@@ -1,0 +1,20 @@
+{
+	"StartupMemory": 2147483648,
+	"MinimumMemory": 536870912,
+	"MaximumMemory": 1099511627776,
+	"ProcessorCount": 2,
+    "SwitchName": "Internal vSwitch",
+	"Media": "2012R2_x64_Standard_EN_Eval",
+    "TimeZone": "GMT Standard Time",
+    "UILanguage": "en-US",
+    "SystemLocale": "en-US",
+    "InputLocale": "en-US",
+    "UserLocale": "en-US",
+    "Password": "P@ssw0rd",
+    "RegisteredOwner": "Test Lab",
+    "RegisteredOrganization": "Test Lab",
+    "ClientCertificatePath": "%ALLUSERSPROFILE%\\VirtualEngineLab\\Certificates\\LabClient.pfx",
+    "RootCertificatePath": "%ALLUSERSPROFILE%\\VirtualEngineLab\\Certificates\\LabRoot.cer",
+    "BootOrder": 99,
+    "BootDelay": 0
+}

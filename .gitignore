@@ -1,0 +1,5 @@
+﻿/bin
+/obj
+*.sln
+*.suo
+*.pssproj

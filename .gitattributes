@@ -1,0 +1,9 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+*.ps1 text
+*.psm1 text
+*.psd1 text
+*.txt text
+
+.gitattributes export-ignore
+.gitignore export-ignore

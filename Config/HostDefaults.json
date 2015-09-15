@@ -1,0 +1,10 @@
+{
+    "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations",
+    "DifferencingVhdPath": "%SYSTEMDRIVE%\\TestLab\\VMVirtualHardDisks",
+    "HotfixPath": "%SYSTEMDRIVE%\\TestLab\\Hotfixes",
+    "IsoPath": "%SYSTEMDRIVE%\\TestLab\\ISOs",
+	"ParentVhdPath": "%SYSTEMDRIVE%\\TestLab\\MasterVirtualHardDisks",
+	"ResourcePath": "%SYSTEMDRIVE%\\TestLab\\Resources",
+    "ResourceShareName": "Resources",
+    "UpdatePath": ""
+}

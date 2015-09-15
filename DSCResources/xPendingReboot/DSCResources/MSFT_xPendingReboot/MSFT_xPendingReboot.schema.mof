@@ -1,0 +1,11 @@
+[ClassVersion("0.1.0.0"), FriendlyName("xPendingReboot")] 
+class MSFT_xPendingReboot : OMI_BaseResource
+{
+  [key] string Name;
+  [read] boolean ComponentBasedServicing;
+  [read] boolean WindowsUpdate;
+  [read] boolean PendingFileRename;
+  [read] boolean PendingComputerRename;
+  [read] boolean CcmClientSDK;
+};
+

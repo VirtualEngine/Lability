@@ -1,0 +1,24 @@
+
+[ClassVersion("1.0.0.0")]
+Class MSFT_xFileDirectory
+{
+  [Required] string DestinationPath;
+  [Write] string SourcePath;
+  [Write,ValueMap{"Present", "Absent"},Values{"Present", "Absent"}] string Ensure;
+  [Write,ValueMap{"File", "Directory"},Values{"File", "Directory"}] string Type;
+  [Write] boolean Recurse;
+  [Write] boolean Force ;
+  [write] string Content;
+  [Write,ValueMap{"ReadOnly", "Hidden", "System", "Archive"},Values{"ReadOnly", "Hidden", "System", "Archive"}] string Attributes[];
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("xVhdFile")]
+class MSFT_xVhdFileDirectory : OMI_BaseResource
+{
+    [Key, Description("Path to the VHD")] String VhdPath;
+    [Required, EmbeddedInstance("MSFT_xFileDirectory"), Description("The FileDirectory objects to copy to the VHD")] String FileDirectory[];
+        [Write,ValueMap{"ModifiedDate","SHA-1","SHA-256","SHA-512"},Values{"ModifiedDate","SHA-1","SHA-256","SHA-512"}] string CheckSum;
+};
+
+
+
