@@ -86,12 +86,6 @@ function GetResourceDownload {
             Write-Debug ('MD5 checksum file ''{0}'' found.' -f $checksumPath);
             $md5Checksum = (Get-Content -Path $checksumPath -Raw).Trim();
             Write-Debug ('Discovered MD5 checksum ''{0}''.' -f $md5Checksum);
-            if ($Checksum -and ($md5Checksum -eq $Checksum)) {
-                WriteVerbose ($localized.ResourceChecksumMatch -f $DestinationPath, $Checksum);
-            }
-            elseif ($Checksum) {
-                WriteVerbose ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
-            }
         }
         else {
             Write-Debug ('MD5 checksum file ''{0}'' not found.' -f $checksumPath);
@@ -123,12 +117,15 @@ function TestResourceDownload {
     process {
         $resource = GetResourceDownload @PSBoundParameters;
         if ([System.String]::IsNullOrEmpty($Checksum) -and (Test-Path -Path $DestinationPath -PathType Leaf)) {
+            WriteVerbose ($localized.ResourceChecksumNotSpecified -f $DestinationPath);
             return $true;
         }
         elseif ($Checksum -eq $resource.Checksum) {
+            WriteVerbose ($localized.ResourceChecksumMatch -f $DestinationPath, $Checksum);
             return $true;
         }
         else {
+            WriteVerbose ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
             return $false;
         }
     } #end process
@@ -160,6 +157,8 @@ function SetResourceDownload {
             Description = $Uri;
             Priority = 'Foreground';
         }
+        $systemUri = New-Object -TypeName System.Uri -ArgumentList $Uri;
+        if ($systemUri.IsFile) { $startBitsTransferParams['Source'] = $systemUri.LocalPath; }
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
         Start-BitsTransfer @startBitsTransferParams -ErrorAction Stop;
 
@@ -186,7 +185,7 @@ function InvokeResourceDownload {
         ##TODO: Support Headers and UserAgent
     )
     process {
-		$PSBoundParameters.Remove('Force');
+		[ref] $null = $PSBoundParameters.Remove('Force');
         if (-not (TestResourceDownload @PSBoundParameters) -or $Force) {
             SetResourceDownload @PSBoundParameters -Verbose:$false;
         }
