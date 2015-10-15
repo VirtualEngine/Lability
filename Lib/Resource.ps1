@@ -189,6 +189,7 @@ function InvokeResourceDownload {
         if (-not (TestResourceDownload @PSBoundParameters) -or $Force) {
             SetResourceDownload @PSBoundParameters -Verbose:$false;
         }
-        return (GetResourceDownload @PSBoundParameters);
+        $resource = GetResourceDownload @PSBoundParameters;
+        return [PSCustomObject] $resource;
     } #end process
 } #end function InvokeResourceDownload

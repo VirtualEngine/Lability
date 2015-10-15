@@ -40,15 +40,12 @@ function NewLabMedia {
             Id = $Id;
             Filename = $Filename;
             Description = $Description;
-            #OperatingSystem = $OperatingSystem;
             Architecture = $Architecture;
-            #Edition = $Edition;
             ImageName = $ImageName;
             MediaType = $MediaType;
             Uri = [System.Uri] $Uri;
             Checksum = $Checksum;
             ProductKey = $ProductKey;
-            #Locale = $Locale;
             CustomData = $CustomData;
             Hotfixes = $Hotfixes;
         }
@@ -189,7 +186,7 @@ function InvokeLabMediaHotfixDownload {
         ISO media is downloaded to the default IsoPath location. VHD(X) files are downloaded directly into the
         ParentVhdPath location.
 #>
-[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
