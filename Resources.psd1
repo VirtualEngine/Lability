@@ -3,8 +3,9 @@ ConvertFrom-StringData @'
 	DownloadingResource             = Downloading resource '{0}' to '{1}'.
     CopyingResource                 = Copying resource '{0}' to '{1}'.
     MissingResourceFile             = Resource '{0}' does not exist.
-	ResourceChecksumMatch           = Resource '{0}' checksum matches specified '{1}' checksum.
-	ResourceChecksumMismatch        = Resource '{0}' checksum does not match specified '{1}' checksum.
+	ResourceChecksumNotSpecified    = Resource '{0}' checksum was not specified.
+    ResourceChecksumMatch           = Resource '{0}' checksum matches '{1}'.
+	ResourceChecksumMismatch        = Resource '{0}' checksum does not match '{1}'.
     CalculatingResourceChecksum     = Calculating resource '{0}' checksum.
 	WritingResourceChecksum         = Writing checksum '{0}' to resource '{1}'.
 	CreatingDirectory               = Creating directory '{0}'.
@@ -49,6 +50,7 @@ ConvertFrom-StringData @'
     ResettingVMConfiguration        = (Re)setting {0} configuration '{1}'.
     TestingVMConfiguration          = Testing {0} configuration '{1}'.
     AddingVMCustomization           = Adding {0} customizations.
+    AddingVMResource                = Adding {0} resources.
     RemovingNodeConfiguration       = Removing {0} configuration '{1}'.
     TestFailed                      = Testing '{0}' failed.
     NodeAlreadyConfigured           = Node '{0}' is already configured.
@@ -67,13 +69,23 @@ ConvertFrom-StringData @'
     FinishedLabConfigurationTest    = Finished Lab configuration test.
     StartedLabConfiguration         = Started Lab configuration.
     FinishedLabConfiguration        = Finished Lab configuration.
+    InjectingVMResource             = Injecting VM resource '{0}'.
+    ExpandingIsoResource            = Expanding ISO resource '{0}'.
+    CopyingFileResource             = Copying file resource '{0}'.
+    ExpandingZipResource             = Expanding Zip archive '{0}'.
+    ExtractingZipArchiveEntry       = Extracting Zip archive entry '{0}'.
+    ClosingZipArchive               = Closing Zip archive '{0}'.
+    ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
+    ResolvedSourcePath              = Resolved Zip source path '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
     SnapshotMissingWarning          = Snapshot '{0}' for virtual machine '{1}' is missing.
     NodeCustomMessageWarning        = [{0}] {1}
+    TargetFileExistsWarning         = Target file '{0}' already exists.
 
     InvalidPathError                = {0} path '{1}' is invalid.
+    InvalidDestinationPathError     = Invalid destination path '{0}' specified.
     InvalidImageArchitectureError   = Architecture '{0}' is invalid for operating system '{1}'.
     InvalidImageEditionError        = Edition '{0}' is invalid for operating system '{1}'.
     InvalidInternalSwitchIpError    = Internal switch IP address '{0}' is an invalid CIDR address.
@@ -92,5 +104,7 @@ ConvertFrom-StringData @'
     CannotLocateNodeError           = Cannot locate node '{0}'.
     CannotSnapshotNodeError         = Cannot perform a snapshot operation on virtual machine '{0}' as it is not powered off. You can force the operation with the -Force switch.
     HostConfigurationTestError      = Host configuration test failed and may have a pending reboot.
-    IncorrectPropertyTypeError      = Incorrect '{0}' property type. Property type must be '{1}'. 
+    IncorrectPropertyTypeError      = Incorrect '{0}' property type. Property type must be '{1}'.
+    CannotResolveResourceIdError    = Cannot resolve resource Id '{0}'.
+    ExpandNotSupportedError         = Expand operation not supported on '{0}' file type.
 '@

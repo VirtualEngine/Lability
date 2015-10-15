@@ -210,6 +210,9 @@ function NewLabVM {
             ProcessorCount = $node.ProcessorCount;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
+        
+        WriteVerbose ($localized.AddingVMResource -f 'VM');
+        SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
 
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
         if ($node.CustomBootStrap) {
