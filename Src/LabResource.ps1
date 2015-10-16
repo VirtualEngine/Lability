@@ -44,6 +44,8 @@ function Invoke-LabResourceDownload {
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        ## Lab resource Id
+        [Parameter()] [System.String[]] $ResourceId,
         ## Forces a checksum recalculations and a download if necessary.
         [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
@@ -52,7 +54,13 @@ function Invoke-LabResourceDownload {
         $hostDefaults = GetConfigurationData -Configuration Host;
     }
     process {
-        foreach ($resource in $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource) {
+        if (-not $ResourceId) {
+            # Download all resources
+            $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
+        }
+
+        foreach ($id in $ResourceId) {
+            $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
             $fileName = $resource.Id;
             if ($resource.Filename) { $fileName = $resource.Filename; }
             $destinationPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $fileName;
@@ -132,7 +140,12 @@ function ExpandLabResource {
             WriteVerbose ($localized.InjectingVMResource -f $resourceId);
             $destinationResourcePath = Join-Path -Path $DestinationPath -ChildPath $resourceId;
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
-            $resourceItem = Get-Item -Path (Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Filename);
+            
+            $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Filename;
+            if (-not (Test-Path -Path $resourceItemPath)) {
+                [ref] $null = Invoke-LabResourceDownload -ConfigurationData $ConfigurationData -ResourceId $resourceId;
+            }
+            $resourceItem = Get-Item -Path $resourceItemPath;
 
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
                 [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
