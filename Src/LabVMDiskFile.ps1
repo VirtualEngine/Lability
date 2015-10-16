@@ -102,7 +102,8 @@ function SetLabVMDiskFile {
             $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $Name);
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
-            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
+            if (-not (Test-Path -Path $mofPath)) { WriteWarning ($localized.CannotLocateMofFileError -f $mofPath); }
+            else { Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop; }
 
             $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $Name);
             if (Test-Path -Path $metaMofPath -PathType Leaf) {
