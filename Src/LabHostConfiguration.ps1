@@ -47,33 +47,6 @@ function GetLabHostSetupConfiguration {
         }
         
         $labHostSetupConfiguration = @(
-            @{  ## Create DSC resource share
-                UseDefault = $false;
-                Description = 'Local resource share';
-                ModuleName = 'xSmbShare';
-                ResourceName = 'MSFT_xSmbShare';
-                Prefix = 'SmbShare'
-                Parameters = @{
-                    Ensure = 'Present';
-                    Name = $configuration.ResourceShareName;
-                    Path = $configuration.ResourcePath;
-                    Description = 'Test Lab Resource Share';
-                    FullAccess = 'BUILTIN\Administrators';
-                    ReadAccess = 'Everyone';
-                };
-            },
-            @{  ## Enable Guest account for DSC resource share
-                UseDefault = $true;
-                Description = 'Guest account enabled';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_UserResource';
-                Prefix = 'UserResource';
-                Parameters = @{
-                    UserName = 'Guest';
-                    Ensure = 'Present';
-                    Disabled = $false;
-                };
-            },
             ## Add Hyper-V role dependong on desktop or server setup
             $hypervConfiguration,
             @{  ## Check for a reboot before continuing
