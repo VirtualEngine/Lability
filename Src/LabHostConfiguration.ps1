@@ -16,9 +16,11 @@ function GetLabHostSetupConfiguration {
     process {
         [System.Boolean] $isDesktop = (Get-WmiObject -Class Win32_OperatingSystem).ProductType -eq 1;
         ## Due to the differences in client/server deployment for Hyper-V, determine the correct method before creating the host configuration array.
+        $labHostSetupConfiguration = @();
+
         if ($isDesktop) {
             Write-Debug 'Implementing desktop configuration.';
-            $hypervConfiguration = @{
+            $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V role';
                 ModuleName = 'PSDesiredStateConfiguration';
@@ -32,7 +34,7 @@ function GetLabHostSetupConfiguration {
         }
         else {
             Write-Debug 'Implementing server configuration.';
-            $hypervConfiguration = @{
+            $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V Role';
                 ModuleName = 'PSDesiredStateConfiguration';
@@ -44,22 +46,31 @@ function GetLabHostSetupConfiguration {
                     IncludeAllSubFeature = $true;
                 }
             };
-        }
-        
-        $labHostSetupConfiguration = @(
-            ## Add Hyper-V role dependong on desktop or server setup
-            $hypervConfiguration,
-            @{  ## Check for a reboot before continuing
-                UseDefault = $false;
-                Description = 'Pending reboot';
-                ModuleName = 'xPendingReboot';
-                ResourceName = 'MSFT_xPendingReboot';
-                Prefix = 'PendingReboot';
+            $labHostSetupConfiguration += @{
+                UseDefault = $true;
+                Description = 'Hyper-V Tools';
+                ModuleName = 'PSDesiredStateConfiguration';
+                ResourceName = 'MSFT_RoleResource';
+                Prefix = 'WindowsFeature';
                 Parameters = @{
-                    Name = 'TestingForHypervReboot';
-                };
+                    Ensure = 'Present';
+                    Name = 'RSAT-Hyper-V-Tools';
+                    IncludeAllSubFeature = $true;
+                }
+            };
+        } #end Server configuration
+        
+        $labHostSetupConfiguration += @{
+            ## Check for a reboot before continuing
+            UseDefault = $false;
+            Description = 'Pending reboot';
+            ModuleName = 'xPendingReboot';
+            ResourceName = 'MSFT_xPendingReboot';
+            Prefix = 'PendingReboot';
+            Parameters = @{
+                Name = 'TestingForHypervReboot';
             }
-        );
+        };
         
         return $labHostSetupConfiguration;
     } #end process
