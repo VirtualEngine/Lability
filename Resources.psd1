@@ -77,6 +77,7 @@ ConvertFrom-StringData @'
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
+    SettingAdministratorPassword    = Setting local administrator password to '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -100,7 +101,7 @@ ConvertFrom-StringData @'
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
     CannotFindCertificateError      = Cannot locate {0} certificate '{1}'.
-    CannotLocateMofFileError        = Cannot locate node '{0}' file. Ensure the DSC configuration has been run successfully.
+    CannotLocateMofFileError        = Cannot locate node '{0}' file. No DSC configuration will be applied. Ensure the DSC configuration has been run successfully.
     CannotLocateNodeError           = Cannot locate node '{0}'.
     CannotSnapshotNodeError         = Cannot perform a snapshot operation on virtual machine '{0}' as it is not powered off. You can force the operation with the -Force switch.
     HostConfigurationTestError      = Host configuration test failed and may have a pending reboot.

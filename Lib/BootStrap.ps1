@@ -9,33 +9,37 @@ function NewBootStrap {
     process {
         $sciptBlock = {
             
-            ## VirtualEngine.Lab DSC Bootstrap
-            $VerbosePreference = 'Continue';
-            $DebugPreference = 'Continue';
-            Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force -IncludeInvocationHeader;
+        ## VirtualEngine.Lab DSC Bootstrap
+        $VerbosePreference = 'Continue';
+        $DebugPreference = 'Continue';
+        Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force -IncludeInvocationHeader;
 
-            certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
-            ## Import the .PFX certificate with a blank password
-            "" | certutil.exe -f -importpfx "$env:SYSTEMDRIVE\BootStrap\LabClient.pfx";
+        certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
+        ## Import the .PFX certificate with a blank password
+        "" | certutil.exe -f -importpfx "$env:SYSTEMDRIVE\BootStrap\LabClient.pfx";
 
-            <#CustomBootStrapInjectionPoint#>
+        <#CustomBootStrapInjectionPoint#>
 
+        if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.meta.mof") {
             Set-DscLocalConfigurationManager -Path "$env:SystemDrive\BootStrap\" -Verbose;
-
-            while ($true) {
-                ## Replay the configuration until the LCM bloody-well takes it!
-                try {
-                    Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
-                    Stop-Transcript;
-                    break;
-                }
-                catch {
-                    Write-Error $_;
-                    Start-Sleep -Seconds 5;
-                }
-            } #end while
-            
         }
+
+        while ($true) {
+            ## Replay the configuration until the LCM bloody-well takes it!
+            try {
+                if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
+                    Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
+                }
+                Stop-Transcript;
+                break;
+            }
+            catch {
+                Write-Error $_;
+                Start-Sleep -Seconds 5;
+            }
+        } #end while
+            
+        } #end bootstrap scriptblock
         return $sciptBlock;
     } #end process
 } #end function NewBootStrap

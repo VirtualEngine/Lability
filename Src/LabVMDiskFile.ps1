@@ -80,6 +80,7 @@ function SetLabVMDiskFile {
             RegisteredOwner = $NodeData.RegisteredOwner;
             RegisteredOrganization = $NodeData.RegisteredOrganization;
         }
+        WriteVerbose ($localized.SettingAdministratorPassword -f $NodeData.Password);
         if ($NodeData.ProductKey) {
             $newUnattendXmlParams['ProductKey'] = $NodeData.ProductKey;
         }

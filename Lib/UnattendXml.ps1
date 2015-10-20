@@ -64,7 +64,7 @@ function NewUnattendXml {
             <UserAccounts>
                 <AdministratorPassword>
                     <Value></Value>
-                    <PlainText>true</PlainText>
+                    <PlainText>false</PlainText>
                 </AdministratorPassword>
             </UserAccounts>
             <RegisteredOrganization>Virtual Engine</RegisteredOrganization>
@@ -130,8 +130,8 @@ function NewUnattendXml {
 
                 if (($setting.'Pass' -eq 'oobeSystem') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
                     $component.TimeZone = $Timezone;
-                    $component.UserAccounts.AdministratorPassword.Value = $Password;
-                    #$component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($Password));
+                    $concatenatedPassword = '{0}AdministratorPassword' -f $Password;
+                    $component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedPassword));
                     $component.RegisteredOrganization = $RegisteredOrganization;
                     $component.RegisteredOwner = $RegisteredOwner;
                 } 
