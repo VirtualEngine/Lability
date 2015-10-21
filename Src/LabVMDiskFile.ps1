@@ -23,7 +23,7 @@ function SetLabVMDiskResource {
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType 'Basic';
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
@@ -61,7 +61,7 @@ function SetLabVMDiskFile {
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType 'Basic';
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
