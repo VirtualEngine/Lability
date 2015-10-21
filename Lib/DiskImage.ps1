@@ -29,7 +29,7 @@ function NewDiskImageMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -53,7 +53,7 @@ function NewDiskImageGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -87,7 +87,7 @@ function NewDiskImage {
         ## Disk image partition scheme
         [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
         ## Disk image size in bytes
-        [Parameter()] [System.UInt64] $Size = 100GB,
+        [Parameter()] [System.UInt64] $Size = 127GB,
         ## Overwrite/recreate existing disk image
         [Parameter()] [System.Management.Automation.SwitchParameter] $Force,
         ## Do not dismount the VHD/x and return a reference
@@ -133,7 +133,7 @@ function SetDiskImageBootVolumeMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         $bcdBootExe = 'bcdboot.exe';
@@ -178,7 +178,7 @@ function SetDiskImageBootVolumeGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         $bcdBootExe = 'bcdboot.exe';
@@ -206,7 +206,7 @@ function SetDiskImageBootVolume {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd,
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         ## Disk image partition scheme
         [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
     )
@@ -234,7 +234,7 @@ function AddDiskImagePackage {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id,
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd,
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         ## Disk image partition scheme
         [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
     )

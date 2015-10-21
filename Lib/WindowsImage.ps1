@@ -12,7 +12,7 @@ function ExpandWindowsImage {
         ## WIM image name to apply from the ISO
         [Parameter(Mandatory, ParameterSetName = 'Name')] [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd,
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         ## Disk image partition scheme
         [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
     )
