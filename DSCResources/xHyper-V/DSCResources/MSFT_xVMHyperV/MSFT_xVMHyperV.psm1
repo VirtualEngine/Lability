@@ -26,7 +26,11 @@ function Get-TargetResource
     {
        Throw "More than one VM with the name $Name exist." 
     }
-     
+    
+    $vmSecureBootState = $false;
+    if ($vmobj.Generation -eq 2) {
+       $vmSecureBootState = ($vmobj | Get-VMFirmware).SecureBoot -eq 'On'
+    } 
     
     @{
         Name             = $Name
@@ -35,6 +39,7 @@ function Get-TargetResource
         State            = $vmobj.State
         Path             = $vmobj.Path
         Generation       = $vmobj.Generation
+        SecureBoot       = $vmSecureBootState
         StartupMemory    = $vmobj.MemoryStartup
         MinimumMemory    = $vmobj.MemoryMinimum
         MaximumMemory    = $vmobj.MemoryMaximum
@@ -108,7 +113,10 @@ function Set-TargetResource
         [ValidateSet("Present","Absent")]
         [String]$Ensure = "Present",
         [System.String]
-        $Notes
+        $Notes,
+
+        # Enable secure boot for Generation 2 VMs
+        [Boolean]$SecureBoot = $true
     )
 
     # Check if Hyper-V module is present for Hyper-V cmdlets
@@ -200,6 +208,17 @@ function Set-TargetResource
                 Write-Verbose -Message "VM $Name now has correct MACAddress."
             }
 
+            if ($Generation -eq 2)
+            {
+                $vmSecureBoot = Get-VMSecureBoot -Name $Name
+                if ($SecureBoot -ne $vmSecureBoot)
+                {
+                    Write-Verbose -Message "VM $Name secure boot is incorrect. Expected $SecureBoot, actual $vmSecureBoot"
+                    Change-VMSecureBoot -Name $Name -SecureBoot $SecureBoot -RestartIfNeeded $RestartIfNeeded
+                    Write-Verbose -Message "VM $Name secure boot is now correct."
+                }
+            }
+
             if($Notes -ne $null)
             {
                 # If the VM notes do not match the desire notes, update them.  This can be done while the VM is running.
@@ -257,6 +276,13 @@ function Set-TargetResource
             if($MACAddress)
             {
                 Set-VMNetworkAdapter -VMName $Name -StaticMacAddress $MACAddress
+            }
+
+            if ($Generation -eq 2) {
+                if ($SecureBoot -eq $false)
+                {
+                    Set-VMFirmware -VMName $Name -EnableSecureBoot Off
+                }
             }
             
             Write-Verbose -Message "VM $Name created"
@@ -328,7 +354,10 @@ function Test-TargetResource
         [ValidateSet("Present","Absent")]
         [String]$Ensure = "Present",
         [System.String]
-        $Notes
+        $Notes,
+
+        # Enable secure boot for Generation 2 VMs
+        [Boolean]$SecureBoot = $true
     )
 
     #region input validation
@@ -402,6 +431,10 @@ function Test-TargetResource
             if($ProcessorCount -and ($vmObj.ProcessorCount -ne $ProcessorCount)){return $false}
             if($MaximumMemory -and ($vmObj.MemoryMaximum -ne $MaximumMemory)){return $false}
             if($MinimumMemory -and ($vmObj.MemoryMinimum -ne $MinimumMemory)){return $false}
+
+            if($vmObj.Generation -eq 2) {
+                if ($SecureBoot -ne (Get-VMSecureBoot -Name $Name)){return $false}
+            }
 
             return $true
         }
@@ -493,6 +526,71 @@ function Change-VMProperty
     {
         Write-Error -Message "Can not change properties for VM $Name in $($vmObj.State) state unless RestartIfNeeded is set to true"
     }
+}
+
+function Change-VMSecureBoot
+{
+    param
+    (
+        [Parameter(Mandatory)]
+        [String]$Name,
+
+        [Boolean]$SecureBoot,
+
+        [Boolean]$RestartIfNeeded
+    )
+
+    $vmObj = Get-VM -Name $Name
+    $originalState = $vmObj.state
+    if($originalState -ne "Off" -and $RestartIfNeeded)
+    { 
+        Set-VMState -Name $Name -State Off
+        if ($SecureBoot)
+        {
+            Set-VMFirmware -VMName $Name -EnableSecureBoot On
+        }
+        else {
+            Set-VMFirmware -VMName $Name -EnableSecureBoot Off
+        }
+
+        # Can not move a off VM to paused, but only to running state
+        if($originalState -eq "Running")
+        {
+            Set-VMState -Name $Name -State Running -WaitForIP $true
+        }
+
+        Write-Verbose -Message "VM $Name now has correct properties."
+
+        # Cannot make a paused VM to go back to Paused state after turning Off
+        if($originalState -eq "Paused")
+        {
+            Write-Warning -Message "VM $Name state will be OFF and not Paused"
+        }
+    }
+    elseif($originalState -eq "Off")
+    {
+        if ($SecureBoot)
+        {
+            Set-VMFirmware -VMName $Name -EnableSecureBoot On
+        }
+        else {
+            Set-VMFirmware -VMName $Name -EnableSecureBoot Off
+        }
+    }
+    else
+    {
+        Write-Error -Message "Can not change properties for VM $Name in $($vmObj.State) state unless RestartIfNeeded is set to true"
+    }
+}
+
+function Get-VMSecureBoot
+{
+    param (
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+    $vm = Get-VM -Name $Name;
+    return (Get-VMFirmware -VM $vm).SecureBoot -eq 'On';
 }
 
 function Get-VMIPAddress

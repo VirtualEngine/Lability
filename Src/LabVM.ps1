@@ -42,6 +42,10 @@ function ResolveLabVMProperties {
                 [ref] $null = $node.Add($propertyName, $labDefaults.$propertyName);
             }
         }
+        ## Default to SecureBoot On/$true unless otherwise specified
+        if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) { $node['SecureBoot'] = $false; }
+        else { $node['SecureBoot'] = $true; }
+        
         return $node;
     } #end process
 } #end function Resolve-LabProperty
@@ -138,6 +142,7 @@ function Test-LabVM {
                 MaximumMemory = $node.MaximumMemory;
                 ProcessorCount = $node.ProcessorCount;
                 MACAddress = $node.MACAddress;
+                SecureBoot = $node.SecureBoot;
             }
             if (-not (TestLabVirtualMachine @testLabVirtualMachineParams -Name $vmName)) {
                 $isNodeCompliant = $false;
@@ -208,6 +213,7 @@ function NewLabVM {
             MinimumMemory = $node.MinimumMemory;
             MaximumMemory = $node.MaximumMemory;
             ProcessorCount = $node.ProcessorCount;
+            SecureBoot = $node.SecureBoot;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
         

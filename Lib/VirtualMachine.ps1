@@ -11,7 +11,8 @@ function GetVirtualMachineProperties {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress
+        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
@@ -51,7 +52,8 @@ function TestLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress
+        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
@@ -78,7 +80,8 @@ function SetLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress
+        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the xVMHyperV resource parameters
@@ -103,7 +106,8 @@ function RemoveLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress
+        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the xVMHyperV resource parameters

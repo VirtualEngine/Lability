@@ -1,4 +1,4 @@
-﻿[ClassVersion("1.0.0"), FriendlyName("xVMHyperV")]
+[ClassVersion("1.0.0"), FriendlyName("xVMHyperV")]
 class MSFT_xVMHyperV : OMI_BaseResource
 {
     [Key, Description("Name of the VM")] String Name;
@@ -16,6 +16,7 @@ class MSFT_xVMHyperV : OMI_BaseResource
     [Write, Description("If specified, shutdowns and restarts the VM as needed for property changes")] Boolean RestartIfNeeded;
     [Write, Description("Should the VM be created or deleted"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Notes about the VM.")] String Notes;
+    [Write, Description("Enable secure boot for Generation 2 VMs.")] Boolean SecureBoot;
     [Read, Description("VM unique ID")] String ID;
     [Read, Description("Status of the VM")] String Status;
     [Read, Description("CPU Usage of the VM")] Uint32 CPUUsage;
