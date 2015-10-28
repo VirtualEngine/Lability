@@ -35,8 +35,8 @@ function ConvertToConfigurationData {
             elseif ([System.IO.Path]::GetExtension($configurationDataPath) -ne '.psd1') {
                 throw "Invalid configuration data file";
             }
-            $configurationDataContents = Get-Content -Path $configurationDataPath -Raw;
-            $ConfigurationData = Invoke-Command -ScriptBlock ([System.Management.Automation.ScriptBlock]::Create($configurationDataContents));
+            $configurationDataContent = Get-Content -Path $configurationDataPath -Raw;
+            $ConfigurationData = Invoke-Command -ScriptBlock ([System.Management.Automation.ScriptBlock]::Create($configurationDataContent));
         }
         if ($ConfigurationData -isnot [System.Collections.Hashtable]) {
             throw "Invalid configuration data type";
@@ -56,7 +56,7 @@ function ResolveConfigurationDataPath {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','DSC')] [System.String] $Configuration,
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media')] [System.String] $Configuration,
 		[Parameter()] [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
     process {
@@ -64,7 +64,6 @@ function ResolveConfigurationDataPath {
             'Host' { $configPath = $labDefaults.HostConfigFilename; }
             'VM' { $configPath = $labDefaults.VMConfigFilename; }
             'Media' { $configPath = $labDefaults.MediaConfigFilename; }
-			'DSC' { $configPath = $labDefaults.DscConfigFilename; }
         }
         $configPath = Join-Path -Path $labDefaults.ConfigurationData -ChildPath $configPath;
         $resolvedPath = Join-Path -Path "$env:ALLUSERSPROFILE\$($labDefaults.ModuleName)" -ChildPath $configPath;
@@ -86,7 +85,7 @@ function GetConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','DSC')] [System.String] $Configuration
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media')] [System.String] $Configuration
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;

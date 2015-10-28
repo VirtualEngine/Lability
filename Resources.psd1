@@ -78,6 +78,9 @@ ConvertFrom-StringData @'
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
     SettingAdministratorPassword    = Setting local administrator password to '{0}'.
+    DownloadingAllRequiredMedia     = No media Id specified. Downloading all required media.
+    DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
+    DownloadingAllDefinedResources  = No resource Id specified. Downloading all defined resources.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.

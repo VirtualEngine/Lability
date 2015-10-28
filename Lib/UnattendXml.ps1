@@ -9,10 +9,10 @@ function NewUnattendXml {
        to pull its configuration from the specified pull server.
 #>
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType([System.Xml.XmlDocument])]
     param (
         # Local Administrator Password
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.string] $Password,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
         # Computer name
         [Parameter()] [System.String] $ComputerName,
         # Product Key
@@ -26,12 +26,12 @@ function NewUnattendXml {
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
         # Timezone
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
         # Registered Owner
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
         # Registered Organization
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
-        # TODO: Execute synchronous commands during OOBE pass
+        # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
         [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
     )

@@ -44,6 +44,8 @@ function Invoke-LabResourceDownload {
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        ## Lab media Id
+        [Parameter()] [System.String[]] $MediaId,
         ## Lab resource Id
         [Parameter()] [System.String[]] $ResourceId,
         ## Forces a checksum recalculations and a download if necessary.
@@ -54,8 +56,27 @@ function Invoke-LabResourceDownload {
         $hostDefaults = GetConfigurationData -Configuration Host;
     }
     process {
+        if (-not $MediaId) {
+            WriteVerbose ($Localized.DownloadingAllRequiredMedia);
+            $uniqueMediaIds = @();
+            $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
+                $id = (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
+                if ($uniqueMediaIds -notcontains $id) { $uniqueMediaIds += $id; }
+            }
+            $MediaId = $uniqueMediaIds;
+        }
+        foreach ($id in $MediaId) {
+            $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
+            InvokeLabMediaImageDownload -Id $id -Force:$Force;
+            
+            WriteVerbose $Localized.DownloadingAllRequiredHotfixes;
+            foreach ($hotfix in $labMedia.Hotfixes) {
+                InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+            }
+        }
+
         if (-not $ResourceId) {
-            # Download all resources
+            WriteVerbose ($Localized.DownloadingAllDefinedResources);
             $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
         }
 

@@ -7,6 +7,7 @@ function ResolvePathEx {
         the location specified by the path, such as the files and folders or registry keys and subkeys.
 #>
     [CmdletBinding()]
+    [OutputType([System.String])]
     param (
         [Parameter(Mandatory)] [System.String] $Path
     )
@@ -53,6 +54,7 @@ function InvokeExecutable {
         $process = Start-Process @processArgs;
         if ($process.ExitCode -ne 0) { WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode);}
         else { WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode); }
+        ##TODO: Should this actually return the exit code?!
     } #end process
 } #end function InvokeExecutable
 
