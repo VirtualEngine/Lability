@@ -149,18 +149,8 @@ function SetResourceDownload {
     }
     process {
         $destinationFilename = [System.IO.Path]::GetFileName($DestinationPath);
-        $startBitsTransferParams = @{
-            Source = $Uri;
-            Destination = $DestinationPath;
-            TransferType = 'Download';
-            DisplayName = $localized.DownloadingActivity -f $destinationFilename;
-            Description = $Uri;
-            Priority = 'Foreground';
-        }
-        $systemUri = New-Object -TypeName System.Uri -ArgumentList $Uri;
-        if ($systemUri.IsFile) { $startBitsTransferParams['Source'] = $systemUri.LocalPath; }
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
-        Start-BitsTransfer @startBitsTransferParams -ErrorAction Stop;
+        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri;
 
         ## Create the checksum file for future reference
         $checksumPath = '{0}.checksum' -f $DestinationPath;
@@ -169,6 +159,65 @@ function SetResourceDownload {
         [ref] $null = $fileHash | Set-Content -Path $checksumPath -Force;
     } #end process
 } #end function SetResourceDownload
+
+function InvokeWebClientDownload {
+<#
+    .SYNOPSIS
+        Downloads a (web) resource using System.Net.WebClient.
+    .NOTES
+        This solves issue #19 when running downloading resources using BITS under alternative credentials.
+#>
+    [CmdletBinding()]
+    [OutputType([System.IO.FileInfo])]
+    param (
+        [Parameter(Mandatory)] [System.String] $DestinationPath,
+        [Parameter(Mandatory)] [System.String] $Uri,
+        [Parameter()] [System.UInt32] $BufferSize = 64KB,
+        [Parameter()] [AllowNull()] [System.Management.Automation.PSCredential] $Credential
+    )
+    process {
+        try {
+            [System.Net.WebClient] $webClient = New-Object -TypeName 'System.Net.WebClient';
+            $webClient.Proxy = [System.Net.WebRequest]::GetSystemWebProxy();
+            if ($Credential) {
+                $webClient.Credentials = $Credential;
+                $webClient.Proxy.Credentials = $Credential;
+            }
+            else {
+                $webClient.UseDefaultCredentials = $true;
+                $webClient.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
+            }
+            [System.IO.Stream] $inputStream = $webClient.OpenRead($Uri);
+            [System.UInt32] $contentLength = $webClient.ResponseHeaders['Content-Length'];
+            $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
+            [System.IO.Stream] $outputStream = [System.IO.File]::Create($path);
+            [System.Byte[]] $buffer = New-Object System.Byte[] $BufferSize;
+            [System.UInt32] $bytesRead = 0;
+            [System.UInt32] $totalBytes = 0;
+            do {
+                $bytesRead = $inputStream.Read($buffer, 0, $buffer.Length);
+                $totalBytes += $bytesRead;
+                $outputStream.Write($buffer, 0, $bytesRead);
+                ## Avoid divide by zero
+                if ($contentLength -gt 0) {
+                    [System.Byte] $percentComplete = ($totalBytes/$contentLength) * 100;
+                    Write-Progress -Activity ($localized.DownloadingActivity -f $Uri) -PercentComplete $percentComplete -Status ($localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete);
+                }
+            }
+            while ($bytesRead -ne 0)
+            $outputStream.Close();
+            return (Get-Item -Path $path);
+        }
+        catch {
+            throw ($localized.ResourceDownloadFailedError -f $Uri);
+        }
+        finally {
+            if ($null -ne $outputStream) { $outputStream.Close(); }
+            if ($null -ne $inputStream) { $inputStream.Close(); }
+            if ($null -ne $webClient) { $webClient.Dispose(); }
+        }
+    }
+} #end function InvokeWebClientDownload
 
 function InvokeResourceDownload {
 <#

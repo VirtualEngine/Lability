@@ -112,7 +112,6 @@ function Start-LabConfiguration {
             if ($node.IsConfigured -and $Force) {
                 WriteVerbose ($localized.NodeForcedConfiguration -f $node.Name);
                 NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot;
-                if ($Start) { Start-VM -Name $node.Name; }
             }
             elseif ($node.IsConfigured) {
                 WriteVerbose ($localized.NodeAlreadyConfigured -f $node.Name);
@@ -124,7 +123,7 @@ function Start-LabConfiguration {
         }
         WriteVerbose $localized.FinishedLabConfiguration;
     } #end process
-} #end function Restore-Lab
+} #end function Start-LabConfiguration
 
 function Remove-LabConfiguration {
 <#
@@ -150,4 +149,4 @@ function Remove-LabConfiguration {
         }
         WriteVerbose $localized.FinishedLabConfiguration;
     } #end process
-} #end function Restore-Lab
+} #end function Remove-LabConfiguration
