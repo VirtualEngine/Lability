@@ -62,11 +62,9 @@ function ResolveLabSwitch {
             $networkSwitch = NewLabSwitch @networkHashtable;
         }
         else {
-            ## Resolve to default host virtual switch?
+            ## Resolve to default host virtual switch
             $vmDefaults = GetConfigurationData -Configuration VM;
-            if ($Name -eq $vmDefaults.SwitchName) {
-                $networkSwitch = @{ Name = $vmDefaults.SwitchName; Type = 'Internal'; }
-            }
+            $networkSwitch = @{ Name = $vmDefaults.SwitchName; Type = 'Internal'; }
         }
         return $networkSwitch;
     } #end process
@@ -89,17 +87,11 @@ function Get-LabSwitch {
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        if (-not $networkSwitch) {
-            throw ($localized.CannotLocateNetworkError -f $Name);
-        }
     } #end begin
     process {
         $xVMSwitch = @{
-            Name = $Name;
-            Type = 'Internal';
-        }
-        if ($networkSwitch.Type) {
-            $xVMSwitch['Type'] = $networkSwitch.Type;
+            Name = $networkSwitch.Name;
+            Type = $networkSwitch.Type;
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
         $switch = GetDscResource -ResourceName VMSwitch -Parameters $xVMSwitch;
@@ -128,15 +120,8 @@ function TestLabSwitch {
     }
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        if (-not $networkSwitch) {
-            return $false;
-        }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        if (-not (TestDscResource -ResourceName VMSwitch -Parameters $networkSwitch)) {
-            return $false;
-        }
-        
-        return $true;
+        return TestDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
     } #end process
 } #end function TestLabSwitch
 
@@ -157,12 +142,9 @@ function SetLabSwitch {
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        if (-not $networkSwitch) {
-            throw ($localized.CannotLocateNetworkError -f $Name);
-        }
     } #end begin
     process {
+        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
         [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
     } #end process
@@ -187,9 +169,6 @@ function RemoveLabSwitch {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         $networkSwitch['Ensure'] = 'Absent';
-        if (-not $networkSwitch) {
-            throw ($localized.CannotLocateNetworkError -f $Name);
-        }
     } #end begin
     process {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
