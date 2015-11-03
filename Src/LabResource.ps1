@@ -137,7 +137,10 @@ function ExpandIsoResource {
 function ExpandLabResource {
 <#
     .SYNOPSIS
-        Expands .zip and .iso resources a lab VM's disk.
+        Copies files, e.g. EXEs, ISOs and ZIP file resources into a lab VM's mounted VHDX differencing disk image.
+    .NOTES
+        VHDX should already be mounted and passed in via the $DestinationPath parameter
+        Can expand ISO and ZIP files if the 'Expand' property is set to $true on the resource's properties.
 #>
     param (
         ## Lab DSC configuration data
@@ -145,7 +148,7 @@ function ExpandLabResource {
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
         ## Lab VM name
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        ## Destination path
+        ## Destination mounted VHDX path to expand resources into
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath
     )
     begin {
@@ -158,11 +161,16 @@ function ExpandLabResource {
         }
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
+            
             WriteVerbose ($localized.InjectingVMResource -f $resourceId);
             $destinationResourcePath = Join-Path -Path $DestinationPath -ChildPath $resourceId;
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
             
-            $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Filename;
+            ## Default to resource.Id unless there is a filename property defined!
+            $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Id;
+            if ($resource.Filename) {
+                $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Filename;
+            }
             if (-not (Test-Path -Path $resourceItemPath)) {
                 [ref] $null = Invoke-LabResourceDownload -ConfigurationData $ConfigurationData -ResourceId $resourceId;
             }
