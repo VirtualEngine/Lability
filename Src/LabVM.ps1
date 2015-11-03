@@ -18,34 +18,46 @@ function ResolveLabVMProperties {
         [Parameter()] [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
     )
     process {
-        $node = @{};
+        $node = @{ };
         if (-not $NoEnumerateWildcardNode) {
             ## Retrieve the AllNodes.* properties
             $ConfigurationData.AllNodes.Where({ $_.NodeName -eq '*' }) | ForEach-Object {
                 foreach ($key in $_.Keys) {
-                    $node[($key -replace "$($labDefaults.ModuleName)_",'')] = $_.$key;
+                    $node[$key] = $_.$key;
                 }
             }
         }
+        
         ## Retrieve the AllNodes.$NodeName properties
         $ConfigurationData.AllNodes.Where({ $_.NodeName -eq $NodeName }) | ForEach-Object {
             foreach ($key in $_.Keys) {
-                $node[($key -replace "$($labDefaults.ModuleName)_",'')] = $_.$key;
+                $node[$key] = $_.$key;
             }
         }
+        
         ## Check VM defaults
-        $labDefaults = GetConfigurationData -Configuration VM;
-        $properties = Get-Member -InputObject $labDefaults -MemberType NoteProperty;
+        $labDefaultProperties = GetConfigurationData -Configuration VM;
+        $properties = Get-Member -InputObject $labDefaultProperties -MemberType NoteProperty;
         foreach ($propertyName in $properties.Name) {
             ## Int32 values of 0 get coerced into $false!
             if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.$propertyName)) {
-                [ref] $null = $node.Add($propertyName, $labDefaults.$propertyName);
+                #[ref] $null = $node.Add($propertyName, $labDefaults.$propertyName);
+                $node[$propertyName] = $labDefaultProperties.$propertyName;
             }
         }
+
+        ## Rename/overwrite existing parameter values where $moduleName-specific parameters exist
+        foreach ($key in @($node.Keys)) {
+            if ($key.StartsWith("$($labDefaults.ModuleName)_")) {
+                $node[($key.Replace("$($labDefaults.ModuleName)_",''))] = $node.$key;
+            }
+        }
+
         ## Default to SecureBoot On/$true unless otherwise specified
+        ## TODO: Should this not be added to the LabVMDefaults?
         if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) { $node['SecureBoot'] = $false; }
         else { $node['SecureBoot'] = $true; }
-        
+
         return $node;
     } #end process
 } #end function Resolve-LabProperty
@@ -62,7 +74,7 @@ function Get-LabVM {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [Object] $ConfigurationData,
+        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
         ## Lab VM/Node name
         [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String[]] $Name
     )
@@ -176,7 +188,7 @@ function NewLabVM {
 
         ## Check for certificate before we (re)create the VM
         if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
-             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
+            $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
             if (-not (Test-Path -Path $expandedClientCertificatePath -PathType Leaf)) {
                 throw ($localized.CannotFindCertificateError -f 'Client', $node.ClientCertificatePath);
             }
@@ -231,7 +243,7 @@ function NewLabVM {
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
-            Checkpoint-VM -VMName $Name -SnapshotName $snapshotName;
+            Checkpoint-VM -Name $Name -SnapshotName $snapshotName;
         }
 
         if ($node.WarningMessage) {
