@@ -150,7 +150,7 @@ function SetResourceDownload {
     process {
         $destinationFilename = [System.IO.Path]::GetFileName($DestinationPath);
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
-        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri;
+        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -Verbose;
 
         ## Create the checksum file for future reference
         $checksumPath = '{0}.checksum' -f $DestinationPath;
@@ -178,7 +178,12 @@ function InvokeWebClientDownload {
     process {
         try {
             [System.Net.WebClient] $webClient = New-Object -TypeName 'System.Net.WebClient';
+            $webClient.Headers.Add('user-agent', $labDefaults.ModuleName);
             $webClient.Proxy = [System.Net.WebRequest]::GetSystemWebProxy();
+            if (-not $webClient.Proxy.IsBypassed($Uri)) {
+                $proxyInfo = $webClient.Proxy.GetProxy($Uri);
+                WriteVerbose ($localized.UsingProxyServer -f $proxyInfo.AbsoluteUri);
+            }
             if ($Credential) {
                 $webClient.Credentials = $Credential;
                 $webClient.Proxy.Credentials = $Credential;
@@ -188,12 +193,12 @@ function InvokeWebClientDownload {
                 $webClient.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
             }
             [System.IO.Stream] $inputStream = $webClient.OpenRead($Uri);
-            [System.UInt32] $contentLength = $webClient.ResponseHeaders['Content-Length'];
+            [System.UInt64] $contentLength = $webClient.ResponseHeaders['Content-Length'];
             $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
             [System.IO.Stream] $outputStream = [System.IO.File]::Create($path);
             [System.Byte[]] $buffer = New-Object System.Byte[] $BufferSize;
-            [System.UInt32] $bytesRead = 0;
-            [System.UInt32] $totalBytes = 0;
+            [System.UInt64] $bytesRead = 0;
+            [System.UInt64] $totalBytes = 0;
             do {
                 $bytesRead = $inputStream.Read($buffer, 0, $buffer.Length);
                 $totalBytes += $bytesRead;
