@@ -1,6 +1,6 @@
 @{
     RootModule = 'VirtualEngineLab.psm1';
-    ModuleVersion = '0.7.13';
+    ModuleVersion = '0.7.14';
     GUID = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author = 'Iain Brighton';
     CompanyName = 'Virtual Engine';
