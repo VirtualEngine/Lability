@@ -167,3 +167,45 @@ function NewUnattendXml {
         Write-Output $unattendXml;
     } #end process
 } #end function NewUnattendXml
+
+function SetUnattendXml {
+<#
+    .SYNOPSIS
+       Creates a Windows unattended installation file and saves to disk.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Xml.XmlDocument])]
+    param (
+        # Filename/path to save the unattend file as
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        # Local Administrator Password
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
+        # Computer name
+        [Parameter()] [System.String] $ComputerName,
+        # Product Key
+        [Parameter()] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')] [System.String] $ProductKey,
+        # Input Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $InputLocale = 'en-US',
+        # System Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $SystemLocale = 'en-US',
+        # User Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UserLocale = 'en-US',
+        # UI Language
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
+        # Timezone
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
+        # Registered Owner
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
+        # Registered Organization
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
+        # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
+        ## Array of hashtables with Description, Order and Path keys
+        [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
+    )
+    process {
+        [ref] $null = $PSBoundParameters.Remove('Path');
+        $unattendXml = NewUnattendXml @PSBoundParameters;
+        $resolvedPath = ResolvePathEx -Path $Path;
+        return $unattendXml.Save($resolvedPath);
+    }
+} #end function SetUnattendXml

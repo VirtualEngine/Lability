@@ -84,10 +84,9 @@ function SetLabVMDiskFile {
         if ($NodeData.ProductKey) {
             $newUnattendXmlParams['ProductKey'] = $NodeData.ProductKey;
         }
-        $unattendXml = NewUnattendXml @newUnattendXmlParams;
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
-        [ref] $null = $unattendXml.Save($unattendXmlPath);
+        $unattendXml = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
