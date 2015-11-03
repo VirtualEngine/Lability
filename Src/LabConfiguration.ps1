@@ -89,7 +89,7 @@ function Start-LabConfiguration {
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        if (-not (Test-LabHostConfiguration)) {
+        if (-not (Test-LabHostConfiguration) -and (-not $Force)) {
             throw $localized.HostConfigurationTestError;
         }
     }
