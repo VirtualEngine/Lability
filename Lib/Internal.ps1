@@ -13,13 +13,15 @@ function ResolvePathEx {
     )
     process {
         try {
-            $resolvedPath = Resolve-Path -Path $Path -ErrorAction Stop;
+            $expandedPath = [System.Environment]::ExpandEnvironmentVariables($Path);
+            $resolvedPath = Resolve-Path -Path $expandedPath -ErrorAction Stop;
+            $Path = $resolvedPath.ProviderPath;
         }
         catch [System.Management.Automation.ItemNotFoundException] {
-            $resolvedPath = $_.TargetObject;
+            $Path = [System.Environment]::ExpandEnvironmentVariables($_.TargetObject);
             $Error.Remove($Error[-1]);
         }
-        return $resolvedPath;
+        return $Path;
     } #end process
 } #end function ResolvePathEx
 
