@@ -30,10 +30,6 @@ function NewLabMedia {
         catch {
             throw $_;
         }
-        ## Confirm we have a valid image/edition configuration
-        foreach ($edition in $Editions) {
-            TestLabImageParameters -OperatingSystem $OperatingSystem -Architecture $Architecture -Edition $edition -Locale $Locale;
-        }
     }
     process {
         [PSCustomObject] @{
@@ -131,7 +127,7 @@ function Test-LabMedia {
                 uri = $media.Uri;
                 Checksum = $media.Checksum;
             }
-            TestResourceDownload @testResourceDownloadParams;
+            return TestResourceDownload @testResourceDownloadParams;
         }
         else {
             return $false;
@@ -162,8 +158,11 @@ function InvokeLabMediaImageDownload {
         if ($media.MediaType -eq 'VHD') {
             $destinationPath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
         }
-        else {
+        elseif ($media.MediaType -eq 'ISO') {
             $destinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
+        }
+        else {
+            Write-Error ($localized.CannotLocateMediaError -f $Id);
         }
         $invokeResourceDownloadParams = @{
             DestinationPath = $destinationPath;
