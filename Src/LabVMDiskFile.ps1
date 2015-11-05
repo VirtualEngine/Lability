@@ -66,7 +66,7 @@ function SetLabVMDiskFile {
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
         WriteVerbose ($localized.CopyingPowershellModules -f $destinationPath);
-        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force;
+        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force -ErrorAction Ignore;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -81,8 +81,8 @@ function SetLabVMDiskFile {
             RegisteredOrganization = $NodeData.RegisteredOrganization;
         }
         WriteVerbose ($localized.SettingAdministratorPassword -f $NodeData.Password);
-        if ($NodeData.ProductKey) {
-            $newUnattendXmlParams['ProductKey'] = $NodeData.ProductKey;
+        if ($NodeData.CustomData.ProductKey) {
+            $newUnattendXmlParams['ProductKey'] = $NodeData.CustomData.ProductKey;
         }
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);

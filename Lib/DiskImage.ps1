@@ -275,4 +275,4 @@ function AddDiskImagePackage {
             [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
         }
     } #end process
-} #end function Add-LabImagePackage
+} #end function AddDiskImagePackage

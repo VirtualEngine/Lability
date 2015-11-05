@@ -32,7 +32,7 @@ function NewLabMedia {
         }
     }
     process {
-        [PSCustomObject] @{
+        $labMedia = [PSCustomObject] @{
             Id = $Id;
             Filename = $Filename;
             Description = $Description;
@@ -41,10 +41,14 @@ function NewLabMedia {
             MediaType = $MediaType;
             Uri = [System.Uri] $Uri;
             Checksum = $Checksum;
-            ProductKey = $ProductKey;
             CustomData = $CustomData;
             Hotfixes = $Hotfixes;
         }
+        if ($ProductKey) {
+            if (-not $CustomData) { $CustomData = @{}; }
+            $CustomData['ProductKey'] = $ProductKey;
+        }
+        return $labMedia;
     } #end process
 } #end function NewLabMedia
 
