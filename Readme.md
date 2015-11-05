@@ -1,7 +1,5 @@
 ### VirtualEngineLab ###
-<div style="float: left">
-![VirtualEngineLab Logo](https://raw.githubusercontent.com/VirtualEngine/Lab/dev/VirtualEngineLab.png)
-</div>
+<img align="right" alt="VirtualEngineLab logo" src="https://raw.githubusercontent.com/VirtualEngine/Lab/dev/VirtualEngineLab.png">
 
 The VirtualEngineLab module enables simple provisioning of Windows Hyper-V development and
 testing environments. It uses a declarative document for machine configuration.
