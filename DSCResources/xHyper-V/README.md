@@ -30,7 +30,8 @@ This resource is particularly useful when bootstrapping DSC Configurations into 
 
 * **Name**: The desired VM name 
 * **VhdPath**: The desired VHD associated with the VM 
-* **SwitchName**: Virtual switch associated with the VM 
+* **SwitchName**: Virtual switch(es) associated with the VM. 
+Multiple NICs can now be assigned.
 * **State**: State of the VM: { Running | Paused | Off }
 * **Path**: Folder where the VM data will be stored
 * **Generation**: Virtual machine generation { 1 | 2 }.
@@ -42,7 +43,8 @@ If not specified, it defaults to True.
 Setting this property enables dynamic memory.
 * **MaximumMemory**: Maximum RAM for the VM.
 Setting this property enables dynamic memory.
-* **MACAddress**: MAC address of the VM
+* **MACAddress**: MAC address(es) of the VM.
+Multiple MAC addresses can now be assigned.
 * **ProcessorCount**: Processor count for the VM
 * **WaitForIP**: If specified, waits for the VM to get valid IP address
 * **RestartIfNeeded**: If specified, will shutdown and restart the VM as needed for property changes
@@ -72,7 +74,9 @@ Please see the Examples section for more details.
 
 ### Unreleased
 
-* xHyperV: Added SecureBoot parameter to enable control of the secure boot BIOS setting on generation 2 VMs.
+* MSFT_xVMHyperV: Added SecureBoot parameter to enable control of the secure boot BIOS setting on generation 2 VMs.
+* MSFT_xVMHyperV: Changed the SwitchName parameter to string[] to support assigning multiple NICs to virtual machines.
+* MSFT_xVMHyperV: Changed the MACAddress parameter to string[] to support assigning multiple MAC addresses to virtual machines.
 
 ### 3.2.0.0
 
@@ -463,6 +467,79 @@ Configuration Sample_xVMHyperV_Complete
         }
     }
 }
+```
+
+### Create VM with multiple NICs.
+
+This configuration will create two internal virtual switches and create a VM with two network interfaces, one attached to each virtual switch.
+
+```powershell
+Configuration Sample_xVMHyperV_MultipleNICs
+{
+    param
+    (
+        [string[]]$NodeName = 'localhost',
+
+        [Parameter(Mandatory)]
+        [string]$VMName,
+
+        [Parameter(Mandatory)]
+        [string]$VhdPath,
+        
+        [Parameter(Mandatory)]
+        [string[]]$SwitchName,
+        
+        [Parameter()]
+        [string[]]$MACAddress
+    )
+
+    Import-DscResource -module xHyper-V
+
+    Node $NodeName
+    {
+        # Install HyperV feature, if not installed - Server SKU only
+        WindowsFeature HyperV
+        {
+            Ensure = 'Present'
+            Name   = 'Hyper-V'
+        }
+        
+        # Dynamically build the 'DependsOn' array for the 'xVMHyperV' feature
+        # based on the number of virtual switches specified
+        $xVMHyperVDependsOn = @('[WindowsFeature]HyperV')
+        
+        # Create each virtual switch
+        foreach ($vmSwitch in $SwitchName)
+        {
+            # Remove spaces and hyphens from the identifier
+            $vmSwitchName = $vmSwitch -replace ' ','' -replace '-',''
+            # Add the virtual switch dependency
+            $xVMHyperVDependsOn += "[xVMHyperV]$vmSwitchName"
+            
+            xVMSwitch $vmSwitchName
+            {
+                Ensure         = 'Present'
+                Name           = $vmSwitch
+                Type           = 'Internal'
+                DependsOn      = '[WindowsFeature]HyperV'
+            }
+        }
+
+        # Ensures a VM with all the properties
+        xVMHyperV $VMName
+        {
+            Ensure     = 'Present'
+            Name       = $VMName
+            VhdPath    = $VhdPath
+            SwitchName = $SwitchName
+            MACAddress = $MACAddress
+            # Use the dynamically created dependency list/array
+            DependsOn  = $xVMHyperVDependsOn
+        }
+    }
+}
+
+Sample_xVMHyperV_MultipleNICs -VMName 'MultiNICVM' -VhdPath 'C:\VMs\MultiNICVM.vhdx' -SwitchName 'Switch 1','Switch-2'
 ```
 
 ### Create an internal VM Switch

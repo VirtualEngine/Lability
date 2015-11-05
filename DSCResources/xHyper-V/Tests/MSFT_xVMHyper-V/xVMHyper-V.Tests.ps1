@@ -29,10 +29,13 @@ Describe 'xVMHyper-V' {
         function Set-VMNetworkAdapter { }
         function Get-VMFirmware { }
         function Set-VMFirmware { }
+        function Connect-VMNetworkAdapter { param ( $SwitchName ) }
 
         $stubVhdxDisk = New-Item -Path 'TestDrive:\TestVM.vhdx' -ItemType File;
         $stubVhdDisk = New-Item -Path 'TestDrive:\TestVM.vhd' -ItemType File;
         $StubVMConfig = New-Item -Path 'TestDrive:\TestVM.xml' -ItemType File;
+        $stubNIC1 = @{ SwitchName = 'Test Switch 1'; MacAddress = 'AA-BB-CC-DD-EE-FF'; IpAddresses = @('192.168.0.1','10.0.0.1'); };
+        $stubNIC2 = @{ SwitchName = 'Test Switch 2'; MacAddress = 'AA-BB-CC-DD-EE-FE'; IpAddresses = @('192.168.1.1'); };
         $stubVM = @{
             HardDrives = @(
                 @{ Path = $stubVhdxDisk.FullName; }
@@ -52,9 +55,7 @@ Describe 'xVMHyper-V' {
             Uptime = New-TimeSpan -Hours 12;
             CreationTime = (Get-Date).AddHours(-12);
             DynamicMemoryEnabled = $true;
-            NetworkAdapters  = @(
-                @{ SwitchName = 'TestSwitch'; MacAddress = 'AA-BB-CC-DD-EE-FF'; IpAddresses = @('192.168.0.1','10.0.0.1'); };
-            );
+            NetworkAdapters = @($stubNIC1,$stubNIC2);
             Notes = '';
         }
 
@@ -177,6 +178,23 @@ Describe 'xVMHyper-V' {
                 Test-TargetResource -Name 'Generation2MV' -SecureBoot $false -Generation 2 @testParams | Should be $false;
             }
 
+            It 'Returns $true when multiple NICs are assigned in the correct order' {
+                Test-TargetResource -Name 'RunningVM' @testParams -SwitchName @($stubNIC1.SwitchName,$stubNIC2.SwitchName) | Should Be $true;
+            }
+
+            It 'Returns $false when multiple NICs are not assigned/assigned in the wrong order' {
+                Test-TargetResource -Name 'RunningVM' @testParams -SwitchName @($stubNIC2.SwitchName,$stubNIC1.SwitchName) | Should Be $false;
+            }
+
+            It 'Returns $true when multiple MAC addresses are assigned in the correct order' {
+                Test-TargetResource -Name 'RunningVM' @testParams -MACAddress @($stubNIC1.MACAddress,$stubNIC2.MACAddress) | Should Be $true;
+            }
+
+
+            It 'Returns $false when multiple MAC addresses not assigned/assigned in the wrong order' {
+                Test-TargetResource -Name 'RunningVM' @testParams -MACAddress @($stubNIC1.MACAddress,$stubNIC2.MACAddress) | Should Be $true;
+            }
+
             It 'Throws when Hyper-V Tools are not installed' {
                 ## This test needs to be the last in the Context otherwise all subsequent Get-Module checks will fail
                 Mock -CommandName Get-Module -ParameterFilter { ($Name -eq 'Hyper-V') -and ($ListAvailable -eq $true) } -MockWith { }
@@ -291,6 +309,58 @@ Describe 'xVMHyper-V' {
                 Mock -CommandName Change-VMSecureBoot -MockWith { }
                 Set-TargetResource -Name 'StoppedVM' -SecureBoot $true -Generation 2 @testParams;
                 Assert-MockCalled -CommandName Change-VMSecureBoot -Exactly -Times 1 -Scope It;
+            }
+
+            It 'Calls "Add-VMNetworkAdapter" for each NIC when creating a new VM' {
+                Mock -CommandName Add-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'NewVM' @testParams -SwitchName 'Switch1','Switch2';
+                ## The first NIC is assigned during the VM creation
+                Assert-MockCalled -CommandName Add-VMNetworkAdapter -Exactly 1 -Scope It;
+            }
+
+            It 'Calls "Connect-VMNetworkAdapter" for each existing NIC when updating an existing VM' {
+                Mock -CommandName Connect-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams -SwitchName 'Switch1','Switch2';
+                ## The first NIC is assigned during the VM creation
+                Assert-MockCalled -CommandName Connect-VMNetworkAdapter -Exactly 2 -Scope It;
+            }
+
+            It 'Calls "Add-VMNetworkAdapter" for each missing NIC when updating an existing VM' {
+                Mock -CommandName Connect-VMNetworkAdapter -MockWith { }
+                Mock -CommandName Add-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams -SwitchName 'Switch1','Switch2','Switch3';
+                ## The first NIC is assigned during the VM creation
+                Assert-MockCalled -CommandName Connect-VMNetworkAdapter -Exactly 2 -Scope It;
+                Assert-MockCalled -CommandName Add-VMNetworkAdapter -Exactly 1 -Scope It;
+            }
+
+            It 'Does not change switch assignments if no switch assignments are specified' {
+                Mock -CommandName Connect-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams;
+                Assert-MockCalled -CommandName Connect-VMNetworkAdapter -Exactly 0 -Scope It;
+            }
+
+            It 'Does not change NIC assignments if the switch assisgnments are correct' {
+                Mock -CommandName Set-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams -SwitchName $stubNIC1.SwitchName,$stubNIC2.SwitchName;
+                Assert-MockCalled -CommandName Set-VMNetworkAdapter -Exactly 0 -Scope It;
+            }
+
+            It 'Errors when updating MAC addresses on a running VM and "RestartIfNeeded" = "$false"' {
+                { Set-TargetResource -Name 'RunningVM' @testParams -MACAddress 'AABBCCDDEEFE','AABBCCDDEEFF' -ErrorAction Stop } | Should Throw;
+            }
+
+            It 'Does not change MAC addresses if no MAC addresses assignments are specified' {
+                Mock -CommandName Set-VMNetworkAdapter -ParameterFilter { $StaticMacAddress -ne $null } -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams;
+                Assert-MockCalled -CommandName Set-VMNetworkAdapter -ParameterFilter { $StaticMacAddress -ne $null } -Exactly 0 -Scope It;
+            }
+
+            It 'Calls "Set-VMNetworkAdapter" for each MAC address on a stopped VM' {
+                Mock -CommandName Set-VMNetworkAdapter -MockWith { }
+                Set-TargetResource -Name 'StoppedVM' @testParams -MACAddress 'AABBCCDDEEFE','AABBCCDDEEFF';
+                ## The first NIC is assigned during the VM creation
+                Assert-MockCalled -CommandName Set-VMNetworkAdapter -Exactly 2 -Scope It;
             }
 
             It 'Throws when Hyper-V Tools are not installed' {

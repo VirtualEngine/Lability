@@ -27,7 +27,9 @@ function ResolveLabVMProperties {
                 }
             }
         }
-        
+        ## Remove the '*' node name entry
+        [ref] $null = $node.Remove('NodeName');
+
         ## Retrieve the AllNodes.$NodeName properties
         $ConfigurationData.AllNodes.Where({ $_.NodeName -eq $NodeName }) | ForEach-Object {
             foreach ($key in $_.Keys) {
@@ -41,7 +43,6 @@ function ResolveLabVMProperties {
         foreach ($propertyName in $properties.Name) {
             ## Int32 values of 0 get coerced into $false!
             if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.$propertyName)) {
-                #[ref] $null = $node.Add($propertyName, $labDefaults.$propertyName);
                 $node[$propertyName] = $labDefaultProperties.$propertyName;
             }
         }
@@ -58,6 +59,9 @@ function ResolveLabVMProperties {
         if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) { $node['SecureBoot'] = $false; }
         else { $node['SecureBoot'] = $true; }
 
+        if ([System.String]::IsNullOrEmpty($node.NodeName)) {
+            Write-Error ($localized.CannotLocateNodeError -f $Name);
+        }
         return $node;
     } #end process
 } #end function Resolve-LabProperty
@@ -210,8 +214,10 @@ function NewLabVM {
             New-LabImage -Id $node.Media;
         }
 
-        WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-        SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
+        foreach ($switch in $node.SwitchName) {
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switch);
+            SetLabSwitch -Name $switch -ConfigurationData $ConfigurationData;
+        }
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', $node.Media);
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;

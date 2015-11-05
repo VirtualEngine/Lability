@@ -5,7 +5,7 @@ function GetVirtualMachineProperties {
 #>
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
         [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
@@ -46,7 +46,7 @@ function TestLabVirtualMachine {
 #>
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
         [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
@@ -74,7 +74,7 @@ function SetLabVirtualMachine {
 #>
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
         [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
@@ -87,7 +87,7 @@ function SetLabVirtualMachine {
         ## Resolve the xVMHyperV resource parameters
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
-        InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue;
+        InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams # -ErrorAction SilentlyContinue;
     } #end process
 } #end function SetLabVirtualMachine
 
@@ -100,7 +100,7 @@ function RemoveLabVirtualMachine {
 #>
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
         [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
