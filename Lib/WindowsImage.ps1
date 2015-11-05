@@ -12,9 +12,11 @@ function ExpandWindowsImage {
         ## WIM image name to apply from the ISO
         [Parameter(Mandatory, ParameterSetName = 'Name')] [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [Microsoft.Vhd.PowerShell.VirtualHardDisk] $Vhd,
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
+        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
+        ## Optional Windows features to add to the image after expansion
+        [Parameter()] [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature
     )
     process {
         ## Mount ISO
@@ -41,7 +43,18 @@ function ExpandWindowsImage {
             LogPath = $logPath;
             Index = $WimImageIndex;
         }
-        $logPath = Expand-WindowsImage @expandWindowsImage -Verbose:$false;
+        $dismOutput = Expand-WindowsImage @expandWindowsImage -Verbose:$false;
+        
+        ## Add additional features if required
+        if ($WindowsOptionalFeature) {
+            $addWindowsOptionalFeatureParams = @{
+                ImagePath = '{0}:\sources\sxs' -f $isoDriveLetter;
+                DestinationPath = '{0}:\' -f $vhdDriveLetter;
+                LogPath = $logPath;
+                WindowsOptionalFeature = $WindowsOptionalFeature;
+            }
+            AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
+        }
     } #end process
     end {
         ## Dismount ISO
@@ -49,6 +62,36 @@ function ExpandWindowsImage {
         Dismount-DiskImage -ImagePath $IsoPath;
     }
 } #end function ExpandWindowsImage
+
+function AddWindowsOptionalFeature {
+<#
+    .SYMOPSIS
+        Enables Windows optional features to an image.
+#>
+    [CmdletBinding()]
+    param (
+        ## Source ISO install.wim
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        ## Mounted VHD(X) Operating System disk drive
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        ## Windows features to add to the image after expansion
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        ## DISM log path
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
+    )
+    process {
+        WriteVerbose ($localized.AddingWindowsFeature -f ($WindowsOptionalFeature -join ','), $DestinationPath);
+        $enableWindowsOptionalFeatureParams = @{
+            Source = $ImagePath;
+            Path = $DestinationPath;
+            LogPath = $LogPath;
+            FeatureName = $WindowsOptionalFeature;
+            LimitAccess = $true;
+        }
+        $dismOutput = Enable-WindowsOptionalFeature @enableWindowsOptionalFeatureParams -Verbose:$false;
+    } #end process
+} #end function AddDiskImageOptionalFeature
+
 
 function GetWindowsImageIndex {
 <#

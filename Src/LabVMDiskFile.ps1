@@ -1,3 +1,41 @@
+function SetLabVMDiskResource {
+<#
+    .SYNOPSIS
+        Copies lab resources to a VHDX file.
+#>
+    [CmdletBinding()]
+    param (
+        ## Lab DSC configuration data
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        ## Lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name
+    )
+    begin {
+        $hostDefaults = GetConfigurationData -Configuration Host;
+    }
+    process {
+        ## Temporarily disable Windows Explorer popup disk initialization and format notifications
+        ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
+        Stop-Service -Name 'ShellHWDetection' -Force;
+
+        $vhdPath = ResolveLabVMDiskPath -Name $Name;
+        WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
+        $vhd = Mount-Vhd -Path $vhdPath -Passthru;
+        [ref] $null = Get-PSDrive;
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
+        Start-Service -Name 'ShellHWDetection';
+
+        $destinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
+        ExpandLabResource -ConfigurationData $ConfigurationData -Name $Name -DestinationPath $destinationPath;
+
+        WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
+        Dismount-Vhd -Path $VhdPath;
+
+        
+    } #end process
+} #end function SetLabVMDiskResource
+
 function SetLabVMDiskFile {
 <#
     .SYNOPSIS
@@ -15,15 +53,20 @@ function SetLabVMDiskFile {
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap
     )
     process {
+        ## Temporarily disable Windows Explorer popup disk initialization and format notifications
+        ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
+        Stop-Service -Name 'ShellHWDetection' -Force;
+
         $vhdPath = ResolveLabVMDiskPath -Name $Name;
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType 'Basic';
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
+        Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
         WriteVerbose ($localized.CopyingPowershellModules -f $destinationPath);
-        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force;
+        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force -ErrorAction Ignore;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -36,20 +79,14 @@ function SetLabVMDiskFile {
             Timezone = $NodeData.Timezone;
             RegisteredOwner = $NodeData.RegisteredOwner;
             RegisteredOrganization = $NodeData.RegisteredOrganization;
-            #ExecuteCommand = @(
-            #    @{
-            #        Description = 'Lab BootStrap';
-            #        Path = 'Powershell.exe -NoProfile -ExecutionPolicy Bypass -NonInteractive -File %SYSTEMDRIVE%\BootStrap\BootStrap.ps1';
-            #    }
-            #);
         }
-        if ($NodeData.ProductKey) {
-            $newUnattendXmlParams['ProductKey'] = $NodeData.ProductKey;
+        WriteVerbose ($localized.SettingAdministratorPassword -f $NodeData.Password);
+        if ($NodeData.CustomData.ProductKey) {
+            $newUnattendXmlParams['ProductKey'] = $NodeData.CustomData.ProductKey;
         }
-        $unattendXml = NewUnattendXml @newUnattendXmlParams;
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
-        [ref] $null = $unattendXml.Save($unattendXmlPath);
+        $unattendXml = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
@@ -65,7 +102,8 @@ function SetLabVMDiskFile {
             $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $Name);
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
-            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
+            if (-not (Test-Path -Path $mofPath)) { WriteWarning ($localized.CannotLocateMofFileError -f $mofPath); }
+            else { Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop; }
 
             $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $Name);
             if (Test-Path -Path $metaMofPath -PathType Leaf) {

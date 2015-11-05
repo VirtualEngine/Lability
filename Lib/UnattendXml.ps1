@@ -9,10 +9,10 @@ function NewUnattendXml {
        to pull its configuration from the specified pull server.
 #>
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType([System.Xml.XmlDocument])]
     param (
         # Local Administrator Password
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.string] $Password,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
         # Computer name
         [Parameter()] [System.String] $ComputerName,
         # Product Key
@@ -26,12 +26,12 @@ function NewUnattendXml {
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
         # Timezone
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
         # Registered Owner
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
         # Registered Organization
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
-        # TODO: Execute synchronous commands during OOBE pass
+        # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
         [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
     )
@@ -41,10 +41,18 @@ function NewUnattendXml {
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="specialize">
         <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
+		<component name="Microsoft-Windows-Deployment" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
 		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
+		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
     </settings>
     <settings pass="oobeSystem">
 		<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+		<component name="Microsoft-Windows-International-Core" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <InputLocale>en-US</InputLocale>
             <SystemLocale>en-US</SystemLocale>
             <UILanguage>en-US</UILanguage>
@@ -64,7 +72,30 @@ function NewUnattendXml {
             <UserAccounts>
                 <AdministratorPassword>
                     <Value></Value>
-                    <PlainText>true</PlainText>
+                    <PlainText>false</PlainText>
+                </AdministratorPassword>
+            </UserAccounts>
+            <RegisteredOrganization>Virtual Engine</RegisteredOrganization>
+            <RegisteredOwner>Virtual Engine</RegisteredOwner>
+			<VisualEffects>
+				<SystemDefaultBackgroundColor>2</SystemDefaultBackgroundColor>
+			</VisualEffects>
+        </component>
+		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<OOBE>
+                <HideEULAPage>true</HideEULAPage>
+				<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                <NetworkLocation>Work</NetworkLocation>
+                <ProtectYourPC>3</ProtectYourPC>
+				<SkipUserOOBE>true</SkipUserOOBE>
+				<SkipMachineOOBE>true</SkipMachineOOBE>
+            </OOBE>
+            <TimeZone>GMT Standard Time</TimeZone>
+            <UserAccounts>
+                <AdministratorPassword>
+                    <Value></Value>
+                    <PlainText>false</PlainText>
                 </AdministratorPassword>
             </UserAccounts>
             <RegisteredOrganization>Virtual Engine</RegisteredOrganization>
@@ -90,11 +121,7 @@ function NewUnattendXml {
         foreach ($setting in $unattendXml.Unattend.Settings) {
             foreach($component in $setting.Component) {
                 if ($setting.'Pass' -eq 'specialize' -and $component.'Name' -eq 'Microsoft-Windows-Deployment') {
-                    if ($ExecuteCommand -eq $null -or $ExecuteCommand.Length -eq 0) {
-                        ## Remove all references
-                        #[ref] $null = $unattendXml.Unattend.RemoveChild($setting);
-                    }
-                    else {
+                    if ($ExecuteCommand -ne $null -or $ExecuteCommand.Length -gt 0) {
                         $commandOrder = 1;
                         foreach ($synchronousCommand in $ExecuteCommand) {
                             $runSynchronousElement = $component.AppendChild($unattendXml.CreateElement('RunSynchronous','urn:schemas-microsoft-com:unattend'));
@@ -130,8 +157,8 @@ function NewUnattendXml {
 
                 if (($setting.'Pass' -eq 'oobeSystem') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
                     $component.TimeZone = $Timezone;
-                    $component.UserAccounts.AdministratorPassword.Value = $Password;
-                    #$component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($Password));
+                    $concatenatedPassword = '{0}AdministratorPassword' -f $Password;
+                    $component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedPassword));
                     $component.RegisteredOrganization = $RegisteredOrganization;
                     $component.RegisteredOwner = $RegisteredOwner;
                 } 
@@ -140,3 +167,45 @@ function NewUnattendXml {
         Write-Output $unattendXml;
     } #end process
 } #end function NewUnattendXml
+
+function SetUnattendXml {
+<#
+    .SYNOPSIS
+       Creates a Windows unattended installation file and saves to disk.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Xml.XmlDocument])]
+    param (
+        # Filename/path to save the unattend file as
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        # Local Administrator Password
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
+        # Computer name
+        [Parameter()] [System.String] $ComputerName,
+        # Product Key
+        [Parameter()] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')] [System.String] $ProductKey,
+        # Input Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $InputLocale = 'en-US',
+        # System Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $SystemLocale = 'en-US',
+        # User Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UserLocale = 'en-US',
+        # UI Language
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
+        # Timezone
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
+        # Registered Owner
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
+        # Registered Organization
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
+        # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
+        ## Array of hashtables with Description, Order and Path keys
+        [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
+    )
+    process {
+        [ref] $null = $PSBoundParameters.Remove('Path');
+        $unattendXml = NewUnattendXml @PSBoundParameters;
+        $resolvedPath = ResolvePathEx -Path $Path;
+        return $unattendXml.Save($resolvedPath);
+    }
+} #end function SetUnattendXml

@@ -10,15 +10,15 @@ function GetLabHostSetupConfiguration {
 #>
     [CmdletBinding()]
     [OutputType([System.Array])]
-    param (
-        [Parameter(Mandatory)] [System.Object] $Configuration
-    )
+    param ( )
     process {
         [System.Boolean] $isDesktop = (Get-WmiObject -Class Win32_OperatingSystem).ProductType -eq 1;
         ## Due to the differences in client/server deployment for Hyper-V, determine the correct method before creating the host configuration array.
+        $labHostSetupConfiguration = @();
+
         if ($isDesktop) {
             Write-Debug 'Implementing desktop configuration.';
-            $hypervConfiguration = @{
+            $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V role';
                 ModuleName = 'PSDesiredStateConfiguration';
@@ -32,7 +32,7 @@ function GetLabHostSetupConfiguration {
         }
         else {
             Write-Debug 'Implementing server configuration.';
-            $hypervConfiguration = @{
+            $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V Role';
                 ModuleName = 'PSDesiredStateConfiguration';
@@ -44,49 +44,31 @@ function GetLabHostSetupConfiguration {
                     IncludeAllSubFeature = $true;
                 }
             };
-        }
-        
-        $labHostSetupConfiguration = @(
-            @{  ## Create DSC resource share
-                UseDefault = $false;
-                Description = 'Local resource share';
-                ModuleName = 'xSmbShare';
-                ResourceName = 'MSFT_xSmbShare';
-                Prefix = 'SmbShare'
-                Parameters = @{
-                    Ensure = 'Present';
-                    Name = $configuration.ResourceShareName;
-                    Path = $configuration.ResourcePath;
-                    Description = 'Test Lab Resource Share';
-                    FullAccess = 'BUILTIN\Administrators';
-                    ReadAccess = 'Everyone';
-                };
-            },
-            @{  ## Enable Guest account for DSC resource share
+            $labHostSetupConfiguration += @{
                 UseDefault = $true;
-                Description = 'Guest account enabled';
+                Description = 'Hyper-V Tools';
                 ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_UserResource';
-                Prefix = 'UserResource';
+                ResourceName = 'MSFT_RoleResource';
+                Prefix = 'WindowsFeature';
                 Parameters = @{
-                    UserName = 'Guest';
                     Ensure = 'Present';
-                    Disabled = $false;
-                };
-            },
-            ## Add Hyper-V role dependong on desktop or server setup
-            $hypervConfiguration,
-            @{  ## Check for a reboot before continuing
-                UseDefault = $false;
-                Description = 'Pending reboot';
-                ModuleName = 'xPendingReboot';
-                ResourceName = 'MSFT_xPendingReboot';
-                Prefix = 'PendingReboot';
-                Parameters = @{
-                    Name = 'TestingForHypervReboot';
-                };
+                    Name = 'RSAT-Hyper-V-Tools';
+                    IncludeAllSubFeature = $true;
+                }
+            };
+        } #end Server configuration
+        
+        $labHostSetupConfiguration += @{
+            ## Check for a reboot before continuing
+            UseDefault = $false;
+            Description = 'Pending reboot';
+            ModuleName = 'xPendingReboot';
+            ResourceName = 'MSFT_xPendingReboot';
+            Prefix = 'PendingReboot';
+            Parameters = @{
+                Name = 'TestingForHypervReboot';
             }
-        );
+        };
         
         return $labHostSetupConfiguration;
     } #end process
@@ -101,14 +83,14 @@ function Get-LabHostConfiguration {
     [OutputType([System.Boolean])]
     param ( )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
-        $labHostSetupConfiguation = GetLabHostSetupConfiguration -Configuration $hostDefaults;
+        #$hostDefaults = GetConfigurationData -Configuration Host;
+        $labHostSetupConfiguation = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
             ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix;
             GetDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
         }
     } #end process
-} #end function Get-LabHostSetup
+} #end function Get-LabHostConfiguration
 
 function Test-LabHostConfiguration {
 <#
@@ -134,7 +116,7 @@ function Test-LabHostConfiguration {
             }
         }
         
-        $labHostSetupConfiguration = GetLabHostSetupConfiguration -Configuration $hostDefaults;
+        $labHostSetupConfiguration = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguration) {
             ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
@@ -153,7 +135,7 @@ function Test-LabHostConfiguration {
         WriteVerbose $localized.FinishedHostConfigurationTest;
         return $true;
     } #end process
-} #end function Test-LabHostSetup
+} #end function Test-LabHostConfiguration
 
 function Start-LabHostConfiguration {
 <#
@@ -171,15 +153,13 @@ function Start-LabHostConfiguration {
         WriteVerbose $localized.StartedHostConfiguration;
 		## Create required directory structure
 		$hostDefaults = GetConfigurationData -Configuration Host;
-        $hostDefaultsPaths = $hostDefaults.PSObject.Properties | Where-Object { $_.Name -like '*Path' } | ForEach-Object { $_.Value }
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 [ref] $null = NewDirectory -Path $property.Value -ErrorAction Stop;
             }
         }
         
-        $hostDefaults = GetConfigurationData -Configuration Host;
-        $labHostSetupConfiguation = GetLabHostSetupConfiguration -Configuration $hostDefaults;
+        $labHostSetupConfiguation = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
             ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
@@ -188,4 +168,4 @@ function Start-LabHostConfiguration {
         }
         WriteVerbose $localized.FinishedHostConfiguration;
     } #end process
-} #end function Test-LabHostSetup
+} #end function Start-LabHostConfiguration

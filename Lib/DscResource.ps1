@@ -17,11 +17,11 @@ function ImportDscResource {
         $testCommandName = 'Test-{0}TargetResource' -f $Prefix;
         if (-not (Get-Command -Name $testCommandName -ErrorAction SilentlyContinue)) {
             if ($UseDefault) {
-                 WriteVerbose ($localized.ImportingDscResource -f $ModuleName, $ResourceName);
+                WriteVerbose ($localized.ImportingDscResource -f $ModuleName, $ResourceName);
                 $resourcePath = GetDscModule -ModuleName $ModuleName -ResourceName $ResourceName -ErrorAction Stop;
             }
             else {
-                 WriteVerbose ($localized.ImportingBundledDscResource -f $ModuleName, $ResourceName);
+                WriteVerbose ($localized.ImportingBundledDscResource -f $ModuleName, $ResourceName);
                 $dscModuleRootPath = '{0}\{1}\{2}\DSCResources' -f $labDefaults.ModuleRoot, $labDefaults.DscResourceDirectory, $ModuleName;
                 $dscResourcePath = '{0}\{0}.psm1' -f $ResourceName;
                 $resourcePath = Join-Path -Path $dscModuleRootPath -ChildPath $dscResourcePath;

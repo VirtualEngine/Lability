@@ -16,8 +16,10 @@ function Get-TargetResource
         [parameter(Mandatory = $true)]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $FileDirectory,
-            [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
-            $CheckSum = 'ModifiedDate'
+
+        [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
+        [System.String]
+        $CheckSum = 'ModifiedDate'
     )
 
     if ( -not (Test-path $VhdPath))
@@ -80,8 +82,10 @@ function Set-TargetResource
         [parameter(Mandatory = $true)]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $FileDirectory,
-            [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
-            $CheckSum = 'ModifiedDate'
+
+        [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
+        [System.String]
+        $CheckSum = 'ModifiedDate'
     )
 
     if (-not (Test-Path $VhdPath)) { throw "Specified destination path $VhdPath does not exist!"}   
@@ -161,9 +165,10 @@ function Test-TargetResource
         [parameter(Mandatory = $true)]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $FileDirectory,
-        
-            [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
-            $CheckSum = 'ModifiedDate'
+
+        [ValidateSet('ModifiedDate','SHA-1','SHA-256','SHA-512')]
+        [System.String]
+        $CheckSum = 'ModifiedDate'
     )
 
     # If the VHD path does not exist throw an error and stop.
@@ -256,7 +261,7 @@ function Test-TargetResource
     }
    
 
-   Write-Verbose "Test retruned $result"
+   Write-Verbose "Test returned $result"
    return $result;
 }
 

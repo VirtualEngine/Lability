@@ -55,16 +55,17 @@ function Set-LabHostDefaults {
 
 		foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
 			if ($PSBoundParameters.ContainsKey($path)) {
-				if (-not (Test-Path -Path $path -IsValid -PathType Container)) {
-					throw ($localized.InvalidPathError -f $path, $PSBoundParameters[$path]);
+                $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
+                if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
+					throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);
 				}
 				else {
-					$hostDefaults.$path = $PSBoundParameters[$path].Trim('\');
+					$hostDefaults.$path = $resolvedPath.Trim('\');
 				}
 			}	
 		}
 		if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
-				$hostDefaults.ResourceShareName = $ResourceShareName;
+			$hostDefaults.ResourceShareName = $ResourceShareName;
 		}
 		
 		SetConfigurationData -Configuration Host -InputObject $hostDefaults;

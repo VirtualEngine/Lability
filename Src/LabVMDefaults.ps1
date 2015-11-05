@@ -42,6 +42,8 @@ function Set-LabVMDefaults {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UserLocale,
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UILanguage,
+        # Password
+		[Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Password,
         # Timezone
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Timezone,
         # Registered Owner
@@ -85,7 +87,7 @@ function Set-LabVMDefaults {
             }
 		}
         if ($PSBoundParameters.ContainsKey('UILanguage')) {
-			$vmDefaults.Language = $UILanguage;
+			$vmDefaults.UILanguage = $UILanguage;
 		}
         if ($PSBoundParameters.ContainsKey('InputLocale')) {
 			$vmDefaults.InputLocale = $InputLocale;
@@ -132,9 +134,6 @@ function Set-LabVMDefaults {
 		}
 		elseif ($vmDefaults.StartupMemory -gt $vmDefaults.MaximumMemory) {
 			throw ('Startup memory ''{0}'' cannot be greater than maximum memory ''{1}''.' -f $vmDefaults.StartupMemory, $vmDefaults.MaximumMemory);
-		}
-		elseif ($vmDefaults.MinimumMemory -gt $vmDefaults.MaximumMemory) {
-			throw ('Minimum memory ''{0}'' cannot be greater than maximum memory ''{1}''.' -f $vmDefaults.MinimumMemory, $vmDefaults.MaximumMemory);
 		}
 		
 		SetConfigurationData -Configuration VM -InputObject $vmDefaults;

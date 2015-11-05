@@ -7,18 +7,21 @@ function ResolvePathEx {
         the location specified by the path, such as the files and folders or registry keys and subkeys.
 #>
     [CmdletBinding()]
+    [OutputType([System.String])]
     param (
         [Parameter(Mandatory)] [System.String] $Path
     )
     process {
         try {
-            $resolvedPath = Resolve-Path -Path $Path -ErrorAction Stop;
+            $expandedPath = [System.Environment]::ExpandEnvironmentVariables($Path);
+            $resolvedPath = Resolve-Path -Path $expandedPath -ErrorAction Stop;
+            $Path = $resolvedPath.ProviderPath;
         }
         catch [System.Management.Automation.ItemNotFoundException] {
-            $resolvedPath = $_.TargetObject;
+            $Path = [System.Environment]::ExpandEnvironmentVariables($_.TargetObject);
             $Error.Remove($Error[-1]);
         }
-        return $resolvedPath;
+        return $Path;
     } #end process
 } #end function ResolvePathEx
 
@@ -53,6 +56,7 @@ function InvokeExecutable {
         $process = Start-Process @processArgs;
         if ($process.ExitCode -ne 0) { WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode);}
         else { WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode); }
+        ##TODO: Should this actually return the exit code?!
     } #end process
 } #end function InvokeExecutable
 

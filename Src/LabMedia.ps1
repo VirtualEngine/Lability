@@ -30,28 +30,25 @@ function NewLabMedia {
         catch {
             throw $_;
         }
-        ## Confirm we have a valid image/edition configuration
-        foreach ($edition in $Editions) {
-            TestLabImageParameters -OperatingSystem $OperatingSystem -Architecture $Architecture -Edition $edition -Locale $Locale;
-        }
     }
     process {
-        [PSCustomObject] @{
+        $labMedia = [PSCustomObject] @{
             Id = $Id;
             Filename = $Filename;
             Description = $Description;
-            #OperatingSystem = $OperatingSystem;
             Architecture = $Architecture;
-            #Edition = $Edition;
             ImageName = $ImageName;
             MediaType = $MediaType;
             Uri = [System.Uri] $Uri;
             Checksum = $Checksum;
-            ProductKey = $ProductKey;
-            #Locale = $Locale;
             CustomData = $CustomData;
             Hotfixes = $Hotfixes;
         }
+        if ($ProductKey) {
+            if (-not $CustomData) { $CustomData = @{}; }
+            $CustomData['ProductKey'] = $ProductKey;
+        }
+        return $labMedia;
     } #end process
 } #end function NewLabMedia
 
@@ -134,7 +131,7 @@ function Test-LabMedia {
                 uri = $media.Uri;
                 Checksum = $media.Checksum;
             }
-            TestResourceDownload @testResourceDownloadParams;
+            return TestResourceDownload @testResourceDownloadParams;
         }
         else {
             return $false;
@@ -165,8 +162,11 @@ function InvokeLabMediaImageDownload {
         if ($media.MediaType -eq 'VHD') {
             $destinationPath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
         }
-        else {
+        elseif ($media.MediaType -eq 'ISO') {
             $destinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
+        }
+        else {
+            Write-Error ($localized.CannotLocateMediaError -f $Id);
         }
         $invokeResourceDownloadParams = @{
             DestinationPath = $destinationPath;
@@ -189,7 +189,7 @@ function InvokeLabMediaHotfixDownload {
         ISO media is downloaded to the default IsoPath location. VHD(X) files are downloaded directly into the
         ParentVhdPath location.
 #>
-[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
