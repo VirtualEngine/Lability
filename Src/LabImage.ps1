@@ -86,8 +86,17 @@ function New-LabImage {
         $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force;
         ## Refresh PSDrives
         [ref] $null = Get-PSDrive;
-        ## Apply WIM (ExpandWindowsImage)
-        ExpandWindowsImage -IsoPath $isoFileInfo.FullName -WimImageName $media.ImageName -Vhd $image -PartitionStyle $partitionStyle;
+        ## Apply WIM (ExpandWindowsImage) and add specified features
+        $expandWindowsImageParams = @{
+            Vhd = $image;
+            IsoPath = $isoFileInfo.FullName;
+            WimImageName = $media.ImageName;
+            PartitionStyle = $partitionStyle;
+        }
+        if ($media.CustomData.WindowsOptionalFeature) {
+            $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
+        }
+        ExpandWindowsImage @expandWindowsImageParams;
         ## Apply hotfixes (AddDiskImagePackage)
         AddDiskImagePackage -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
         ## Configure boot volume (SetDiskImageBootVolume)
