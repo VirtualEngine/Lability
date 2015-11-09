@@ -61,13 +61,13 @@ function NewUnattendXml {
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<OOBE>
                 <HideEULAPage>true</HideEULAPage>
-				<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <NetworkLocation>Work</NetworkLocation>
                 <ProtectYourPC>3</ProtectYourPC>
-				<SkipUserOOBE>true</SkipUserOOBE>
-				<SkipMachineOOBE>true</SkipMachineOOBE>
+                <SkipUserOOBE>true</SkipUserOOBE>
+                <SkipMachineOOBE>true</SkipMachineOOBE>
             </OOBE>
+            <ShowWindowsLive>false</ShowWindowsLive>
             <TimeZone>GMT Standard Time</TimeZone>
             <UserAccounts>
                 <AdministratorPassword>
@@ -77,20 +77,19 @@ function NewUnattendXml {
             </UserAccounts>
             <RegisteredOrganization>Virtual Engine</RegisteredOrganization>
             <RegisteredOwner>Virtual Engine</RegisteredOwner>
-			<VisualEffects>
-				<SystemDefaultBackgroundColor>2</SystemDefaultBackgroundColor>
-			</VisualEffects>
+            <BluetoothTaskbarIconEnabled>true</BluetoothTaskbarIconEnabled>
+            <DoNotCleanTaskBar>false</DoNotCleanTaskBar>
         </component>
 		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<OOBE>
                 <HideEULAPage>true</HideEULAPage>
-				<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <NetworkLocation>Work</NetworkLocation>
                 <ProtectYourPC>3</ProtectYourPC>
-				<SkipUserOOBE>true</SkipUserOOBE>
-				<SkipMachineOOBE>true</SkipMachineOOBE>
+                <SkipUserOOBE>true</SkipUserOOBE>
+                <SkipMachineOOBE>true</SkipMachineOOBE>
             </OOBE>
+            <ShowWindowsLive>false</ShowWindowsLive>
             <TimeZone>GMT Standard Time</TimeZone>
             <UserAccounts>
                 <AdministratorPassword>
@@ -100,9 +99,8 @@ function NewUnattendXml {
             </UserAccounts>
             <RegisteredOrganization>Virtual Engine</RegisteredOrganization>
             <RegisteredOwner>Virtual Engine</RegisteredOwner>
-			<VisualEffects>
-				<SystemDefaultBackgroundColor>2</SystemDefaultBackgroundColor>
-			</VisualEffects>
+            <BluetoothTaskbarIconEnabled>true</BluetoothTaskbarIconEnabled>
+            <DoNotCleanTaskBar>false</DoNotCleanTaskBar>
         </component>
     </settings>
 </unattend>
