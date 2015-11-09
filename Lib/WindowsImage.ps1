@@ -53,7 +53,7 @@ function ExpandWindowsImage {
                 LogPath = $logPath;
                 WindowsOptionalFeature = $WindowsOptionalFeature;
             }
-            AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
+            $dismOutput = AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
         }
 
         ## Dismount ISO
