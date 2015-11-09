@@ -17,13 +17,13 @@ function SetLabVMDiskResource {
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force;
+        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
 
         $vhdPath = ResolveLabVMDiskPath -Name $Name;
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
@@ -55,13 +55,13 @@ function SetLabVMDiskFile {
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force;
+        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
 
         $vhdPath = ResolveLabVMDiskPath -Name $Name;
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -First 1 -ExpandProperty DriveLetter;
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
@@ -130,4 +130,4 @@ function SetLabVMDiskFile {
         WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
         Dismount-Vhd -Path $VhdPath;
     } #end process
-} #end function  SetLabVMDiskFile
+} #end function SetLabVMDiskFile
