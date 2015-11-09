@@ -1,7 +1,7 @@
 ### VirtualEngineLab ###
 <img align="right" alt="VirtualEngineLab logo" src="https://raw.githubusercontent.com/VirtualEngine/Lab/dev/VirtualEngineLab.png">
 
-The ____VirtualEngineLab____ module enables simple provisioning of Windows Hyper-V development and
+The __VirtualEngineLab__ module enables simple provisioning of Windows Hyper-V development and
 testing environments. It uses a declarative document for machine configuration.
 However, rather than defining configurations in an external custom domain-specific
 language (DSL) document, __VirtualEngineLab__ extends existing PowerShell Desired

@@ -65,13 +65,19 @@ function Invoke-LabResourceDownload {
             }
             $MediaId = $uniqueMediaIds;
         }
+
         foreach ($id in $MediaId) {
             $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
-            InvokeLabMediaImageDownload -Id $id -Force:$Force;
-            
-            WriteVerbose $Localized.DownloadingAllRequiredHotfixes;
-            foreach ($hotfix in $labMedia.Hotfixes) {
-                InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+            InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
+
+            WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
+            if ($labMedia.Hotfixes.Count -gt 0) {
+                foreach ($hotfix in $labMedia.Hotfixes) {
+                    InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                }
+            }
+            else {
+                WriteVerbose ($localized.NoHotfixesSpecified);
             }
         }
 
@@ -80,12 +86,17 @@ function Invoke-LabResourceDownload {
             $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
         }
 
-        foreach ($id in $ResourceId) {
-            $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
-            $fileName = $resource.Id;
-            if ($resource.Filename) { $fileName = $resource.Filename; }
-            $destinationPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $fileName;
-            InvokeResourceDownload -DestinationPath $destinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+        if ($ResourceId.Count -gt 0) {
+            foreach ($id in $ResourceId) {
+                $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
+                $fileName = $resource.Id;
+                if ($resource.Filename) { $fileName = $resource.Filename; }
+                $destinationPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $fileName;
+                InvokeResourceDownload -DestinationPath $destinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+            }
+        }
+        else {
+            WriteVerbose ($localized.NoResourcesDefined);
         }
     } #end process
 } #end function Invoke-LabResourceDownload

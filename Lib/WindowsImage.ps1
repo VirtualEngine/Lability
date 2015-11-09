@@ -55,12 +55,11 @@ function ExpandWindowsImage {
             }
             AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
         }
-    } #end process
-    end {
+
         ## Dismount ISO
         WriteVerbose ($localized.DismountingDiskImage -f $IsoPath);
         Dismount-DiskImage -ImagePath $IsoPath;
-    }
+    } #end process
 } #end function ExpandWindowsImage
 
 function AddWindowsOptionalFeature {
@@ -87,6 +86,7 @@ function AddWindowsOptionalFeature {
             LogPath = $LogPath;
             FeatureName = $WindowsOptionalFeature;
             LimitAccess = $true;
+            All = $true;
         }
         $dismOutput = Enable-WindowsOptionalFeature @enableWindowsOptionalFeatureParams -Verbose:$false;
     } #end process
