@@ -55,6 +55,25 @@ function NewDirectory {
     } #end process
 } #end function NewDirectory
 
+function SetResourceChecksum {
+<#
+    .SYNOPSIS
+        Creates a resource's checksum file.
+#>
+    param (
+        ## Path of file to create the checksum of
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path
+    )
+    process {
+        $checksumPath = '{0}.checksum' -f $Path;
+        ## As it can take a long time to calculate the checksum, write it out to disk for future reference
+        WriteVerbose ($localized.CalculatingResourceChecksum -f $checksumPath);
+        $fileHash = Get-FileHash -Path $Path -Algorithm MD5 -ErrorAction Stop | Select-Object -ExpandProperty Hash;
+        WriteVerbose ($localized.WritingResourceChecksum -f $fileHash, $checksumPath);
+        $fileHash | Set-Content -Path $checksumPath -Force;
+    }
+} #end function SetResourceChecksum
+
 function GetResourceDownload {
 <#
     .SYNOPSIS
@@ -67,7 +86,8 @@ function GetResourceDownload {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
 	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum
+        [Parameter()] [AllowNull()] [System.String] $Checksum,
+        [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
@@ -76,11 +96,7 @@ function GetResourceDownload {
 			WriteVerbose ($localized.MissingResourceFile -f $DestinationPath);
 		}
         elseif (-not (Test-Path -Path $checksumPath)) {
-            ## As it can take a long time to calculate the checksum, write it out to disk for future reference
-            WriteVerbose ($localized.CalculatingResourceChecksum -f $checksumPath);
-            $fileHash = Get-FileHash -Path $DestinationPath -Algorithm MD5 -ErrorAction Stop | Select-Object -ExpandProperty Hash;
-            WriteVerbose ($localized.WritingResourceChecksum -f $fileHash, $checksumPath);
-            $fileHash | Set-Content -Path $checksumPath -Force;
+            [ref] $null = SetResourceChecksum -Path $DestinationPath;
         }
         if (Test-Path -Path $checksumPath) {
             Write-Debug ('MD5 checksum file ''{0}'' found.' -f $checksumPath);
@@ -111,7 +127,8 @@ function TestResourceDownload {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
 	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum
+        [Parameter()] [AllowNull()] [System.String] $Checksum,
+        [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
@@ -140,7 +157,8 @@ function SetResourceDownload {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
 	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum
+        [Parameter()] [AllowNull()] [System.String] $Checksum,
+        [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     begin {
@@ -150,13 +168,10 @@ function SetResourceDownload {
     process {
         $destinationFilename = [System.IO.Path]::GetFileName($DestinationPath);
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
-        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -Verbose;
+        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -Verbose -BufferSize $BufferSize;
 
         ## Create the checksum file for future reference
-        $checksumPath = '{0}.checksum' -f $DestinationPath;
-        $fileHash = Get-FileHash -Path $DestinationPath -Algorithm MD5 -ErrorAction Stop | Select-Object -ExpandProperty Hash;
-        WriteVerbose ($localized.WritingResourceChecksum -f $fileHash, $checksumPath);
-        [ref] $null = $fileHash | Set-Content -Path $checksumPath -Force;
+        [ref] $null = SetResourceChecksum -Path $DestinationPath;
     } #end process
 } #end function SetResourceDownload
 
@@ -206,7 +221,12 @@ function InvokeWebClientDownload {
                 ## Avoid divide by zero
                 if ($contentLength -gt 0) {
                     [System.Byte] $percentComplete = ($totalBytes/$contentLength) * 100;
-                    Write-Progress -Activity ($localized.DownloadingActivity -f $Uri) -PercentComplete $percentComplete -Status ($localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete);
+                    $writeProgressParams = @{
+                        Activity = $localized.DownloadingActivity -f $Uri;
+                        PercentComplete = $percentComplete;
+                        Status = $localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete;
+                    }
+                    Write-Progress @writeProgressParams;
                 }
             }
             while ($bytesRead -ne 0)
@@ -221,7 +241,7 @@ function InvokeWebClientDownload {
             if ($null -ne $inputStream) { $inputStream.Close(); }
             if ($null -ne $webClient) { $webClient.Dispose(); }
         }
-    }
+    } #end process
 } #end function InvokeWebClientDownload
 
 function InvokeResourceDownload {
@@ -235,7 +255,8 @@ function InvokeResourceDownload {
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
 	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [AllowNull()] [System.String] $Checksum,
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force
+		[Parameter()] [System.Management.Automation.SwitchParameter] $Force,
+        [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
