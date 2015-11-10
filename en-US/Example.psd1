@@ -15,14 +15,14 @@
             VirtualEngineLab_SwitchName = 'Corpnet';
             VirtualEngineLab_ProcessorCount = 1;
             VirtualEngineLab_Media = '2012R2_x64_Standard_EN_Eval';
-        },
+        }
         @{
             NodeName = 'DC1';
             IPAddress = '10.0.0.1';
             DnsServerAddress = '127.0.0.1';
             Role = 'DC';
             VirtualEngineLab_ProcessorCount = 2;
-        },
+        }
         @{
             NodeName = 'EDGE1';
             IPAddress = '10.0.0.2';
@@ -33,12 +33,12 @@
             Role = 'EDGE';
             ## Windows sees the two NICs in reverse order, e.g. first switch is 'Ethernet 2' and second is 'Ethernet'!?
             VirtualEngineLab_SwitchName = 'Corpnet','Internet';
-        },
+        }
         @{
             NodeName = 'APP1';
             IPAddress = '10.0.0.3';
             Role = 'APP';
-        },
+        }
         @{
             NodeName = 'INET1';
             IPAddress = '131.107.0.1';
@@ -46,7 +46,7 @@
             DefaultGateway = '';
             Role = 'INET';
             VirtualEngineLab_SwitchName = 'Internet';
-        },
+        }
         @{
             NodeName = 'CLIENT1';
             Role = 'CLIENT';
@@ -58,7 +58,7 @@
                 ## Kick-start PowerShell remoting on clients to permit applying DSC configurations
                 Enable-PSRemoting -SkipNetworkProfileCheck -Force;
 '@
-        },
+        }
         @{
             NodeName = 'CLIENT2';
             Role = 'CLIENT';
