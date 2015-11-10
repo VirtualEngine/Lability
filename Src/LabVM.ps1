@@ -27,9 +27,7 @@ function ResolveLabVMProperties {
                 }
             }
         }
-        ## Remove the '*' node name entry
-        [ref] $null = $node.Remove('NodeName');
-
+        
         ## Retrieve the AllNodes.$NodeName properties
         $ConfigurationData.AllNodes.Where({ $_.NodeName -eq $NodeName }) | ForEach-Object {
             foreach ($key in $_.Keys) {
@@ -59,9 +57,6 @@ function ResolveLabVMProperties {
         if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) { $node['SecureBoot'] = $false; }
         else { $node['SecureBoot'] = $true; }
 
-        if ([System.String]::IsNullOrEmpty($node.NodeName)) {
-            Write-Error ($localized.CannotLocateNodeError -f $Name);
-        }
         return $node;
     } #end process
 } #end function Resolve-LabProperty
@@ -211,13 +206,11 @@ function NewLabVM {
         }
 
         if (-not (Test-LabImage -Id $node.Media)) {
-            New-LabImage -Id $node.Media;
+            [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
 
-        foreach ($switch in $node.SwitchName) {
-            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switch);
-            SetLabSwitch -Name $switch -ConfigurationData $ConfigurationData;
-        }
+        WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
+        SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', $node.Media);
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
@@ -281,7 +274,10 @@ function RemoveLabVM {
         [Parameter()] [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
     process {
-        $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
+        if (-not $node.NodeName) {
+            throw ($localized.CannotLocateNodeError -f $Name);
+        }
         $Name = $node.NodeName;
         
         RemoveLabVMSnapshot -Name $Name;

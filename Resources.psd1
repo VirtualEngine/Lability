@@ -75,21 +75,24 @@ ConvertFrom-StringData @'
     InjectingVMResource             = Injecting VM resource '{0}'.
     ExpandingIsoResource            = Expanding ISO resource '{0}'.
     CopyingFileResource             = Copying file resource '{0}'.
-    ExpandingZipResource             = Expanding Zip archive '{0}'.
+    ExpandingZipResource            = Expanding Zip archive '{0}'.
     ExtractingZipArchiveEntry       = Extracting Zip archive entry '{0}'.
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
     SettingAdministratorPassword    = Setting local administrator password to '{0}'.
-    DownloadingAllRequiredMedia     = No media Id specified. Downloading all required media.
+    DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
-    DownloadingAllDefinedResources  = No resource Id specified. Downloading all defined resources.
+    DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
+    NoHotfixesSpecified             = No hotfixes were specified.
+    NoResourcesDefined              = No custom resources were defined.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
     SnapshotMissingWarning          = Snapshot '{0}' for virtual machine '{1}' is missing.
     NodeCustomMessageWarning        = [{0}] {1}
     TargetFileExistsWarning         = Target file '{0}' already exists.
+    RemovingIncompleteImageWarning  = Removing incomplete image '{0}'.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.

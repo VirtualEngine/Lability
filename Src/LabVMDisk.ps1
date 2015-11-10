@@ -106,16 +106,20 @@ function RemoveLabVMDisk {
         $hostDefaults = GetConfigurationData -Configuration Host;
         $image = Get-LabImage -Id $Media -ErrorAction Stop;
         if ($image) {
-            ## If the parent image isn't there, the differencing VHD won't be either (and xVHD will throw)
-            $vhd = @{
-                Name = $Name;
-                Path = $hostDefaults.DifferencingVhdPath;
-                ParentPath = $image.ImagePath;
-                Generation = 'VHDX';
-                Ensure = 'Absent';
+            ## If the parent image isn't there, the differencing VHD won't be either
+            $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath "$Name.vhdx";
+            if (Test-Path -Path $vhdPath) {
+                ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
+                $vhd = @{
+                    Name = $Name;
+                    Path = $hostDefaults.DifferencingVhdPath;
+                    ParentPath = $image.ImagePath;
+                    Generation = 'VHDX';
+                    Ensure = 'Absent';
+                }
+                ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+                [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
             }
-            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-            [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
         }
     } #end process
 } #end RemoveLabVMDisk

@@ -16,7 +16,7 @@ function NewLabMedia {
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Uri = $(throw ($localized.MissingParameterError -f 'Uri')),
         [Parameter()] [System.String] $Checksum = '',
         [Parameter()] [System.String] $ProductKey = '',
-        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable] $CustomData,
+        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable] $CustomData = @{},
         [Parameter()] [AllowNull()] [System.Array] $Hotfixes
     )
     begin {
@@ -45,7 +45,6 @@ function NewLabMedia {
             Hotfixes = $Hotfixes;
         }
         if ($ProductKey) {
-            if (-not $CustomData) { $CustomData = @{}; }
             $CustomData['ProductKey'] = $ProductKey;
         }
         return $labMedia;
@@ -153,26 +152,33 @@ function InvokeLabMediaImageDownload {
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        ## Lab media object
+        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Media,
+        ## Force (re)download of the resource
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $media = ResolveLabMedia -Id $Id;
+
         if ($media.MediaType -eq 'VHD') {
             $destinationPath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
         }
         elseif ($media.MediaType -eq 'ISO') {
             $destinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
         }
-        else {
-            Write-Error ($localized.CannotLocateMediaError -f $Id);
-        }
+
         $invokeResourceDownloadParams = @{
             DestinationPath = $destinationPath;
-            uri = $media.Uri;
+            Uri = $media.Uri;
             Checksum = $media.Checksum;
         }
+
+        $mediaUri = New-Object -TypeName System.Uri -ArgumentList $Media.Uri;
+        if ($mediaUri.Scheme -eq 'File') {
+            ## Use a bigger buffer for local file copies..
+            $invokeResourceDownloadParams['BufferSize'] = 1MB;
+        }
+        
         [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
         return (Get-Item -Path $destinationPath);
     } #end process

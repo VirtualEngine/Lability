@@ -13,7 +13,7 @@ function GetDiskImageDriveLetter {
         $driveLetter = Get-Partition -DiskNumber $DiskImage.DiskNumber |
             Where Type -eq $PartitionType |
                 Where-Object DriveLetter |
-                    Select-Object -ExpandProperty DriveLetter;
+                    Select-Object -Last 1 -ExpandProperty DriveLetter;
         if (-not $driveLetter) {
             throw ($localized.CannotLocateDiskImageLetter -f $DiskImage.Path);
         }
@@ -34,7 +34,7 @@ function NewDiskImageMbr {
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force;
+        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
         WriteVerbose ($localized.CreatingDiskPartition -f 'OS');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -MbrType IFS -IsActive |
             Add-PartitionAccessPath -AssignDriveLetter -PassThru |
@@ -77,7 +77,7 @@ function NewDiskImageGpt {
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force;
+        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
         WriteVerbose ($localized.CreatingDiskPartition -f 'System');
         $systemPartition = New-Partition -DiskNumber $Vhd.DiskNumber -Size 250MB -GptType '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}' -AssignDriveLetter;
         WriteVerbose ($localized.FormattingDiskPartition -f 'System');
@@ -120,7 +120,7 @@ function NewDiskImage {
     } #end begin
     process {
         WriteVerbose ($localized.CreatingDiskImage -f $Path);
-        $vhd = New-Vhd -Path $Path -Dynamic -SizeBytes 127GB;
+        $vhd = New-Vhd -Path $Path -Dynamic -SizeBytes $Size;
         WriteVerbose ($localized.MountingDiskImage -f $Path);
         $vhdMount = Mount-VHD -Path $Path -Passthru;
         WriteVerbose ($localized.InitializingDiskImage -f $Path);
@@ -209,6 +209,9 @@ function SetDiskImageBootVolumeGpt {
             '/f UEFI'                                      # Specifies the firmware type of the target system partition
         )
         InvokeExecutable -Path $bcdBootExe -Arguments $bcdBootArgs -LogName ('{0}-BootEdit.log' -f $imageName);
+        ## Clean up and remove drive access path
+        Remove-PSDrive -Name $osPartitionDriveLetter -PSProvider FileSystem -ErrorAction Ignore;
+        [ref] $null = Get-PSDrive;
     } #end process
 } #end function
 
@@ -237,7 +240,6 @@ function SetDiskImageBootVolume {
         } #end switch
     } #end process
 } #end function SetDiskImageBootVolume
-
 
 function AddDiskImagePackage {
 <#

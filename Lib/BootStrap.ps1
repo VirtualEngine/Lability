@@ -1,7 +1,7 @@
 function NewBootStrap {
 <#
     .SYNOPSIS
-        Creates a lab BootStrap script block.
+        Creates a lab DSC BootStrap script block.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.ScriptBlock])]
@@ -12,7 +12,7 @@ function NewBootStrap {
         ## VirtualEngine.Lab DSC Bootstrap
         $VerbosePreference = 'Continue';
         $DebugPreference = 'Continue';
-        Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force -IncludeInvocationHeader;
+        Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force;
 
         certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
         ## Import the .PFX certificate with a blank password
@@ -30,7 +30,6 @@ function NewBootStrap {
                 if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
                     Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
                 }
-                Stop-Transcript;
                 break;
             }
             catch {
@@ -38,7 +37,8 @@ function NewBootStrap {
                 Start-Sleep -Seconds 5;
             }
         } #end while
-            
+        
+        Stop-Transcript;
         } #end bootstrap scriptblock
         return $sciptBlock;
     } #end process
