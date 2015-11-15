@@ -139,7 +139,7 @@ function ExpandIsoResource {
         $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
         WriteVerbose ($localized.ExpandingIsoResource -f $DestinationPath);
         $sourcePath = '{0}:\*' -f $isoDriveLetter;
-        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force;
+        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force -Verbose:$false;
         WriteVerbose ($localized.DismountingDiskImage -f $Path);
         Dismount-DiskImage -ImagePath $Path;
     } #end process
@@ -191,13 +191,13 @@ function ExpandLabResource {
                 [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
                 switch ($resourceItem.Extension) {
                     '.iso' { ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath; }
-                    '.zip' { [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath; }
+                    '.zip' { [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false; }
                     Default { throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension); }
                 } #end switch
             }
             else {
                 WriteVerbose ($localized.CopyingFileResource -f (Join-Path -Path $DestinationPath -ChildPath $resourceItem.Name));
-                Copy-Item -Path $resourceItem.FullName -Destination $destinationPath -Force;
+                Copy-Item -Path $resourceItem.FullName -Destination $destinationPath -Force -Verbose:$false;
             }
         } #end foreach ResourceId
     } #end process
