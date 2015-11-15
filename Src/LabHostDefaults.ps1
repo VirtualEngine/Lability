@@ -56,12 +56,13 @@ function Set-LabHostDefaults {
 		foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
 			if ($PSBoundParameters.ContainsKey($path)) {
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
-                if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
-					throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);
-				}
-				else {
-					$hostDefaults.$path = $resolvedPath.Trim('\');
-				}
+                if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
+                
+                    throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);
+                }
+                else {
+                    $hostDefaults.$path = $resolvedPath.Trim('\');
+                }
 			}	
 		}
 		if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
