@@ -79,7 +79,7 @@ function Start-LabConfiguration {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
         ## Local administrator password of the provisioned lab VMs 
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password = (Get-Credential -Message 'Hello'),
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         ## Path to .MOF files created from the DSC configuration
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
