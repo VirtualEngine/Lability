@@ -86,6 +86,7 @@ ConvertFrom-StringData @'
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
     NoHotfixesSpecified             = No hotfixes were specified.
     NoResourcesDefined              = No custom resources were defined.
+    ProvideAdministratorPassword    = Please provide the local Administrator password. 
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.

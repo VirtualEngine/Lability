@@ -175,6 +175,8 @@ function NewLabVM {
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        ## Local administrator password of the VM
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         ## Virtual machine DSC .mof and .meta.mof location
         [Parameter()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
@@ -232,13 +234,17 @@ function NewLabVM {
         SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
 
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
+        $setLabVMDiskFileParams = @{
+            Name = $Name;
+            NodeData = $node;
+            Path = $Path;
+            Password = $Password;
+        }
         if ($node.CustomBootStrap) {
-            SetLabVMDiskFile -Name $Name -NodeData $node -Path $Path -CustomBootStrap ($node.CustomBootStrap).ToString();
+            $setLabVMDiskFileParams['CustomBootStrap'] = ($node.CustomBootStrap).ToString();
         }
-        else {
-            SetLabVMDiskFile -Name $Name -NodeData $node -Path $Path;
-        }
-        
+        SetLabVMDiskFile @setLabVMDiskFileParams;
+
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
@@ -316,6 +322,8 @@ function Reset-LabVM {
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        ## Local administrator password of the VM
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         ## Directory path containing the VM .mof file(s)
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
@@ -326,6 +334,6 @@ function Reset-LabVM {
     }
     process {
         RemoveLabVM -Name $Name -ConfigurationData $ConfigurationData;
-        NewLabVM -Name $Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot;
+        NewLabVM -Name $Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Password $Password;
     } #end process    
 } #end function Reset-LabVM

@@ -12,7 +12,7 @@ function NewUnattendXml {
     [OutputType([System.Xml.XmlDocument])]
     param (
         # Local Administrator Password
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         # Computer name
         [Parameter()] [System.String] $ComputerName,
         # Product Key
@@ -155,7 +155,7 @@ function NewUnattendXml {
 
                 if (($setting.'Pass' -eq 'oobeSystem') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
                     $component.TimeZone = $Timezone;
-                    $concatenatedPassword = '{0}AdministratorPassword' -f $Password;
+                    $concatenatedPassword = '{0}AdministratorPassword' -f $Password.GetNetworkCredential().Password;
                     $component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedPassword));
                     $component.RegisteredOrganization = $RegisteredOrganization;
                     $component.RegisteredOwner = $RegisteredOwner;
@@ -177,7 +177,7 @@ function SetUnattendXml {
         # Filename/path to save the unattend file as
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
         # Local Administrator Password
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Password,
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         # Computer name
         [Parameter()] [System.String] $ComputerName,
         # Product Key

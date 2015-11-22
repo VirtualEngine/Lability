@@ -88,6 +88,8 @@ Describe 'LabVMDiskFile' {
         
         Context 'Validates "SetLabVMDiskFile" method' {
 
+            $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
+
             It 'Mounts virtual machine VHDX file' {
                 $testVMName = 'TestVM';
                 $testVhdPath = "TestDrive:\$testVMName.vhdx";
@@ -95,19 +97,21 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; }
+                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; Password = 'P@ssw0rd'; }
                     )
                 }
-                $fakeVhd = [PSCustomObject] @{ DiskNumber = $testDiskNumber; }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return $testVhdPath; }
-                Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { New-PSDrive -Name $testDriveLetter -PSProvider FileSystem -Root TestDrive:\; return $fakeVhd; }
+                Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
                 Mock Get-Partition -ParameterFilter { $DiskNumber -eq $testDiskNumber } -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
                 Mock Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ExpandLabResource -MockWith { }
+                Mock SetBootStrap -ParameterFilter { $Path.EndsWith('\BootStrap') -eq $true } -MockWith { }
+                Mock SetSetupCompleteCmd -ParameterFilter { $Path.EndsWith('\Windows\Setup\Scripts') -eq $true } -MockWith { }
+                Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
+                Mock Copy-Item -ParameterFilter { $Destination.EndsWith('\Program Files\WindowsPowershell\Modules') -eq $true } -MockWith { }
                 Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
-                SetLabVMDiskResource -ConfigurationData $configurationData -Name $testVMName;
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword;
 
                 Assert-MockCalled Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
             }
@@ -133,7 +137,7 @@ Describe 'LabVMDiskFile' {
                 Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
                 Mock Copy-Item -ParameterFilter { $Destination.EndsWith('\Program Files\WindowsPowershell\Modules') -eq $true } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName;
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword;
 
                 Assert-MockCalled Copy-Item -ParameterFilter { $Destination.EndsWith('\Program Files\WindowsPowershell\Modules') -eq $true } -Scope It;
             }
@@ -159,10 +163,11 @@ Describe 'LabVMDiskFile' {
                 Mock SetSetupCompleteCmd -ParameterFilter { $Path.EndsWith('\Windows\Setup\Scripts') -eq $true } -MockWith { }
                 Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName;
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword;
 
                 Assert-MockCalled SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -Scope It;
             }
+
             It 'Copies default "BootStrap.ps1"' {
                 $testVMName = 'TestVM';
                 $testVhdPath = "TestDrive:\$testVMName.vhdx";
@@ -184,7 +189,7 @@ Describe 'LabVMDiskFile' {
                 Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
                 Mock SetBootStrap -ParameterFilter { $Path.EndsWith('\BootStrap') -eq $true } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName;
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword;
 
                 Assert-MockCalled SetBootStrap -ParameterFilter { $Path.EndsWith('\BootStrap') -eq $true } -Scope It;
             }
@@ -210,7 +215,7 @@ Describe 'LabVMDiskFile' {
                 Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
                 Mock SetBootStrap -ParameterFilter { $CustomBootStrap -ne $null } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -CustomBootStrap '# Test Bootstrap';
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword -CustomBootStrap '# Test Bootstrap';
 
                 Assert-MockCalled SetBootStrap -ParameterFilter { $CustomBootStrap -ne $null } -Scope It;
             }
@@ -236,7 +241,7 @@ Describe 'LabVMDiskFile' {
                 Mock SetBootStrap -ParameterFilter { $CustomBootStrap -ne $null } -MockWith { }
                 Mock SetSetupCompleteCmd -ParameterFilter { $Path.EndsWith('\Windows\Setup\Scripts') -eq $true } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -CustomBootStrap '# Test Bootstrap';
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword -CustomBootStrap '# Test Bootstrap';
 
                 Assert-MockCalled SetSetupCompleteCmd -ParameterFilter { $Path.EndsWith('\Windows\Setup\Scripts') -eq $true } -Scope It;
             }
@@ -262,7 +267,7 @@ Describe 'LabVMDiskFile' {
                 Mock Copy-Item -ParameterFilter { $Destination.EndsWith('\Program Files\WindowsPowershell\Modules') -eq $true } -MockWith { }
                 Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
-                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName;
+                SetLabVMDiskFile -NodeData $configurationData.AllNodes[0] -Name $testVMName -Password $testPassword;
 
                 Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
             }

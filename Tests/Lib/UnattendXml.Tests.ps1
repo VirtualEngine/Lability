@@ -16,7 +16,7 @@ Describe 'UnattendXml' {
         Context 'Validates "NewUnattendXml" method' {
 
             It 'Returns a "System.Xml.XmlDocument" type' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
                 
@@ -24,7 +24,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Creates equal number of "x86" and "amd64" components' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
 
@@ -35,9 +35,9 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets encoded Administrator password' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
-                $concatenatedTestPassword = '{0}AdministratorPassword' -f $TestPassword;
+                $concatenatedTestPassword = '{0}AdministratorPassword' -f $TestPassword.GetNetworkCredential().Password;
                 $encodedTestPassword = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedTestPassword));
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
 
@@ -49,7 +49,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets timezone' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
 
@@ -61,7 +61,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets Input locale' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testInputLocale = 'fr-FR';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -InputLocale $testInputLocale;
@@ -74,7 +74,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets System locale' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testSystemLocale = 'de-DE';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -SystemLocale $testSystemLocale;
@@ -87,7 +87,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets UI language' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testUILanguage = 'de-DE';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -UILanguage $testUILanguage;
@@ -100,7 +100,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets User locale' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testUserLocale = 'es-ES';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -UserLocale $testUserLocale;
@@ -113,7 +113,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets computer name' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testComputerName = 'TESTCOMPUTER';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ComputerName $testComputerName;
@@ -126,7 +126,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Sets product key' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testProductKey = 'ABCDE-12345-FGHIJ-67890-KLMNO';
                 $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ProductKey $testProductKey;
@@ -139,7 +139,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Adds single synchronous command' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testCommand = @(
                     @{ Description = 'Test Command #1'; Order = 1; Path = 'Command1.exe'; }
@@ -149,7 +149,7 @@ Describe 'UnattendXml' {
             }
 
             It 'Adds multiple synchronous commands' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testCommands = @(
                     @{ Description = 'Test Command #1'; Order = 1; Path = 'Command1.exe'; }
@@ -163,7 +163,7 @@ Describe 'UnattendXml' {
         Context 'Validates "SetUnattendXml" method' {
 
             It 'Saves Xml file to disk' {
-                $testPassword = 'P@ssw0rd';
+                $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testPath = "$((Get-PSDrive -Name TestDrive).Root)\test.xml";
                 

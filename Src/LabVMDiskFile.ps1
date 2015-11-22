@@ -31,8 +31,6 @@ function SetLabVMDiskResource {
 
         WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
         Dismount-Vhd -Path $VhdPath;
-
-        
     } #end process
 } #end function SetLabVMDiskResource
 
@@ -47,6 +45,8 @@ function SetLabVMDiskFile {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name,
         ## Lab VM/Node configuration data
         [Parameter(Mandatory)] [System.Collections.Hashtable] $NodeData,
+        ## Local administrator password of the VM
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter()] [System.String] $Path,
         ## Custom bootstrap script
@@ -71,7 +71,7 @@ function SetLabVMDiskFile {
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
             ComputerName = $Name;
-            Password = $NodeData.Password;
+            Password = $Password;
             InputLocale = $NodeData.InputLocale;
             SystemLocale = $NodeData.SystemLocale;
             UserLocale = $NodeData.UserLocale;

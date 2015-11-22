@@ -51,7 +51,6 @@ Describe 'LabVMDefaults' {
                 @{ SystemLocale = 'FR-fr'; }
                 @{ UILanguage = 'ES-es'; }
                 @{ UserLocale = 'EN-gb'; }
-                @{ Password = 'ReallyWeak'; }
                 @{ RegisteredOwner = 'Virtual Engine Ltd'; }
                 @{ RegisteredOrganization = 'Virtual Engine Ltd'; }
                 @{ BootDelay = 42; }
