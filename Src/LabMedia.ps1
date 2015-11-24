@@ -358,7 +358,7 @@ function Unregister-LabMedia {
     [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Unique media ID. You can override the built-in media if required.
-        [Parameter(Mandatory)] [System.String] $Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Id
     )
     process {
         ## Get the custom media list
