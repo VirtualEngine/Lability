@@ -183,10 +183,6 @@ Describe 'LabVMDisk' {
         
         }  #end context Validates "ResetLabVMDisk" method
         
-        Context 'Validates "" method' {
-        
-        }  #end context Validates "" method
-
     } #end InModuleScope
 
 } #end describe LabVMDisk

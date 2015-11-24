@@ -62,7 +62,7 @@ Describe 'ConfigurationData' {
 
         Context 'Validates "ResolveConfigurationDataPath" method' {
 
-            foreach ($config in @('Host','VM','Media')) {
+            foreach ($config in @('Host','VM','Media','CustomMedia')) {
                 
                 It "Resolves '$config' to module path when custom configuration does not exist" {
                     Mock Test-Path -MockWith { return $false }
@@ -86,6 +86,7 @@ Describe 'ConfigurationData' {
             It 'Resolves environment variables in path' {
                 $testConfigurationFilename = 'TestConfiguration.json';
                 $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                Mock Test-Path -MockWith { return $true; }
                 Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
                 Mock Get-Content -ParameterFilter { $Path -eq "$env:SystemRoot\$testConfigurationFilename" } -MockWith { return $fakeConfiguration; }
 

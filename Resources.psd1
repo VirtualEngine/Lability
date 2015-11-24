@@ -86,7 +86,12 @@ ConvertFrom-StringData @'
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
     NoHotfixesSpecified             = No hotfixes were specified.
     NoResourcesDefined              = No custom resources were defined.
-    ProvideAdministratorPassword    = Please provide the local Administrator password. 
+    ProvideAdministratorPassword    = Please provide the local Administrator password.
+    AddingCustomMediaEntry          = Adding '{0}' media entry.
+    OverwritingCustomMediaEntry     = Overwriting existing '{0}' media entry.
+    RemovingCustomMediaEntry        = Removing '{0}' media entry.
+    SavingConfiguration             = Saving configuration '{0}'.
+    PerformingOperationOnTarget     = Performing the operation '{0}' on target '{1}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -94,6 +99,8 @@ ConvertFrom-StringData @'
     NodeCustomMessageWarning        = [{0}] {1}
     TargetFileExistsWarning         = Target file '{0}' already exists.
     RemovingIncompleteImageWarning  = Removing incomplete image '{0}'.
+    NoCustomMediaFoundWarning       = No custom media '{0}' registered.
+    ShouldProcessWarning            = Are you sure you want to perform this action?
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -118,4 +125,6 @@ ConvertFrom-StringData @'
     IncorrectPropertyTypeError      = Incorrect '{0}' property type. Property type must be '{1}'.
     CannotResolveResourceIdError    = Cannot resolve resource Id '{0}'.
     ExpandNotSupportedError         = Expand operation not supported on '{0}' file type.
+    ImageNameRequiredError          = An image name is required for ISO and WIM media. Please specify the {0} parameter.
+    MediaAlreadyRegisteredError     = Media Id '{0}' is already registered. Use {1} to override the existing media entry.
 '@

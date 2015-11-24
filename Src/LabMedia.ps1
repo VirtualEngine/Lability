@@ -81,6 +81,14 @@ function ResolveLabMedia {
                 $media = NewLabMedia @mediaHash;
             }
         }
+        ## If we have custom media, return that
+        if (-not $media) {
+            $media = GetConfigurationData -Configuration CustomMedia;
+            if ($Id) {
+                $media = $media | Where-Object { $_.Id -eq $Id };
+            }
+        }
+        ## If we still don't have a media image, return the built-in object
         if (-not $media) {
             $media = Get-LabMedia -Id $Id;
         }
@@ -94,18 +102,50 @@ function ResolveLabMedia {
 function Get-LabMedia {
 <#
 	.SYNOPSIS
-		Gets the current lab media settings.
+		Gets the currently registered built-in and custom lab media.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
 	param (
         ## Media ID
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id,
+        ## Only return custom media
+        [Parameter()] [System.Management.Automation.SwitchParameter] $CustomOnly
     )
     process {
-        $media = GetConfigurationData -Configuration Media;
+        ## Retrieve built-in media
+        if (-not $CustomOnly) {
+            $defaultMedia = GetConfigurationData -Configuration Media;
+        }
+        ## Retrieve custom media
+        $customMedia = GetConfigurationData -Configuration CustomMedia;
+        if (-not $customMedia) {
+            $customMedia = @();
+        }
+
+        ## Are we looking for a specific media Id
         if ($Id) {
-            $media = $media | Where-Object { $_.Id -eq $Id };
+            ## Return the custom media definition first (if it exists)
+            $media = $customMedia | Where-Object { $_.Id -eq $Id };
+            if ((-not $media) -and (-not $CustomOnly)) {
+                ## We didn't find a custom media entry, return a default entry (if it exists)
+                $media = $defaultMedia | Where-Object { $_.Id -eq $Id };
+            }
+        }
+        else {
+            ## Return all custom media
+            $media = $customMedia;
+            if (-not $CustomOnly) {
+                foreach ($mediaEntry in $defaultMedia) {
+                    ## Determine whether the media is present in the custom media, i.e. make sure
+                    ## we don't override a custom entry with the default one.
+                    $defaultMediaEntry = $customMedia | Where-Object { $_.Id -eq $mediaEntry.Id }
+                    ## If not, add it to the media array to return
+                    if (-not $defaultMediaEntry) {
+                        $media += $mediaEntry;
+                    }
+                } #end foreach default media
+            } #end if not custom only
         }
         return $media;
     } #end process
@@ -142,7 +182,7 @@ function InvokeLabMediaImageDownload {
 <#
     .SYNOPSIS
         Downloads ISO/VHDX media resources.
-    .DESCRIPTIONS
+    .DESCRIPTION
         Initiates a download of a media resource. If the resource has already been downloaded and the checksum
         is correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
     .NOTES
@@ -188,7 +228,7 @@ function InvokeLabMediaHotfixDownload {
 <#
     .SYNOPSIS
         Downloads resources.
-    .DESCRIPTIONS
+    .DESCRIPTION
         Initiates a download of a media resource. If the resource has already been downloaded and the checksum
         is correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
     .NOTES
@@ -217,3 +257,135 @@ function InvokeLabMediaHotfixDownload {
         return (Get-Item -Path $destinationPath);
     } #end process
 } #end function InvokeLabMediaHotfixDownload
+
+function Register-LabMedia {
+<#
+    .SYNOPSIS
+        Registers a custom media entry.
+    .DESCRIPTION
+        The Register-LabMedia cmdlet allows registering custom media circumventing the requirement of having to define custom media in the DSC Configuration Data.
+
+        You can use the Register-LabMedia cmdlet to override the default media entries, e.g. you have the media hosted internally.
+#>
+    [CmdletBinding()]
+    param (
+        ## Unique media ID. You can override the built-in media if required.
+        [Parameter(Mandatory)] [System.String] $Id,
+        ## Media type
+        [Parameter(Mandatory)] [ValidateSet('VHD','ISO','WIM')] [System.String] $MediaType,
+        ## The source http/https/file Uri of the source file
+        [Parameter(Mandatory)] [System.Uri] $Uri,
+        ## Architecture of the source media
+        [Parameter(Mandatory)] [ValidateSet('x64','x86')] [System.String] $Architecture,
+        ## Media description
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Description,
+        ## ISO/WIM image name
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $ImageName,
+        ## Target local filename for the locally cached resource
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Filename,
+        ## MD5 checksum of the resource
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Checksum,
+        ## Media custom data
+        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable] $CustomData,
+        ## Media custom data
+        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable[]] $Hotfixes,
+        ## Override existing media entries
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+    )
+    process {
+        ## Validate ImageName when media type is ISO/WIM
+        if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
+            if (-not $PSBoundParameters.ContainsKey('ImageName')) {
+                throw ($localized.ImageNameRequiredError -f '-ImageName');
+            }
+        }
+
+        ## Resolve the media Id to see if it's already been used
+        $media = ResolveLabMedia -Id $Id -ErrorAction SilentlyContinue;
+        if ($media -and (-not $Force)) {
+            throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');
+        }
+    
+        ## Get the custom media list (not the built in media)
+        $existingCustomMedia = GetConfigurationData -Configuration CustomMedia;
+        if (-not $existingCustomMedia) {
+            WriteWarning ($localized.NoCustomMediaFoundWarning  -f $Id);
+            $existingCustomMedia = @();
+        }
+    
+        $customMedia = [PSCustomObject] @{
+            Id = $Id;
+            Filename = $Filename;
+            Description = $Description;
+            Architecture = $Architecture;
+            ImageName = $ImageName;
+            MediaType = $MediaType;
+            Uri = $Uri;
+            Checksum = $Checksum;
+            CustomData = $CustomData;
+            Hotfixes = $Hotfixes;
+        }
+
+        $hasExistingMediaEntry = $false;
+        for ($i = 0; $i -lt $existingCustomMedia.Count; $i++) {
+            if ($existingCustomMedia[$i].Id -eq $Id) {
+                WriteVerbose ($localized.OverwritingCustomMediaEntry -f $Id);
+                $hasExistingMediaEntry = $true;
+                $existingCustomMedia[$i] = $customMedia;
+            }
+        }
+
+        if (-not $hasExistingMediaEntry) {
+            ## Add it to the array
+            WriteVerbose ($localized.AddingCustomMediaEntry -f $Id);
+            $existingCustomMedia += $customMedia;
+        }
+    
+        WriteVerbose ($localized.SavingConfiguration -f $Id);
+        SetConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
+        return $customMedia;
+    
+    } #end process
+} #end function Register-LabMedia
+
+function Unregister-LabMedia {
+<#
+    .SYNOPSIS
+        Unregisters a custom media entry.
+    .DESCRIPTION
+        The Unregister-LabMedia cmdlet allows unregistering custom media entries.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        ## Unique media ID. You can override the built-in media if required.
+        [Parameter(Mandatory)] [System.String] $Id
+    )
+    process {
+        ## Get the custom media list
+        $customMedia = GetConfigurationData -Configuration CustomMedia;
+        if (-not $customMedia) {
+            ## We don't have anything defined
+            WriteWarning ($localized.NoCustomMediaFoundWarning -f $Id);
+            return;
+        }
+        else {
+            ## Check if we have a matching Id
+            $media = $customMedia | Where-Object { $_.Id -eq $Id };
+            if (-not $media) {
+                ## We don't have a custom matching Id registered
+                WriteWarning ($localized.NoCustomMediaFoundWarning -f $Id);
+                return;
+            }
+        }
+        
+        $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Unregister-LabMedia', $Id;
+        $verboseProcessMessage = $localized.RemovingCustomMediaEntry -f $Id;
+        if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+            $customMedia = $customMedia | Where-Object { $_.Id -ne $Id };
+            WriteVerbose ($localized.SavingConfiguration -f $Id);
+            SetConfigurationData -Configuration CustomMedia -InputObject @($customMedia);
+            return $media;
+        }
+        
+    } #end process
+} #end function Unregister-LabMedia
