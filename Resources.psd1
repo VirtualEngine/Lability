@@ -92,6 +92,7 @@ ConvertFrom-StringData @'
     RemovingCustomMediaEntry        = Removing '{0}' media entry.
     SavingConfiguration             = Saving configuration '{0}'.
     PerformingOperationOnTarget     = Performing the operation '{0}' on target '{1}'.
+    ResettingConfigurationDefaults  = Resetting '{0}' configuration settings to default.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.

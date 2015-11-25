@@ -115,3 +115,22 @@ function SetConfigurationData {
 		Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force;
     }
 } #end function SetConfigurationData
+
+function RemoveConfigurationData {
+<#
+    .SYNOPSIS
+        Removes custom lab configuration data file.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration
+    )
+    process {
+        $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
+        $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
+        if (Test-Path -Path $expandedPath) {
+            WriteVerbose ($localized.ResettingConfigurationDefaults -f $Configuration);
+            Remove-Item -Path $expandedPath -Force;
+        }
+    }
+} # end function RemoveConfigurationData

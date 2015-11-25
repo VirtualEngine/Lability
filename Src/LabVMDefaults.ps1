@@ -1,3 +1,17 @@
+function Reset-LabVMDefaults {
+<#
+	.SYNOPSIS
+		Reset the current lab virtual machine default settings back to defaults.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+	param ( )
+    process {
+        RemoveConfigurationData -Configuration VM;
+        Get-LabVMDefaults;
+    }
+} #end function Reset-LabVMDefaults
+
 function Get-LabVMDefaults {
 <#
 	.SYNOPSIS

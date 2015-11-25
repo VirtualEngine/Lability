@@ -389,3 +389,17 @@ function Unregister-LabMedia {
         
     } #end process
 } #end function Unregister-LabMedia
+
+function Reset-LabMedia {
+<#
+	.SYNOPSIS
+		Reset the lab media back to default settings.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+	param ( )
+    process {
+        RemoveConfigurationData -Configuration CustomMedia;
+        Get-Labmedia;
+    }
+} #end function Reset-LabHostDefaults
