@@ -93,6 +93,9 @@ ConvertFrom-StringData @'
     SavingConfiguration             = Saving configuration '{0}'.
     PerformingOperationOnTarget     = Performing the operation '{0}' on target '{1}'.
     ResettingConfigurationDefaults  = Resetting '{0}' configuration settings to default.
+    LocatingWimImageName            = Locating WIM image '{0}' name.
+    LocatingWimImageIndex           = Locating WIM image '{0}' index.
+    MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -101,6 +104,7 @@ ConvertFrom-StringData @'
     TargetFileExistsWarning         = Target file '{0}' already exists.
     RemovingIncompleteImageWarning  = Removing incomplete image '{0}'.
     NoCustomMediaFoundWarning       = No custom media '{0}' registered.
+    UnsupportedConfigurationWarning = Configuration '{0}' is not supported by {1}.
     ShouldProcessWarning            = Are you sure you want to perform this action?
 
     InvalidPathError                = {0} path '{1}' is invalid.

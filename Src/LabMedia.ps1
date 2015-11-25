@@ -165,12 +165,18 @@ function Test-LabMedia {
         $hostDefaults = GetConfigurationData -Configuration Host;
         $media = Get-LabMedia -Id $Id;
         if ($media) {
-            $testResourceDownloadParams = @{
-                DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
-                uri = $media.Uri;
-                Checksum = $media.Checksum;
+            if (-not $hostDefaults.DisableLocalFileCaching) {
+                $testResourceDownloadParams = @{
+                    DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
+                    Uri = $media.Uri;
+                    Checksum = $media.Checksum;
+                }
+                return TestResourceDownload @testResourceDownloadParams;
             }
-            return TestResourceDownload @testResourceDownloadParams;
+            else {
+                ## Local file resource caching is disabled
+                return $true;
+            }
         }
         else {
             return $false;
@@ -181,7 +187,7 @@ function Test-LabMedia {
 function InvokeLabMediaImageDownload {
 <#
     .SYNOPSIS
-        Downloads ISO/VHDX media resources.
+        Downloads ISO/WIM/VHDX media resources.
     .DESCRIPTION
         Initiates a download of a media resource. If the resource has already been downloaded and the checksum
         is correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
@@ -200,29 +206,40 @@ function InvokeLabMediaImageDownload {
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
 
-        if ($media.MediaType -eq 'VHD') {
-            $destinationPath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
-        }
-        elseif ($media.MediaType -eq 'ISO') {
-            $destinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
-        }
-
         $invokeResourceDownloadParams = @{
-            DestinationPath = $destinationPath;
+            DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
             Uri = $media.Uri;
             Checksum = $media.Checksum;
         }
-
+        if ($media.MediaType -eq 'VHD') {
+            $invokeResourceDownloadParams['DestinationPath'] = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
+        }
+        
         $mediaUri = New-Object -TypeName System.Uri -ArgumentList $Media.Uri;
         if ($mediaUri.Scheme -eq 'File') {
             ## Use a bigger buffer for local file copies..
             $invokeResourceDownloadParams['BufferSize'] = 1MB;
         }
         
-        [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
-        return (Get-Item -Path $destinationPath);
+        if ($media.MediaType -eq 'VHD') {
+            ## Always download VHDXs regardless of Uri type
+            [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
+        }
+        elseif (($mediaUri.Scheme -eq 'File') -and ($media.MediaType -eq 'WIM') -and $hostDefaults.DisableLocalFileCaching)
+        ## TODO: elseif (($mediaUri.Scheme -eq 'File') -and $hostDefaults.DisableLocalFileCaching)
+        {
+            ## NOTE: Only WIM media can currently be run from a file share (see https://github.com/VirtualEngine/Lab/issues/28)
+            ## Caching is disabled and we have a file resource, so just return the source URI path
+            WriteVerbose ($localized.MediaFileCachingDisabled -f $Media.Id);
+            $destinationPath = $mediaUri.LocalPath;
+        }
+        else {
+            ## Caching is enabled or it's a http/https source
+            [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
+        }
+        return (Get-Item -Path $invokeResourceDownloadParams.DestinationPath);
     } #end process
-} #end Invoke-LabMediaDownload
+} #end InvokeLabMediaImageDownload
 
 function InvokeLabMediaHotfixDownload {
 <#
@@ -232,7 +249,7 @@ function InvokeLabMediaHotfixDownload {
         Initiates a download of a media resource. If the resource has already been downloaded and the checksum
         is correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
     .NOTES
-        ISO media is downloaded to the default IsoPath location. VHD(X) files are downloaded directly into the
+        ISO/WIM media is downloaded to the default IsoPath location. VHD(X) files are downloaded directly into the
         ParentVhdPath location.
 #>
     [CmdletBinding()]
