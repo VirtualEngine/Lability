@@ -78,6 +78,8 @@ function Start-LabConfiguration {
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        ## Local administrator password of the provisioned lab VMs 
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
         ## Path to .MOF files created from the DSC configuration
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
@@ -111,14 +113,14 @@ function Start-LabConfiguration {
             
             if ($node.IsConfigured -and $Force) {
                 WriteVerbose ($localized.NodeForcedConfiguration -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot;
+                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Password $Password;
             }
             elseif ($node.IsConfigured) {
                 WriteVerbose ($localized.NodeAlreadyConfigured -f $node.Name);
             }
             else {
                 WriteVerbose ($localized.NodeMissingOrMisconfigured -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot;
+                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Password $Password;
             }
         }
         WriteVerbose $localized.FinishedLabConfiguration;

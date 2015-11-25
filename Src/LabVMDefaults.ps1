@@ -42,8 +42,6 @@ function Set-LabVMDefaults {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UserLocale,
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UILanguage,
-        # Password
-		[Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Password,
         # Timezone
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Timezone,
         # Registered Owner
@@ -98,9 +96,6 @@ function Set-LabVMDefaults {
         if ($PSBoundParameters.ContainsKey('UserLocale')) {
 			$vmDefaults.UserLocale = $UserLocale;
 		}
-        if ($PSBoundParameters.ContainsKey('Password')) {
-			$vmDefaults.Password = $Password;
-		}
         if ($PSBoundParameters.ContainsKey('RegisteredOwner')) {
 			$vmDefaults.RegisteredOwner = $RegisteredOwner;
 		}
@@ -142,3 +137,4 @@ function Set-LabVMDefaults {
         return $vmDefaults;
     }
 } #end function Set-LabVMDefaults
+    

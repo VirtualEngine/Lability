@@ -56,7 +56,7 @@ function ResolveConfigurationDataPath {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media')] [System.String] $Configuration,
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
 		[Parameter()] [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
     process {
@@ -64,6 +64,7 @@ function ResolveConfigurationDataPath {
             'Host' { $configPath = $labDefaults.HostConfigFilename; }
             'VM' { $configPath = $labDefaults.VMConfigFilename; }
             'Media' { $configPath = $labDefaults.MediaConfigFilename; }
+            'CustomMedia' { $configPath = $labDefaults.CustomMediaConfigFilename; }
         }
         $configPath = Join-Path -Path $labDefaults.ConfigurationData -ChildPath $configPath;
         $resolvedPath = Join-Path -Path "$env:ALLUSERSPROFILE\$($labDefaults.ModuleName)" -ChildPath $configPath;
@@ -85,12 +86,14 @@ function GetConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media')] [System.String] $Configuration
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
-        return Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+        if (Test-Path -Path $expandedPath) {
+            return Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+        }
     }
 } #end function GetConfigurationData
 
@@ -102,13 +105,13 @@ function SetConfigurationData {
 	[CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media')] [System.String] $Configuration,
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
 		[Parameter(Mandatory, ValueFromPipeline)] [System.Object] $InputObject
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
 		[ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-		Set-Content -Path $expandedPath -Value ($InputObject | ConvertTo-Json) -Force;
+		Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force;
     }
 } #end function SetConfigurationData

@@ -8,6 +8,7 @@ $labDefaults = @{
     HostConfigFilename = 'HostDefaults.json';
     VmConfigFilename = 'VmDefaults.json';
     MediaConfigFilename = 'Media.json';
+    CustomMediaConfigFilename = 'CustomMedia.json';
     DscResourceDirectory = 'DSCResources';
 }
 
