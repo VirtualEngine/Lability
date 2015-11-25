@@ -85,6 +85,7 @@ ConvertFrom-StringData @'
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
     NoHotfixesSpecified             = No hotfixes were specified.
+    NoMediaDefined                  = No media resources were defined.
     NoResourcesDefined              = No custom resources were defined.
     ProvideAdministratorPassword    = Please provide the local Administrator password.
     AddingCustomMediaEntry          = Adding '{0}' media entry.

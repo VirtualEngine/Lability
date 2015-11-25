@@ -43,11 +43,12 @@ function Invoke-LabResourceDownload {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [System.Object] $ConfigurationData = @{ },
         ## Lab media Id
-        [Parameter()] [System.String[]] $MediaId,
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $MediaId,
         ## Lab resource Id
-        [Parameter()] [System.String[]] $ResourceId,
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $ResourceId,
         ## Forces a checksum recalculations and a download if necessary.
         [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
@@ -66,19 +67,24 @@ function Invoke-LabResourceDownload {
             $MediaId = $uniqueMediaIds;
         }
 
-        foreach ($id in $MediaId) {
-            $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
-            InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
+        if ($MediaId) {
+            foreach ($id in $MediaId) {
+                $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
+                InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
 
-            WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
-            if ($labMedia.Hotfixes.Count -gt 0) {
-                foreach ($hotfix in $labMedia.Hotfixes) {
-                    InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
+                if ($labMedia.Hotfixes.Count -gt 0) {
+                    foreach ($hotfix in $labMedia.Hotfixes) {
+                        InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                    }
+                }
+                else {
+                    WriteVerbose ($localized.NoHotfixesSpecified);
                 }
             }
-            else {
-                WriteVerbose ($localized.NoHotfixesSpecified);
-            }
+        }
+        else {
+            WriteVerbose ($localized.NoMediaDefined);
         }
 
         if (-not $ResourceId) {
