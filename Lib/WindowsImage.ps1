@@ -5,60 +5,76 @@ function ExpandWindowsImage {
 #>
     [CmdletBinding(DefaultParameterSetName = 'Index')]
     param (
-        ## ISO file path containing WIM image
-        [Parameter(Mandatory)] [System.String] $IsoPath,
-        ## WIM image index to apply from the ISO
-        [Parameter(Mandatory, ParameterSetName = 'Index')] [System.Int32] $WimImageIndex,
-        ## WIM image name to apply from the ISO
-        [Parameter(Mandatory, ParameterSetName = 'Name')] [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
+        ## File path to WIM file or ISO file containing the WIM image
+        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $MediaPath,
+        ## WIM image index to apply
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Index')]
+        [System.Int32] $WimImageIndex,
+        ## WIM image name to apply
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
+        [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
-        ## Optional Windows features to add to the image after expansion
-        [Parameter()] [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
+        ## Optional Windows features to add to the image after expansion (ISO only)
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature
     )
     process {
-        ## Mount ISO
-        WriteVerbose ($localized.MountingDiskImage -f $IsoPath);
-        $iso = Mount-DiskImage -ImagePath $IsoPath -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
-        $iso = Get-DiskImage -ImagePath $iso.ImagePath;
-        $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+        $mediaFileInfo = Get-Item -Path $MediaPath;
+        $wimPath = $MediaPath;
+
+        if ($mediaFileInfo.Extension -eq '.ISO') {
+            ## Mount ISO
+            WriteVerbose ($localized.MountingDiskImage -f $MediaPath);
+            $iso = Mount-DiskImage -ImagePath $MediaPath -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
+            $iso = Get-DiskImage -ImagePath $iso.ImagePath;
+            $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+            ## Update the media path to point to the mounted ISO
+            $wimPath = '{0}:\sources\install.wim' -f $isoDriveLetter;
+        }
 
         if ($PSCmdlet.ParameterSetName -eq 'Name') {
             ## Locate the image index
-            $WimImageIndex = GetWindowsImageIndex -IsoDriveLetter $isoDriveLetter -ImageName $WimImageName;
+            $WimImageIndex = GetWindowsImageIndex -ImagePath $wimPath -ImageName $WimImageName;
         }
-
+        
         if ($PartitionStyle -eq 'MBR') { $partitionType = 'IFS'; }
         elseif ($PartitionStyle -eq 'GPT') { $partitionType = 'Basic'; }
         $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
-
+        
         $logName = '{0}.log' -f [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
         $logPath = Join-Path -Path $env:TEMP -ChildPath $logName;
         WriteVerbose ($localized.ApplyingWindowsImage -f $WimImageIndex, $Vhd.Path);
         $expandWindowsImage = @{
-            ImagePath = '{0}:\sources\install.wim' -f $isoDriveLetter;
+            ImagePath = $wimPath;
             ApplyPath = '{0}:\' -f $vhdDriveLetter;
             LogPath = $logPath;
             Index = $WimImageIndex;
         }
         $dismOutput = Expand-WindowsImage @expandWindowsImage -Verbose:$false;
         
-        ## Add additional features if required
-        if ($WindowsOptionalFeature) {
-            $addWindowsOptionalFeatureParams = @{
-                ImagePath = '{0}:\sources\sxs' -f $isoDriveLetter;
-                DestinationPath = '{0}:\' -f $vhdDriveLetter;
-                LogPath = $logPath;
-                WindowsOptionalFeature = $WindowsOptionalFeature;
+        ## Add additional features if required (only supported for ISOs as there's no \SXS folder?)
+        if ($mediaFileInfo.Extension -eq '.ISO') {
+            if ($WindowsOptionalFeature) {
+                $addWindowsOptionalFeatureParams = @{
+                    ImagePath = '{0}:\sources\sxs' -f $isoDriveLetter;
+                    DestinationPath = '{0}:\' -f $vhdDriveLetter;
+                    LogPath = $logPath;
+                    WindowsOptionalFeature = $WindowsOptionalFeature;
+                }
+                $dismOutput = AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
             }
-            $dismOutput = AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
+            ## Dismount ISO
+            WriteVerbose ($localized.DismountingDiskImage -f $MediaPath);
+            Dismount-DiskImage -ImagePath $MediaPath;
         }
-
-        ## Dismount ISO
-        WriteVerbose ($localized.DismountingDiskImage -f $IsoPath);
-        Dismount-DiskImage -ImagePath $IsoPath;
+        elseif ($WindowsOptionalFeature) {
+            WriteWarning ($localized.UnsupportedConfigurationWarning -f 'WindowsOptionalFeature', 'WIM media');
+        }
     } #end process
 } #end function ExpandWindowsImage
 
@@ -70,11 +86,14 @@ function AddWindowsOptionalFeature {
     [CmdletBinding()]
     param (
         ## Source ISO install.wim
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
         ## Mounted VHD(X) Operating System disk drive
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
         ## Windows features to add to the image after expansion
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
         ## DISM log path
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
     )
@@ -103,13 +122,16 @@ function GetWindowsImageIndex {
     [CmdletBinding()]
     [OutputType([System.Int32])]
     param (
-        # Mounted ISO drive letter
-        [Parameter(Mandatory)] [ValidateLength(1,1)] [System.String] $IsoDriveLetter,
+        # WIM image path
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
         # Windows image name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $ImageName
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $ImageName
     )
     process {
-        Get-WindowsImage -ImagePath ('{0}:\sources\install.wim' -f $IsoDriveLetter) |
+        WriteVerbose ($localized.LocatingWimImageIndex -f $ImageName);
+        Get-WindowsImage -ImagePath $ImagePath -Verbose:$false |
             Where-Object ImageName -eq $ImageName |
                 Select-Object -ExpandProperty ImageIndex;
     } #end process
@@ -123,13 +145,16 @@ function GetWindowsImageName {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        # Mounted ISO path
-        [Parameter(Mandatory)] [ValidateLength(1,1)] [System.String] $IsoDriveLetter,
+        # WIM image path
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
         # Windows image index
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.Int32] $ImageIndex
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.Int32] $ImageIndex
     )
     process {
-        Get-WindowsImage -ImagePath ('{0}:\sources\install.wim' -f $IsoDriveLetter) |
+        WriteVerbose ($localized.LocatingWimImageName -f $ImageIndex);
+        Get-WindowsImage -ImagePath $ImagePath -Verbose:$false |
             Where-Object ImageIndex -eq $ImageIndex |
                 Select-Object -ExpandProperty ImageName;
     } #end process

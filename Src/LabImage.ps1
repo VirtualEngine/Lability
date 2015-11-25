@@ -6,7 +6,8 @@ function Get-LabImage {
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Id
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -40,7 +41,8 @@ function Test-LabImage {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Id
     )
     process {
         if (Get-LabImage -Id $Id) { return $true; }
@@ -57,10 +59,11 @@ function New-LabImage {
     [OutputType([System.IO.FileInfo])]
     param (
         ## Lab media Id
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Id,
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter()] [System.Object] $ConfigurationData,
+        [Parameter(ValueFromPipelineByPropertyName)] [System.Object] $ConfigurationData,
         ## Force the re(creation) of the master/parent image
         [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
@@ -78,7 +81,7 @@ function New-LabImage {
         ## Download media if required..
         [ref] $null = $PSBoundParameters.Remove('Force');
         $media = ResolveLabMedia @PSBoundParameters;
-        $isoFileInfo = InvokeLabMediaImageDownload -Media $media;
+        $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
         
         $hostDefaults = GetConfigurationData -Configuration Host;
         
@@ -100,16 +103,28 @@ function New-LabImage {
             else {
                 $partitionStyle = 'GPT';
             }
+            
+            ## Create disk image and refresh PSDrives
             $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force # -ErrorAction Stop;
-            ## Refresh PSDrives
             [ref] $null = Get-PSDrive;
+            
             ## Apply WIM (ExpandWindowsImage) and add specified features
             $expandWindowsImageParams = @{
                 Vhd = $image;
-                IsoPath = $isoFileInfo.FullName;
-                WimImageName = $media.ImageName;
+                MediaPath = $mediaFileInfo.FullName;
                 PartitionStyle = $partitionStyle;
             }
+            
+            ## Determine whether we're using the WIM image index or image name. This permits
+            ## specifying an integer image index in a media's 'ImageName' property.
+            [System.Int32] $wimImageIndex = $null;
+            if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
+                $expandWindowsImageParams['WimImageIndex'] = $wimImageIndex;
+            }
+            else {
+                $expandWindowsImageParams['WimImageName'] = $media.ImageName;
+            }
+
             if ($media.CustomData.WindowsOptionalFeature) {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }
