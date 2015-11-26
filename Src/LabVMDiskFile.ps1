@@ -1,3 +1,22 @@
+function SetLabVMDiskDscResource {
+<#
+    .SYNOPSIS
+        Copies the local DSC resources to a VHDX file.
+#>
+    [CmdletBinding()]
+    param (
+        ## The target VHDX modules path
+        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $DestinationPath
+    )
+    process {
+        $dscResourceModules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules";
+        foreach ($dscResourceModule in $dscResourceModules) {
+            WriteVerbose ($localized.AddingDSCResource -f $dscResourceModule.ModuleName, $dscResourceModule.ModuleVersion);
+            Copy-Item -Path $dscResourceModule.Path -Destination $DestinationPath -Recurse -Force;
+        }
+    } #end process
+} #end function SetLabVMDiskDscResource
+
 function SetLabVMDiskResource {
 <#
     .SYNOPSIS
@@ -65,8 +84,8 @@ function SetLabVMDiskFile {
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
-        WriteVerbose ($localized.CopyingPowershellModules -f $destinationPath);
-        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force -ErrorAction Ignore;
+        WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
+        SetLabVMDiskDscResource -DestinationPath $destinationPath;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{

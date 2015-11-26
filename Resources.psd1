@@ -38,7 +38,8 @@ ConvertFrom-StringData @'
     FormattingDiskPartition         = Formatting '{0}' disk partition.
     AddingImagePackage              = Adding package '{0}' to image '{1}'.
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
-    CopyingPowershellModules        = Copying Powershell modules to '{0}'.
+    AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
+    AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
     CreatingBaselineSnapshot        = Creating baseline snapshot '{0}'.
     SnapshottingVirtualMachine      = Creating virtual machine '{0}' snapshot '{1}'.

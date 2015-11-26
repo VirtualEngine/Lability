@@ -422,11 +422,11 @@ Describe 'LabVM' {
                 Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
 
-            It 'Injects VM DSC resources and certificates' {
+            It 'Injects VM DSC custom resources' {
                 $testVMName = 'TestVM';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; }
+                        @{ NodeName = $testVMName; Resource = 'TestResource'; }
                     )
                 }
                 Mock SetLabVMDiskFile -MockWith { }
@@ -444,7 +444,7 @@ Describe 'LabVM' {
                 Assert-MockCalled SetLabVMDiskResource -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
 
-            It 'Injects VM custom resources' {
+            It 'Injects VM DSC resources and certificates' {
                 $testVMName = 'TestVM';
                 $configurationData = @{
                     AllNodes = @(
