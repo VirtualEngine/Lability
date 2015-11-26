@@ -81,6 +81,7 @@ ConvertFrom-StringData @'
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
+    EnterLocalAdministratorPassword = Enter the virtual machines' local administrator password.
     SettingAdministratorPassword    = Setting local administrator password to '{0}'.
     DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
@@ -134,4 +135,6 @@ ConvertFrom-StringData @'
     ExpandNotSupportedError         = Expand operation not supported on '{0}' file type.
     ImageNameRequiredError          = An image name is required for ISO and WIM media. Please specify the {0} parameter.
     MediaAlreadyRegisteredError     = Media Id '{0}' is already registered. Use {1} to override the existing media entry.
+    CannotProcessCommandError       = Cannot process command because of one or more missing mandatory parameters: {0}.
+    CannotBindArgumentError         = Cannot bind argument to parameter '{0}' because it is an empty string.
 '@

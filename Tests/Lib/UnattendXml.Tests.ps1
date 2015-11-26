@@ -18,7 +18,7 @@ Describe 'UnattendXml' {
             It 'Returns a "System.Xml.XmlDocument" type' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone;
                 
                 $unattendXml -is [System.Xml.XmlDocument] | Should Be $true;
             }
@@ -26,7 +26,7 @@ Describe 'UnattendXml' {
             It 'Creates equal number of "x86" and "amd64" components' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone;
 
                 $x64Count = ($unattendXml.unattend.settings.component | Where processorArchitecture -eq 'amd64').Count;
                 $x86Count = ($unattendXml.unattend.settings.component | Where processorArchitecture -eq 'x86').Count;
@@ -39,7 +39,7 @@ Describe 'UnattendXml' {
                 $testTimezone = 'GMT Standard Time';
                 $concatenatedTestPassword = '{0}AdministratorPassword' -f $TestPassword.GetNetworkCredential().Password;
                 $encodedTestPassword = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedTestPassword));
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-Shell-Setup' | %{
@@ -51,7 +51,7 @@ Describe 'UnattendXml' {
             It 'Sets timezone' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-Shell-Setup' | %{
@@ -64,7 +64,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testInputLocale = 'fr-FR';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -InputLocale $testInputLocale;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -InputLocale $testInputLocale;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-International-Core' | %{
@@ -77,7 +77,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testSystemLocale = 'de-DE';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -SystemLocale $testSystemLocale;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -SystemLocale $testSystemLocale;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-International-Core' | %{
@@ -90,7 +90,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testUILanguage = 'de-DE';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -UILanguage $testUILanguage;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -UILanguage $testUILanguage;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-International-Core' | %{
@@ -103,7 +103,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testUserLocale = 'es-ES';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -UserLocale $testUserLocale;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -UserLocale $testUserLocale;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'oobeSystem' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-International-Core' | %{
@@ -116,7 +116,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testComputerName = 'TESTCOMPUTER';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ComputerName $testComputerName;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -ComputerName $testComputerName;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'specialize' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-Shell-Setup' | %{
@@ -129,7 +129,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testProductKey = 'ABCDE-12345-FGHIJ-67890-KLMNO';
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ProductKey $testProductKey;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -ProductKey $testProductKey;
 
                 $unattendXml.unattend.settings | Where Pass -eq 'specialize' | %{
                     $_.Component | Where Name -eq 'Microsoft-Windows-Shell-Setup' | %{
@@ -144,7 +144,7 @@ Describe 'UnattendXml' {
                 $testCommand = @(
                     @{ Description = 'Test Command #1'; Order = 1; Path = 'Command1.exe'; }
                 )
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ExecuteCommand $testCommand;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -ExecuteCommand $testCommand;
 
             }
 
@@ -155,7 +155,7 @@ Describe 'UnattendXml' {
                     @{ Description = 'Test Command #1'; Order = 1; Path = 'Command1.exe'; }
                     @{ Description = 'Test Command #2'; Order = 2; Path = 'Command2.exe'; }
                 )
-                $unattendXml = NewUnattendXml -Password $testPassword -Timezone $testTimezone -ExecuteCommand $testCommands;
+                $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone -ExecuteCommand $testCommands;
             }
 
         } #end context Validates "NewUnattendXml" method
@@ -167,7 +167,7 @@ Describe 'UnattendXml' {
                 $testTimezone = 'GMT Standard Time';
                 $testPath = "$((Get-PSDrive -Name TestDrive).Root)\test.xml";
                 
-                SetUnattendXml -Path $testPath -Password $testPassword -Timezone $testTimezone;
+                SetUnattendXml -Path $testPath -Credential $testPassword -Timezone $testTimezone;
 
                 Test-Path -Path $testPath | Should Be $true;
             }

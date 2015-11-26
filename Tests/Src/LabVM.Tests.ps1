@@ -312,7 +312,7 @@ Describe 'LabVM' {
                     )
                 }
 
-                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword } | Should Throw;
+                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword } | Should Throw;
             }
 
             It 'Throws when "RootCertificatePath" cannot be found' {
@@ -323,7 +323,7 @@ Describe 'LabVM' {
                     )
                 }
 
-                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword } | Should Throw;
+                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword } | Should Throw;
             }
 
             It 'Creates parent image if it is not already present' {
@@ -345,7 +345,7 @@ Describe 'LabVM' {
                 Mock Test-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return $false; }
                 Mock New-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled New-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
             }
@@ -369,7 +369,7 @@ Describe 'LabVM' {
                 Mock New-LabImage -MockWith { }
                 Mock SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
@@ -393,7 +393,7 @@ Describe 'LabVM' {
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -ParameterFilter { $Name -eq $testVMName -and $Media -eq $testMedia } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled ResetLabVMDisk -ParameterFilter { $Name -eq $testVMName -and $Media -eq $testMedia } -Scope It;
             }
@@ -417,7 +417,7 @@ Describe 'LabVM' {
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
@@ -439,7 +439,7 @@ Describe 'LabVM' {
                 Mock SetLabVirtualMachine -MockWith { }
                 Mock SetLabVMDiskResource -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabVMDiskResource -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
@@ -461,7 +461,7 @@ Describe 'LabVM' {
                 Mock SetLabVMDiskResource -MockWith { }
                 Mock SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -eq $null } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -eq $null } -Scope It;
             }
@@ -484,7 +484,7 @@ Describe 'LabVM' {
                 Mock SetLabVMDiskResource -MockWith { }
                 Mock SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -ne $null } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -ne $null } -Scope It;
             }
@@ -506,7 +506,7 @@ Describe 'LabVM' {
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled Checkpoint-VM -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
@@ -528,7 +528,7 @@ Describe 'LabVM' {
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword -NoSnapshot;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -NoSnapshot;
 
                 Assert-MockCalled Checkpoint-VM -Exactly 0 -Scope It;
             }
@@ -550,7 +550,7 @@ Describe 'LabVM' {
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
 
-                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword -NoSnapshot -WarningAction Stop 3>&1 } | Should Throw;
+                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -NoSnapshot -WarningAction Stop 3>&1 } | Should Throw;
             }
 
             It 'Warns when no client or root certificate is used' {
@@ -571,7 +571,7 @@ Describe 'LabVM' {
                 }
                 Mock ResolveLabVMProperties -MockWith { return $fakeVMProperties; }
                 
-                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Password $testPassword -WarningAction Stop 3>&1 } | Should Throw;
+                { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -WarningAction Stop 3>&1 } | Should Throw;
             }
 
         } #end context Validates "NewLabVM" method
@@ -690,7 +690,7 @@ Describe 'LabVM' {
                 Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
                 Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Password $testPassword;
+                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
 
                 Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
@@ -705,7 +705,7 @@ Describe 'LabVM' {
                 Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
                 Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
 
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Password $testPassword;
+                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
             }
@@ -720,7 +720,7 @@ Describe 'LabVM' {
                 Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
                 Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
 
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Password $testPassword -NoSnapshot;
+                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword -NoSnapshot;
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
             }

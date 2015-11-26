@@ -65,7 +65,7 @@ function SetLabVMDiskFile {
         ## Lab VM/Node configuration data
         [Parameter(Mandatory)] [System.Collections.Hashtable] $NodeData,
         ## Local administrator password of the VM
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter()] [System.String] $Path,
         ## Custom bootstrap script
@@ -90,7 +90,7 @@ function SetLabVMDiskFile {
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
             ComputerName = $Name;
-            Password = $Password;
+            Credential = $Credential;
             InputLocale = $NodeData.InputLocale;
             SystemLocale = $NodeData.SystemLocale;
             UserLocale = $NodeData.UserLocale;
@@ -99,7 +99,7 @@ function SetLabVMDiskFile {
             RegisteredOwner = $NodeData.RegisteredOwner;
             RegisteredOrganization = $NodeData.RegisteredOrganization;
         }
-        WriteVerbose ($localized.SettingAdministratorPassword -f $NodeData.Password);
+        WriteVerbose ($localized.SettingAdministratorPassword -f $Credential.GetNetworkCredential().Password);
         if ($NodeData.CustomData.ProductKey) {
             $newUnattendXmlParams['ProductKey'] = $NodeData.CustomData.ProductKey;
         }

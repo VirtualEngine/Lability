@@ -97,7 +97,7 @@ Describe 'LabConfiguration' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $false; }
 
-                { Start-LabConfiguration -ConfigurationData $configurationData -Password $testPassword } | Should Throw;
+                { Start-LabConfiguration -ConfigurationData $configurationData -Credential $testPassword } | Should Throw;
             }
 
             It 'Throws if path is invalid' {
@@ -106,7 +106,7 @@ Describe 'LabConfiguration' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $true; }
 
-                { Start-LabConfiguration -ConfigurationData $configurationData -Path 'TestDrive:\InvalidPath'  -Password $testPassword } | Should Throw;
+                { Start-LabConfiguration -ConfigurationData $configurationData -Path 'TestDrive:\InvalidPath'  -Credential $testPassword } | Should Throw;
             }
             
             It 'Calls "NewLabVM" if node is not configured' {
@@ -119,7 +119,7 @@ Describe 'LabConfiguration' {
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
                 Mock Test-LabConfiguration -MockWith { return @{ Name = $testVM; IsConfigured = $false; } }
 
-                Start-LabConfiguration -ConfigurationData $configurationData -Password $testPassword;
+                Start-LabConfiguration -ConfigurationData $configurationData -Credential $testPassword;
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Scope It;
             }
@@ -134,7 +134,7 @@ Describe 'LabConfiguration' {
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
                 Mock Test-LabConfiguration -MockWith { return @{ Name = $testVM; IsConfigured = $true; } }
 
-                Start-LabConfiguration -ConfigurationData $configurationData -Password $testPassword;
+                Start-LabConfiguration -ConfigurationData $configurationData -Credential $testPassword;
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Exactly 0 -Scope It;
             }
@@ -149,7 +149,7 @@ Describe 'LabConfiguration' {
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
                 Mock Test-LabConfiguration -MockWith { return @{ Name = $testVM; IsConfigured = $true; } }
 
-                Start-LabConfiguration -ConfigurationData $configurationData -Password $testPassword -Force;
+                Start-LabConfiguration -ConfigurationData $configurationData -Credential $testPassword -Force;
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Scope It;
             }
