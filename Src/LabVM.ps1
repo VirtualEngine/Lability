@@ -230,8 +230,11 @@ function NewLabVM {
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
         
-        WriteVerbose ($localized.AddingVMResource -f 'VM');
-        SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
+        ## Only mount the VHDX to copy resources if needed!
+        if ($node.Resource) {
+            WriteVerbose ($localized.AddingVMResource -f 'VM');
+            SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
+        }
 
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
         $setLabVMDiskFileParams = @{
