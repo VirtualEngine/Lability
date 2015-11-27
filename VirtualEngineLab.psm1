@@ -33,3 +33,11 @@ Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | % {
     Write-Verbose ('Updating certificate ''{0}''.' -f $_.FullName);
     Copy-Item -Path $_ -Destination $allUsersConfigPath;
 }
+
+## Create the credential check scriptblock
+$credentialCheckScriptBlock = {
+    ## Only prompt if -Password is not specified. This works around the credential pop-up regardless of the ParameterSet!
+    if ($PSCmdlet.ParameterSetName -eq 'PSCredential') {
+        Get-Credential -Message $localized.EnterLocalAdministratorPassword -UserName 'LocalAdministrator';
+    }
+}

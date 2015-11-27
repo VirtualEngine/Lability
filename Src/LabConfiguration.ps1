@@ -73,13 +73,20 @@ function Start-LabConfiguration {
     .SYNOPSIS
         Invokes a lab configuration from a DSC configuration document.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
-        ## Local administrator password of the provisioned lab VMs 
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Password,
+        
+        ## Local administrator password of the VM. The username is NOT used.
+        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        
+        ## Local administrator password of the VM.
+        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [System.Security.SecureString] $Password,
+        
         ## Path to .MOF files created from the DSC configuration
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
@@ -90,6 +97,13 @@ function Start-LabConfiguration {
         [Parameter()] [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
     begin {
+        ## If we have only a secure string, create a PSCredential
+        if ($PSCmdlet.ParameterSetName -eq 'Password') {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         if (-not (Test-LabHostConfiguration) -and (-not $Force)) {
             throw $localized.HostConfigurationTestError;
@@ -113,14 +127,14 @@ function Start-LabConfiguration {
             
             if ($node.IsConfigured -and $Force) {
                 WriteVerbose ($localized.NodeForcedConfiguration -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Password $Password;
+                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
             }
             elseif ($node.IsConfigured) {
                 WriteVerbose ($localized.NodeAlreadyConfigured -f $node.Name);
             }
             else {
                 WriteVerbose ($localized.NodeMissingOrMisconfigured -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Password $Password;
+                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
             }
         }
         WriteVerbose $localized.FinishedLabConfiguration;
