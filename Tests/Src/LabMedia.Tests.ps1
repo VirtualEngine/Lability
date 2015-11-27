@@ -280,17 +280,32 @@ Describe 'LabMedia' {
             It 'Does not call "InvokeResourceDownload" when "DisableLocalFileCaching" is enabled' {
                 $testMediaId = '2012R2_x64_Standard_EN_Eval';
                 $testMediaFilename = "$testMediaId.wim";
-                $testHostIsoPath = 'TestDrive:\ISOs';
+                $testHostIsoPath = '{0}\ISOs' -f (Get-PSDrive -Name TestDrive).Root
                 $testImagePath = "$testHostIsoPath\$testMediaFilename";
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; DisableLocalFileCaching = $true; }
-                $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'WIM'; }
+                $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://$testImagePath"; Checksum = ''; MediaType = 'WIM'; }
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -MockWith { }
         
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
         
                 Assert-MockCalled InvokeResourceDownload -Scope It -Exactly 0;
+            }
+
+            It 'Returns source Uri when "DisableLocalFileCaching" is enabled' {
+                $testMediaId = '2012R2_x64_Standard_EN_Eval';
+                $testMediaFilename = "$testMediaId.wim";
+                $testHostIsoPath = '{0}\ISOs' -f (Get-PSDrive -Name TestDrive).Root
+                $testImagePath = "$testHostIsoPath\$testMediaFilename";
+                New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; DisableLocalFileCaching = $true; }
+                $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://$testImagePath"; Checksum = ''; MediaType = 'WIM'; }
+                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+        
+                $media = InvokeLabMediaImageDownload -Media $fakeLabMedia;
+            
+                $media.FullName | Should Be $testImagePath;
             }
         
         } #end context Validates "InvokeLabMediaImageDownload" method

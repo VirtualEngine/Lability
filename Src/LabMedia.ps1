@@ -231,7 +231,7 @@ function InvokeLabMediaImageDownload {
             ## NOTE: Only WIM media can currently be run from a file share (see https://github.com/VirtualEngine/Lab/issues/28)
             ## Caching is disabled and we have a file resource, so just return the source URI path
             WriteVerbose ($localized.MediaFileCachingDisabled -f $Media.Id);
-            $destinationPath = $mediaUri.LocalPath;
+            $invokeResourceDownloadParams['DestinationPath'] = $mediaUri.LocalPath;
         }
         else {
             ## Caching is enabled or it's a http/https source
