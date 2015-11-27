@@ -371,3 +371,81 @@ function Reset-LabVM {
         }
     } #end process    
 } #end function Reset-LabVM
+
+function New-LabQuickVM {
+<#
+    .SYNOPSIS
+        Creates a quick virtual machine.
+    .DESCRIPTION
+        The New-LabQuickVM creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
+        
+        NOTE: The -Id parameter is dynamic and is not displayed in the help output.
+
+        The resulting virtual machine is created using the default values. You can find the default values with the 'Get-LabVMDefaults' cmdlet.
+    .LINK
+        Register-LabMedia
+        Unregister-LabMedia
+        Get-LabVMDefaults
+        Set-LabVMDefaults
+#>
+    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    param (
+        ## Lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+        
+        ## Local administrator password of the VM. The username is NOT used.
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        
+        ## Local administrator password of the VM.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [System.Security.SecureString] $Password,
+        
+        ## Virtual machine switch name. NOTE: the virtual switch must already exist - it won't be created!
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        
+        ## Skip creating baseline snapshots
+        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $NoSnapshot
+    )
+    DynamicParam {
+        ## Adds a dynamic -Id parameter that returns the registered media Ids
+        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
+        $parameterAttribute.ParameterSetName = '__AllParameterSets';
+        $parameterAttribute.Mandatory = $true;
+        $aliasAttribute = New-Object -TypeName 'System.Management.Automation.AliasAttribute' -ArgumentList @('MediaId');
+        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
+        $attributeCollection.Add($parameterAttribute);
+        $attributeCollection.Add($aliasAttribute);
+        $mediaIds = (Get-LabMedia).Id;
+        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
+        $attributeCollection.Add($validateSetAttribute);
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('Id', [System.String], $attributeCollection);
+        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
+        $runtimeParameterDictionary.Add('Id', $runtimeParameter);
+        return $runtimeParameterDictionary;
+    }
+    begin {
+        ## If we have only a secure string, create a PSCredential
+        if ($PSCmdlet.ParameterSetName -eq 'Password') {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+    }
+    process {
+        foreach ($vmName in $Name) {
+            ## Create a skelton config data
+            $skeletonConfigurationData = @{
+                AllNodes = @(
+                    @{  NodeName = $vmName; VirtualEngineLab_Media = $Id; }
+                )
+            };
+            if ($SwitchName) {
+                $switchKeyName = '{0}_SwitchName' -f $labDefaults.ModuleName;
+                [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($switchKeyName, $SwitchName);
+            }
+            WriteVerbose ($localized.CreatingQuickVM -f $vmName, $MediaId);
+            NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot
+        }
+    } #end process
+} #end function New-LabVM

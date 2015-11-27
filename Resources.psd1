@@ -99,6 +99,7 @@ ConvertFrom-StringData @'
     LocatingWimImageName            = Locating WIM image '{0}' name.
     LocatingWimImageIndex           = Locating WIM image '{0}' index.
     MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
+    CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
