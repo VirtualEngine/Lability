@@ -12,7 +12,8 @@ function SetLabVMDiskDscResource {
         $dscResourceModules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules";
         foreach ($dscResourceModule in $dscResourceModules) {
             WriteVerbose ($localized.AddingDSCResource -f $dscResourceModule.ModuleName, $dscResourceModule.ModuleVersion);
-            Copy-Item -Path $dscResourceModule.Path -Destination $DestinationPath -Recurse -Force;
+            $targetModulePath = '{0}\{1}' -f $Destinationpath, $dscResourceModule.ModuleName;
+            Copy-Item -Path $dscResourceModule.Path -Destination $targetModulePath -Recurse -Force;
         }
     } #end process
 } #end function SetLabVMDiskDscResource
