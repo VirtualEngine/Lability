@@ -19,6 +19,10 @@ function ExpandZipArchive {
         # Destination file path to extract the Zip Archive item to.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
         [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+
+        # Excludes NuGet .nuspec specific files
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $ExcludeNuSpecFiles,
         
         # Overwrite existing files
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -30,11 +34,11 @@ function ExpandZipArchive {
             throw ($localized.InvalidDestinationPathError -f $DestinationPath);
         }
         $DestinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
-        WriteVerbose ($localized.ResolvedDestinationPath -f $DestinationPath);
+        WriteVerbose -Message ($localized.ResolvedDestinationPath -f $DestinationPath);
         [ref] $null = NewDirectory -Path $DestinationPath;
         foreach ($pathItem in $Path) {
             foreach ($resolvedPath in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pathItem)) {
-                WriteVerbose ($localized.ResolvedSourcePath -f $resolvedPath);
+                WriteVerbose -Message ($localized.ResolvedSourcePath -f $resolvedPath);
                 $LiteralPath += $resolvedPath;
             }
         }
@@ -50,6 +54,7 @@ function ExpandZipArchive {
                 $expandZipArchiveItemParams = @{
                     InputObject = [ref] $zipArchive.Entries;
                     DestinationPath = $DestinationPath;
+                    ExcludeNuSpecFiles = $ExcludeNuSpecFiles;
                     Force = $Force;
                 }
                 ExpandZipArchiveItem @expandZipArchiveItemParams;
@@ -87,7 +92,12 @@ function ExpandZipArchiveItem {
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 1)]
         [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
 
+        # Excludes NuGet .nuspec specific files
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $ExcludeNuSpecFiles,
+
         # Overwrite existing physical filesystem files
+        [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force  
     )
     begin {
@@ -99,16 +109,21 @@ function ExpandZipArchiveItem {
         try {
             foreach ($zipArchiveEntry in $InputObject) {
 
+                ## Exclude the .nuspec specific files
+                if ($ExcludeNuSpecFiles -and ($zipArchiveEntry.FullName -match '(_rels\/)|(\[Content_Types\]\.xml)|(\w+\.nuspec)')) {
+                    WriteVerbose -Message ($localized.IgnoringNuspecZipArchiveEntry -f $zipArchiveEntry.FullName);
+                    continue;
+                }
+
                 if ($zipArchiveEntry.FullName.Contains('/')) {
                     ## We need to create the directory path as the ExtractToFile extension method won't do this and will throw an exception
                     $pathSplit = $zipArchiveEntry.FullName.Split('/');
-                    $relativeDirectoryPath = New-Object System.Text.StringBuilder;
+                    $relativeDirectoryPath = New-Object -TypeName 'System.Text.StringBuilder';
 
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
                         [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]); 
                     }
-                    ## Rename the GitHub \<RepositoryName>-<Branch>\ root directory to \<RepositoryName>\
                     $relativePath = $relativeDirectoryPath.ToString();
          
                     ## Create the destination directory path, joining the relative directory name
@@ -126,14 +141,12 @@ function ExpandZipArchiveItem {
                     ## This is a folder and we need to create the directory path as the
                     ## ExtractToFile extension method won't do this and will throw an exception
                     $pathSplit = $zipArchiveEntry.FullName.Split('/');
-                    $relativeDirectoryPath = New-Object System.Text.StringBuilder;
+                    $relativeDirectoryPath = New-Object -TypeName 'System.Text.StringBuilder';
                 
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
                         [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]); 
                     }
-                    
-                    ## Rename the GitHub \<RepositoryName>-<Branch>\ root directory to \<RepositoryName>\
                     $relativePath = $relativeDirectoryPath.ToString();
          
                     ## Create the destination directory path, joining the relative directory name
@@ -144,12 +157,12 @@ function ExpandZipArchiveItem {
                 }
                 elseif (-not $Force -and (Test-Path -Path $fullDestinationFilePath -PathType Leaf)) {
                     ## Are we overwriting existing files (-Force)?
-                    WriteWarning ($localized.TargetFileExistsWarning -f $fullDestinationFilePath);
+                    WriteWarning -Message ($localized.TargetFileExistsWarning -f $fullDestinationFilePath);
                 }
                 else {
                     ## Just overwrite any existing file
                     if ($Force -or $PSCmdlet.ShouldProcess($fullDestinationFilePath, 'Expand')) {
-                        WriteVerbose ($localized.ExtractingZipArchiveEntry -f $fullDestinationFilePath);
+                        WriteVerbose -Message ($localized.ExtractingZipArchiveEntry -f $fullDestinationFilePath);
                         [System.IO.Compression.ZipFileExtensions]::ExtractToFile($zipArchiveEntry, $fullDestinationFilePath, $true);
                         ## Return a FileInfo object to the pipline
                         Write-Output (Get-Item -Path $fullDestinationFilePath);
@@ -171,7 +184,7 @@ function CloseZipArchive {
     [CmdletBinding()]
     param ()
     process {
-        WriteVerbose ($localized.ClosingZipArchive -f $Path);
+        WriteVerbose -Message ($localized.ClosingZipArchive -f $Path);
         if ($zipArchive -ne $null) {
             $zipArchive.Dispose();
         }

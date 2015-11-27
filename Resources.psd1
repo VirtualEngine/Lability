@@ -78,6 +78,7 @@ ConvertFrom-StringData @'
     CopyingFileResource             = Copying file resource '{0}'.
     ExpandingZipResource            = Expanding Zip archive '{0}'.
     ExtractingZipArchiveEntry       = Extracting Zip archive entry '{0}'.
+    IgnoringNuspecZipArchiveEntry   = Ignoring NuSpec Zip archive entry '{0}'.
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
@@ -99,6 +100,11 @@ ConvertFrom-StringData @'
     LocatingWimImageName            = Locating WIM image '{0}' name.
     LocatingWimImageIndex           = Locating WIM image '{0}' index.
     MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
+    QueryingModuleVersion           = Querying '{0}' module version.
+    ExistingModuleVersion           = Existing module version is '{0}'.
+    LocatingModule                  = Locating module '{0}'.
+    ModuleNotFound                  = Module '{0}' was not found.
+    ModuleFoundInPath               = Found module in '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
