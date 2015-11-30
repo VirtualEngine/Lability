@@ -33,7 +33,7 @@ Describe 'ConfigurationData' {
 
             It 'Throws when passed a file path with an extension other than ".psd1"' {
                 $testPath = "TestDrive:\ConfigurationData.ps1";
-                New-Item -Path $testPath;
+                New-Item -Path $testPath -ItemType File -Force;
                 { ConvertToConfigurationData -ConfigurationData $testPath } | Should Throw;
             }
 

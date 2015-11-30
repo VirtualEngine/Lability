@@ -42,14 +42,14 @@ Describe 'DiskImage' {
             
             It 'Throws if VHD image already exists' {
                 $testVhdPath = "TestDrive:\TestImage.vhdx";
-                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -Confirm:$false); PartitionStyle = 'MBR'; }
+                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'MBR'; }
                 
                 { NewDiskImage @newDiskImageParams } | Should Throw;    
             }
 
             It 'Removes existing VHD image if it already exists and -Force is specified' {
                 $testVhdPath = "TestDrive:\TestImage.vhdx";
-                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -Confirm:$false); PartitionStyle = 'MBR'; Force = $true; }
+                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'MBR'; Force = $true; }
                 Mock Dismount-VHD -MockWith { }
                 Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = 10; } }
                 Mock New-Vhd -MockWith { }
@@ -65,7 +65,7 @@ Describe 'DiskImage' {
             It 'Creates new VHD file and initializes disk' {
                 $testVhdPath = "TestDrive:\TestImage.vhdx";
                 $testDiskNumber = 10;
-                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -Confirm:$false); PartitionStyle = 'GPT'; Force = $true; }
+                $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
                 Mock Dismount-VHD -MockWith { }
                 Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
                 Mock NewDiskImageGpt -MockWith { }
@@ -114,7 +114,7 @@ Describe 'DiskImage' {
         Context 'Validates "SetDiskImageBootVolumeMbr" method' {
 
             It 'Calls "BCDBOOT.EXE" with "/f BIOS"' {
-                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -Confirm:$false).FullName;
+                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -ItemType File).FullName;
                 $testVhdImage = @{ Path = $testVhdPath };
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
                 Mock InvokeExecutable -MockWith { }
@@ -126,7 +126,7 @@ Describe 'DiskImage' {
             }
 
             It 'Calls "BCDEDIT.EXE" thrice' {
-                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -Confirm:$false).FullName;
+                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -ItemType File).FullName;
                 $testVhdImage = @{ Path = $testVhdPath };
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
                 Mock InvokeExecutable -MockWith { }
@@ -142,7 +142,7 @@ Describe 'DiskImage' {
         Context 'Validates "SetDiskImageBootVolumeGpt" method' {
 
             It 'Calls "BCDBOOT.EXE" with "/f UEFI"' {
-                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -Confirm:$false).FullName;
+                $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -ItemType File).FullName;
                 $testVhdImage = @{ Path = $testVhdPath };
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
                 Mock InvokeExecutable -MockWith { }
@@ -330,7 +330,7 @@ Describe 'DiskImage' {
                         $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
                         Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
                         Mock Get-LabMedia -MockWith { return [PSCustomObject] $fakeMedia; }
-                        Mock InvokeLabMediaHotfixDownload -MockWith { return New-Item -Path "TestDrive:\$Id" -Force -Confirm:$false }
+                        Mock InvokeLabMediaHotfixDownload -MockWith { return New-Item -Path "TestDrive:\$Id" -Force -ItemType File }
                         Mock NewDirectory -MockWith { }
                         Mock Add-WindowsPackage -MockWith { }
 
