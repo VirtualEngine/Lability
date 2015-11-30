@@ -68,13 +68,15 @@ Describe 'ConfigurationData' {
 
             It 'Resolves environment variables in path' {
                 $testConfigurationFilename = 'TestConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
                 $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
-                Mock Get-Content -ParameterFilter { $Path -eq "$env:SystemRoot\$testConfigurationFilename" } -MockWith { return $fakeConfiguration; }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
 
                 GetConfigurationData -Configuration Host;
 
-                Assert-MockCalled Get-Content -ParameterFilter { $Path -eq "$env:SystemRoot\$testConfigurationFilename" } -Scope It;
+                Assert-MockCalled Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -Scope It;
             }
 
         } #end context Validates "GetConfigurationData" method
