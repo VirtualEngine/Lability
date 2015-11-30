@@ -13,23 +13,6 @@ Describe 'ConfigurationData' {
     
     InModuleScope $moduleName {
 
-        Context 'Validates "GetConfigurationDataFromFilePath" method' {
-            
-            It 'Returns a "System.Collections.Hashtable" type' {
-                $configurationDataPath = "TestDrive:\GetConfigurationDataFromFilePath.psd1";
-                Set-Content -Path $configurationDataPath -Value '@{ Node = "Test"; }';
-                $configurationData = GetConfigurationDataFromFilePath -ConfigurationData $configurationDataPath;
-                $configurationData -is [System.Collections.Hashtable] | Should Be $true;
-            }
-
-            It 'Throws when passed a .psd1 file with invalid contents' {
-                $configurationDataPath = "TestDrive:\GetConfigurationDataFromFilePath.psd1";
-                Set-Content -Path $configurationDataPath -Value '@{ Node = Get-Date; }';
-                { GetConfigurationDataFromFilePath -ConfigurationData $configurationDataPath } | Should Throw;
-            }
-
-        } #end context Validates "GetConfigurationDataFromFilePath" method
-
         Context 'Validates "ConvertToConfigurationData" method' {
             
             It 'Returns a "System.Collections.Hashtable" type' {

@@ -1,20 +1,3 @@
-function GetConfigurationDataFromFilePath {
-<#
-    .SYNOPSIS
-        Reads Powershell DSC configuration data from a file path.
-#>
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Collections.Hashtable] $ConfigurationData
-    )
-    process {
-        return $ConfigurationData;
-    }
-} #end function GetConfigurationDataFromFilePath
-
 function ConvertToConfigurationData {
 <#
     .SYNOPSIS

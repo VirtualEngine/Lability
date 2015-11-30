@@ -17,13 +17,13 @@ Describe 'Internal' {
             
             It 'Resolves existing home path' {
                 $psPath = '~';
-                $fileSystemPath = $env:HOME;
+                $fileSystemPath = (Get-PSProvider -PSProvider 'FileSystem').Home;
                 ResolvePathEx -Path $psPath | Should Be $fileSystemPath;
             }
 
             It 'Resolves non-existent home path' {
                 $psPath = '~\HopefullyThisPathDoesNotExist';
-                $fileSystemPath = "$env:HOME\HopefullyThisPathDoesNotExist";
+                $fileSystemPath = '{0}\HopefullyThisPathDoesNotExist' -f (Get-PSProvider -PSProvider 'FileSystem').Home;
                 ResolvePathEx -Path $psPath | Should Be $fileSystemPath;
             }
 

@@ -202,7 +202,7 @@ function Start-LabConfiguration {
         WriteVerbose $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where { $_.NodeName -ne '*' };
 
-        $Path = Resolve-Path -Path $Path -ErrorAction Stop;
+        $Path = ResolvePathEx -Path $Path;
         foreach ($node in $nodes) {
             $testLabConfigurationMofParams = @{
                 ConfigurationData = $ConfigurationData;
