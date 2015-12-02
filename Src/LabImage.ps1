@@ -125,6 +125,12 @@ function New-LabImage {
                 $expandWindowsImageParams['WimImageName'] = $media.ImageName;
             }
 
+            if ($media.CustomData.SourcePath) {
+                $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+            }
+            if ($media.CustomData.WimPath) {
+                $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
+            }
             if ($media.CustomData.WindowsOptionalFeature) {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }

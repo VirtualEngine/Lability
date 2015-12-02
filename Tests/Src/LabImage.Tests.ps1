@@ -397,6 +397,76 @@ Describe 'LabImage' {
                 Assert-MockCalled ExpandWindowsImage -ParameterFilter { $WindowsOptionalFeature -ne $null } -Scope It;
             }
 
+            It 'Calls "ExpandWindowsImage" with "WimPath"' {
+                $testImageId = 'NewLabImage';
+                $testParentImagePath = 'TestDrive:'
+                $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+                $testArchitecture = 'x64';
+                $testWimImageName = 'Fake windows image';
+                $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+                $testCustomWimPath = '\custom\install.wim';
+                $fakeMedia = [PSCustomObject] @{
+                    Id = $testImageId;
+                    Description = 'Fake media';
+                    Architecture = $testArchitecture;
+                    ImageName = $testWimImageName;
+                    CustomData = @{ WimPath = $testCustomWimPath };
+                }
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+                New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                Mock Test-LabImage -MockWith { return $false; }
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+                Mock AddDiskImagePackage -MockWith { }
+                Mock SetDiskImageBootVolume -MockWith { }
+                Mock Dismount-VHD -MockWith { }
+                Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
+                Mock ExpandWindowsImage -ParameterFilter { $WimPath -eq $testCustomWimPath } -MockWith { }
+
+                New-LabImage -Id $testImageId
+
+                Assert-MockCalled ExpandWindowsImage -ParameterFilter { $WimPath -eq $testCustomWimPath } -Scope It;
+            }
+
+            It 'Calls "ExpandWindowsImage" with "SourcePath"' {
+                $testImageId = 'NewLabImage';
+                $testParentImagePath = 'TestDrive:'
+                $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+                $testArchitecture = 'x64';
+                $testWimImageName = 'Fake windows image';
+                $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+                $testCustomSourcePath = '\custom\sxs';
+                $fakeMedia = [PSCustomObject] @{
+                    Id = $testImageId;
+                    Description = 'Fake media';
+                    Architecture = $testArchitecture;
+                    ImageName = $testWimImageName;
+                    CustomData = @{ SourcePath = $testCustomSourcePath };
+                }
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+                New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                Mock Test-LabImage -MockWith { return $false; }
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+                Mock AddDiskImagePackage -MockWith { }
+                Mock SetDiskImageBootVolume -MockWith { }
+                Mock Dismount-VHD -MockWith { }
+                Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
+                Mock ExpandWindowsImage -ParameterFilter { $SourcePath -eq $testCustomSourcePath } -MockWith { }
+
+                New-LabImage -Id $testImageId
+
+                Assert-MockCalled ExpandWindowsImage -ParameterFilter { $SourcePath -eq $testCustomSourcePath } -Scope It;
+            }
+
             It 'Calls "AddDiskImagePackage" to inject hotfixes' {
                 $testImageId = 'NewLabImage';
                 $testParentImagePath = 'TestDrive:'

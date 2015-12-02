@@ -7,25 +7,39 @@ function ExpandWindowsImage {
     param (
         ## File path to WIM file or ISO file containing the WIM image
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $MediaPath,
+        
         ## WIM image index to apply
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Index')]
         [System.Int32] $WimImageIndex,
+        
         ## WIM image name to apply
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
         [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
+        
         ## Mounted VHD(X) Operating System disk image
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        
         ## Disk image partition scheme
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
+        
         ## Optional Windows features to add to the image after expansion (ISO only)
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature
+        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        
+        ## Optional Windows features source path
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $SourcePath = '\sources\sxs',
+
+        ## Relative source WIM file path (only used for ISOs)
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $WimPath = '\sources\install.wim'
     )
     process {
+        ## Assume the media path is a literal path to a WIM file
+        $windowsImagePath = $MediaPath;
         $mediaFileInfo = Get-Item -Path $MediaPath;
-        $wimPath = $MediaPath;
 
         if ($mediaFileInfo.Extension -eq '.ISO') {
             ## Mount ISO
@@ -34,12 +48,12 @@ function ExpandWindowsImage {
             $iso = Get-DiskImage -ImagePath $iso.ImagePath;
             $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
             ## Update the media path to point to the mounted ISO
-            $wimPath = '{0}:\sources\install.wim' -f $isoDriveLetter;
+            $windowsImagePath = '{0}:{1}' -f $isoDriveLetter, $WimPath;
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'Name') {
             ## Locate the image index
-            $WimImageIndex = GetWindowsImageIndex -ImagePath $wimPath -ImageName $WimImageName;
+            $WimImageIndex = GetWindowsImageIndex -ImagePath $windowsImagePath -ImageName $WimImageName;
         }
         
         if ($PartitionStyle -eq 'MBR') { $partitionType = 'IFS'; }
@@ -50,30 +64,33 @@ function ExpandWindowsImage {
         $logPath = Join-Path -Path $env:TEMP -ChildPath $logName;
         WriteVerbose ($localized.ApplyingWindowsImage -f $WimImageIndex, $Vhd.Path);
         $expandWindowsImage = @{
-            ImagePath = $wimPath;
+            ImagePath = $windowsImagePath;
             ApplyPath = '{0}:\' -f $vhdDriveLetter;
             LogPath = $logPath;
             Index = $WimImageIndex;
         }
         $dismOutput = Expand-WindowsImage @expandWindowsImage -Verbose:$false;
         
-        ## Add additional features if required (only supported for ISOs as there's no \SXS folder?)
-        if ($mediaFileInfo.Extension -eq '.ISO') {
-            if ($WindowsOptionalFeature) {
-                $addWindowsOptionalFeatureParams = @{
-                    ImagePath = '{0}:\sources\sxs' -f $isoDriveLetter;
-                    DestinationPath = '{0}:\' -f $vhdDriveLetter;
-                    LogPath = $logPath;
-                    WindowsOptionalFeature = $WindowsOptionalFeature;
-                }
-                $dismOutput = AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
+        ## Add additional features if required
+        if ($WindowsOptionalFeature) {
+            ## Default to ISO relative source folder path
+            $addWindowsOptionalFeatureParams = @{
+                ImagePath = '{0}:{1}' -f $isoDriveLetter, $SourcePath;
+                DestinationPath = '{0}:\' -f $vhdDriveLetter;
+                LogPath = $logPath;
+                WindowsOptionalFeature = $WindowsOptionalFeature;
             }
+            if ($mediaFileInfo.Extension -eq '.WIM') {
+                ## The Windows optional feature source path for .WIM files is a literal path
+                $addWindowsOptionalFeatureParams['ImagePath'] = $SourcePath;
+            }
+            $dismOutput = AddWindowsOptionalFeature @addWindowsOptionalFeatureParams;
+        } #end if WindowsOptionalFeature
+
+        if ($mediaFileInfo.Extension -eq '.ISO') {
             ## Dismount ISO
             WriteVerbose ($localized.DismountingDiskImage -f $MediaPath);
             Dismount-DiskImage -ImagePath $MediaPath;
-        }
-        elseif ($WindowsOptionalFeature) {
-            WriteWarning ($localized.UnsupportedConfigurationWarning -f 'WindowsOptionalFeature', 'WIM media');
         }
     } #end process
 } #end function ExpandWindowsImage
