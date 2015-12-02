@@ -437,7 +437,7 @@ function New-LabQuickVM {
             ## Create a skelton config data
             $skeletonConfigurationData = @{
                 AllNodes = @(
-                    @{  NodeName = $vmName; VirtualEngineLab_Media = $Id; }
+                    @{  NodeName = $vmName; "$($labDefaults.ModuleName)_Media" = $PSBoundParameters.Id; }
                 )
             };
             if ($SwitchName) {
