@@ -155,7 +155,7 @@ function Start-LabHostConfiguration {
 		$hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
-                [ref] $null = NewDirectory -Path $property.Value -ErrorAction Stop;
+                [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
             }
         }
         
