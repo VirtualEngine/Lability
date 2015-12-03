@@ -70,7 +70,11 @@ function WriteVerbose {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
     )
     process {
-        Write-Verbose ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
+        $parentcallstack = (Get-PSCallStack)[1] # store the parent Call Stack        
+        $Functionname = $parentcallstack.FunctionName
+        $LineNo = $parentcallstack.ScriptLineNumber
+        $scriptname = ($parentcallstack.Location -split ':')[0]
+        Write-Verbose ('[{0}] [Script - {1}] [Function - {2}] [Line - {3}] {4}' -f (Get-Date).ToLongTimeString(),$Scriptname, $FunctionName, $LineNo, $Message);
     }
 }
 
