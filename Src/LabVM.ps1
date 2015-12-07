@@ -124,7 +124,7 @@ function Test-LabVM {
     }
     process {
         if (-not $Name) {
-            $Name = $ConfigurationData.AllNodes | Where NodeName -ne '*' | ForEach-Object { $_.NodeName }
+            $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
         foreach ($vmName in $Name) {
             $isNodeCompliant = $true;

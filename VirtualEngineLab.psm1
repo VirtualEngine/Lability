@@ -29,7 +29,7 @@ Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tes
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
 [ref] $null = NewDirectory -Path $allUsersConfigPath;
-Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | % {
+Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | ForEach-Object {
     Write-Verbose ('Updating certificate ''{0}''.' -f $_.FullName);
     Copy-Item -Path $_ -Destination $allUsersConfigPath;
 }

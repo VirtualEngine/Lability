@@ -86,7 +86,7 @@ function GetDscResourceModule {
                             catch { }
                         }
                     } | #end foreach module\<number>.<number> sub directory
-                        Sort-Object -Property ModuleVersion -Descending | Select -First 1;
+                        Sort-Object -Property ModuleVersion -Descending | Select-Object -First 1;
                 } 
             } #end foreach module directory
         } #end foreach path

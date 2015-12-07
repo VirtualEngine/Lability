@@ -22,7 +22,7 @@ function ExpandDscModule {
 			$archiveItems = $shellApplication.Namespace($Path).Items();
 			$shellApplication.NameSpace($DestinationPath).CopyHere($archiveItems);
 			## Rename any -master branch folder where no GitHub release available
-			Get-ChildItem -Path $DestinationPath -Directory | Where-Object { $_.Name -like '*-dev' -or $_.Name -like '*-master' }  | % {
+			Get-ChildItem -Path $DestinationPath -Directory | Where-Object { $_.Name -like '*-dev' -or $_.Name -like '*-master' } | ForEach-Object {
 				$destinationFilename = $_.Name -replace '-dev','' -replace '-master','';
 				WriteVerbose ($localized.RenamingPath -f $_.FullName, $destinationFilename);
 				Rename-Item -Path $_.FullName -NewName $destinationFilename -ErrorAction Stop;
