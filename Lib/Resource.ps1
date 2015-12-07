@@ -211,7 +211,7 @@ function InvokeWebClientDownload {
             [System.UInt64] $contentLength = $webClient.ResponseHeaders['Content-Length'];
             $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
             [System.IO.Stream] $outputStream = [System.IO.File]::Create($path);
-            [System.Byte[]] $buffer = New-Object -TypeName System.Byte[] $BufferSize;
+            [System.Byte[]] $buffer = New-Object -TypeName System.Byte[] -ArgumentList $BufferSize;
             [System.UInt64] $bytesRead = 0;
             [System.UInt64] $totalBytes = 0;
             do {
