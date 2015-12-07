@@ -20,12 +20,12 @@ function NewDirectory {
         [ValidateNotNullOrEmpty()] [System.String[]] $Path
     )
     process {
-        Write-Debug ("Using parameter set '{0}'." -f $PSCmdlet.ParameterSetName);
+        Write-Debug -Message ("Using parameter set '{0}'." -f $PSCmdlet.ParameterSetName);
         switch ($PSCmdlet.ParameterSetName) {
             'ByString' {
                 foreach ($directory in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)) {
-                    Write-Debug ("Testing target directory '{0}'." -f $directory);
-                    if (!(Test-Path $directory -PathType Container)) {
+                    Write-Debug -Message ("Testing target directory '{0}'." -f $directory);
+                    if (!(Test-Path -Path $directory -PathType Container)) {
                         if ($PSCmdlet.ShouldProcess($directory, "Create directory")) {
                             WriteVerbose ($localized.CreatingDirectory -f $directory);
                             New-Item -Path $directory -ItemType Directory;
@@ -39,7 +39,7 @@ function NewDirectory {
 
             'ByDirectoryInfo' {
                  foreach ($directoryInfo in $InputObject) {
-                    Write-Debug ("Testing target directory '{0}'." -f $directoryInfo.FullName);
+                    Write-Debug -Message ("Testing target directory '{0}'." -f $directoryInfo.FullName);
                     if (!($directoryInfo.Exists)) {
                         if ($PSCmdlet.ShouldProcess($directoryInfo.FullName, "Create directory")) {
                             WriteVerbose ($localized.CreatingDirectory -f $directoryInfo.FullName);
@@ -99,12 +99,12 @@ function GetResourceDownload {
             [ref] $null = SetResourceChecksum -Path $DestinationPath;
         }
         if (Test-Path -Path $checksumPath) {
-            Write-Debug ('MD5 checksum file ''{0}'' found.' -f $checksumPath);
+            Write-Debug -Message ('MD5 checksum file ''{0}'' found.' -f $checksumPath);
             $md5Checksum = (Get-Content -Path $checksumPath -Raw).Trim();
-            Write-Debug ('Discovered MD5 checksum ''{0}''.' -f $md5Checksum);
+            Write-Debug -Message ('Discovered MD5 checksum ''{0}''.' -f $md5Checksum);
         }
         else {
-            Write-Debug ('MD5 checksum file ''{0}'' not found.' -f $checksumPath);
+            Write-Debug -Message ('MD5 checksum file ''{0}'' not found.' -f $checksumPath);
         }
         $resource = @{
             DestinationPath = $DestinationPath;
@@ -211,7 +211,7 @@ function InvokeWebClientDownload {
             [System.UInt64] $contentLength = $webClient.ResponseHeaders['Content-Length'];
             $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
             [System.IO.Stream] $outputStream = [System.IO.File]::Create($path);
-            [System.Byte[]] $buffer = New-Object System.Byte[] $BufferSize;
+            [System.Byte[]] $buffer = New-Object -TypeName System.Byte[] $BufferSize;
             [System.UInt64] $bytesRead = 0;
             [System.UInt64] $totalBytes = 0;
             do {

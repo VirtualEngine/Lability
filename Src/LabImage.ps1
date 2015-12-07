@@ -27,7 +27,7 @@ function Get-LabImage {
                     FileSize = $diskImage.FileSize;
                     Size = $diskImage.Size;
                 }
-                Write-Output $labImage;
+                Write-Output -InputObject $labImage;
             }
         } #end foreach $image
     } #end process
@@ -137,7 +137,7 @@ function New-LabImage {
         catch {
             ## Have to ensure VHDX is dismounted before we can delete!
             $imageCreationFailed = $true;
-            Write-Error $_;
+            Write-Error -Message $_;
         }
         finally {
             ## Dismount VHDX

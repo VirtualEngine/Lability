@@ -17,7 +17,7 @@ function GetLabHostSetupConfiguration {
         $labHostSetupConfiguration = @();
 
         if ($isDesktop) {
-            Write-Debug 'Implementing desktop configuration.';
+            Write-Debug -Message 'Implementing desktop configuration.';
             $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V role';
@@ -31,7 +31,7 @@ function GetLabHostSetupConfiguration {
             };
         }
         else {
-            Write-Debug 'Implementing server configuration.';
+            Write-Debug -Message 'Implementing server configuration.';
             $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V Role';

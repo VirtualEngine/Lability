@@ -199,7 +199,7 @@ function Checkpoint-Lab {
          }
          elseif ($runningNodes) {
             foreach ($runningNode in $runningNodes) {
-                Write-Error ($localized.CannotSnapshotNodeError -f $runningNode.Name);
+                Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.Name);
             }
          }
          else {
@@ -268,7 +268,7 @@ function Restore-Lab {
         }
         elseif ($runningNodes) {
             foreach ($runningNode in $runningNodes) {
-                Write-Error ($localized.CannotSnapshotNodeError -f $runningNode.NodeName);
+                Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.NodeName);
             }
         }
         else {

@@ -55,7 +55,7 @@ function GetLabVMSnapshot {
                 WriteWarning ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
             }
             else {
-                Write-Output $snapshot;
+                Write-Output -InputObject $snapshot;
             }
         } #end foreach VM
     } #end process

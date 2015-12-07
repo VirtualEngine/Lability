@@ -12,22 +12,22 @@ function ExpandDscModule {
 	)
 	process {
 		$targetPath = Join-Path -Path $DestinationPath -ChildPath $ModuleName;
-		if (-not (Test-Path $targetPath) -or $Force) {
-			if (Test-Path -Path $targetPath) {
-				WriteVerbose ($localized.RemovingDirectory -f $targetPath);
-				Remove-Item -Path $targetPath -Recurse -Force -ErrorAction Stop;
-			}
-			WriteVerbose ($localized.ExpandingArchive -f $Path, $DestinationPath);
-			$shellApplication = New-Object -ComObject Shell.Application;
-			$archiveItems = $shellApplication.Namespace($Path).Items();
-			$shellApplication.NameSpace($DestinationPath).CopyHere($archiveItems);
-			## Rename any -master branch folder where no GitHub release available
-			Get-ChildItem -Path $DestinationPath -Directory | Where-Object { $_.Name -like '*-dev' -or $_.Name -like '*-master' } | ForEach-Object {
-				$destinationFilename = $_.Name -replace '-dev','' -replace '-master','';
-				WriteVerbose ($localized.RenamingPath -f $_.FullName, $destinationFilename);
-				Rename-Item -Path $_.FullName -NewName $destinationFilename -ErrorAction Stop;
-			}
-		}
+        if (-not (Test-Path -Path $targetPath) -or $Force) {
+            if (Test-Path -Path $targetPath) {
+                WriteVerbose ($localized.RemovingDirectory -f $targetPath);
+                Remove-Item -Path $targetPath -Recurse -Force -ErrorAction Stop;
+            }
+            WriteVerbose ($localized.ExpandingArchive -f $Path, $DestinationPath);
+            $shellApplication = New-Object -ComObject Shell.Application;
+            $archiveItems = $shellApplication.Namespace($Path).Items();
+            $shellApplication.NameSpace($DestinationPath).CopyHere($archiveItems);
+            ## Rename any -master branch folder where no GitHub release available
+            Get-ChildItem -Path $DestinationPath -Directory | Where-Object { $_.Name -like '*-dev' -or $_.Name -like '*-master' } | ForEach-Object {
+                $destinationFilename = $_.Name -replace '-dev','' -replace '-master','';
+                WriteVerbose ($localized.RenamingPath -f $_.FullName, $destinationFilename);
+                Rename-Item -Path $_.FullName -NewName $destinationFilename -ErrorAction Stop;
+            }
+        }
 	} #end process
 } #end function ExpandDscModule
 
@@ -69,12 +69,12 @@ function GetDscModule {
             $dscModulePath = Join-Path -Path $dscModulePath -ChildPath "DSCResources\$ResourceName";
         }
         if (-not (Test-Path -Path $dscModulePath)) {
-            Write-Error ($localized.DscResourceNotFoundError -f $ModuleName);
+            Write-Error -Message ($localized.DscResourceNotFoundError -f $ModuleName);
             return $null;
         }
         if ($MinimumVersion) {
             if ($Module.Version -lt [System.Version]$MinimumVersion) {
-                Write-Error ($localized.ResourceVersionMismatchError -f $ModuleName, $module.Version.ToString(), $MinimumVersion);
+                Write-Error -Message ($localized.ResourceVersionMismatchError -f $ModuleName, $module.Version.ToString(), $MinimumVersion);
                 return $null;
             }
         }
