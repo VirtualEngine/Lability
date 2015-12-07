@@ -63,9 +63,9 @@ function GetDscResourceModule {
                     Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f $moduleInfo.FullName);
                     $module = Test-ModuleManifest -Path "$($moduleInfo.FullName)\$($moduleInfo.Name).psd1";
                     Write-Output -InputObject ([PSCustomObject] @{
-                            ModuleName = $moduleInfo.Name;
-                            ModuleVersion = [System.Version] $module.Version;
-                            Path = $moduleInfo.FullName;
+                        ModuleName = $moduleInfo.Name;
+                        ModuleVersion = [System.Version] $module.Version;
+                        Path = $moduleInfo.FullName;
                     });
                 }
                 else {
@@ -78,9 +78,9 @@ function GetDscResourceModule {
                                 #$moduleVersion = [System.Version] $PSItem.Name;
                                 Write-Debug -Message ('Discovered versioned DSC resource ''{0}''.' -f $PSItem.FullName);
                                 Write-Output -InputObject ([PSCustomObject] @{
-                                        ModuleName = $moduleInfo.Name;
-                                        ModuleVersion = [System.Version] $PSItem.Name;
-                                        Path = "$($moduleInfo.FullName)\$($PSItem.Name)";
+                                    ModuleName = $moduleInfo.Name;
+                                    ModuleVersion = [System.Version] $PSItem.Name;
+                                    Path = "$($moduleInfo.FullName)\$($PSItem.Name)";
                                 });
                             }
                             catch { }
