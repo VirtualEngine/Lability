@@ -391,7 +391,52 @@ function New-LabQuickVM {
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+
+        ## Default virtual machine startup memory (bytes).
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $StartupMemory,
+        
+        ## Default virtual machine miniumum dynamic memory allocation (bytes).		
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $MinimumMemory,
+        
+        ## Default virtual machine maximum dynamic memory allocation (bytes).
+		[Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $MaximumMemory,
+        
+        ## Default virtual machine processor count.
+		[Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [System.Int32] $ProcessorCount,
+
+        # Input Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
+        [System.String] $InputLocale,
+        
+        # System Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $SystemLocale,
+        
+        # User Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $UserLocale,
+        
+        # UI Language
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $UILanguage,
+        
+        # Timezone
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Timezone,
+        
+        # Registered Owner
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOwner,
+        
+        # Registered Organization
+        [Parameter(ValueFromPipelineByPropertyName)] [Alias('RegisteredOrganisation')] 
+        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOrganization,
         
         ## Local administrator password of the VM. The username is NOT used.
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
@@ -440,11 +485,17 @@ function New-LabQuickVM {
                     @{  NodeName = $vmName; "$($labDefaults.ModuleName)_Media" = $PSBoundParameters.Id; }
                 )
             };
-            if ($SwitchName) {
-                $switchKeyName = '{0}_SwitchName' -f $labDefaults.ModuleName;
-                [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($switchKeyName, $SwitchName);
+
+            $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
+                'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
+            foreach ($key in $parameterNames) {
+                if ($PSBoundParameters.ContainsKey($key)) {
+                    $configurationName = '{0}_{1}' -f $labDefaults.ModuleName, $key;
+                    [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);		
+                }
             }
-            WriteVerbose ($localized.CreatingQuickVM -f $vmName, $MediaId);
+
+            WriteVerbose -Message ($localized.CreatingQuickVM -f $vmName, $MediaId);
             NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot
         }
     } #end process

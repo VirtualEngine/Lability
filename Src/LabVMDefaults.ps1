@@ -90,13 +90,7 @@ function Set-LabVMDefaults {
 			$vmDefaults.SwitchName = $SwitchName;
 		}
         if ($PSBoundParameters.ContainsKey('Timezone')) {
-            try {
-                $TZ = [TimeZoneInfo]::FindSystemTimeZoneById($TimeZone)
-			    $vmDefaults.Timezone = $TZ.StandardName;
-            }
-            catch [System.TimeZoneNotFoundException] {
-                throw $_;
-            }
+            $vmDefaults.Timezone = ValidateTimeZone -TimeZone $Timezone;
 		}
         if ($PSBoundParameters.ContainsKey('UILanguage')) {
 			$vmDefaults.UILanguage = $UILanguage;
@@ -120,7 +114,7 @@ function Set-LabVMDefaults {
             if (-not [System.String]::IsNullOrWhitespace($ClientCertificatePath)) {
                 $ClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($ClientCertificatePath);
                 if (-not (Test-Path -Path $ClientCertificatePath -Type Leaf)) {
-                    throw ('Cannot resolve certificate path ''{0}''.' -f $ClientCertificatePath);
+                    throw ($localized.CannotFindCertificateError -f 'Client', $ClientCertificatePath);
                 }
             }
             $vmDefaults.ClientCertificatePath = $ClientCertificatePath;
@@ -129,7 +123,7 @@ function Set-LabVMDefaults {
             if (-not [System.String]::IsNullOrWhitespace($RootCertificatePath)) {
                 $RootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($RootCertificatePath);
                 if (-not (Test-Path -Path $RootCertificatePath -Type Leaf)) {
-                    throw ('Cannot resolve certificate path ''{0}''.' -f $RootCertificatePath);
+                    throw ($localized.CannotFindCertificateError -f 'Root', $RootCertificatePath);
                 }
             }
             $vmDefaults.RootCertificatePath = $RootCertificatePath;
@@ -139,10 +133,10 @@ function Set-LabVMDefaults {
         }
 
 		if ($vmDefaults.StartupMemory -lt $vmDefaults.MinimumMemory) {
-			throw ('Startup memory ''{0}'' cannot be less than minimum memory ''{1}''.' -f $vmDefaults.StartupMemory, $vmDefaults.MinimumMemory);
+			throw ($localized.StartMemLessThanMinMemError -f $vmDefaults.StartupMemory, $vmDefaults.MinimumMemory);
 		}
 		elseif ($vmDefaults.StartupMemory -gt $vmDefaults.MaximumMemory) {
-			throw ('Startup memory ''{0}'' cannot be greater than maximum memory ''{1}''.' -f $vmDefaults.StartupMemory, $vmDefaults.MaximumMemory);
+			throw ($localized.StartMemGreaterThanMaxMemError -f $vmDefaults.StartupMemory, $vmDefaults.MaximumMemory);
 		}
 		
 		SetConfigurationData -Configuration VM -InputObject $vmDefaults;
@@ -151,4 +145,25 @@ function Set-LabVMDefaults {
         return $vmDefaults;
     }
 } #end function Set-LabVMDefaults
-    
+
+function ValidateTimeZone {
+<#
+    .SYNOPSIS
+        Validates a timezone string.
+#>
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $TimeZone
+    )
+    process {
+        try {
+            $TZ = [TimeZoneInfo]::FindSystemTimeZoneById($TimeZone)
+			return $TZ.StandardName;
+        }
+        catch [System.TimeZoneNotFoundException] {
+            throw $_;
+        }
+    } #end process
+} #end function ValidateTimeZone

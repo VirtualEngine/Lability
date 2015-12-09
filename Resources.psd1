@@ -138,4 +138,6 @@ ConvertFrom-StringData -StringData @'
     MediaAlreadyRegisteredError     = Media Id '{0}' is already registered. Use {1} to override the existing media entry.
     CannotProcessCommandError       = Cannot process command because of one or more missing mandatory parameters: {0}.
     CannotBindArgumentError         = Cannot bind argument to parameter '{0}' because it is an empty string.
+    StartMemLessThanMinMemError     = Startup memory '{0}' cannot be less than minimum memory '{1}'.
+    StartMemGreaterThanMaxMemError  = Startup memory '{0}' cannot be greater than maximum memory '{1}'.
 '@
