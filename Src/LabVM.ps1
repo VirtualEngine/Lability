@@ -95,10 +95,10 @@ function Get-LabVM {
             try {
                 ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
                 $vm = GetDscResource -ResourceName VM -Parameters $xVMParams;
-                Write-Output ([PSCustomObject] $vm);
+                Write-Output -InputObject ([PSCustomObject] $vm);
             }
             catch {
-                Write-Error ($localized.CannotLocateNodeError -f $nodeName);
+                Write-Error -Message ($localized.CannotLocateNodeError -f $nodeName);
             }
         } #end foreach node
         
@@ -124,7 +124,7 @@ function Test-LabVM {
     }
     process {
         if (-not $Name) {
-            $Name = $ConfigurationData.AllNodes | Where NodeName -ne '*' | ForEach-Object { $_.NodeName }
+            $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
         foreach ($vmName in $Name) {
             $isNodeCompliant = $true;
@@ -158,7 +158,7 @@ function Test-LabVM {
             if (-not (TestLabVirtualMachine @testLabVirtualMachineParams -Name $vmName)) {
                 $isNodeCompliant = $false;
             }
-            Write-Output $isNodeCompliant;
+            Write-Output -InputObject $isNodeCompliant;
         }
     } #end process
 } #end function Test-LabVM
@@ -278,7 +278,7 @@ function NewLabVM {
             }
         }
 
-        Write-Output (Get-VM -Name $Name);
+        Write-Output -InputObject (Get-VM -Name $Name);
     } #end process
 } #end function NewLabVM
 

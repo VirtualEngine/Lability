@@ -16,14 +16,18 @@ Describe 'Internal' {
         Context 'Validates "ResolvePathEx" method' {
             
             It 'Resolves existing home path' {
+                (Get-PSProvider -PSProvider 'FileSystem').Home = (Get-PSDrive -Name TestDrive).Root;
+                $fileSystemPath = (Get-PSProvider -PSProvider 'FileSystem').Home;
                 $psPath = '~';
-                $fileSystemPath = $env:HOME;
+                                
                 ResolvePathEx -Path $psPath | Should Be $fileSystemPath;
             }
 
             It 'Resolves non-existent home path' {
+                (Get-PSProvider -PSProvider 'FileSystem').Home = (Get-PSDrive -Name TestDrive).Root;
+                $fileSystemPath = '{0}\HopefullyThisPathDoesNotExist' -f (Get-PSProvider -PSProvider 'FileSystem').Home;
                 $psPath = '~\HopefullyThisPathDoesNotExist';
-                $fileSystemPath = "$env:HOME\HopefullyThisPathDoesNotExist";
+                                
                 ResolvePathEx -Path $psPath | Should Be $fileSystemPath;
             }
 
