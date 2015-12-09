@@ -33,7 +33,7 @@ function NewBootStrap {
                 break;
             }
             catch {
-                Write-Error $_;
+                Write-Error -Message $_;
                 Start-Sleep -Seconds 5;
             }
         } #end while

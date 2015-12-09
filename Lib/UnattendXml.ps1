@@ -162,7 +162,7 @@ function NewUnattendXml {
                 } 
             } #end foreach setting.Component
         } #end foreach unattendXml.Unattend.Settings
-        Write-Output $unattendXml;
+        Write-Output -InputObject $unattendXml;
     } #end process
 } #end function NewUnattendXml
 
