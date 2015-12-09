@@ -71,7 +71,7 @@ Describe 'LabVMDefaults' {
             foreach ($file in $testFiles) {
                 It "Sets ""$($file.Keys[0])"" value" {
                     Mock SetConfigurationData -MockWith { }
-                    New-Item -Path $file.Values[0] -Force -ErrorAction SilentlyContinue;
+                    New-Item -Path $file.Values[0] -Force -ErrorAction SilentlyContinue -ItemType File;
                     $defaults = Set-LabVMDefaults @file;
                     
                     $defaults.($file.Keys[0]) | Should Be $file.Values[0];

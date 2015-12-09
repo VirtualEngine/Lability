@@ -12,7 +12,7 @@ function RemoveLabVMSnapshot {
        <## TODO: Add the ability to force/wait for the snapshots to be removed. When removing snapshots it take a minute
                  or two before the files are actually removed. This causes issues when performing a lab reset #>
         foreach ($vmName in $Name) {
-            Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue | Where Name -like $SnapshotName | ForEach-Object {
+            Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue | Where-Object Name -like $SnapshotName | ForEach-Object {
                 WriteVerbose ($localized.RemovingSnapshot -f $vmName, $_.Name);
                 Remove-VMSnapshot -VMName $_.VMName -Name $_.Name;
             }
@@ -55,7 +55,7 @@ function GetLabVMSnapshot {
                 WriteWarning ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
             }
             else {
-                Write-Output $snapshot;
+                Write-Output -InputObject $snapshot;
             }
         } #end foreach VM
     } #end process

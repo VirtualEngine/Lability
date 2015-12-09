@@ -1,20 +1,3 @@
-function GetConfigurationDataFromFilePath {
-<#
-    .SYNOPSIS
-        Reads Powershell DSC configuration data from a file path.
-#>
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Collections.Hashtable] $ConfigurationData
-    )
-    process {
-        return $ConfigurationData;
-    }
-} #end function GetConfigurationDataFromFilePath
-
 function ConvertToConfigurationData {
 <#
     .SYNOPSIS
@@ -73,7 +56,7 @@ function ResolveConfigurationDataPath {
 				$resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
 			}
 		}
-        Write-Debug ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
+        Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
     } #end process
 } #end function ReolveConfigurationPath

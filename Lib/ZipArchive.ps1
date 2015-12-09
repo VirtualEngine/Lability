@@ -43,7 +43,7 @@ function ExpandZipArchive {
             }
         }
         ## If all tests passed, load the required .NET assemblies
-        Write-Debug 'Loading ''System.IO.Compression'' .NET binaries.';
+        Write-Debug -Message 'Loading ''System.IO.Compression'' .NET binaries.';
         Add-Type -AssemblyName 'System.IO.Compression';
         Add-Type -AssemblyName 'System.IO.Compression.FileSystem';
     } # end begin
@@ -60,7 +60,7 @@ function ExpandZipArchive {
                 ExpandZipArchiveItem @expandZipArchiveItemParams;
             } # end try
             catch {
-                Write-Error $_.Exception;
+                Write-Error -Message $_.Exception;
             }
             finally {
                 ## Close the file handle
@@ -101,7 +101,7 @@ function ExpandZipArchiveItem {
         [System.Management.Automation.SwitchParameter] $Force  
     )
     begin {
-        Write-Debug 'Loading ''System.IO.Compression'' .NET binaries.';
+        Write-Debug -Message 'Loading ''System.IO.Compression'' .NET binaries.';
         Add-Type -AssemblyName 'System.IO.Compression';
         Add-Type -AssemblyName 'System.IO.Compression.FileSystem';
     }
@@ -118,7 +118,7 @@ function ExpandZipArchiveItem {
                 if ($zipArchiveEntry.FullName.Contains('/')) {
                     ## We need to create the directory path as the ExtractToFile extension method won't do this and will throw an exception
                     $pathSplit = $zipArchiveEntry.FullName.Split('/');
-                    $relativeDirectoryPath = New-Object -TypeName 'System.Text.StringBuilder';
+                    $relativeDirectoryPath = New-Object -TypeName System.Text.StringBuilder;
 
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
@@ -141,7 +141,7 @@ function ExpandZipArchiveItem {
                     ## This is a folder and we need to create the directory path as the
                     ## ExtractToFile extension method won't do this and will throw an exception
                     $pathSplit = $zipArchiveEntry.FullName.Split('/');
-                    $relativeDirectoryPath = New-Object -TypeName 'System.Text.StringBuilder';
+                    $relativeDirectoryPath = New-Object -TypeName System.Text.StringBuilder;
                 
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
@@ -165,13 +165,13 @@ function ExpandZipArchiveItem {
                         WriteVerbose -Message ($localized.ExtractingZipArchiveEntry -f $fullDestinationFilePath);
                         [System.IO.Compression.ZipFileExtensions]::ExtractToFile($zipArchiveEntry, $fullDestinationFilePath, $true);
                         ## Return a FileInfo object to the pipline
-                        Write-Output (Get-Item -Path $fullDestinationFilePath);
+                        Write-Output -InputObject (Get-Item -Path $fullDestinationFilePath);
                     }
                 } # end if
             } # end foreach zipArchiveEntry
         } # end try
         catch {
-            Write-Error $_.Exception;
+            Write-Error -Message $_.Exception;
         }
     } # end process
 } #end function ExpandZipArchiveItem
