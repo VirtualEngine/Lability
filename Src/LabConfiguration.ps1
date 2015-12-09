@@ -28,7 +28,7 @@ function Test-LabConfiguration {
     }
     process {
         WriteVerbose $localized.StartedLabConfigurationTest;
-        $nodes = $ConfigurationData.AllNodes | Where { $_.NodeName -ne '*' };
+        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         foreach ($node in $nodes) {
             [PSCustomObject] @{
                 Name = $node.NodeName;
@@ -61,7 +61,7 @@ function TestLabConfigurationMof {
     }
     process {
         $Path = Resolve-Path -Path $Path -ErrorAction Stop;
-        $node = $ConfigurationData.AllNodes | Where { $_.NodeName -eq $Name };
+        $node = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -eq $Name };
         
         $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $node.NodeName);
         WriteVerbose ($localized.CheckingForNodeFile -f $mofPath);
@@ -200,7 +200,7 @@ function Start-LabConfiguration {
     }
     process {
         WriteVerbose $localized.StartedLabConfiguration;
-        $nodes = $ConfigurationData.AllNodes | Where { $_.NodeName -ne '*' };
+        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
 
         $Path = ResolvePathEx -Path $Path;
         foreach ($node in $nodes) {
@@ -266,7 +266,7 @@ function Remove-LabConfiguration {
     }
     process {
         WriteVerbose $localized.StartedLabConfiguration;
-        $nodes = $ConfigurationData.AllNodes | Where { $_.NodeName -ne '*' };
+        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         foreach ($node in $nodes) {
             ##TODO: Should this not ensure that VMs are powered off?
             RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch;

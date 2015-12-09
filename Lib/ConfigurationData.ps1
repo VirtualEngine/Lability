@@ -56,7 +56,7 @@ function ResolveConfigurationDataPath {
 				$resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
 			}
 		}
-        Write-Debug ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
+        Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
     } #end process
 } #end function ReolveConfigurationPath

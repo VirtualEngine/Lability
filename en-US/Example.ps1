@@ -8,7 +8,7 @@ Configuration Example {
         ! xDhcpServer (v1.3.0 or later):       https://github.com/iainbrighton/xDhcpServer/dev (due to xDhcpServerAuthorization resource)
 #>
     param (
-        [Parameter()] [ValidateNotNull()] [PSCredential] $Credential = (Get-Credential 'Administrator')
+        [Parameter()] [ValidateNotNull()] [PSCredential] $Credential = (Get-Credential -Credential 'Administrator')
     )
     Import-DscResource -Module xComputerManagement, xNetworking, xActiveDirectory;
     Import-DscResource -Module xSmbShare, PSDesiredStateConfiguration;
@@ -70,7 +70,7 @@ Configuration Example {
   
     node $AllNodes.Where({$_.Role -in 'DC'}).NodeName {
         ## Flip credential into username@domain.com
-        $domainCredential = New-Object System.Management.Automation.PSCredential("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
+        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
 
         xComputer 'Hostname' {
             Name = $node.NodeName;
@@ -146,7 +146,7 @@ Configuration Example {
     ## INET1 is on the 'Internet' subnet and not domain-joined
     node $AllNodes.Where({$_.Role -in 'CLIENT','APP','EDGE'}).NodeName {
         ## Flip credential into username@domain.com
-        $domainCredential = New-Object System.Management.Automation.PSCredential("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
+        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
 
         xComputer 'DomainMembership' {
             Name = $node.NodeName;
@@ -157,7 +157,7 @@ Configuration Example {
     
     node $AllNodes.Where({$_.Role -in 'APP'}).NodeName {
         ## Flip credential into username@domain.com
-        $domainCredential = New-Object System.Management.Automation.PSCredential("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
+        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
         
         foreach ($feature in @(
                 'Web-Default-Doc',
