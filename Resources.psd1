@@ -1,4 +1,4 @@
-ConvertFrom-StringData @'    
+ConvertFrom-StringData -StringData @'    
 	DownloadingResource             = Downloading resource '{0}' to '{1}'.
     DownloadingActivity             = Downloading '{0}'.
     DownloadStatus                  = {0:N0} of {1:N0} bytes ({2} %).

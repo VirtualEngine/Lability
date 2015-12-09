@@ -109,47 +109,6 @@ Describe 'LabSwitch' {
                 $labSwitch.Type | Should Be 'Internal';
             }
         } #end context Validates "ResolveLabSwitch" method
-        
-        Context 'Validates "Get-LabSwitch" method' {
-
-            It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
-                $configurationData = @{
-                    NonNodeData = @{
-                        $labDefaults.ModuleName = @{
-                            Network = @( ) } } }
-                Mock ImportDscResource -MockWith { }
-                Mock GetDscResource -MockWith { return @{ Name = $Name; Type = $Type; } }
-
-                $labSwitch = Get-LabSwitch -ConfigurationData $configurationData -Name 'NonExistentSwitch';
-                $labSwitch -is [System.Management.Automation.PSCustomObject] | Should Be $true;
-            }
-
-            It 'Imports "MSFT_xVMSwitch" DSC resource' {
-                $configurationData = @{
-                    NonNodeData = @{
-                        $labDefaults.ModuleName = @{
-                            Network = @( ) } } }
-                Mock GetDscResource -MockWith { return @{ Name = $Name; Type = $Type; } }
-                Mock ImportDscResource -ParameterFilter { $ResourceName -eq 'MSFT_xVMSwitch' } -MockWith { }
-
-                Get-LabSwitch -ConfigurationData $configurationData -Name 'NonExistentSwitch';
-
-                Assert-MockCalled ImportDscResource -ParameterFilter { $ResourceName -eq 'MSFT_xVMSwitch' } -Scope It;
-            }
-
-            It 'Calls GetDscResource" to retrieve switch details' {
-                $configurationData = @{
-                    NonNodeData = @{
-                        $labDefaults.ModuleName = @{
-                            Network = @( ) } } }
-                Mock GetDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { }
-
-                Get-LabSwitch -ConfigurationData $configurationData -Name 'NonExistentSwitch';
-
-                Assert-MockCalled GetDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -Scope It;
-            }
-
-        } #end context Validates "Get-LabSwitch" method
 
         Context 'Validates "TestLabSwitch" method' {
 
