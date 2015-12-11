@@ -50,8 +50,8 @@ function InvokeExecutable {
             NoNewWindow = $true;
             PassThru = $true;
         }
-        Write-Debug ($localized.RedirectingOutput -f 'StdOut', $processArgs.RedirectStandardOutput);
-        Write-Debug ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
+        Write-Debug -Message ($localized.RedirectingOutput -f 'StdOut', $processArgs.RedirectStandardOutput);
+        Write-Debug -Message ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
         WriteVerbose ($localized.StartingProcess -f $Path, [System.String]::Join(' ', $Arguments));
         $process = Start-Process @processArgs;
         if ($process.ExitCode -ne 0) { WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode);}
@@ -88,6 +88,6 @@ function WriteWarning {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
     )
     process {
-        Write-Warning ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
+        Write-Warning -Message ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
     }
 }
