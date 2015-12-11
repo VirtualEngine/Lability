@@ -161,7 +161,7 @@ function Start-LabHostConfiguration {
         
         # Once all the path are created, check if the hostdefaults.Json file in the $env:ALLUSERSPROFILE is doesn't have entries with %SYSTEMDRIVE% in it
         # Many subsequent call are failing to Get-LabImage, Test-LabHostConfiguration which do not resolve the "%SYSTEMDRIVE%" in the path for Host defaults
-        foreach ($property in $($hostDefaults.PSObject.Properties | where -Property TypeNameOfValue -ne 'System.Boolean')) {
+        foreach ($property in $($hostDefaults.PSObject.Properties | where -Property TypeNameOfValue -eq 'System.String')) {
             if ($property.Value.Contains("%")){
                 # if the Path for host defaults contains a '%' character then resolve it
                 $resolvedPath = ResolvePathEx -Path $Property.Value
