@@ -241,7 +241,7 @@ function SetDiskImageBootVolume {
     } #end process
 } #end function SetDiskImageBootVolume
 
-function AddDiskImagePackage {
+function AddDiskImageHotfix {
 <#
     .SYMOPSIS
         Adds a Windows update/hotfix package to an image.
@@ -277,4 +277,4 @@ function AddDiskImagePackage {
             [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
         }
     } #end process
-} #end function AddDiskImagePackage
+} #end function AddDiskImageHotfix

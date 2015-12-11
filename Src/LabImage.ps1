@@ -135,8 +135,8 @@ function New-LabImage {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }
             ExpandWindowsImage @expandWindowsImageParams;
-            ## Apply hotfixes (AddDiskImagePackage)
-            AddDiskImagePackage -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+            ## Apply hotfixes (AddDiskImageHotfix)
+            AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
             ## Configure boot volume (SetDiskImageBootVolume)
             SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
         }
