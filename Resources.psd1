@@ -38,6 +38,7 @@ ConvertFrom-StringData -StringData @'
     FormattingDiskPartition         = Formatting '{0}' disk partition.
     AddingImagePackage              = Adding package '{0}' to image '{1}'.
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
+    AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.

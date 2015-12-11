@@ -34,7 +34,15 @@ function ExpandWindowsImage {
 
         ## Relative source WIM file path (only used for ISOs)
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $WimPath = '\sources\install.wim'
+        [ValidateNotNullOrEmpty()] [System.String] $WimPath = '\sources\install.wim',
+
+        ## Optional Windows packages to add to the image after expansion (primarily used for Nano Server)
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()] [System.String[]] $Package,
+        
+        ## Relative packages (.cab) file path (primarily used for Nano Server)
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $PackagePath = '\packages'
     )
     process {
         ## Assume the media path is a literal path to a WIM file
@@ -70,6 +78,24 @@ function ExpandWindowsImage {
             Index = $WimImageIndex;
         }
         $dismOutput = Expand-WindowsImage @expandWindowsImage -Verbose:$false;
+
+        [ref] $null = Get-PSDrive;
+
+        ## Add additional packages (.cab) files
+        if ($Package) {
+            ## Default to relative package folder path
+            $addWindowsPackageParams = @{
+                PackagePath = '{0}:{1}' -f $isoDriveLetter, $PackagePath;
+                DestinationPath = '{0}:\' -f $vhdDriveLetter;
+                LogPath = $logPath;
+                Package = $Package;
+            }
+            if (-not $PackagePath.StartsWith('\')) {
+                ## Use the specified/literal path
+                $addWindowsPackageParams['PackagePath'] = $PackagePath;
+            }
+            $dismOutput = AddWindowsPackage @addWindowsPackageParams;
+        } #end if Package
         
         ## Add additional features if required
         if ($WindowsOptionalFeature) {
@@ -102,15 +128,18 @@ function AddWindowsOptionalFeature {
 #>
     [CmdletBinding()]
     param (
-        ## Source ISO install.wim
+        ## Source package file path
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        
         ## Mounted VHD(X) Operating System disk drive
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-        ## Windows features to add to the image after expansion
+        
+        ## Windows packages to add to the image after expansion
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        
         ## DISM log path
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
     )
@@ -128,6 +157,38 @@ function AddWindowsOptionalFeature {
     } #end process
 } #end function AddDiskImageOptionalFeature
 
+function AddWindowsPackage {
+<#
+    .SYNOPSIS
+        Adds a Windows package to an image.
+#>
+    ## Source ISO install.wim
+    [CmdletBinding()]
+    param (
+        ## Windows packages (.cab) files to add to the image after expansion
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()] [System.String[]] $Package,
+
+        ## Path to the .cab files
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $PackagePath,
+        
+        ## Mounted VHD(X) Operating System disk drive
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        
+        ## DISM log path
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
+    )
+    process {
+        foreach ($packageName in $Package) {
+            WriteVerbose ($localized.AddingWindowsPackage -f $packagename, $DestinationPath);
+            $packageFilename = '{0}.cab' -f $packageName;
+            $packageFilePath = Join-Path -Path $PackagePath -ChildPath $packageFilename;
+            AddDiskImagePackage -Name $packageName -Path $packageFilePath -DestinationPath $DestinationPath;
+        } #end foreach package
+    } #end process
+} #end function AddWindowsPackage
 
 function GetWindowsImageIndex {
 <#

@@ -134,6 +134,13 @@ function New-LabImage {
             if ($media.CustomData.WindowsOptionalFeature) {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }
+            if ($media.CustomData.PackagePath) {
+                $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
+            }
+            if ($media.CustomData.Package) {
+                $expandWindowsImageParams['Package'] = $media.CustomData.Package;
+            }
+
             ExpandWindowsImage @expandWindowsImageParams;
             ## Apply hotfixes (AddDiskImageHotfix)
             AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
