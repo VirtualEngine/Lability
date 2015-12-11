@@ -104,12 +104,12 @@ function Start-LabConfiguration {
         on the node hashtable in the PowerShell DSC configuration document. Default settings include the Operating
         System image to use, the amount of memory assigned to the virtual machine and/or the virtual switch to
         connect the virtual machine to. If the settings are not overridden, the module's defaults are used. Use the
-        Get-LabVMDefaults cmdlet to view the module's default values.
+        Get-LabVMDefault cmdlet to view the module's default values.
         
         Each virtual machine created by the Start-LabConfiguration cmdlet, has its PowerShell DSC configuraion (.mof)
         file injected into the VHD file as it is created. This configuration is then applied during the first boot
         process to ensure the virtual machine is configured as required. If the path to the VM's .mof files is not
-        specified, the module's default Configuration directory is used. Use the Get-LabHostDefaults cmdlet to view
+        specified, the module's default Configuration directory is used. Use the Get-LabHostDefault cmdlet to view
         the module's default Configuration directory path.
         
         The virtual machine .mof files must be created before creating the lab. If any .mof files are missing, the
@@ -156,10 +156,10 @@ function Start-LabConfiguration {
     .LINK
         about_ConfigurationData
         about_Bootstrap
-        Get-LabHostDefaults
-        Get-LabHostDefaults
-        Get-LabVMDefaults
-        Set-LabVMDefaults
+        Get-LabHostDefault
+        Set-LabHostDefault
+        Get-LabVMDefault
+        Set-LabVMDefault
         Reset-Lab
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]

@@ -6,7 +6,7 @@ function GetLabHostSetupConfiguration {
         The GetLabHostSetupConfiguration function returns an array of hashtables used to determine whether the
         host is in the desired configuration.
     .NOTES
-        The configuration is passed to avoid repeated calls to Get-LabHostDefaults and polluting verbose output.
+        The configuration is passed to avoid repeated calls to Get-LabHostDefault and polluting verbose output.
 #>
     [CmdletBinding()]
     [OutputType([System.Array])]
