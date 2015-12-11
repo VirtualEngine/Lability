@@ -12,7 +12,7 @@ function GetLabHostSetupConfiguration {
     [OutputType([System.Array])]
     param ( )
     process {
-        [System.Boolean] $isDesktop = (Get-WmiObject -Class Win32_OperatingSystem).ProductType -eq 1;
+        [System.Boolean] $isDesktop = (Get-CimInstance -ClassName Win32_OperatingSystem).ProductType -eq 1;
         ## Due to the differences in client/server deployment for Hyper-V, determine the correct method before creating the host configuration array.
         $labHostSetupConfiguration = @();
 
