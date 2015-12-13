@@ -1,3 +1,23 @@
+function SetLabVMDiskDscResource {
+<#
+    .SYNOPSIS
+        Copies the local DSC resources to a VHDX file.
+#>
+    [CmdletBinding()]
+    param (
+        ## The target VHDX modules path
+        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $DestinationPath
+    )
+    process {
+        $dscResourceModules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules";
+        foreach ($dscResourceModule in $dscResourceModules) {
+            WriteVerbose ($localized.AddingDSCResource -f $dscResourceModule.ModuleName, $dscResourceModule.ModuleVersion);
+            $targetModulePath = '{0}\{1}' -f $Destinationpath, $dscResourceModule.ModuleName;
+            Copy-Item -Path $dscResourceModule.Path -Destination $targetModulePath -Recurse -Force;
+        }
+    } #end process
+} #end function SetLabVMDiskDscResource
+
 function SetLabVMDiskResource {
 <#
     .SYNOPSIS
@@ -31,8 +51,6 @@ function SetLabVMDiskResource {
 
         WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
         Dismount-Vhd -Path $VhdPath;
-
-        
     } #end process
 } #end function SetLabVMDiskResource
 
@@ -47,6 +65,8 @@ function SetLabVMDiskFile {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name,
         ## Lab VM/Node configuration data
         [Parameter(Mandatory)] [System.Collections.Hashtable] $NodeData,
+        ## Local administrator password of the VM
+        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter()] [System.String] $Path,
         ## Custom bootstrap script
@@ -65,13 +85,13 @@ function SetLabVMDiskFile {
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
-        WriteVerbose ($localized.CopyingPowershellModules -f $destinationPath);
-        Copy-Item -Path "$env:ProgramFiles\WindowsPowershell\Modules\*" -Destination $destinationPath -Recurse -Force -ErrorAction Ignore;
+        WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
+        SetLabVMDiskDscResource -DestinationPath $destinationPath;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
             ComputerName = $Name;
-            Password = $NodeData.Password;
+            Credential = $Credential;
             InputLocale = $NodeData.InputLocale;
             SystemLocale = $NodeData.SystemLocale;
             UserLocale = $NodeData.UserLocale;
@@ -80,7 +100,7 @@ function SetLabVMDiskFile {
             RegisteredOwner = $NodeData.RegisteredOwner;
             RegisteredOrganization = $NodeData.RegisteredOrganization;
         }
-        WriteVerbose ($localized.SettingAdministratorPassword -f $NodeData.Password);
+        WriteVerbose ($localized.SettingAdministratorPassword -f $Credential.GetNetworkCredential().Password);
         if ($NodeData.CustomData.ProductKey) {
             $newUnattendXmlParams['ProductKey'] = $NodeData.CustomData.ProductKey;
         }

@@ -6,7 +6,7 @@ function GetLabHostSetupConfiguration {
         The GetLabHostSetupConfiguration function returns an array of hashtables used to determine whether the
         host is in the desired configuration.
     .NOTES
-        The configuration is passed to avoid repeated calls to Get-LabHostDefaults and polluting verbose output.
+        The configuration is passed to avoid repeated calls to Get-LabHostDefault and polluting verbose output.
 #>
     [CmdletBinding()]
     [OutputType([System.Array])]
@@ -17,7 +17,7 @@ function GetLabHostSetupConfiguration {
         $labHostSetupConfiguration = @();
 
         if ($isDesktop) {
-            Write-Debug 'Implementing desktop configuration.';
+            Write-Debug -Message 'Implementing desktop configuration.';
             $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V role';
@@ -31,7 +31,7 @@ function GetLabHostSetupConfiguration {
             };
         }
         else {
-            Write-Debug 'Implementing server configuration.';
+            Write-Debug -Message 'Implementing server configuration.';
             $labHostSetupConfiguration += @{
                 UseDefault = $true;
                 Description = 'Hyper-V Role';
@@ -110,7 +110,7 @@ function Test-LabHostConfiguration {
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 WriteVerbose ($localized.TestingPathExists -f $property.Value);
-                if (-not (Test-Path -Path $property.Value -PathType Container)) {
+                if (-not (Test-Path -Path $(ResolvePathEx -Path $property.Value) -PathType Container)) {
                     return $false;
                 }
             }
@@ -155,8 +155,24 @@ function Start-LabHostConfiguration {
 		$hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
-                [ref] $null = NewDirectory -Path $property.Value -ErrorAction Stop;
+                [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
             }
+        }
+        
+        # Once all the path are created, check if the hostdefaults.Json file in the $env:ALLUSERSPROFILE is doesn't have entries with %SYSTEMDRIVE% in it
+        # Many subsequent call are failing to Get-LabImage, Test-LabHostConfiguration which do not resolve the "%SYSTEMDRIVE%" in the path for Host defaults
+        foreach ($property in $($hostDefaults.PSObject.Properties | where -Property TypeNameOfValue -eq 'System.String')) {
+            if ($property.Value.Contains("%")){
+                # if the Path for host defaults contains a '%' character then resolve it
+                $resolvedPath = ResolvePathEx -Path $Property.Value
+                # update the hostdefaults Object
+                $hostDefaults.($property.name)  = $resolvedPath
+                $hostdefaultupdated = $True
+            }
+        }
+        if ($hostdefaultupdated) {
+            # Write the changes back to the json file in the $env:ALLUSERSPROFILE
+            $hostDefaults | ConvertTo-Json | Out-File -FilePath $(ResolveConfigurationDataPath -Configuration host)
         }
         
         $labHostSetupConfiguation = GetLabHostSetupConfiguration;

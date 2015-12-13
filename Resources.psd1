@@ -1,4 +1,4 @@
-ConvertFrom-StringData @'    
+ConvertFrom-StringData -StringData @'    
 	DownloadingResource             = Downloading resource '{0}' to '{1}'.
     DownloadingActivity             = Downloading '{0}'.
     DownloadStatus                  = {0:N0} of {1:N0} bytes ({2} %).
@@ -38,7 +38,8 @@ ConvertFrom-StringData @'
     FormattingDiskPartition         = Formatting '{0}' disk partition.
     AddingImagePackage              = Adding package '{0}' to image '{1}'.
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
-    CopyingPowershellModules        = Copying Powershell modules to '{0}'.
+    AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
+    AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
     CreatingBaselineSnapshot        = Creating baseline snapshot '{0}'.
     SnapshottingVirtualMachine      = Creating virtual machine '{0}' snapshot '{1}'.
@@ -80,12 +81,24 @@ ConvertFrom-StringData @'
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
+    EnterLocalAdministratorPassword = Enter the virtual machines' local administrator password.
     SettingAdministratorPassword    = Setting local administrator password to '{0}'.
     DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
     NoHotfixesSpecified             = No hotfixes were specified.
+    NoMediaDefined                  = No media resources were defined.
     NoResourcesDefined              = No custom resources were defined.
+    ProvideAdministratorPassword    = Please provide the local Administrator password.
+    AddingCustomMediaEntry          = Adding '{0}' media entry.
+    OverwritingCustomMediaEntry     = Overwriting existing '{0}' media entry.
+    RemovingCustomMediaEntry        = Removing '{0}' media entry.
+    SavingConfiguration             = Saving configuration '{0}'.
+    PerformingOperationOnTarget     = Performing the operation '{0}' on target '{1}'.
+    ResettingConfigurationDefaults  = Resetting '{0}' configuration settings to default.
+    LocatingWimImageName            = Locating WIM image '{0}' name.
+    LocatingWimImageIndex           = Locating WIM image '{0}' index.
+    MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -93,6 +106,9 @@ ConvertFrom-StringData @'
     NodeCustomMessageWarning        = [{0}] {1}
     TargetFileExistsWarning         = Target file '{0}' already exists.
     RemovingIncompleteImageWarning  = Removing incomplete image '{0}'.
+    NoCustomMediaFoundWarning       = No custom media '{0}' registered.
+    UnsupportedConfigurationWarning = Configuration '{0}' is not supported by {1}.
+    ShouldProcessWarning            = Are you sure you want to perform this action?
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -117,4 +133,8 @@ ConvertFrom-StringData @'
     IncorrectPropertyTypeError      = Incorrect '{0}' property type. Property type must be '{1}'.
     CannotResolveResourceIdError    = Cannot resolve resource Id '{0}'.
     ExpandNotSupportedError         = Expand operation not supported on '{0}' file type.
+    ImageNameRequiredError          = An image name is required for ISO and WIM media. Please specify the {0} parameter.
+    MediaAlreadyRegisteredError     = Media Id '{0}' is already registered. Use {1} to override the existing media entry.
+    CannotProcessCommandError       = Cannot process command because of one or more missing mandatory parameters: {0}.
+    CannotBindArgumentError         = Cannot bind argument to parameter '{0}' because it is an empty string.
 '@

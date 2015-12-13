@@ -43,11 +43,12 @@ function Invoke-LabResourceDownload {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [System.Object] $ConfigurationData = @{ },
         ## Lab media Id
-        [Parameter()] [System.String[]] $MediaId,
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $MediaId,
         ## Lab resource Id
-        [Parameter()] [System.String[]] $ResourceId,
+        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $ResourceId,
         ## Forces a checksum recalculations and a download if necessary.
         [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
@@ -66,19 +67,24 @@ function Invoke-LabResourceDownload {
             $MediaId = $uniqueMediaIds;
         }
 
-        foreach ($id in $MediaId) {
-            $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
-            InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
+        if ($MediaId) {
+            foreach ($id in $MediaId) {
+                $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
+                InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
 
-            WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
-            if ($labMedia.Hotfixes.Count -gt 0) {
-                foreach ($hotfix in $labMedia.Hotfixes) {
-                    InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
+                if ($labMedia.Hotfixes.Count -gt 0) {
+                    foreach ($hotfix in $labMedia.Hotfixes) {
+                        InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                    }
+                }
+                else {
+                    WriteVerbose ($localized.NoHotfixesSpecified);
                 }
             }
-            else {
-                WriteVerbose ($localized.NoHotfixesSpecified);
-            }
+        }
+        else {
+            WriteVerbose ($localized.NoMediaDefined);
         }
 
         if (-not $ResourceId) {
@@ -114,7 +120,7 @@ function ResolveLabResource {
         [Parameter(Mandatory)] [System.String] $ResourceId
     )
     process {
-        $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where Id -eq $ResourceId;
+        $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
         if ($resource) { return $resource; }
         else { throw ($localized.CannotResolveResourceIdError -f $resourceId); }
     }
@@ -139,7 +145,7 @@ function ExpandIsoResource {
         $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
         WriteVerbose ($localized.ExpandingIsoResource -f $DestinationPath);
         $sourcePath = '{0}:\*' -f $isoDriveLetter;
-        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force;
+        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force -Verbose:$false;
         WriteVerbose ($localized.DismountingDiskImage -f $Path);
         Dismount-DiskImage -ImagePath $Path;
     } #end process
@@ -191,13 +197,13 @@ function ExpandLabResource {
                 [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
                 switch ($resourceItem.Extension) {
                     '.iso' { ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath; }
-                    '.zip' { [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath; }
+                    '.zip' { [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false; }
                     Default { throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension); }
                 } #end switch
             }
             else {
                 WriteVerbose ($localized.CopyingFileResource -f (Join-Path -Path $DestinationPath -ChildPath $resourceItem.Name));
-                Copy-Item -Path $resourceItem.FullName -Destination $destinationPath -Force;
+                Copy-Item -Path $resourceItem.FullName -Destination $destinationPath -Force -Verbose:$false;
             }
         } #end foreach ResourceId
     } #end process

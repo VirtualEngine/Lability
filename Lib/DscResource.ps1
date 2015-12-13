@@ -27,11 +27,12 @@ function ImportDscResource {
                 $resourcePath = Join-Path -Path $dscModuleRootPath -ChildPath $dscResourcePath;
             }
             if ($resourcePath) {
-                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Verbose:$false;
+                ## Import the DSC module into the module's global scope to improve performance
+                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Verbose:$false -Scope Global;
             }
         }
         else {
-            Write-Debug ($localized.DscResourceAlreadyImported -f $ModuleName, $ResourceName);
+            Write-Debug -Message ($localized.DscResourceAlreadyImported -f $ModuleName, $ResourceName);
         }
     } #end process
 } #end function ImportDscResource
@@ -76,7 +77,7 @@ function TestDscResource {
         $testTargetResourceCommand = 'Test-{0}TargetResource' -f $ResourceName;
         WriteVerbose ($localized.InvokingCommand -f $testTargetResourceCommand);
         $Parameters.Keys | ForEach-Object {
-            Write-Debug ($localized.CommandParameter -f $_, $Parameters.$_);
+            Write-Debug -Message ($localized.CommandParameter -f $_, $Parameters.$_);
         }
         $testDscResourceResult = & $testTargetResourceCommand @Parameters;
         if (-not $testDscResourceResult) {
@@ -103,7 +104,7 @@ function SetDscResource {
         $setTargetResourceCommand = 'Set-{0}TargetResource' -f $ResourceName;
         WriteVerbose ($localized.InvokingCommand -f $setTargetResourceCommand);
         $Parameters.Keys | ForEach-Object {
-            Write-Debug ($localized.CommandParameter -f $_, $Parameters.$_);
+            Write-Debug -Message ($localized.CommandParameter -f $_, $Parameters.$_);
         }
         return (& $setTargetResourceCommand @Parameters);
     } #end process

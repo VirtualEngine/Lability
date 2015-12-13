@@ -2,12 +2,13 @@
 
 ## Set the global defaults
 $labDefaults = @{
-    ModuleRoot = Split-Path -Parent $MyInvocation.MyCommand.Path;
+    ModuleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
     ModuleName = 'VirtualEngineLab';
     ConfigurationData = 'Config';
     HostConfigFilename = 'HostDefaults.json';
     VmConfigFilename = 'VmDefaults.json';
     MediaConfigFilename = 'Media.json';
+    CustomMediaConfigFilename = 'CustomMedia.json';
     DscResourceDirectory = 'DSCResources';
 }
 
@@ -20,15 +21,27 @@ $moduleLibPath = Join-Path -Path $moduleRoot -ChildPath 'Lib';
 $moduleSrcPath = Join-Path -Path $moduleRoot -ChildPath 'Src';
 Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurse |
     ForEach-Object {
-        Write-Verbose ('Importing library\source file ''{0}''.' -f $_.FullName);
+        Write-Verbose -Message ('Importing library\source file ''{0}''.' -f $_.FullName);
         . $_.FullName;
     }
+
 
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
 [ref] $null = NewDirectory -Path $allUsersConfigPath;
-Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | % {
-    Write-Verbose ('Updating certificate ''{0}''.' -f $_.FullName);
+Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | ForEach-Object {
+    Write-Verbose -Message ('Updating certificate ''{0}''.' -f $_.FullName);
     Copy-Item -Path $_ -Destination $allUsersConfigPath;
 }
+
+## Create the credential check scriptblock
+$credentialCheckScriptBlock = {
+    ## Only prompt if -Password is not specified. This works around the credential pop-up regardless of the ParameterSet!
+    if ($PSCmdlet.ParameterSetName -eq 'PSCredential') {
+        Get-Credential -Message $localized.EnterLocalAdministratorPassword -UserName 'LocalAdministrator';
+    }
+}
+
+## Load the call stack logging setting referenced by WriteVerbose
+$labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;

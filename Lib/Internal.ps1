@@ -50,8 +50,8 @@ function InvokeExecutable {
             NoNewWindow = $true;
             PassThru = $true;
         }
-        Write-Debug ($localized.RedirectingOutput -f 'StdOut', $processArgs.RedirectStandardOutput);
-        Write-Debug ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
+        Write-Debug -Message ($localized.RedirectingOutput -f 'StdOut', $processArgs.RedirectStandardOutput);
+        Write-Debug -Message ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
         WriteVerbose ($localized.StartingProcess -f $Path, [System.String]::Join(' ', $Arguments));
         $process = Start-Process @processArgs;
         if ($process.ExitCode -ne 0) { WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode);}
@@ -70,9 +70,19 @@ function WriteVerbose {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
     )
     process {
-        Write-Verbose ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
+        if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
+            $parentCallStack = (Get-PSCallStack)[1]; # store the parent Call Stack        
+            $functionName = $parentCallStack.FunctionName;
+            $lineNumber = $parentCallStack.ScriptLineNumber;
+            $scriptName = ($parentCallStack.Location -split ':')[0];
+            $verboseMessage = '[{0}] [Script:{1}] [Function:{2}] [Line:{3}] {4}' -f (Get-Date).ToLongTimeString(), $scriptName, $functionName, $lineNumber, $Message;
+        }
+        else {
+            $verboseMessage = '[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message;
+        }
+        Write-Verbose -Message $verboseMessage;
     }
-}
+} #end function WriteVerbose
 
 function WriteWarning {
 <#
@@ -84,6 +94,6 @@ function WriteWarning {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
     )
     process {
-        Write-Warning ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
+        Write-Warning -Message ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
     }
-}
+} #end function WriteWarning

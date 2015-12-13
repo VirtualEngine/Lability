@@ -70,35 +70,6 @@ function ResolveLabSwitch {
     } #end process
 } #end function ResolveLabSwitch
 
-function Get-LabSwitch {
-<#
-    .SYNOPSIS
-        Retrieves the current configuration of a virtual network switch.
-    .DESCRIPTION
-        Gets a virtual network switch configuration using the xVMSwitch DSC resource.
-#>
-    param (
-        ## Switch Id/Name
-        [Parameter(Mandatory)] [System.String] $Name,
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
-    )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-    } #end begin
-    process {
-        $xVMSwitch = @{
-            Name = $networkSwitch.Name;
-            Type = $networkSwitch.Type;
-        }
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        $switch = GetDscResource -ResourceName VMSwitch -Parameters $xVMSwitch;
-        return [PSCustomObject] $switch;
-    } #end process
-} #end function GetLabSwitch
-
 function TestLabSwitch {
 <#
     .SYNOPSIS

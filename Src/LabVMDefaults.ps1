@@ -1,4 +1,19 @@
-function Get-LabVMDefaults {
+function Reset-LabVMDefault {
+<#
+	.SYNOPSIS
+		Reset the current lab virtual machine default settings back to defaults.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+	param ( )
+    process {
+        RemoveConfigurationData -Configuration VM;
+        Get-LabVMDefault;
+    }
+} #end function Reset-LabVMDefault
+New-Alias -Name Reset-LabVMDefaults -Value Reset-LabVMDefault
+
+function Get-LabVMDefault {
 <#
 	.SYNOPSIS
 		Gets the current lab virtual machine default settings.
@@ -8,13 +23,14 @@ function Get-LabVMDefaults {
 	param ( )
     process {
         $labDefaults = GetConfigurationData -Configuration VM;
-        ## BootOrder property should not be exposed via the Get-LabVMDefaults/Set-LabVMDefaults
+        ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $labDefaults.PSObject.Properties.Remove('BootOrder');
         return $labDefaults;
     }
-} #end function Get-LabVMDefaults
+} #end function Get-LabVMDefault
+New-Alias -Name Get-LabVMDefaults -Value Get-LabVMDefault
 
-function Set-LabVMDefaults {
+function Set-LabVMDefault {
 <#
 	.SYNOPSIS
 		Sets the lab virtual machine default settings.
@@ -42,8 +58,6 @@ function Set-LabVMDefaults {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UserLocale,
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')] [System.String] $UILanguage,
-        # Password
-		[Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Password,
         # Timezone
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $Timezone,
         # Registered Owner
@@ -98,9 +112,6 @@ function Set-LabVMDefaults {
         if ($PSBoundParameters.ContainsKey('UserLocale')) {
 			$vmDefaults.UserLocale = $UserLocale;
 		}
-        if ($PSBoundParameters.ContainsKey('Password')) {
-			$vmDefaults.Password = $Password;
-		}
         if ($PSBoundParameters.ContainsKey('RegisteredOwner')) {
 			$vmDefaults.RegisteredOwner = $RegisteredOwner;
 		}
@@ -137,8 +148,9 @@ function Set-LabVMDefaults {
 		}
 		
 		SetConfigurationData -Configuration VM -InputObject $vmDefaults;
-        ## BootOrder property should not be exposed via the Get-LabVMDefaults/Set-LabVMDefaults
+        ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');		
         return $vmDefaults;
     }
-} #end function Set-LabVMDefaults
+} #end function Set-LabVMDefault
+New-Alias -Name Set-LabVMDefaults -Value Set-LabVMDefault

@@ -95,10 +95,10 @@ function Get-LabVM {
             try {
                 ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
                 $vm = GetDscResource -ResourceName VM -Parameters $xVMParams;
-                Write-Output ([PSCustomObject] $vm);
+                Write-Output -InputObject ([PSCustomObject] $vm);
             }
             catch {
-                Write-Error ($localized.CannotLocateNodeError -f $nodeName);
+                Write-Error -Message ($localized.CannotLocateNodeError -f $nodeName);
             }
         } #end foreach node
         
@@ -124,7 +124,7 @@ function Test-LabVM {
     }
     process {
         if (-not $Name) {
-            $Name = $ConfigurationData.AllNodes | Where NodeName -ne '*' | ForEach-Object { $_.NodeName }
+            $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
         foreach ($vmName in $Name) {
             $isNodeCompliant = $true;
@@ -158,7 +158,7 @@ function Test-LabVM {
             if (-not (TestLabVirtualMachine @testLabVirtualMachineParams -Name $vmName)) {
                 $isNodeCompliant = $false;
             }
-            Write-Output $isNodeCompliant;
+            Write-Output -InputObject $isNodeCompliant;
         }
     } #end process
 } #end function Test-LabVM
@@ -168,18 +168,35 @@ function NewLabVM {
     .SYNOPSIS
         Creates a new lab virtual machine is configured as required.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        
+        ## Local administrator password of the VM. The username is NOT used.
+        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        
+        ## Local administrator password of the VM.
+        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [System.Security.SecureString] $Password,
+        
         ## Virtual machine DSC .mof and .meta.mof location
         [Parameter()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
         [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
+    begin {
+        ## If we have only a secure string, create a PSCredential
+        if ($PSCmdlet.ParameterSetName -eq 'Password') {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+    }
     process {
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $Name = $node.NodeName;
@@ -228,17 +245,24 @@ function NewLabVM {
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
         
-        WriteVerbose ($localized.AddingVMResource -f 'VM');
-        SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
+        ## Only mount the VHDX to copy resources if needed!
+        if ($node.Resource) {
+            WriteVerbose ($localized.AddingVMResource -f 'VM');
+            SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
+        }
 
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
+        $setLabVMDiskFileParams = @{
+            Name = $Name;
+            NodeData = $node;
+            Path = $Path;
+            Credential = $Credential;
+        }
         if ($node.CustomBootStrap) {
-            SetLabVMDiskFile -Name $Name -NodeData $node -Path $Path -CustomBootStrap ($node.CustomBootStrap).ToString();
+            $setLabVMDiskFileParams['CustomBootStrap'] = ($node.CustomBootStrap).ToString();
         }
-        else {
-            SetLabVMDiskFile -Name $Name -NodeData $node -Path $Path;
-        }
-        
+        SetLabVMDiskFile @setLabVMDiskFileParams;
+
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
@@ -254,15 +278,15 @@ function NewLabVM {
             }
         }
 
-        Write-Output (Get-VM -Name $Name);
+        Write-Output -InputObject (Get-VM -Name $Name);
     } #end process
 } #end function NewLabVM
 
 function RemoveLabVM {
-<#
-    .SYNOPSIS
-        Deletes a lab virtual machine.
-#>
+    <#
+            .SYNOPSIS
+            Deletes a lab virtual machine.
+    #>
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
@@ -279,6 +303,9 @@ function RemoveLabVM {
             throw ($localized.CannotLocateNodeError -f $Name);
         }
         $Name = $node.NodeName;
+        
+        # Revert to oldest snapshot prior to VM removal to speed things up
+        Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue | Sort-Object -Property CreationTime | Select-Object -First 1 | Restore-VMSnapshot -Confirm:$false
         
         RemoveLabVMSnapshot -Name $Name;
 
@@ -309,23 +336,41 @@ function Reset-LabVM {
     .SYNOPSIS
         Deletes and recreates a lab virtual machine, reapplying the MOF
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        
+        ## Local administrator password of the VM. The username is NOT used.
+        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        
+        ## Local administrator password of the VM.
+        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [System.Security.SecureString] $Password,
+        
         ## Directory path containing the VM .mof file(s)
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
         ## Skip creating baseline snapshots
         [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     begin {
+        ## If we have only a secure string, create a PSCredential
+        if ($PSCmdlet.ParameterSetName -eq 'Password') {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+        
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
     }
     process {
-        RemoveLabVM -Name $Name -ConfigurationData $ConfigurationData;
-        NewLabVM -Name $Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot;
+        foreach ($vmName in $Name) {
+            RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
+            NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+        }
     } #end process    
 } #end function Reset-LabVM

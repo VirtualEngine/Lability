@@ -6,5 +6,6 @@
 	"ParentVhdPath": "%SYSTEMDRIVE%\\TestLab\\MasterVirtualHardDisks",
 	"ResourcePath": "%SYSTEMDRIVE%\\TestLab\\Resources",
     "ResourceShareName": "Resources",
-    "UpdatePath": ""
+    "UpdatePath": "",
+	"DisableLocalFileCaching": false
 }
