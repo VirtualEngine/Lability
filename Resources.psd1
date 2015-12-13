@@ -48,6 +48,8 @@ ConvertFrom-StringData -StringData @'
     AddingDscConfiguration          = Adding DSC file '{0}'.
     AddingBootStrapFile             = Adding BootStrap.ps1 file to '{0}'.
     AddingSetupCompleteCmdFile      = Adding SetupComplete.cmd to '{0}'.
+    UsingCoreCLRSetupComplete       = Using CoreCLR 'SetupComplete.cmd'.
+    UsingDefaultSetupComplete       = Using default 'SetupComplete.cmd'.
     AddingCertificate               = Adding {0} certificate '{1}'.
     CheckingForNodeFile             = Checking node configuration file '{0}'.
     TestingNodeConfiguration        = Testing node '{0}' configuration.

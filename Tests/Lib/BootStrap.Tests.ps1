@@ -46,6 +46,13 @@ Describe 'BootStrap' {
                 $setupCompleteCmd -match '-NonInteractive' | Should Be $true;
             }
 
+            It 'Creates scheduled tasks for CoreCLR image' {
+                ## Must execute before we mock Set-Content!
+                SetSetupCompleteCmd -Path TestDrive:\ -CoreCLR;
+                $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
+                $setupCompleteCmd -match 'Schtasks' | Should Be $true;
+            }
+
             It 'Uses ASCII encoding' {
                 Mock Set-Content -ParameterFilter { $Encoding -eq 'ASCII' } -MockWith { }
                 SetSetupCompleteCmd -Path TestDrive:\;

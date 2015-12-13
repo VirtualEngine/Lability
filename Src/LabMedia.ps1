@@ -63,10 +63,13 @@ function ResolveLabMedia {
     [CmdletBinding()]
     param (
         ## Media ID
-        [Parameter(Mandatory)] [System.String] $Id,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Id,
+        
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter()] [System.Object] $ConfigurationData
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Object] $ConfigurationData
     )
     process {
         ## If we have configuration data specific instance, return that

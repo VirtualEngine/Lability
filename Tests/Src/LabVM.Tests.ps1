@@ -335,6 +335,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; Media = $testMedia; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
@@ -359,6 +360,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
                 Mock SetLabVMDiskResource -MockWith { }
@@ -383,6 +385,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabVirtualMachine -MockWith { }
                 Mock SetLabVMDiskResource -MockWith { }
                 Mock SetLabVMDiskFile -MockWith { }
@@ -407,6 +410,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabVMDiskResource -MockWith { }
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
@@ -429,6 +433,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; Resource = 'TestResource'; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -451,6 +456,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -466,6 +472,30 @@ Describe 'LabVM' {
                 Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -eq $null } -Scope It;
             }
 
+            It 'Uses CoreCLR bootstrap when "SetupComplete" is specified' {
+                $testVMName = 'TestVM';
+                $testCustomBootStrap = 'Write-Host "CustomBootstrap";';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return [PSCustomObject] @{ Id = $Id; CustomData = @{ SetupComplete = 'CoreCLR'; }; }; }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock New-LabImage -MockWith { }
+                Mock SetLabSwitch -MockWith { }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -ParameterFilter { $CoreCLR -eq $true } -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $CoreCLR -eq $true } -Scope It;
+            }
+
             It 'Injects a custom bootstrap when "CustomBootStrap" is specified' {
                 $testVMName = 'TestVM';
                 $testCustomBootStrap = 'Write-Host "CustomBootstrap";';
@@ -474,6 +504,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; CustomBootStrap = $testCustomBootStrap; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -496,6 +527,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
@@ -518,6 +550,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
@@ -540,6 +573,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; WarningMessage = 'This is a test warning' }
                     )
                 }
+                Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
