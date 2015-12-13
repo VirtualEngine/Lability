@@ -13,17 +13,17 @@ Describe 'LabHostDefaults' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "Get-LabHostDefaults" method' {
+        Context 'Validates "Get-LabHostDefault" method' {
 
             It 'Calls "GetConfigurationData"' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { }
                 
-                Get-LabHostDefaults;
+                Get-LabHostDefault;
 
                 Assert-MockCalled GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' }
             }
 
-        } #end context Validates "Get-LabHostDefaults" method
+        } #end context Validates "Get-LabHostDefault" method
 
         Context 'Validates "GetLabHostDSCConfigurationPath" method' {
 
@@ -36,7 +36,7 @@ Describe 'LabHostDefaults' {
 
         } #end context Validates "GetLabHostDSCConfigurationPath" method
 
-        Context 'Validates "Set-LabHostDefaults" method' {
+        Context 'Validates "Set-LabHostDefault" method' {
 
             $fakeConfigurationDataObject = ConvertFrom-Json -InputObject '{
                 "ConfigurationPath": "", "DifferencingVhdPath": "", "HotfixPath": "", "IsoPath": "",
@@ -50,7 +50,7 @@ Describe 'LabHostDefaults' {
                 Mock SetConfigurationData -MockWith { Write-Host $InputObject.IsoPath -ForegroundColor Yellow; }
                 Mock SetConfigurationData -ParameterFilter { $InputObject.IsoPath -eq $testResolvedPath } -MockWith { }
 
-                Set-LabHostDefaults -IsoPath $testEnvironmentPath;
+                Set-LabHostDefault -IsoPath $testEnvironmentPath;
 
                 Assert-MockCalled SetConfigurationData -ParameterFilter { $InputObject.IsoPath -eq $testResolvedPath } -Scope It;
             }
@@ -65,7 +65,7 @@ Describe 'LabHostDefaults' {
                     Mock SetConfigurationData -ParameterFilter { $InputObject.$parameter -eq $testValidPath } -MockWith { }
 
                     $setLabHostDefaultsParams = @{ $parameter = $testPath; }
-                    Set-LabHostDefaults @setLabHostDefaultsParams;
+                    Set-LabHostDefault @setLabHostDefaultsParams;
 
                     Assert-MockCalled SetConfigurationData -ParameterFilter { $InputObject.$parameter -eq $testValidPath } -Scope It;
                 }
@@ -77,7 +77,7 @@ Describe 'LabHostDefaults' {
                     Mock SetConfigurationData -MockWith {  }
                     Mock SetConfigurationData -ParameterFilter { $InputObject.ResourceShareName -eq $testShareName } -MockWith { }
 
-                    Set-LabHostDefaults -ResourceShareName $testShareName;
+                    Set-LabHostDefault -ResourceShareName $testShareName;
 
                     Assert-MockCalled SetConfigurationData -ParameterFilter { $InputObject.ResourceShareName -eq $testShareName } -Scope It;
                 }
@@ -87,10 +87,10 @@ Describe 'LabHostDefaults' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeConfigurationDataObject; }
                 Mock SetConfigurationData -MockWith { }
 
-                { Set-LabHostDefaults -IsoPath $testInvalidPath } | Should Throw;
+                { Set-LabHostDefault -IsoPath $testInvalidPath } | Should Throw;
             }
             
-        } #end context Validates "Set-LabHostDefaults" method
+        } #end context Validates "Set-LabHostDefault" method
 
     } #end InModuleScope
 

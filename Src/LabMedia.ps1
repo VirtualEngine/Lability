@@ -422,4 +422,4 @@ function Reset-LabMedia {
         RemoveConfigurationData -Configuration CustomMedia;
         Get-Labmedia;
     }
-} #end function Reset-LabHostDefaults
+} #end function Reset-LabMedia

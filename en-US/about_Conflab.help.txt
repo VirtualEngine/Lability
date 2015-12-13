@@ -1,0 +1,230 @@
+TOPIC
+        about_Conflab
+        
+SHORT DESCRIPTION
+        Conflab is a local Hyper-V lab provisioning framework.
+
+LONG DESCRIPTION
+        
+        The Conflab module enables simple provisioning of local Windows Hyper-V
+        development and testing lab environments. The intended purpose is to enable
+        the sharing and collaboration of lab environment configurations in a standard-
+        ised format.
+        
+        It uses a declarative document for machine configuration. However, rather than
+        defining configurations in an external custom domain-specific language (DSL)
+        document, Conflab extends existing PowerShell Desired State Configuration
+        (DSC) configuration .psd1 documents with metadata that can be interpreted by
+        the module.
+        
+        By using this approach, it allows the use of a single confiugration document
+        to describe all properties for provisioning Windows-centric development and/or
+        test environments.
+        
+        The Conflab module will parse the DSC configuration document and provision
+        Hyper-V virtual machines according to the metadata contained within. When
+        invoked, Conflab will parse a DSC configuration document and automagically
+        provision the following resources:
+        
+        * Virtual machine disk images
+            * Download required evaluation Operating System installation media.
+            * Expand Windows Image (WIM) image files into Sysprep'd virtual machine
+              parent disks.
+            * Apply required/recommended DSC Windows updates.
+        * Virtual networks
+            * Create internal and external Hyper-V switches.
+        * Virtual machines
+            * Connect to the correct virtual switches.
+            * Inject DSC resources from the host machine.
+            * Inject a dynamically created Unattend.xml file.
+            * Inject external ISO, EXE and ZIP resources.
+            * Inject the virtual machine's DSC document.
+            * Invoke the Local Configuration Manager (LCM) after Sysprep.
+
+DSC CONFIGURATIONS
+    
+        An example DSC configuration document might look the following.
+
+        @{
+            AllNodes = @(
+                @{
+                    NodeName               = 'DC1';
+                },
+                @{
+                    NodeName               = 'APP1';
+                }   
+            )
+            NonNodeData = @{
+
+            }
+        }
+        
+        This exact same document can be extended with specific properties which the
+        Conflab module can interpret. NOTE: this is still a valid PowerShell DSC
+        configuration (.psd1) document that can be supplied to an existing PowerShell
+        DSC configuration.
+        
+        @{
+            AllNodes = @(
+                @{
+                    NodeName               = '*';
+                    Conflab_SwitchName     = 'CORPNET';
+                    Conflab_Media          = '2012R2_x64_Standard_EN_Eval';
+                },
+                @{
+                    NodeName               = 'DC1';
+                    Conflab_ProcessorCount = 2;
+                },
+                @{
+                    NodeName               = 'APP1';
+                    Conflab_ProcessorCount = 1;
+                }   
+            )
+            NonNodeData = @{
+                Conflab = @{
+                    Network = @(
+                        @{
+                            Name = 'CORPNET';
+                            Type = 'Internal';
+                        }
+                    )
+                }
+            }
+        }
+
+        When Start-LabConfiguration is invoked with the above configuration document,
+        it will:
+
+            * Create an internal Hyper-V virtual switch named 'CORPNET'. 
+            * Download required Server 2012 R2 Standard Edition evaluation media.
+            * Create a Sysprep'd Server 2012 R2 Standard Edition parent VHDX file.
+            * Install required/recommended DSC hotfixes.
+            * Provision two Hyper-V virtual machines called 'DC1' and 'APP1'.
+            * Each VM will be given 2GB RAM (configurable default).
+            * 'DC1' will be assigned 2 virtual CPUs.
+            * 'APP1' will be assigned 1 virtual CPU.
+            * Attach each virtual machine to the 'CORPNET' virtual switch.
+            * Create differencing VHDX for each VM.
+            * Inject a dynamically created Unattend.xml file into the differencing
+              VHDX.
+            
+        For a full list of supported metadata, see about_ConfigurationData.
+
+SETTING UP CONFLAB  
+        
+        Initiating a lab deployment requires a number of prerequisites:
+        
+            * The Conflab module must be running with administrative credentials
+                * Creating virtual machines requires administrative permissions.
+            * Installation of the Hyper-V role and PowerShell management cmdlets
+                * Conflab will take care of the local host configuration.
+                * Manually installing the Hyper-V role will remove the need to
+                   reboot the host.
+                   
+        To start the configuration of the Conflab host, run the following command
+        at an elevated PowerShell prompt:
+        
+            PS C:\> Start-LabHostConfiguration
+            
+        If a reboot is required, the module will produce an error. Reboot the host
+        and run the command again.
+        
+        For more detailed information about the progress or what the command is
+        doing, you can supply the -Verbose switch:
+        
+            PS C:\> Start-LabHostConfiguration -Verbose
+
+CONFIGURING HOST DEFAULT VALUES
+
+        Conflab uses numerous defaults for all virtual machines that are created.
+        These default values include the location of the parent virtual disk files,
+        the location of differencing virtual disk files and the default location
+        searched for PowerShell DSC .mof files etc.
+        
+        To view the current host configuration settings, run the following command:
+        
+            PS C:\> Get-LabHostDefaults
+            
+        If any of the default values need changing to reflect your particualar
+        environment or configuration, it is recommended that you set these default
+        before creating any virtual machines. To change any of the default values,
+        use the `Set-LabHostDefaults` cmdlet.
+        
+        For more information about setting the host's default values run the
+        following command:
+        
+            PS C:\> Get-Help -Name Set-LabHostDefaults
+        
+CONFIGURING VIRTUAL MACHINE DEFAULT VALUES
+
+        Conflab applies numerous default values to virtual machine, for example
+        the number of processors to assign or the virtual switch to attach the VM
+        to.
+        
+        The default values can always be overridden within the PowerShell DSC
+        configuration document itself. There is a order of precedence that is
+        applied when evaluating the effective setting. The value is applied to the
+        virtual machine in the following order of precedence:
+        
+            1. The node's configuration hashtable.
+            2. The default/wildcard node's configuration hashtable.
+            3. The LabVMDefaults value.
+        
+        To view the current virtual machine default settings, run the following
+        command:
+        
+            PS C:\> Get-LabVMDefaults
+            
+        To change any of the default values, use the following command:
+        
+            PS C:\> Set-LabVMDefaults
+            
+        For more information about setting the virtual machines' default values
+        run the following command:
+        
+            PS C:\> Get-Help -Name Set-LabVMDefaults
+    
+RUNNING CONFLAB
+
+        Once the Conflab host is configured, the host default values and the virtual
+        machine defaults set, you can initiate a lab deployment. In order to
+        successfully deploy a lab, you will need to following prerequisites in place:
+        
+        * A PowerShell DSC configuration (.ps1) file and an associated PowerShell DSC
+          configuration (.psd1) document.
+            * This should be annotated with the Conflab metadata to ensure that the
+              correct Operating System(s) will be deployed.
+            * If an Operating System is not defined on a node, the virtual machine
+              default 'Media' value will be used.
+        * Have already run the required PowerShell DSC configuration on the Conflab
+          host.
+            * This will ensure that all the .mof files are available locally.
+            * This will also ensure that all the PowerShell DSC resources are located
+              on the host.
+
+        After you have confirmed that all the prerequisites are in place, you can
+        invoke the deployment 
+            
+        For more information on Operating System media and custom resources see the
+        following help topics:
+        
+            PS C:\> Get-Help -Name Media
+            PS C:\> Get-Help -Name Resources
+  
+CONTRIBUTE
+
+        Conflab is open source on GitHub:
+        
+        https://github.com/VirtualEngine/Conflab
+        
+        As you run Conflab and find what you believe to be are bugs, please submit
+        them to:
+        
+        https://github.com/VirtualEngine/Conflab/issues
+        
+        Better yet, fix the bug and submit a pull request.
+        
+SEE ALSO
+        Start-LabConfiguration
+        about_ConfigurationData
+        about_Media

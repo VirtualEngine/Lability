@@ -27,7 +27,8 @@ function ImportDscResource {
                 $resourcePath = Join-Path -Path $dscModuleRootPath -ChildPath $dscResourcePath;
             }
             if ($resourcePath) {
-                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Verbose:$false;
+                ## Import the DSC module into the module's global scope to improve performance
+                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Verbose:$false -Scope Global;
             }
         }
         else {
