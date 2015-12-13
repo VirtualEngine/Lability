@@ -375,12 +375,12 @@ function Reset-LabVM {
     } #end process    
 } #end function Reset-LabVM
 
-function New-LabQuickVM {
+function New-LabVM {
 <#
     .SYNOPSIS
-        Creates a quick virtual machine.
+        Creates a simple bare-metal virtual machine.
     .DESCRIPTION
-        The New-LabQuickVM creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
+        The New-LabVM cmdlet creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
         
         NOTE: The -Id parameter is dynamic and is not displayed in the help output.
     .LINK
