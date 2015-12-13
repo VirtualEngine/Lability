@@ -85,7 +85,7 @@ Describe 'LabVM' {
                     )
                 }
 
-                $hostDefaultProperties = Get-LabVMDefaults;
+                $hostDefaultProperties = Get-LabVMDefault;
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
 
                 $vmProperties.ProcessorCount | Should Be $hostDefaultProperties.ProcessorCount;
@@ -99,7 +99,7 @@ Describe 'LabVM' {
                     )
                 }
 
-                $hostDefaultProperties = Get-LabVMDefaults;
+                $hostDefaultProperties = Get-LabVMDefault;
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $hostDefaultProperties.ProcessorCount;

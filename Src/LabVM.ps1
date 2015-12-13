@@ -283,10 +283,10 @@ function NewLabVM {
 } #end function NewLabVM
 
 function RemoveLabVM {
-<#
-    .SYNOPSIS
-        Deletes a lab virtual machine.
-#>
+    <#
+            .SYNOPSIS
+            Deletes a lab virtual machine.
+    #>
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
@@ -303,6 +303,9 @@ function RemoveLabVM {
             throw ($localized.CannotLocateNodeError -f $Name);
         }
         $Name = $node.NodeName;
+        
+        # Revert to oldest snapshot prior to VM removal to speed things up
+        Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue | Sort-Object -Property CreationTime | Select-Object -First 1 | Restore-VMSnapshot -Confirm:$false
         
         RemoveLabVMSnapshot -Name $Name;
 

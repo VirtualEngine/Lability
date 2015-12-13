@@ -25,6 +25,7 @@ Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tes
         . $_.FullName;
     }
 
+
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
@@ -41,3 +42,6 @@ $credentialCheckScriptBlock = {
         Get-Credential -Message $localized.EnterLocalAdministratorPassword -UserName 'LocalAdministrator';
     }
 }
+
+## Load the call stack logging setting referenced by WriteVerbose
+$labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;

@@ -1,4 +1,4 @@
-function Reset-LabVMDefaults {
+function Reset-LabVMDefault {
 <#
 	.SYNOPSIS
 		Reset the current lab virtual machine default settings back to defaults.
@@ -8,11 +8,12 @@ function Reset-LabVMDefaults {
 	param ( )
     process {
         RemoveConfigurationData -Configuration VM;
-        Get-LabVMDefaults;
+        Get-LabVMDefault;
     }
-} #end function Reset-LabVMDefaults
+} #end function Reset-LabVMDefault
+New-Alias -Name Reset-LabVMDefaults -Value Reset-LabVMDefault
 
-function Get-LabVMDefaults {
+function Get-LabVMDefault {
 <#
 	.SYNOPSIS
 		Gets the current lab virtual machine default settings.
@@ -22,13 +23,14 @@ function Get-LabVMDefaults {
 	param ( )
     process {
         $labDefaults = GetConfigurationData -Configuration VM;
-        ## BootOrder property should not be exposed via the Get-LabVMDefaults/Set-LabVMDefaults
+        ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $labDefaults.PSObject.Properties.Remove('BootOrder');
         return $labDefaults;
     }
-} #end function Get-LabVMDefaults
+} #end function Get-LabVMDefault
+New-Alias -Name Get-LabVMDefaults -Value Get-LabVMDefault
 
-function Set-LabVMDefaults {
+function Set-LabVMDefault {
 <#
 	.SYNOPSIS
 		Sets the lab virtual machine default settings.
@@ -140,11 +142,12 @@ function Set-LabVMDefaults {
 		}
 		
 		SetConfigurationData -Configuration VM -InputObject $vmDefaults;
-        ## BootOrder property should not be exposed via the Get-LabVMDefaults/Set-LabVMDefaults
+        ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');		
         return $vmDefaults;
     }
-} #end function Set-LabVMDefaults
+} #end function Set-LabVMDefault
+New-Alias -Name Set-LabVMDefaults -Value Set-LabVMDefault
 
 function ValidateTimeZone {
 <#
