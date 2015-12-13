@@ -383,13 +383,11 @@ function New-LabQuickVM {
         The New-LabQuickVM creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
         
         NOTE: The -Id parameter is dynamic and is not displayed in the help output.
-
-        The resulting virtual machine is created using the default values. You can find the default values with the 'Get-LabVMDefaults' cmdlet.
     .LINK
         Register-LabMedia
         Unregister-LabMedia
-        Get-LabVMDefaults
-        Set-LabVMDefaults
+        Get-LabVMDefault
+        Set-LabVMDefault
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
@@ -499,7 +497,7 @@ function New-LabQuickVM {
             }
 
             WriteVerbose -Message ($localized.CreatingQuickVM -f $vmName, $MediaId);
-            NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot
+            NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot;
         }
     } #end process
 } #end function New-LabVM
