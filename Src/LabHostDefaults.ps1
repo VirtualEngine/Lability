@@ -66,7 +66,9 @@ function Set-LabHostDefault {
         ## Lab host Windows additional update/offline WSUS path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $UpdatePath,
         ## Disable local caching of file-based ISO and WIM files.
-        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $DisableLocalFileCaching
+        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $DisableLocalFileCaching,
+        ## Enable call stack logging in verbose output
+        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
 	)
 	process {
 		$hostDefaults = GetConfigurationData -Configuration Host;
@@ -74,6 +76,10 @@ function Set-LabHostDefault {
         ## This property may not be present in the original machine configuration file
         if ($hostDefaults.PSObject.Properties.Name -notcontains 'DisableLocalFileCaching') {
             [ref] $null = Add-Member -InputObject $hostDefaults -MemberType NoteProperty -Name 'DisableLocalFileCaching' -Value $DisableLocalFileCaching;
+        }
+        ## This property may not be present in the original machine configuration file
+        if ($hostDefaults.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
+            [ref] $null = Add-Member -InputObject $hostDefaults -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $DisableLocalFileCaching;
         }
 
 		foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
@@ -87,11 +93,17 @@ function Set-LabHostDefault {
                 }
 			}	
 		}
+
 		if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
 			$hostDefaults.ResourceShareName = $ResourceShareName;
 		}
 		if ($PSBoundParameters.ContainsKey('DisableLocalFileCaching')) {
 			$hostDefaults.DisableLocalFileCaching = $DisableLocalFileCaching.ToBool();
+		}
+        if ($PSBoundParameters.ContainsKey('EnableCallStackLogging')) {
+			## Set the global script variable read by WriteVerbose
+            $script:labDefaults.CallStackLogging = $EnableCallStackLogging;
+            $hostDefaults.EnableCallStackLogging = $EnableCallStackLogging.ToBool();
 		}
 		
 		SetConfigurationData -Configuration Host -InputObject $hostDefaults;

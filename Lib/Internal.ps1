@@ -70,13 +70,19 @@ function WriteVerbose {
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
     )
     process {
-        $parentcallstack = (Get-PSCallStack)[1] # store the parent Call Stack        
-        $Functionname = $parentcallstack.FunctionName
-        $LineNo = $parentcallstack.ScriptLineNumber
-        $scriptname = ($parentcallstack.Location -split ':')[0]
-        Write-Verbose ('[{0}] [Script - {1}] [Function - {2}] [Line - {3}] {4}' -f (Get-Date).ToLongTimeString(),$Scriptname, $FunctionName, $LineNo, $Message);
+        if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
+            $parentCallStack = (Get-PSCallStack)[1]; # store the parent Call Stack        
+            $functionName = $parentCallStack.FunctionName;
+            $lineNumber = $parentCallStack.ScriptLineNumber;
+            $scriptName = ($parentCallStack.Location -split ':')[0];
+            $verboseMessage = '[{0}] [Script:{1}] [Function:{2}] [Line:{3}] {4}' -f (Get-Date).ToLongTimeString(), $scriptName, $functionName, $lineNumber, $Message;
+        }
+        else {
+            $verboseMessage = '[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message;
+        }
+        Write-Verbose -Message $verboseMessage;
     }
-}
+} #end function WriteVerbose
 
 function WriteWarning {
 <#
@@ -90,4 +96,4 @@ function WriteWarning {
     process {
         Write-Warning -Message ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
     }
-}
+} #end function WriteWarning
