@@ -13,7 +13,7 @@ Describe 'LabResource' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "Get-LabHostDefaults" method' {
+        Context 'Validates "Get-LabHostDefault" method' {
             
             $configurationData = @{
                 NonNodeData = @{
@@ -124,7 +124,7 @@ Describe 'LabResource' {
                 Assert-MockCalled TestResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -Scope It;
             }
 
-        } #end context Validates "Get-LabHostDefaults" method
+        } #end context Validates "Get-LabHostDefault" method
 
         Context 'Validates "Invoke-LabResourceDownload" method' {
 

@@ -1,4 +1,4 @@
-function Reset-LabHostDefaults {
+function Reset-LabHostDefault {
 <#
 	.SYNOPSIS
 		Reset the current Hyper-V host default settings back to defaults.
@@ -8,11 +8,12 @@ function Reset-LabHostDefaults {
 	param ( )
     process {
         RemoveConfigurationData -Configuration Host;
-        Get-LabHostDefaults;
+        Get-LabHostDefault;
     }
-} #end function Reset-LabHostDefaults
+} #end function Reset-LabHostDefault
+New-Alias -Name Reset-LabHostDefaults -Value Reset-LabHostDefault
 
-function Get-LabHostDefaults {
+function Get-LabHostDefault {
 <#
 	.SYNOPSIS
 		Gets the current Hyper-V host default settings.
@@ -23,7 +24,8 @@ function Get-LabHostDefaults {
     process {
         GetConfigurationData -Configuration Host;
     }
-} #end function Get-LabHostDefaults
+} #end function Get-LabHostDefault
+New-Alias -Name Get-LabHostDefaults -Value Get-LabHostDefault
 
 function GetLabHostDSCConfigurationPath {
 <#
@@ -39,7 +41,7 @@ function GetLabHostDSCConfigurationPath {
     }
 } #end function GetLabHostDSCConfigurationPath
 
-function Set-LabHostDefaults {
+function Set-LabHostDefault {
 <#
 	.SYNOPSIS
 		Sets the current Hyper-V host default settings.
@@ -95,4 +97,5 @@ function Set-LabHostDefaults {
 		SetConfigurationData -Configuration Host -InputObject $hostDefaults;
 		return $hostDefaults;
 	}
-} #end function Set-LabHostDefaults
+} #end function Set-LabHostDefault
+New-Alias -Name Set-LabHostDefaults -Value Set-LabHostDefault

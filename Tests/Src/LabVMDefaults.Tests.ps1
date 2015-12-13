@@ -13,27 +13,27 @@ Describe 'LabVMDefaults' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "Get-LabVMDefaults" method' {
+        Context 'Validates "Get-LabVMDefault" method' {
 
             It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
-                $defaults = Get-LabVMDefaults;
+                $defaults = Get-LabVMDefault;
                 
                 $defaults -is [System.Management.Automation.PSCustomObject] | Should Be $true;
             }
 
             It 'Does not return "BootOrder" property' {
-                $defaults = Get-LabVMDefaults;
+                $defaults = Get-LabVMDefault;
 
                 $defaults.BootOrder | Should BeNullOrEmpty;
             }
 
-        } #end context Validates "Get-LabVMDefaults" method
+        } #end context Validates "Get-LabVMDefault" method
         
-        Context 'Validates "Set-LabVMDefaults" method' {
+        Context 'Validates "Set-LabVMDefault" method' {
 
             It 'Does not return "BootOrder" property' {
                 Mock SetConfigurationData -MockWith { }
-                $defaults = Set-LabVMDefaults;
+                $defaults = Set-LabVMDefault;
 
                 $defaults.BootOrder | Should BeNullOrEmpty;
             }
@@ -58,7 +58,7 @@ Describe 'LabVMDefaults' {
             foreach ($property in $testProperties) {
                 It "Sets ""$($property.Keys[0])"" value" {
                     Mock SetConfigurationData -MockWith { }
-                    $defaults = Set-LabVMDefaults @property;
+                    $defaults = Set-LabVMDefault @property;
 
                     $defaults.($property.Keys[0]) | Should Be $property.Values[0];
                 }
@@ -72,41 +72,41 @@ Describe 'LabVMDefaults' {
                 It "Sets ""$($file.Keys[0])"" value" {
                     Mock SetConfigurationData -MockWith { }
                     New-Item -Path $file.Values[0] -Force -ErrorAction SilentlyContinue -ItemType File;
-                    $defaults = Set-LabVMDefaults @file;
+                    $defaults = Set-LabVMDefault @file;
                     
                     $defaults.($file.Keys[0]) | Should Be $file.Values[0];
                 }
             }
 
             It 'Throws if "Timezone" cannot be resolved' {
-                { Set-LabVMDefaults -Timezone 'Cloud cockoo land' } | Should Throw;
+                { Set-LabVMDefault -Timezone 'Cloud cockoo land' } | Should Throw;
             }
 
             It 'Throws if "ClientCertificatePath" file cannot be found' {
-                { Set-LabVMDefaults -ClientCertificatePath 'TestDrive:\ClientCertificate.cer' } | Should Throw;
+                { Set-LabVMDefault -ClientCertificatePath 'TestDrive:\ClientCertificate.cer' } | Should Throw;
             }
 
             It 'Throws if "RootCertificatePath" file cannot be found' {
-                { Set-LabVMDefaults -RootCertificatePath 'TestDrive:\RootCertificate.cer' } | Should Throw;
+                { Set-LabVMDefault -RootCertificatePath 'TestDrive:\RootCertificate.cer' } | Should Throw;
             }
 
             It 'Throws if "StartupMemory" is less than "MinimumMemory"' {
-                { Set-LabVMDefaults -StartupMemory 1GB -MinimumMemory 2GB } | Should Throw;
+                { Set-LabVMDefault -StartupMemory 1GB -MinimumMemory 2GB } | Should Throw;
             }
 
             It 'Throws if "StartupMemory" is greater than "MaximumMemory"' {
-                { Set-LabVMDefaults -StartupMemory 2GB -MaximumMemory 1GB } | Should Throw;
+                { Set-LabVMDefault -StartupMemory 2GB -MaximumMemory 1GB } | Should Throw;
             }
 
             It 'Calls "SetConfigurationData" to write data to disk' {
                 Mock SetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
 
-                $defaults = Set-LabVMDefaults;
+                $defaults = Set-LabVMDefault;
 
                 Assert-MockCalled SetConfigurationData -ParameterFilter { $Configuration -eq 'VM' }
             }
 
-        } #end context Validates "Set-LabVMDefaults" method
+        } #end context Validates "Set-LabVMDefault" method
     } #end InModuleScope
 
 } #end describe LabVMDefaults
