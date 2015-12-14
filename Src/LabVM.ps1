@@ -399,16 +399,16 @@ function New-LabVM {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $StartupMemory,
         
-        ## Default virtual machine miniumum dynamic memory allocation (bytes).		
+        ## Default virtual machine miniumum dynamic memory allocation (bytes).        
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MinimumMemory,
         
         ## Default virtual machine maximum dynamic memory allocation (bytes).
-		[Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MaximumMemory,
         
         ## Default virtual machine processor count.
-		[Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
         [System.Int32] $ProcessorCount,
 
         # Input Locale
@@ -492,7 +492,7 @@ function New-LabVM {
             foreach ($key in $parameterNames) {
                 if ($PSBoundParameters.ContainsKey($key)) {
                     $configurationName = '{0}_{1}' -f $labDefaults.ModuleName, $key;
-                    [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);		
+                    [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);        
                 }
             }
 

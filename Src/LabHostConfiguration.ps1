@@ -147,12 +147,12 @@ function Start-LabHostConfiguration {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         WriteVerbose $localized.StartedHostConfiguration;
-		## Create required directory structure
-		$hostDefaults = GetConfigurationData -Configuration Host;
+        ## Create required directory structure
+        $hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
