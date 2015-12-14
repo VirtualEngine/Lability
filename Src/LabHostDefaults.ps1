@@ -1,11 +1,11 @@
 function Reset-LabHostDefault {
 <#
-	.SYNOPSIS
-		Reset the current Hyper-V host default settings back to defaults.
+    .SYNOPSIS
+        Reset the current Hyper-V host default settings back to defaults.
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
-	param ( )
+    param ( )
     process {
         RemoveConfigurationData -Configuration Host;
         Get-LabHostDefault;
@@ -15,12 +15,12 @@ New-Alias -Name Reset-LabHostDefaults -Value Reset-LabHostDefault
 
 function Get-LabHostDefault {
 <#
-	.SYNOPSIS
-		Gets the current Hyper-V host default settings.
+    .SYNOPSIS
+        Gets the current Hyper-V host default settings.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
-	param ( )
+    param ( )
     process {
         GetConfigurationData -Configuration Host;
     }
@@ -29,8 +29,8 @@ New-Alias -Name Get-LabHostDefaults -Value Get-LabHostDefault
 
 function GetLabHostDSCConfigurationPath {
 <#
-	.SYNOPSIS
-		Shortcut function to resolve the $labHostDefaults.ConfigurationPath property
+    .SYNOPSIS
+        Shortcut function to resolve the $labHostDefaults.ConfigurationPath property
 #>
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -43,19 +43,19 @@ function GetLabHostDSCConfigurationPath {
 
 function Set-LabHostDefault {
 <#
-	.SYNOPSIS
-		Sets the current Hyper-V host default settings.
+    .SYNOPSIS
+        Sets the current Hyper-V host default settings.
 #>
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
-	param (
+    param (
         ## Lab host default configuration document path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ConfigurationPath,
-		## Lab host Media/ISO path.
+        ## Lab host Media/ISO path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $IsoPath,
         ## Lab host parent/master VHD(X) path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ParentVhdPath,
-        ## Lab host virtual machine differencing VHD(X) path.		
+        ## Lab host virtual machine differencing VHD(X) path.        
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $DifferencingVhdPath,
         ## Lab host DSC resource path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ResourcePath,
@@ -69,9 +69,9 @@ function Set-LabHostDefault {
         [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $DisableLocalFileCaching,
         ## Enable call stack logging in verbose output
         [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
-	)
-	process {
-		$hostDefaults = GetConfigurationData -Configuration Host;
+    )
+    process {
+        $hostDefaults = GetConfigurationData -Configuration Host;
         
         ## This property may not be present in the original machine configuration file
         if ($hostDefaults.PSObject.Properties.Name -notcontains 'DisableLocalFileCaching') {
@@ -82,8 +82,8 @@ function Set-LabHostDefault {
             [ref] $null = Add-Member -InputObject $hostDefaults -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $DisableLocalFileCaching;
         }
 
-		foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
-			if ($PSBoundParameters.ContainsKey($path)) {
+        foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
+            if ($PSBoundParameters.ContainsKey($path)) {
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
                 if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
                     throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);
@@ -91,23 +91,23 @@ function Set-LabHostDefault {
                 else {
                     $hostDefaults.$path = $resolvedPath.Trim('\');
                 }
-			}	
-		}
+            }    
+        }
 
-		if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
-			$hostDefaults.ResourceShareName = $ResourceShareName;
-		}
-		if ($PSBoundParameters.ContainsKey('DisableLocalFileCaching')) {
-			$hostDefaults.DisableLocalFileCaching = $DisableLocalFileCaching.ToBool();
-		}
+        if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
+            $hostDefaults.ResourceShareName = $ResourceShareName;
+        }
+        if ($PSBoundParameters.ContainsKey('DisableLocalFileCaching')) {
+            $hostDefaults.DisableLocalFileCaching = $DisableLocalFileCaching.ToBool();
+        }
         if ($PSBoundParameters.ContainsKey('EnableCallStackLogging')) {
-			## Set the global script variable read by WriteVerbose
+            ## Set the global script variable read by WriteVerbose
             $script:labDefaults.CallStackLogging = $EnableCallStackLogging;
             $hostDefaults.EnableCallStackLogging = $EnableCallStackLogging.ToBool();
-		}
-		
-		SetConfigurationData -Configuration Host -InputObject $hostDefaults;
-		return $hostDefaults;
-	}
+        }
+        
+        SetConfigurationData -Configuration Host -InputObject $hostDefaults;
+        return $hostDefaults;
+    }
 } #end function Set-LabHostDefault
 New-Alias -Name Set-LabHostDefaults -Value Set-LabHostDefault

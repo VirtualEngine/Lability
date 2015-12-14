@@ -85,16 +85,16 @@ function GetResourceDownload {
     [OutputType([System.Collections.Hashtable])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [AllowNull()] [System.String] $Checksum,
         [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
         $checksumPath = '{0}.checksum' -f $DestinationPath;
-		if (-not (Test-Path -Path $DestinationPath)) {
-			WriteVerbose ($localized.MissingResourceFile -f $DestinationPath);
-		}
+        if (-not (Test-Path -Path $DestinationPath)) {
+            WriteVerbose ($localized.MissingResourceFile -f $DestinationPath);
+        }
         elseif (-not (Test-Path -Path $checksumPath)) {
             [ref] $null = SetResourceChecksum -Path $DestinationPath;
         }
@@ -126,7 +126,7 @@ function TestResourceDownload {
     [OutputType([System.Boolean])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [AllowNull()] [System.String] $Checksum,
         [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
@@ -156,7 +156,7 @@ function SetResourceDownload {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [AllowNull()] [System.String] $Checksum,
         [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
@@ -253,14 +253,14 @@ function InvokeResourceDownload {
     [OutputType([System.Collections.Hashtable])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-	    [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [AllowNull()] [System.String] $Checksum,
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force,
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force,
         [Parameter()] [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
-		[ref] $null = $PSBoundParameters.Remove('Force');
+        [ref] $null = $PSBoundParameters.Remove('Force');
         if (-not (TestResourceDownload @PSBoundParameters) -or $Force) {
             SetResourceDownload @PSBoundParameters -Verbose:$false;
         }

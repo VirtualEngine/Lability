@@ -104,12 +104,12 @@ function ResolveLabMedia {
 
 function Get-LabMedia {
 <#
-	.SYNOPSIS
-		Gets the currently registered built-in and custom lab media.
+    .SYNOPSIS
+        Gets the currently registered built-in and custom lab media.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
-	param (
+    param (
         ## Media ID
         [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id,
         ## Only return custom media
@@ -261,7 +261,7 @@ function InvokeLabMediaHotfixDownload {
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
         [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Checksum,
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -412,12 +412,12 @@ function Unregister-LabMedia {
 
 function Reset-LabMedia {
 <#
-	.SYNOPSIS
-		Reset the lab media back to default settings.
+    .SYNOPSIS
+        Reset the lab media back to default settings.
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
-	param ( )
+    param ( )
     process {
         RemoveConfigurationData -Configuration CustomMedia;
         Get-Labmedia;
