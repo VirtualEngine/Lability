@@ -87,6 +87,14 @@ function SetLabVirtualMachine {
         ## Resolve the xVMHyperV resource parameters
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
+        foreach ($key in $vmHyperVParams.Keys) {
+            Write-Host ("CS! '{0}' : '{1}'" -f $key, $vmHyperVParams.$key -join ',') -ForegroundColor Yellow;
+            if ($vmHyperVParams.$key -is [System.String[]]) {
+                foreach ($s in $vmHyperVParams.$key) {
+                    Write-Host ("CS!  '{0}[]' : '{1}'" -f $key, $s) -ForegroundColor Yellow;
+                }
+            }
+        }            
         InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams # -ErrorAction SilentlyContinue;
     } #end process
 } #end function SetLabVirtualMachine

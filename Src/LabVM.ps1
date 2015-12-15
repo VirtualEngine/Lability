@@ -382,7 +382,7 @@ function New-LabVM {
     .DESCRIPTION
         The New-LabVM cmdlet creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
         
-        NOTE: The -Id parameter is dynamic and is not displayed in the help output.
+        NOTE: The -MediaId parameter is dynamic and is not displayed in the help output.
     .LINK
         Register-LabMedia
         Unregister-LabMedia
@@ -458,16 +458,14 @@ function New-LabVM {
         $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
         $parameterAttribute.ParameterSetName = '__AllParameterSets';
         $parameterAttribute.Mandatory = $true;
-        $aliasAttribute = New-Object -TypeName 'System.Management.Automation.AliasAttribute' -ArgumentList @('MediaId');
         $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
         $attributeCollection.Add($parameterAttribute);
-        $attributeCollection.Add($aliasAttribute);
         $mediaIds = (Get-LabMedia).Id;
         $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
         $attributeCollection.Add($validateSetAttribute);
-        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('Id', [System.String], $attributeCollection);
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('MediaId', [System.String], $attributeCollection);
         $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
-        $runtimeParameterDictionary.Add('Id', $runtimeParameter);
+        $runtimeParameterDictionary.Add('MediaId', $runtimeParameter);
         return $runtimeParameterDictionary;
     }
     begin {
@@ -483,7 +481,7 @@ function New-LabVM {
             ## Create a skelton config data
             $skeletonConfigurationData = @{
                 AllNodes = @(
-                    @{  NodeName = $vmName; "$($labDefaults.ModuleName)_Media" = $PSBoundParameters.Id; }
+                    @{  NodeName = $vmName; "$($labDefaults.ModuleName)_Media" = $PSBoundParameters.MediaId; }
                 )
             };
 
@@ -495,9 +493,8 @@ function New-LabVM {
                     [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);        
                 }
             }
-
-            WriteVerbose -Message ($localized.CreatingQuickVM -f $vmName, $MediaId);
+            WriteVerbose -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
             NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot;
-        }
+        } #end foreach name
     } #end process
 } #end function New-LabVM
