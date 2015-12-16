@@ -382,7 +382,9 @@ function New-LabVM {
     .DESCRIPTION
         The New-LabVM cmdlet creates a bare virtual machine using the specified media. No DSC configuration is applied, although DSC resources are still copied in to the VM's VHD(X).
         
-        NOTE: The -MediaId parameter is dynamic and is not displayed in the help output.
+        NOTE: The mandatory -MediaId parameter is dynamic and is not displayed in the help syntax output.
+
+        If optional values are not specified, the virtual machine default settings are applied. To list the current default settings run the `Get-LabVMDefault` command.
     .LINK
         Register-LabMedia
         Unregister-LabMedia
@@ -447,8 +449,8 @@ function New-LabVM {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
-        ## Virtual machine switch name. NOTE: the virtual switch must already exist - it won't be created!
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $SwitchName,
+        ## Virtual machine switch name.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
         
         ## Skip creating baseline snapshots
         [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $NoSnapshot
