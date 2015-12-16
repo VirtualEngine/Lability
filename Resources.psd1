@@ -1,21 +1,21 @@
 ConvertFrom-StringData -StringData @'    
-	DownloadingResource             = Downloading resource '{0}' to '{1}'.
+    DownloadingResource             = Downloading resource '{0}' to '{1}'.
     DownloadingActivity             = Downloading '{0}'.
     DownloadStatus                  = {0:N0} of {1:N0} bytes ({2} %).
     UsingProxyServer                = Using proxy server '{0}'.
     CopyingResource                 = Copying resource '{0}' to '{1}'.
     MissingResourceFile             = Resource '{0}' does not exist.
-	ResourceChecksumNotSpecified    = Resource '{0}' checksum was not specified.
+    ResourceChecksumNotSpecified    = Resource '{0}' checksum was not specified.
     ResourceChecksumMatch           = Resource '{0}' checksum matches '{1}'.
-	ResourceChecksumMismatch        = Resource '{0}' checksum does not match '{1}'.
+    ResourceChecksumMismatch        = Resource '{0}' checksum does not match '{1}'.
     CalculatingResourceChecksum     = Calculating resource '{0}' checksum.
-	WritingResourceChecksum         = Writing checksum '{0}' to resource '{1}'.
-	CreatingDirectory               = Creating directory '{0}'.
-	RemovingDirectory               = Removing directory '{0}'.
-	DirectoryExists                 = Directory '{0}' already exists.
-	RenamingPath                    = Renaming '{0}' to '{1}'.
+    WritingResourceChecksum         = Writing checksum '{0}' to resource '{1}'.
+    CreatingDirectory               = Creating directory '{0}'.
+    RemovingDirectory               = Removing directory '{0}'.
+    DirectoryExists                 = Directory '{0}' already exists.
+    RenamingPath                    = Renaming '{0}' to '{1}'.
     TestingPathExists               = Testing directory '{0}' exists.
-	ExpandingArchive                = Expanding archive '{0}' to '{1}'.
+    ExpandingArchive                = Expanding archive '{0}' to '{1}'.
     PendingRebootWarning            = A pending reboot is required. Please reboot the system and re-run the configuration.
     CheckingDscResource             = Checking DSC Resource '{0}\\{1}'.
     ImportingDscResource            = Importing DSC Resource '{0}\\{1}'.
@@ -100,6 +100,8 @@ ConvertFrom-StringData -StringData @'
     LocatingWimImageIndex           = Locating WIM image '{0}' index.
     MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
     CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
+    RemovingQuickVM                 = Removing quick VM '{0}'.
+    ResettingVM                     = Resetting VM '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -140,4 +142,5 @@ ConvertFrom-StringData -StringData @'
     CannotBindArgumentError         = Cannot bind argument to parameter '{0}' because it is an empty string.
     StartMemLessThanMinMemError     = Startup memory '{0}' cannot be less than minimum memory '{1}'.
     StartMemGreaterThanMaxMemError  = Startup memory '{0}' cannot be greater than maximum memory '{1}'.
+    SwitchDoesNotExistError         = Virtual switch '{0}' cannot be found.
 '@

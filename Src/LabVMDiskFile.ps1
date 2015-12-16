@@ -70,7 +70,11 @@ function SetLabVMDiskFile {
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter()] [System.String] $Path,
         ## Custom bootstrap script
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap
+        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap,
+
+        ## Is a quick VM
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $IsQuickVM
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -83,10 +87,6 @@ function SetLabVMDiskFile {
         [ref] $null = Get-PSDrive;
         $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
-
-        $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
-        WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
-        SetLabVMDiskDscResource -DestinationPath $destinationPath;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -108,44 +108,52 @@ function SetLabVMDiskFile {
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
         $unattendXml = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
-        $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
-        WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
-        if ($CustomBootStrap) { SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap; }
-        else { SetBootStrap -Path $bootStrapPath; }
+        ## Don't copy DSC resources, bootstrap or the certificates for a quick VM
+        if (-not $IsQuickVM) {
+
+            $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
+            WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
+            SetLabVMDiskDscResource -DestinationPath $destinationPath;
+
+            $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
+            WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
+            if ($CustomBootStrap) { SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap; }
+            else { SetBootStrap -Path $bootStrapPath; }
         
-        $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
-        WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
-        SetSetupCompleteCmd -Path $setupCompleteCmdPath;
+            $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
+            WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
+            SetSetupCompleteCmd -Path $setupCompleteCmdPath;
 
-        ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
-        if ($Path) {
-            $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $Name);
-            $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
-            WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
-            if (-not (Test-Path -Path $mofPath)) { WriteWarning ($localized.CannotLocateMofFileError -f $mofPath); }
-            else { Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop; }
+            ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
+            if ($Path) {
+                $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $Name);
+                $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
+                WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
+                if (-not (Test-Path -Path $mofPath)) { WriteWarning ($localized.CannotLocateMofFileError -f $mofPath); }
+                else { Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop; }
 
-            $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $Name);
-            if (Test-Path -Path $metaMofPath -PathType Leaf) {
-                $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
-                WriteVerbose ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
-                Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force;
+                $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $Name);
+                if (Test-Path -Path $metaMofPath -PathType Leaf) {
+                    $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
+                    WriteVerbose ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
+                    Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force;
+                }
             }
-        }
 
-        ## Copy certificates
-        if (-not [System.String]::IsNullOrWhitespace($NodeData.ClientCertificatePath)) {
-            $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
-            $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($NodeData.ClientCertificatePath);
-            WriteVerbose ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
-            Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force;
-        }
-        if (-not [System.String]::IsNullOrWhitespace($NodeData.RootCertificatePath)) {
-            $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
-            $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($NodeData.RootCertificatePath);
-            WriteVerbose ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
-            Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force;
-        }
+            ## Copy certificates
+            if (-not [System.String]::IsNullOrWhitespace($NodeData.ClientCertificatePath)) {
+                $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
+                $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($NodeData.ClientCertificatePath);
+                WriteVerbose ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
+                Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force;
+            }
+            if (-not [System.String]::IsNullOrWhitespace($NodeData.RootCertificatePath)) {
+                $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
+                $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($NodeData.RootCertificatePath);
+                WriteVerbose ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
+                Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force;
+            }
+        } #end if not Quick VM
 
         WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
         Dismount-Vhd -Path $VhdPath;
