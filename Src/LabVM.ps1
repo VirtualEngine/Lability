@@ -225,6 +225,7 @@ function NewLabVM {
         $Name = $node.NodeName;
         [ref] $null = $node.Remove('NodeName');
 
+        ## Don't attempt to check certificates or create virtual switch for quick VMs        
         if (-not $IsQuickVM) {
             ## Check for certificate before we (re)create the VM
             if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
@@ -245,14 +246,13 @@ function NewLabVM {
             else {
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
             }
-
-            if (-not (Test-LabImage -Id $node.Media)) {
-                [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
-            }
-
             WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
             SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         } #end if not quick VM
+
+        if (-not (Test-LabImage -Id $node.Media)) {
+            [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
+        }
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$Name.vhdx");
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
@@ -286,7 +286,7 @@ function NewLabVM {
         if ($node.CustomBootStrap) {
             $setLabVMDiskFileParams['CustomBootStrap'] = ($node.CustomBootStrap).ToString();
         }
-        SetLabVMDiskFile @setLabVMDiskFileParams -IsQuickVM:$IsQuickVM;
+        SetLabVMDiskFile @setLabVMDiskFileParams;
 
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
@@ -434,7 +434,7 @@ function New-LabVM {
         Get-LabVMDefault
         Set-LabVMDefault
 #>
-    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
@@ -526,8 +526,8 @@ function New-LabVM {
             if (-not (Get-VMSwitch -Name $switch -ErrorAction SilentlyContinue)) {
                 throw ($localized.SwitchDoesNotExistError -f $switch);
             }
-        }
-    }
+        } #end foreach switch
+    } #end begin
     process {
         foreach ($vmName in $Name) {
             ## Create a skelton config data
@@ -545,8 +545,11 @@ function New-LabVM {
                     [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);        
                 }
             }
-            WriteVerbose -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
-            NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
+            $verboseProcessMessage = $localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId;
+            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+            }
         } #end foreach name
     } #end process
 } #end function New-LabVM
