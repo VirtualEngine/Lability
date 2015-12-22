@@ -63,14 +63,26 @@ function SetLabVMDiskFile {
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name,
+        
         ## Lab VM/Node configuration data
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $NodeData,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable] $NodeData,
+        
         ## Local administrator password of the VM
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.PSCredential] $Credential,
+        
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
-        [Parameter()] [System.String] $Path,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $Path,
+        
         ## Custom bootstrap script
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()][System.String] $CustomBootStrap,
+
+        ## CoreCLR
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $CoreCLR
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -110,12 +122,16 @@ function SetLabVMDiskFile {
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
-        if ($CustomBootStrap) { SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap; }
-        else { SetBootStrap -Path $bootStrapPath; }
+        if ($CustomBootStrap) {
+            SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
+        }
+        else {
+            SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
+        }
         
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
-        SetSetupCompleteCmd -Path $setupCompleteCmdPath;
+        SetSetupCompleteCmd -Path $setupCompleteCmdPath -CoreCLR:$CoreCLR;
 
         ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
         if ($Path) {

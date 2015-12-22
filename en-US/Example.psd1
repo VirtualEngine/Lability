@@ -10,7 +10,7 @@
             DomainName = 'corp.contoso.com';
             PSDscAllowPlainTextPassword = $true;
             #CertificateFile = "$env:AllUsersProfile\VirtualEngineLab\Certificates\LabClient.cer";
-            #Thumbprint = '599E0BDA95ADED538154DC9FA6DE94920424BCB1';
+            #Thumbprint = 'AAC41ECDDB3B582B133527E4DE0D2F8FEB17AAB2';
             PSDscAllowDomainUser = $true; # Removes 'It is not recommended to use domain credential for node X' messages
             VirtualEngineLab_SwitchName = 'Corpnet';
             VirtualEngineLab_ProcessorCount = 1;
