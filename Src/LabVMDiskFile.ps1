@@ -88,7 +88,11 @@ function SetLabVMDiskFile {
         ## Custom bootstrap order
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateSet('ConfigurationFirst','ConfigurationOnly','Disabled','MediaFirst','MediaOnly')]
-        [System.String] $CustomBootstrapOrder = 'MediaFirst'
+        [System.String] $CustomBootstrapOrder = 'MediaFirst',
+
+        ## CoreCLR
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $CoreCLR
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -128,12 +132,16 @@ function SetLabVMDiskFile {
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
-        if ($CustomBootStrap) { SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap; }
-        else { SetBootStrap -Path $bootStrapPath; }
+        if ($CustomBootStrap) {
+            SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
+        }
+        else {
+            SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
+        }
         
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
-        SetSetupCompleteCmd -Path $setupCompleteCmdPath;
+        SetSetupCompleteCmd -Path $setupCompleteCmdPath -CoreCLR:$CoreCLR;
 
         ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
         if ($Path) {

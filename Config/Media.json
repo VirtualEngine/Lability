@@ -55,6 +55,29 @@
     "Hotfixes": []
 },
 {
+	"Id":  "2016TP4_x64_NANO_EN",
+	"Filename":  "2016TP4_x64_EN.iso",
+	"Description":  "Windows Server 2016 Technical Preview 4 Nano 64bit English",
+	"Architecture":  "x64",
+	"ImageName":  "1",
+	"MediaType":  "ISO",
+	"Uri":  "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
+	"Checksum":  "935BA77651210BD1BD71A114C92B0CAA",
+	"CustomData":  {
+					   "SetupComplete": "CoreCLR",
+					   "PackagePath":  "\\NanoServer\\Packages",
+					   "WimPath":  "\\NanoServer\\NanoServer.wim",
+					   "Package":  [
+							"Microsoft-NanoServer-Guest-Package",
+							"Microsoft-NanoServer-DSC-Package",
+							"Microsoft-NanoServer-Compute-Package",
+							"Microsoft-NanoServer-Containers-Package",
+							"Microsoft-NanoServer-DNS-Package"
+						]
+				   },
+	"Hotfixes":  null
+},
+{
 	"Id": "2012R2_x64_Standard_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation",

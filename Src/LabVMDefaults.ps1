@@ -197,7 +197,7 @@ function Set-LabVMDefault {
         if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
             SetConfigurationData -Configuration VM -InputObject $vmDefaults;
         }
-        
+
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');        
         return $vmDefaults;

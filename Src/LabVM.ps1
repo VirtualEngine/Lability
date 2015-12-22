@@ -256,7 +256,7 @@ function NewLabVM {
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$Name.vhdx");
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
-
+        
         WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $Name);
         $setLabVirtualMachineParams = @{
             Name = $Name;
@@ -276,12 +276,14 @@ function NewLabVM {
             SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
         }
 
+        $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
         $setLabVMDiskFileParams = @{
             Name = $Name;
             NodeData = $node;
             Path = $Path;
             Credential = $Credential;
+            CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
         }
         if ($node.CustomBootStrap) {
             $setLabVMDiskFileParams['CustomBootstrap'] = ($node.CustomBootstrap).ToString();
@@ -296,7 +298,7 @@ function NewLabVM {
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
             Checkpoint-VM -Name $Name -SnapshotName $snapshotName;
         }
-
+        
         if ($node.WarningMessage) {
             if ($node.WarningMessage -is [System.String]) {
                 WriteWarning ($localized.NodeCustomMessageWarning -f $Name, $node.WarningMessage);
@@ -305,7 +307,7 @@ function NewLabVM {
                 WriteWarning ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
             }
         }
-
+        
         Write-Output -InputObject (Get-VM -Name $Name);
     } #end process
 } #end function NewLabVM
