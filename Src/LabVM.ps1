@@ -284,7 +284,10 @@ function NewLabVM {
             Credential = $Credential;
         }
         if ($node.CustomBootStrap) {
-            $setLabVMDiskFileParams['CustomBootStrap'] = ($node.CustomBootStrap).ToString();
+            $setLabVMDiskFileParams['CustomBootstrap'] = ($node.CustomBootstrap).ToString();
+        }
+        if ($node.CustomBootStrapOrder) {
+            $setLabVMDiskFileParams['CustomBootstrapOrder'] = ($node.CustomBootstrapOrder).ToString();
         }
         SetLabVMDiskFile @setLabVMDiskFileParams;
 
@@ -493,10 +496,16 @@ function New-LabVM {
         [System.Security.SecureString] $Password,
         
         ## Virtual machine switch name.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+
+        ## Custom data
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Collections.Hashtable] $CustomData,
         
         ## Skip creating baseline snapshots
-        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     DynamicParam {
         ## Adds a dynamic -Id parameter that returns the registered media Ids
@@ -530,25 +539,33 @@ function New-LabVM {
     } #end begin
     process {
         foreach ($vmName in $Name) {
-            ## Create a skelton config data
-            $skeletonConfigurationData = @{
-                AllNodes = @(
-                    @{  NodeName = $vmName; "$($labDefaults.ModuleName)_Media" = $PSBoundParameters.MediaId; }
-                )
-            };
+            ## Create a skelton node configuration
+            $configurationNode = @{ Nodename = $vmName; };
 
+            ## Add all -CustomData keys/values to the skeleton configuration
+            if ($CustomData) {
+                foreach ($key in $CustomData.Keys) {
+                    $configurationNode[$key] = $CustomData.$key;
+                }
+            }
+
+            ## Explicitly defined parameters override any -CustomData
             $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
                 'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
             foreach ($key in $parameterNames) {
                 if ($PSBoundParameters.ContainsKey($key)) {
-                    $configurationName = '{0}_{1}' -f $labDefaults.ModuleName, $key;
-                    [ref] $null = $skeletonConfigurationData.AllNodes[0].Add($configurationname, $PSBoundParameters.$key);        
+                    $configurationNode[$key] = $PSBoundParameters.$key;        
                 }
             }
+
+            ## Ensure the specified MediaId is applied after any CustomData media entry!
+            $configurationNode['Media'] = $PSBoundParameters.MediaId;
+
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
             $verboseProcessMessage = $localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId;
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
-                NewLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+                $configurationData = @{ AllNodes = @( $configurationNode ) };                
+                NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
             }
         } #end foreach name
     } #end process
