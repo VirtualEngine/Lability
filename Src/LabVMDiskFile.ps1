@@ -83,7 +83,12 @@ function SetLabVMDiskFile {
         
         ## Custom bootstrap script
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $CustomBootStrap
+        [System.String] $CustomBootstrap,
+
+        ## Custom bootstrap order
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateSet('ConfigurationFirst','ConfigurationOnly','Disabled','MediaFirst','MediaOnly')]
+        [System.String] $CustomBootstrapOrder = 'MediaFirst'
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
