@@ -55,7 +55,7 @@ function New-LabImage {
     .SYNOPSIS
         Creates a new master/parent image.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.IO.FileInfo])]
     param (
         ## Lab media Id
@@ -80,6 +80,8 @@ function New-LabImage {
     process {
         ## Download media if required..
         [ref] $null = $PSBoundParameters.Remove('Force');
+        [ref] $null = $PSBoundParameters.Remove('WhatIf');
+        [ref] $null = $PSBoundParameters.Remove('Confirm');
         $media = ResolveLabMedia @PSBoundParameters;
         $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
         
@@ -105,7 +107,7 @@ function New-LabImage {
             }
             
             ## Create disk image and refresh PSDrives
-            $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force # -ErrorAction Stop;
+            $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
             [ref] $null = Get-PSDrive;
             
             ## Apply WIM (ExpandWindowsImage) and add specified features

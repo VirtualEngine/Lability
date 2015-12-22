@@ -95,6 +95,7 @@ ConvertFrom-StringData -StringData @'
     RemovingCustomMediaEntry        = Removing '{0}' media entry.
     SavingConfiguration             = Saving configuration '{0}'.
     PerformingOperationOnTarget     = Performing the operation '{0}' on target '{1}'.
+    SettingVMDefaults               = Setting VM defaults.
     ResettingConfigurationDefaults  = Resetting '{0}' configuration settings to default.
     LocatingWimImageName            = Locating WIM image '{0}' name.
     LocatingWimImageIndex           = Locating WIM image '{0}' index.
