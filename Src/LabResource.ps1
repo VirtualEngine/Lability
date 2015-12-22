@@ -6,9 +6,12 @@ function Test-LabResource {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData,
+        
         ## Lab resource Id
-        [Parameter()] [System.String] $ResourceId
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ResourceId
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -45,12 +48,18 @@ function Invoke-LabResourceDownload {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.Object] $ConfigurationData = @{ },
+        
         ## Lab media Id
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $MediaId,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String[]] $MediaId,
+        
         ## Lab resource Id
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String[]] $ResourceId,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String[]] $ResourceId,
+        
         ## Forces a checksum recalculations and a download if necessary.
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -115,9 +124,12 @@ function ResolveLabResource {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData,
+        
         ## Lab resource ID
-        [Parameter(Mandatory)] [System.String] $ResourceId
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ResourceId
     )
     process {
         $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
@@ -133,9 +145,12 @@ function ExpandIsoResource {
 #>
     param (
         ## Source ISO file path
-        [Parameter(Mandatory)] [System.String] $Path,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Path,
+        
         ## Destination folder path
-        [Parameter(Mandatory)] [System.String] $DestinationPath
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $DestinationPath
     )
     process {
         WriteVerbose ($localized.MountingDiskImage -f $Path);
@@ -162,11 +177,16 @@ function ExpandLabResource {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData,
+        
         ## Lab VM name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Destination mounted VHDX path to expand resources into
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
