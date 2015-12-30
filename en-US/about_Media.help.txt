@@ -22,6 +22,7 @@ LONG DESCRIPTION
         Package
         PackagePath
         SetupComplete { CoreCLR }
+        CustomBootstrap
     }
 
 EXAMPLES
