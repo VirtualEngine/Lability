@@ -145,7 +145,7 @@ function Get-LabMedia {
             $defaultMedia = GetConfigurationData -Configuration Media;
         }
         ## Retrieve custom media
-        $customMedia = GetConfigurationData -Configuration CustomMedia;
+        $customMedia = @(GetConfigurationData -Configuration CustomMedia);
         if (-not $customMedia) {
             $customMedia = @();
         }
