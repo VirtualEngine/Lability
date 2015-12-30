@@ -465,11 +465,11 @@ Describe 'LabVM' {
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
                 Mock SetLabVMDiskResource -MockWith { }
-                Mock SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -eq $null } -MockWith { }
+                Mock SetLabVMDiskFile -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $CustomBootStrap -eq $null } -Scope It;
+                Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
 
             It 'Uses CoreCLR bootstrap when "SetupComplete" is specified' {

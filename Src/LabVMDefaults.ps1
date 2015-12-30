@@ -24,11 +24,6 @@ function Get-LabVMDefault {
     process {
         $vmDefaults = GetConfigurationData -Configuration VM;
 
-        ## This property may not be present in the original VM default file
-        if ($vmDefaults.PSObject.Properties.Name -notcontains 'CustomBootstrapOrder') {
-            [ref] $null = Add-Member -InputObject $vmDefaults -MemberType NoteProperty -Name 'CustomBootstrapOrder' -Value 'MediaFirst';
-        }
-
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');
         return $vmDefaults;

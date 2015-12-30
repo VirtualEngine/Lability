@@ -249,11 +249,11 @@ function NewLabVM {
             WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
             SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         } #end if not quick VM
-
+        
         if (-not (Test-LabImage -Id $node.Media)) {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
-
+        
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$Name.vhdx");
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
         
@@ -285,11 +285,15 @@ function NewLabVM {
             Credential = $Credential;
             CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
         }
-        if ($node.CustomBootStrap) {
-            $setLabVMDiskFileParams['CustomBootstrap'] = ($node.CustomBootstrap).ToString();
+        
+        $resolveCustomBootStrapParams = @{
+            CustomBootstrapOrder = $node.CustomBootstrapOrder;
+            ConfigurationCustomBootstrap = $node.CustomBootstrap;
+            MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
         }
-        if ($node.CustomBootStrapOrder) {
-            $setLabVMDiskFileParams['CustomBootstrapOrder'] = ($node.CustomBootstrapOrder).ToString();
+        $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
+        if ($customBootstrap) {
+            $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
         }
         SetLabVMDiskFile @setLabVMDiskFileParams;
 
@@ -313,10 +317,10 @@ function NewLabVM {
 } #end function NewLabVM
 
 function RemoveLabVM {
-    <#
-            .SYNOPSIS
-            Deletes a lab virtual machine.
-    #>
+<#
+    .SYNOPSIS
+        Deletes a lab virtual machine.
+#>
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
@@ -419,7 +423,7 @@ function Reset-LabVM {
                 RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
                 NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
             } #end if should process
-        } #end foreach VM
+        } #end foreach VMd
     } #end process    
 } #end function Reset-LabVM
 
@@ -510,7 +514,7 @@ function New-LabVM {
         [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     DynamicParam {
-        ## Adds a dynamic -Id parameter that returns the registered media Ids
+        ## Adds a dynamic -MediaId parameter that returns the available media Ids
         $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
         $parameterAttribute.ParameterSetName = '__AllParameterSets';
         $parameterAttribute.Mandatory = $true;
@@ -589,7 +593,7 @@ function Remove-LabVM {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
             $verboseProcessMessage = $localized.RemovingQuickVM -f $vmName;
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
-                ## Create a skelton config data
+                ## Create a skeleton config data
                 $skeletonConfigurationData = @{
                     AllNodes = @(
                         @{  NodeName = $vmName; }

@@ -84,6 +84,55 @@ Describe 'BootStrap' {
 
         } #end context Validates "SetBootStrap" method
 
+        Context 'Validates "ResolveCustomBootStrap" method' {
+
+            It 'Returns empty string when "CustomBootStrapOrder" = "Disabled"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder Disabled -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should BeNullOrEmpty;
+            }
+
+            It 'Returns configuration bootstrap when "CustomBootStrapOrder" = "ConfigurationOnly"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationOnly -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be $configurationBootstrap;
+            }
+
+            It 'Returns media bootstrap when "CustomBootStrapOrder" = "MediaOnly"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaOnly -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be $mediaBootstrap;
+            }
+
+            It 'Returns configuration bootstrap first when "CustomBootStrapOrder" = "ConfigurationFirst"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationFirst -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$configurationBootStrap`r`n$mediaBootstrap";
+            }
+
+            It 'Returns media bootstrap first when "CustomBootStrapOrder" = "MediaFirst"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaFirst -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
+            }
+
+        } #end context Validates "ResolveCustomBootStrap" method
+
     } #end InModuleScope
 
 } #end describe Bootstrap

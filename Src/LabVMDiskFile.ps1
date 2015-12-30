@@ -85,11 +85,6 @@ function SetLabVMDiskFile {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $CustomBootstrap,
 
-        ## Custom bootstrap order
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateSet('ConfigurationFirst','ConfigurationOnly','Disabled','MediaFirst','MediaOnly')]
-        [System.String] $CustomBootstrapOrder = 'MediaFirst',
-
         ## CoreCLR
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CoreCLR

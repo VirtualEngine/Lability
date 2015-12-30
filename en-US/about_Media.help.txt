@@ -21,6 +21,7 @@ LONG DESCRIPTION
         WindowsOptionalFeature
         Package
         PackagePath
+        SetupComplete { CoreCLR }
     }
 
 EXAMPLES
