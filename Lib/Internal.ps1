@@ -67,7 +67,8 @@ function GetFormattedMessage {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
     )
     process {
         if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
@@ -91,7 +92,8 @@ function WriteVerbose {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
     )
     process {
         $verboseMessage = GetFormattedMessage -Message $Message;
@@ -106,7 +108,8 @@ function WriteWarning {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
     )
     process {
         $warningMessage = GetFormattedMessage -Message $Message;
