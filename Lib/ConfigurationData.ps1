@@ -30,17 +30,17 @@ function ConvertToConfigurationData {
 
 function ResolveConfigurationDataPath {
 <#
-	.SYNOPSIS
-		Resolves the lab configuration data path.
-	.NOTES
-		When -IncludeDefaultPath is specified, if the configuration data file is not found, the default
-		module configuration path is returned.
+    .SYNOPSIS
+        Resolves the lab configuration data path.
+    .NOTES
+        When -IncludeDefaultPath is specified, if the configuration data file is not found, the default
+        module configuration path is returned.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
-		[Parameter()] [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
+        [Parameter()] [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
     process {
         switch ($Configuration) {
@@ -51,11 +51,11 @@ function ResolveConfigurationDataPath {
         }
         $configPath = Join-Path -Path $labDefaults.ConfigurationData -ChildPath $configPath;
         $resolvedPath = Join-Path -Path "$env:ALLUSERSPROFILE\$($labDefaults.ModuleName)" -ChildPath $configPath;
-		if ($IncludeDefaultPath) {
-			if (-not (Test-Path -Path $resolvedPath)) {
-				$resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
-			}
-		}
+        if ($IncludeDefaultPath) {
+            if (-not (Test-Path -Path $resolvedPath)) {
+                $resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
+            }
+        }
         Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
     } #end process
@@ -63,8 +63,8 @@ function ResolveConfigurationDataPath {
 
 function GetConfigurationData {
 <#
-	.SYNOPSIS
-		Gets lab configuration data.
+    .SYNOPSIS
+        Gets lab configuration data.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
@@ -82,20 +82,20 @@ function GetConfigurationData {
 
 function SetConfigurationData {
 <#
-	.SYNOPSIS
-		Saves lab configuration data.
+    .SYNOPSIS
+        Saves lab configuration data.
 #>
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
-		[Parameter(Mandatory, ValueFromPipeline)] [System.Object] $InputObject
+        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $InputObject
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
-		[ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-		Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force;
+        [ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
+        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force;
     }
 } #end function SetConfigurationData
 

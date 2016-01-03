@@ -76,13 +76,32 @@ Describe 'WindowsImage' {
                 Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
                 Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
-                Mock Expand-WindowsImage -ParameterFilter { $Index -eq $testWimImageIndex} -MockWith { }
                 Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
                 Mock Dismount-DiskImage -MockWith { }
+                Mock Expand-WindowsImage -ParameterFilter { $Index -eq $testWimImageIndex} -MockWith { }
 
                 ExpandWindowsImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle MBR;
 
                 Assert-MockCalled Expand-WindowsImage -ParameterFilter { $Index -eq $testWimImageIndex} -Scope It;
+            }
+
+            It 'Calls "Expand-WindowsImage" with custom "WimPath"' {
+                $testIsoPath = 'TestDrive:\TestIsoImage.iso';
+                [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
+                $testVhdPath = 'TestDrive:\TestImage.vhdx';
+                $testVhdImage = @{ Path = $testVhdPath };
+                $testWimImageIndex = 42;
+                $testWimPath = '\custom.wim';
+                Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
+                Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
+                Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+                Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
+                Mock Dismount-DiskImage -MockWith { }
+                Mock Expand-WindowsImage -ParameterFilter { $ImagePath.EndsWith($testWimPath) } -MockWith { }
+
+                ExpandWindowsImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle MBR -WimPath $testWimPath;
+
+                Assert-MockCalled Expand-WindowsImage -ParameterFilter { $ImagePath.EndsWith($testWimPath) } -Scope It;
             }
 
             It 'Dismounts ISO image' {
@@ -118,7 +137,7 @@ Describe 'WindowsImage' {
                 Assert-MockCalled Dismount-DiskImage -Scope It -Exactly 0;
             }
 
-            It 'Calls "AddWindowsOptionalFeature" when "WindowsOptionalFeature" is defined with ISO media' {
+            It 'Calls "AddWindowsOptionalFeature" when "WindowsOptionalFeature" is defined' {
                 $testIsoPath = 'TestDrive:\TestIsoImage.iso';
                 [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $testVhdPath = 'TestDrive:\TestImage.vhdx';
@@ -145,16 +164,17 @@ Describe 'WindowsImage' {
                 Assert-MockCalled AddWindowsOptionalFeature -Scope It;
             }
 
-            It 'Does not Call "AddWindowsOptionalFeature" when "WindowsOptionalFeature" is defined with WIM media' {
+            It 'Calls "AddWindowsOptionalFeature" with custom "SourcePath"' {
                 $testWimPath = 'TestDrive:\TestWimImage.wim';
                 [ref] $null = New-Item -Path $testWimPath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $testVhdPath = 'TestDrive:\TestImage.vhdx';
                 $testVhdImage = @{ Path = $testVhdPath };
                 $testWimImageName = 'TestWimImage';
+                $testSourcePath = '\CustomSourcePath';
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
                 Mock Expand-WindowsImage -MockWith { }
                 Mock GetWindowsImageIndex { return 42; }
-                Mock AddWindowsOptionalFeature { }
+                Mock AddWindowsOptionalFeature -ParameterFilter { $ImagePath.EndsWith($testSourcePath) } -MockWith { }
 
                 $expandWindowsImageParams = @{
                     MediaPath = $testWimPath;
@@ -162,10 +182,12 @@ Describe 'WindowsImage' {
                     Vhd = $testVhdImage;
                     PartitionStyle = 'GPT';
                     WindowsOptionalFeature = 'NetFx3';
+                    SourcePath = $testSourcePath;
                 }
                 ExpandWindowsImage @expandWindowsImageParams -WarningAction SilentlyContinue;
 
-                Assert-MockCalled AddWindowsOptionalFeature -Scope It -Exactly 0;
+                Assert-MockCalled AddWindowsOptionalFeature -ParameterFilter { $ImagePath.EndsWith($testSourcePath) }-Scope It;
+            
             }
 
         } #end context Validates "ExpandWindowsImage" method

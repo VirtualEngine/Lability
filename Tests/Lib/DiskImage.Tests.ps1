@@ -300,7 +300,7 @@ Describe 'DiskImage' {
         
         } #end context Validates "SetDiskImageBootVolume" method
 
-        Context 'Validates "AddDiskImagePackage" method' {
+        Context 'Validates "AddDiskImageHotfix" method' {
 
             $fakeMediaSuite = @(
                 @{  Id = 'NoHotfixes';
@@ -334,7 +334,7 @@ Describe 'DiskImage' {
                         Mock NewDirectory -MockWith { }
                         Mock Add-WindowsPackage -MockWith { }
 
-                        AddDiskImagePackage $fakeMedia.Id -Vhd $vhdImage -PartitionStyle $partitionStyle;
+                        AddDiskImageHotfix $fakeMedia.Id -Vhd $vhdImage -PartitionStyle $partitionStyle;
 
                         Assert-MockCalled Add-WindowsPackage -Scope It -Exactly $fakeMedia.Hotfixes.Count;
                     }
@@ -342,7 +342,7 @@ Describe 'DiskImage' {
                 } #end foreach partition style
             } #end foreach fake media suite
 
-        } #end context Validates "AddDiskImagePackage" method
+        } #end context Validates "AddDiskImageHotfix" method
 
     } #end InModuleScope
 

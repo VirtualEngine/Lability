@@ -38,6 +38,7 @@ ConvertFrom-StringData -StringData @'
     FormattingDiskPartition         = Formatting '{0}' disk partition.
     AddingImagePackage              = Adding package '{0}' to image '{1}'.
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
+    AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
@@ -47,6 +48,8 @@ ConvertFrom-StringData -StringData @'
     AddingDscConfiguration          = Adding DSC file '{0}'.
     AddingBootStrapFile             = Adding BootStrap.ps1 file to '{0}'.
     AddingSetupCompleteCmdFile      = Adding SetupComplete.cmd to '{0}'.
+    UsingCoreCLRSetupComplete       = Using CoreCLR 'SetupComplete.cmd'.
+    UsingDefaultSetupComplete       = Using default 'SetupComplete.cmd'.
     AddingCertificate               = Adding {0} certificate '{1}'.
     CheckingForNodeFile             = Checking node configuration file '{0}'.
     TestingNodeConfiguration        = Testing node '{0}' configuration.
