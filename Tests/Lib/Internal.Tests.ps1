@@ -76,12 +76,54 @@ Describe 'Internal' {
             
         } #end context Validates "InvokeExecutable" method
 
+        Context 'Validates "GetFormattedMessage" method' {
+        
+            It 'Does not return call stack information when "$labDefaults.CallStackLogging" = "$null"' {
+                $labDefaults = @{ }
+                $testMessage = 'This is a test message';
+
+                $message = GetFormattedMessage -Message $testMessage;
+
+                $message -match '\] \[' | Should Be $false;
+            }
+            
+            It 'Does not return call stack information when "$labDefaults.CallStackLogging" = "$false"' {
+                $labDefaults = @{ CallStackLogging = $false; }
+                $testMessage = 'This is a test message';
+
+                $message = GetFormattedMessage -Message $testMessage;
+
+                $message -match '\] \[' | Should Be $false;
+            }
+            
+            It 'Returns call stack information when "$labDefaults.CallStackLogging" = "$true"' {
+                $labDefaults = @{ CallStackLogging = $true; }
+                $testMessage = 'This is a test message';
+
+                $message = GetFormattedMessage -Message $testMessage;
+
+                $message -match '\] \[' | Should Be $true;
+            }
+        
+        } #end context Validates "GetFormattedMessage" method
+
         Context 'Validates "WriteVerbose" method' {
             
+            It 'Calls "GetFormattedMessage" method' {
+                $testMessage = 'This is a test message';
+                Mock GetFormattedMessage -ParameterFilter { $Message -match $testMessage } -MockWith { return $testMessage; }
+
+                WriteVerbose -Message $testMessage;
+
+                Assert-MockCalled GetFormattedMessage -ParameterFilter { $Message -match $testMessage } -Scope It;
+            }
+
             It 'Calls "Write-Verbose" method with test message' {
                 $testMessage = 'This is a test message';
                 Mock Write-Verbose -ParameterFilter { $Message -match "$testMessage`$" } -MockWith { }
+                
                 WriteVerbose -Message $testMessage;
+                
                 Assert-MockCalled Write-Verbose -ParameterFilter { $Message -match $testMessage } -Scope It;
             }
 
@@ -89,6 +131,15 @@ Describe 'Internal' {
 
         Context 'Validates "WriteWarning" method' {
             
+            It 'Calls "GetFormattedMessage" method' {
+                $testMessage = 'This is a test message';
+                Mock GetFormattedMessage -ParameterFilter { $Message -match $testMessage } -MockWith { return $testMessage; }
+
+                WriteVerbose -Message $testMessage;
+
+                Assert-MockCalled GetFormattedMessage -ParameterFilter { $Message -match $testMessage } -Scope It;
+            }
+
             It 'Calls "Write-Warning" method with test message' {
                 $testMessage = 'This is a test message';
                 Mock Write-Warning -ParameterFilter { $Message -match "$testMessage`$" } -MockWith { }

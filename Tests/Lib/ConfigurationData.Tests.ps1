@@ -78,6 +78,19 @@ Describe 'ConfigurationData' {
 
                 Assert-MockCalled Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -Scope It;
             }
+            
+            It 'Adds missing "CustomBootstrapOrder" property to VM configuration' {
+                $testConfigurationFilename = 'TestVMConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $vmConfiguration = GetConfigurationData -Configuration VM;
+                
+                $vmConfiguration.CustomBootstrapOrder | Should Be 'MediaFirst';
+            }
 
         } #end context Validates "GetConfigurationData" method
 
@@ -97,7 +110,25 @@ Describe 'ConfigurationData' {
         ##    }
         ##
         ##} #end context Validates "GetConfigurationData" method
+        
+        Context 'Validates "RemoveConfigurationData" method' {
+            
+            It 'Removes configuration file' {
+                $testConfigurationFilename = 'TestVMConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
+                Mock Test-Path -MockWith { return $true; }
+                Mock Remove-Item -ParameterFilter { $Path.EndsWith($testConfigurationFilename ) } -MockWith { }
+                
+                RemoveConfigurationData -Configuration VM;
+                
+                Assert-MockCalled Remove-Item -ParameterFilter { $Path.EndsWith($testConfigurationFilename) } -Scope It;
+            }
+            
+        } #end context Validates "RemoveConfigurationData" method
 
     } #end InModuleScope
 
-} #end describe Bootstrap
+} #end describe ConfigurationData

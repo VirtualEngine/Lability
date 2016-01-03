@@ -130,6 +130,22 @@ Describe 'BootStrap' {
 
                 $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
             }
+            
+            It 'Returns configuration bootstrap when "MediaCustomBootstrap" is null' {
+                $configurationBootstrap = 'Configuration';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationFirst -ConfigurationCustomBootstrap $configurationBootstrap;
+
+                $bootstrap | Should Be "$configurationBootStrap`r`n$mediaBootstrap";
+            }
+
+            It 'Returns media bootstrap when "ConfigurationCustomBootstrap" is null' {
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaFirst -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
+            }
 
         } #end context Validates "ResolveCustomBootStrap" method
 
