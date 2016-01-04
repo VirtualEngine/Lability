@@ -125,12 +125,25 @@ function New-LabImage {
                 $expandWindowsImageParams['WimImageName'] = $media.ImageName;
             }
 
+            if ($media.CustomData.SourcePath) {
+                $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+            }
+            if ($media.CustomData.WimPath) {
+                $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
+            }
             if ($media.CustomData.WindowsOptionalFeature) {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }
+            if ($media.CustomData.PackagePath) {
+                $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
+            }
+            if ($media.CustomData.Package) {
+                $expandWindowsImageParams['Package'] = $media.CustomData.Package;
+            }
+
             ExpandWindowsImage @expandWindowsImageParams;
-            ## Apply hotfixes (AddDiskImagePackage)
-            AddDiskImagePackage -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+            ## Apply hotfixes (AddDiskImageHotfix)
+            AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
             ## Configure boot volume (SetDiskImageBootVolume)
             SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
         }

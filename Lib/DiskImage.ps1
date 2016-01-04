@@ -241,7 +241,7 @@ function SetDiskImageBootVolume {
     } #end process
 } #end function SetDiskImageBootVolume
 
-function AddDiskImagePackage {
+function AddDiskImageHotfix {
 <#
     .SYMOPSIS
         Adds a Windows update/hotfix package to an image.
@@ -264,17 +264,51 @@ function AddDiskImagePackage {
             $hotfixFileInfo = InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
             $packageName = [System.IO.Path]::GetFileNameWithoutExtension($hotfixFileInfo.FullName);
 
-            $logPath = '{0}:\Windows\Logs\{1}' -f $vhdDriveLetter, $labDefaults.ModuleName;
-            [ref] $null = NewDirectory -Path $logPath -Verbose:$false;
-            
-            WriteVerbose ($localized.AddingImagePackage -f $packageName, $Vhd.Path);
-            $addWindowsPackageParams = @{
-                PackagePath = $hotfixFileInfo.FullName;
-                Path = '{0}:\' -f $vhdDriveLetter;
-                LogPath = '{0}\{1}.log' -f $logPath, $packageName;
-                LogLevel = 'Errors';
-            }
-            [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
+            AddDiskImagePackage -Name $packageName -Path $hotfixFileInfo.FullName -DestinationPath $vhdDriveLetter;
         }
+    } #end process
+} #end function AddDiskImageHotfix
+
+function AddDiskImagePackage {
+<#
+    .SYNOPSIS
+        Adds a Windows package (.cab) to an image. This is implmented primarily to support injection of
+        packages into Nano server images.
+    .NOTES
+        The real difference between a hotfix and package is that a package can either be specified in the
+        master VHD(X) image creation OR be injected into VHD(X) differencing disk.
+#>
+    [CmdletBinding()]
+    param (
+        ## Package name (used for logging)
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Name,
+
+        ## File path to the package (.cab) file
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Path,
+
+        ## Destination operating system path (mounted VHD), i.e. G:\
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath
+    )
+    begin {
+        ## We just want the drive letter
+        if ($DestinationPath.Length -gt 1) {
+            $DestinationPath = $DestinationPath.Substring(0,1);
+        }
+    }
+    process {
+        $logPath = '{0}:\Windows\Logs\{1}' -f $DestinationPath, $labDefaults.ModuleName;
+        [ref] $null = NewDirectory -Path $logPath -Verbose:$false;
+        
+        WriteVerbose ($localized.AddingImagePackage -f $Name, $Path);
+        $addWindowsPackageParams = @{
+            PackagePath = $Path;
+            Path = '{0}:\' -f $DestinationPath;
+            LogPath = '{0}\{1}.log' -f $logPath, $Name;
+            LogLevel = 'Errors';
+        }
+        [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
     } #end process
 } #end function AddDiskImagePackage
