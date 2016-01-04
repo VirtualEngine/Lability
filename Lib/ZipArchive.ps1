@@ -11,6 +11,7 @@ function ExpandZipArchive {
 #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Source path to the Zip Archive.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
@@ -172,10 +173,10 @@ function CloseZipArchive {
     param ()
     process {
         WriteVerbose ($localized.ClosingZipArchive -f $Path);
-        if ($zipArchive -ne $null) {
+        if ($null -ne $zipArchive) {
             $zipArchive.Dispose();
         }
-        if ($fileStream -ne $null) {
+        if ($null -ne $fileStream) {
             $fileStream.Close();
         }
     } # end process

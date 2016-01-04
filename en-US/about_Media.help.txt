@@ -2,28 +2,57 @@ TOPIC
     about_Media
 
 SHORT DESCRIPTION
-    A short, one-line description of the topic contents.
-
+        Additional custom media/images can be used to either supplement the default built-in media or to override
+        the built-in media with alternative media/images.
+    
 LONG DESCRIPTION
-    A detailed, full description of the subject or purpose of the module.
+        By default, Conflab only includes evaluation media (and will automatically download this if it is not present
+        on the host machine). If you wish to use VLK or MAK media you must provide your own media.
+        
+        You can also override the default media with your own implementation(s). This is useful if you have an existing
+        image that you wish to use instead of the built-in media or wish to specify a shared file server in a team
+        environment.
+            
+        Additional media can be added to the default Conflab media either by registering it (in advance) in the host's
+        configuration or by defining it within the PowerShell DSC configuration (.psd1) document. The following custom
+        media types are supported:
+        
+            * VHD
+            * WIM
+            * ISO
+        
+        This media can be downloaded from a web server or from an accessible file server as long as it is contactable
+        from the host machine. NOTE: YOU CAN MANUALLY DOWNLOAD/PLACE MEDIA ON THE HOST MACHINE IF NEEDED.
+        
+        Conflab natively supports all Windows operating systems that include the Windows Management Framework (WMF) v4
+        or later: Windows 8.1, Windows Server 2012 R2, Windows 10 and Windows Server 2016. To support earlier operating
+        systems, for example Windows 7, registering custom images is required.
 
-    Id
-    Description
-    Filename
-    Architecture { x86 | x64 }
-    Uri
-    Checksum
-    MediaType { VHD | ISO | WIM }
-    CustomData = @{
-        PartitionStyle { MBR | GPT }
-        WimPath
-        SourcePath
-        WindowsOptionalFeature
-        Package
-        PackagePath
-        SetupComplete { CoreCLR }
-        CustomBootstrap
-    }
+        DSC must already be installed in VHD(X) images - supports Win 7, 2008 R2, Win 8 and 2012
+        WMF 4+ must already be included for ISO images - does not support Win 7, 2008 R2, Win 8 and 2012
+        DSC hotfixes must be specified for WMF 4 images (if not included in the image already) 
+
+        Id
+        Description
+        Filename
+        Architecture { x86 | x64 }
+        Uri
+        Checksum
+        MediaType { VHD | ISO | WIM }
+        ImageName [string] (supports [int32] for image numbers)
+        CustomData = @{
+            PartitionStyle { MBR | GPT }
+            WimPath
+            SourcePath
+            WindowsOptionalFeature
+            Package
+            PackagePath
+            SetupComplete { CoreCLR }
+            CustomBootstrap [string[]]
+        }
+
+MANUAL MEDIA DOWNLOAD
+
 
 EXAMPLES
     Examples of how to use the module or how the subject feature works in practice.
@@ -32,5 +61,7 @@ KEYWORDS
     Terms or titles on which you might expect your users to search for the information in this topic.
 
 SEE ALSO
-    Text-only references for further reading. Hyperlinks cannot work in the Windows PowerShell console. 
+        Register-LabMedia
+        Unregister-LabMedia
+ 
 	

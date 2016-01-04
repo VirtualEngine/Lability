@@ -16,7 +16,7 @@ Describe 'LabHostConfiguration' {
         Context 'Validates "GetLabHostSetupConfiguration" method' {
 
             It 'Installs "Microsoft-Hyper-V-All" feature with "WindowsOptionalFeature" on a desktop OS' {
-                Mock Get-WmiObject -MockWith { return [PSCustomObject] @{ ProductType = 1; } }
+                Mock Get-CimInstance -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 1; } }
                 
                 $windowsOptionalFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'Microsoft-Hyper-V-All' }
 
@@ -24,7 +24,7 @@ Describe 'LabHostConfiguration' {
             }
 
             It 'Installs "Hyper-V" feature using "WindowsFeature" on a server OS' {
-                Mock Get-WmiObject -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
+                Mock Get-CimInstance -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
                 
                 $windowsFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'Hyper-V' }
 
@@ -32,7 +32,7 @@ Describe 'LabHostConfiguration' {
             }
 
             It 'Installs "RSAT-Hyper-V-Tools" feature using "WindowsFeature" on a server OS' {
-                Mock Get-WmiObject -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
+                Mock Get-CimInstance  -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
                 
                 $windowsFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'RSAT-Hyper-V-Tools' }
 

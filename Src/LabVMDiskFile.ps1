@@ -75,7 +75,9 @@ function SetLabVMDiskFile {
         
         ## Local administrator password of the VM
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.PSCredential] $Credential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential,
         
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter(ValueFromPipelineByPropertyName)]
