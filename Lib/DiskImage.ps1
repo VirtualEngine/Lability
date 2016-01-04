@@ -124,7 +124,7 @@ function NewDiskImage {
         WriteVerbose ($localized.MountingDiskImage -f $Path);
         $vhdMount = Mount-VHD -Path $Path -Passthru;
         WriteVerbose ($localized.InitializingDiskImage -f $Path);
-        $msftDisk = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
+        [ref] $null = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
 
         switch ($PartitionStyle) {
             'MBR' {
