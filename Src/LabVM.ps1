@@ -10,12 +10,17 @@ function ResolveLabVMProperties {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [System.String] $NodeName,
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $NodeName,
+        
         ## Lab DSC configuration data
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [System.Collections.Hashtable] $ConfigurationData,
+        
         ## Do not enumerate the AllNode.'*'
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
     )
     process {
         $node = @{ };
@@ -72,10 +77,13 @@ function Get-LabVM {
     [OutputType([System.Boolean])]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Lab VM/Node name
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String[]] $Name
+        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -114,10 +122,13 @@ function Test-LabVM {
     [OutputType([System.Boolean])]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Lab VM/Node name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String[]] $Name
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -171,23 +182,31 @@ function NewLabVM {
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        [System.Collections.Hashtable] $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
         
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
         ## Virtual machine DSC .mof and .meta.mof location
-        [Parameter()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Skip creating baseline snapshots
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     begin {
         ## If we have only a secure string, create a PSCredential
@@ -292,12 +311,17 @@ function RemoveLabVM {
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Include removal of virtual switch(es). By default virtual switches are not removed.
-        [Parameter()] [System.Management.Automation.SwitchParameter] $RemoveSwitch
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
     process {
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
@@ -341,23 +365,31 @@ function Reset-LabVM {
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
         
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
         ## Directory path containing the VM .mof file(s)
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Skip creating baseline snapshots
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     begin {
         ## If we have only a secure string, create a PSCredential

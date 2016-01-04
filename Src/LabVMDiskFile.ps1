@@ -70,7 +70,9 @@ function SetLabVMDiskFile {
         
         ## Local administrator password of the VM
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.PSCredential] $Credential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential,
         
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -118,7 +120,7 @@ function SetLabVMDiskFile {
         }
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
-        $unattendXml = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
+        [ref] $null = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);

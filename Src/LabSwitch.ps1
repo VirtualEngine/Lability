@@ -6,7 +6,7 @@ function NewLabSwitch {
         Permits validation of custom NonNodeData\VirtualEngineLab\Network entries.
 #>
     [CmdletBinding()]
-    [OutputType([System.Management.Automation.PSCustomObject])]
+    [OutputType([System.Collections.Hashtable])]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
         [Parameter(Mandatory)] [ValidateSet('Internal','External','Private')] [System.String] $Type,
