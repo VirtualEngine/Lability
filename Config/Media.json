@@ -75,7 +75,7 @@
 							"Microsoft-NanoServer-DNS-Package"
 						]
 				   },
-	"Hotfixes":  null
+	"Hotfixes":  []
 },
 {
 	"Id": "2012R2_x64_Standard_EN_Eval",

@@ -439,6 +439,8 @@ function New-LabVM {
         NOTE: The mandatory -MediaId parameter is dynamic and is not displayed in the help syntax output.
 
         If optional values are not specified, the virtual machine default settings are applied. To list the current default settings run the `Get-LabVMDefault` command.
+        
+        NOTE: If a specified virtual switch cannot be found, an Internal virtual switch will automatically be created. To use any other virtual switch configuration, ensure the virtual switch is created in advance.
     .LINK
         Register-LabMedia
         Unregister-LabMedia
@@ -541,37 +543,54 @@ function New-LabVM {
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
 
-        ## Test VM Switch exists
-        foreach ($switch in $SwitchName) {
-            if (-not (Get-VMSwitch -Name $switch -ErrorAction SilentlyContinue)) {
-                throw ($localized.SwitchDoesNotExistError -f $switch);
-            }
-        } #end foreach switch
+        
     } #end begin
     process {
-        foreach ($vmName in $Name) {
-            ## Create a skelton node configuration
-            $configurationNode = @{ Nodename = $vmName; };
-
+        ## Skeleton configuration node
+        $configurationNode = @{ }
+        
+        if ($CustomData) {
             ## Add all -CustomData keys/values to the skeleton configuration
-            if ($CustomData) {
-                foreach ($key in $CustomData.Keys) {
-                    $configurationNode[$key] = $CustomData.$key;
-                }
+            foreach ($key in $CustomData.Keys) {
+                $configurationNode[$key] = $CustomData.$key;
             }
-
-            ## Explicitly defined parameters override any -CustomData
-            $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
-                'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
-            foreach ($key in $parameterNames) {
-                if ($PSBoundParameters.ContainsKey($key)) {
-                    $configurationNode[$key] = $PSBoundParameters.$key;        
-                }
+        }
+        
+        ## Explicitly defined parameters override any -CustomData
+        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
+            'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
+        foreach ($key in $parameterNames) {
+            if ($PSBoundParameters.ContainsKey($key)) {
+                $configurationNode[$key] = $PSBoundParameters.$key;        
             }
+        }
+    
+        ## Ensure the specified MediaId is applied after any CustomData media entry!
+        $configurationNode['Media'] = $PSBoundParameters.MediaId;
 
-            ## Ensure the specified MediaId is applied after any CustomData media entry!
-            $configurationNode['Media'] = $PSBoundParameters.MediaId;
-
+        ## Ensure we have at lease the default switch if nothing was specified      
+        if (-not $configurationNode.ContainsKey('SwitchName')) {
+            $configurationNode['SwitchName'] = (GetConfigurationData -Configuration VM).SwitchName;
+        }
+        ## Ensure the specified/default virtual switch(es) exist
+        foreach ($switch in $configurationNode.SwitchName) {
+            if (-not (Get-VMSwitch -Name $switch -ErrorAction SilentlyContinue)) {
+                WriteWarning -Message ($localized.MissingVirtualSwitchWarning -f $switch);
+                $switchConfigurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Network = @( @{ Name = $switch; Type = 'Internal'; } )
+                        }
+                    }
+                }
+                WriteVerbose -Message ($localized.CreatingInternalVirtualSwitch  -f $switch);
+                SetLabSwitch -Name $switch -ConfigurationData $switchConfigurationData;
+            }
+        } #end foreach switch
+        
+        foreach ($vmName in $Name) {
+            ## Update the node name before creating the VM
+            $configurationNode['NodeName'] = $vmName;
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
             $verboseProcessMessage = $localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId;
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
