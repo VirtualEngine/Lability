@@ -1,10 +1,10 @@
 @{
     RootModule = 'VirtualEngineLab.psm1';
-    ModuleVersion = '0.8.11';
+    ModuleVersion = '0.8.12';
     GUID = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author = 'Iain Brighton';
     CompanyName = 'Virtual Engine';
-    Copyright = '(c) 2015 Virtual Engine Limited. All rights reserved.';
+    Copyright = '(c) 2016 Virtual Engine Limited. All rights reserved.';
     Description = 'The VirtualEngineLab module contains cmdlets for provisioning Hyper-V test labs.';
     RequiredModules = @('BitsTransfer');
     PowerShellVersion = '4.0';
