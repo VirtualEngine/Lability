@@ -46,6 +46,13 @@ Describe 'BootStrap' {
                 $setupCompleteCmd -match '-NonInteractive' | Should Be $true;
             }
 
+            It 'Creates scheduled tasks for CoreCLR image' {
+                ## Must execute before we mock Set-Content!
+                SetSetupCompleteCmd -Path TestDrive:\ -CoreCLR;
+                $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
+                $setupCompleteCmd -match 'Schtasks' | Should Be $true;
+            }
+
             It 'Uses ASCII encoding' {
                 Mock Set-Content -ParameterFilter { $Encoding -eq 'ASCII' } -MockWith { }
                 SetSetupCompleteCmd -Path TestDrive:\;
@@ -76,6 +83,71 @@ Describe 'BootStrap' {
             }
 
         } #end context Validates "SetBootStrap" method
+
+        Context 'Validates "ResolveCustomBootStrap" method' {
+
+            It 'Returns empty string when "CustomBootStrapOrder" = "Disabled"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder Disabled -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should BeNullOrEmpty;
+            }
+
+            It 'Returns configuration bootstrap when "CustomBootStrapOrder" = "ConfigurationOnly"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationOnly -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be $configurationBootstrap;
+            }
+
+            It 'Returns media bootstrap when "CustomBootStrapOrder" = "MediaOnly"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaOnly -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be $mediaBootstrap;
+            }
+
+            It 'Returns configuration bootstrap first when "CustomBootStrapOrder" = "ConfigurationFirst"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationFirst -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$configurationBootStrap`r`n$mediaBootstrap";
+            }
+
+            It 'Returns media bootstrap first when "CustomBootStrapOrder" = "MediaFirst"' {
+                $configurationBootstrap = 'Configuration';
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaFirst -ConfigurationCustomBootstrap $configurationBootstrap -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
+            }
+            
+            It 'Returns configuration bootstrap when "MediaCustomBootstrap" is null' {
+                $configurationBootstrap = 'Configuration';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder ConfigurationFirst -ConfigurationCustomBootstrap $configurationBootstrap;
+
+                $bootstrap | Should Be "$configurationBootStrap`r`n$mediaBootstrap";
+            }
+
+            It 'Returns media bootstrap when "ConfigurationCustomBootstrap" is null' {
+                $mediaBootstrap = 'Media';
+
+                $bootstrap = ResolveCustomBootstrap -CustomBootstrapOrder MediaFirst -MediaCustomBootstrap $mediaBootstrap;
+
+                $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
+            }
+
+        } #end context Validates "ResolveCustomBootStrap" method
 
     } #end InModuleScope
 

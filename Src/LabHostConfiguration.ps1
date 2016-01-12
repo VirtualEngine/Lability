@@ -9,10 +9,10 @@ function GetLabHostSetupConfiguration {
         The configuration is passed to avoid repeated calls to Get-LabHostDefault and polluting verbose output.
 #>
     [CmdletBinding()]
-    [OutputType([System.Array])]
+    [OutputType([System.Collections.Hashtable])]
     param ( )
     process {
-        [System.Boolean] $isDesktop = (Get-WmiObject -Class Win32_OperatingSystem).ProductType -eq 1;
+        [System.Boolean] $isDesktop = (Get-CimInstance -ClassName Win32_OperatingSystem).ProductType -eq 1;
         ## Due to the differences in client/server deployment for Hyper-V, determine the correct method before creating the host configuration array.
         $labHostSetupConfiguration = @();
 
@@ -106,7 +106,7 @@ function Test-LabHostConfiguration {
         WriteVerbose $localized.StartedHostConfigurationTest;
         ## Test folders/directories
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $hostDefaultsPaths = $hostDefaults.PSObject.Properties | Where-Object { $_.Name -like '*Path' } | ForEach-Object { $_.Value }
+        #$hostDefaultsPaths = $hostDefaults.PSObject.Properties | Where-Object { $_.Name -like '*Path' } | ForEach-Object { $_.Value }
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 WriteVerbose ($localized.TestingPathExists -f $property.Value);
@@ -147,12 +147,12 @@ function Start-LabHostConfiguration {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-		[Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         WriteVerbose $localized.StartedHostConfiguration;
-		## Create required directory structure
-		$hostDefaults = GetConfigurationData -Configuration Host;
+        ## Create required directory structure
+        $hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
@@ -161,7 +161,7 @@ function Start-LabHostConfiguration {
         
         # Once all the path are created, check if the hostdefaults.Json file in the $env:ALLUSERSPROFILE is doesn't have entries with %SYSTEMDRIVE% in it
         # Many subsequent call are failing to Get-LabImage, Test-LabHostConfiguration which do not resolve the "%SYSTEMDRIVE%" in the path for Host defaults
-        foreach ($property in $($hostDefaults.PSObject.Properties | where -Property TypeNameOfValue -eq 'System.String')) {
+        foreach ($property in $($hostDefaults.PSObject.Properties | Where-Object -Property TypeNameOfValue -eq 'System.String')) {
             if ($property.Value.Contains("%")){
                 # if the Path for host defaults contains a '%' character then resolve it
                 $resolvedPath = ResolvePathEx -Path $Property.Value

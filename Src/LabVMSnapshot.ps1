@@ -5,8 +5,11 @@ function RemoveLabVMSnapshot {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $SnapshotName = '*'
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $SnapshotName = '*'
     )
     process {
        <## TODO: Add the ability to force/wait for the snapshots to be removed. When removing snapshots it take a minute
@@ -14,10 +17,14 @@ function RemoveLabVMSnapshot {
         foreach ($vmName in $Name) {
         
             # Sort by descending CreationTime to ensure we will not have to commit changes from one snapshot to another
-            Get-VMSnapshot -VMName $vmName -ErrorAction SilentlyContinue | Where-Object Name -like $SnapshotName | Sort-Object -Property CreationTime -Descending | ForEach-Object {
-                WriteVerbose ($localized.RemovingSnapshot -f $vmName, $_.Name);
-                Remove-VMSnapshot -VMName $_.VMName -Name $_.Name;
-            }
+            Get-VMSnapshot -VMName $vmName -ErrorAction SilentlyContinue |
+                Where-Object Name -like $SnapshotName |
+                    Sort-Object -Property CreationTime -Descending |
+                        ForEach-Object {
+                            WriteVerbose -Message ($localized.RemovingSnapshot -f $vmName, $_.Name);
+                            Remove-VMSnapshot -VMName $_.VMName -Name $_.Name -Confirm:$false;
+                        }
+
         } #end foreach VM
     } #end process
 } #end function RemoveVMSnapshot
@@ -29,12 +36,15 @@ function NewLabVMSnapshot {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SnapshotName
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $SnapshotName
     )
     process {
         foreach ($vmName in $Name) {
-            WriteVerbose ($localized.SnapshottingVirtualMachine -f $vmName, $SnapshotName);
+            WriteVerbose -Message ($localized.SnapshottingVirtualMachine -f $vmName, $SnapshotName);
             Checkpoint-VM -VMName $vmName -SnapshotName $SnapshotName;
         } #end foreach VM
     } #end process
@@ -47,14 +57,17 @@ function GetLabVMSnapshot {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $SnapshotName
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $SnapshotName
     )
     process {
         foreach ($vmName in $Name) {
             $snapshot = Get-VMSnapshot -VMName $vmName -Name $SnapshotName -ErrorAction SilentlyContinue;
             if (-not $snapshot) {
-                WriteWarning ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
+                WriteWarning -Message ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
             }
             else {
                 Write-Output -InputObject $snapshot;

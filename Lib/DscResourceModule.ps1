@@ -51,6 +51,7 @@ function GetDscResourceModule {
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock','')]
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [System.String[]] $Path
     )
@@ -75,7 +76,6 @@ function GetDscResourceModule {
                         ## Test to see if it's a DSC resource module
                         if (TestDscResourceModule -Path $PSItem.FullName -ModuleName $moduleInfo.Name) {
                             try {
-                                #$moduleVersion = [System.Version] $PSItem.Name;
                                 Write-Debug -Message ('Discovered versioned DSC resource ''{0}''.' -f $PSItem.FullName);
                                 Write-Output -InputObject ([PSCustomObject] @{
                                     ModuleName = $moduleInfo.Name;

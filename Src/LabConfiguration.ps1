@@ -20,8 +20,9 @@ function Test-LabConfiguration {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -47,14 +48,21 @@ function TestLabConfigurationMof {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Lab vm/node name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Path to .MOF files created from the DSC configuration
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Ignores missing MOF file
-        [Parameter()] [System.Management.Automation.SwitchParameter] $SkipMofCheck
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -165,25 +173,35 @@ function Start-LabConfiguration {
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
         
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
         ## Path to .MOF files created from the DSC configuration
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Skip creating baseline snapshots
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot,
+        
         ## Forces a reconfiguration/redeployment of all nodes.
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force,
+        
         ## Ignores missing MOF file
-        [Parameter()] [System.Management.Automation.SwitchParameter] $SkipMofCheck
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
     begin {
         ## If we have only a secure string, create a PSCredential
@@ -256,10 +274,13 @@ function Remove-LabConfiguration {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Include removal of virtual switch(es). By default virtual switches are not removed.
-        [Parameter()] [System.Management.Automation.SwitchParameter] $RemoveSwitch
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;

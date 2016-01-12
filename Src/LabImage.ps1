@@ -55,7 +55,7 @@ function New-LabImage {
     .SYNOPSIS
         Creates a new master/parent image.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.IO.FileInfo])]
     param (
         ## Lab media Id
@@ -80,6 +80,8 @@ function New-LabImage {
     process {
         ## Download media if required..
         [ref] $null = $PSBoundParameters.Remove('Force');
+        [ref] $null = $PSBoundParameters.Remove('WhatIf');
+        [ref] $null = $PSBoundParameters.Remove('Confirm');
         $media = ResolveLabMedia @PSBoundParameters;
         $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
         
@@ -105,7 +107,7 @@ function New-LabImage {
             }
             
             ## Create disk image and refresh PSDrives
-            $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force # -ErrorAction Stop;
+            $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
             [ref] $null = Get-PSDrive;
             
             ## Apply WIM (ExpandWindowsImage) and add specified features
@@ -125,12 +127,25 @@ function New-LabImage {
                 $expandWindowsImageParams['WimImageName'] = $media.ImageName;
             }
 
+            if ($media.CustomData.SourcePath) {
+                $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+            }
+            if ($media.CustomData.WimPath) {
+                $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
+            }
             if ($media.CustomData.WindowsOptionalFeature) {
                 $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
             }
+            if ($media.CustomData.PackagePath) {
+                $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
+            }
+            if ($media.CustomData.Package) {
+                $expandWindowsImageParams['Package'] = $media.CustomData.Package;
+            }
+
             ExpandWindowsImage @expandWindowsImageParams;
-            ## Apply hotfixes (AddDiskImagePackage)
-            AddDiskImagePackage -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+            ## Apply hotfixes (AddDiskImageHotfix)
+            AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
             ## Configure boot volume (SetDiskImageBootVolume)
             SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
         }

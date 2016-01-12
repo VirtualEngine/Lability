@@ -10,7 +10,7 @@
             DomainName = 'corp.contoso.com';
             PSDscAllowPlainTextPassword = $true;
             #CertificateFile = "$env:AllUsersProfile\VirtualEngineLab\Certificates\LabClient.cer";
-            #Thumbprint = '599E0BDA95ADED538154DC9FA6DE94920424BCB1';
+            #Thumbprint = 'AAC41ECDDB3B582B133527E4DE0D2F8FEB17AAB2';
             PSDscAllowDomainUser = $true; # Removes 'It is not recommended to use domain credential for node X' messages
             VirtualEngineLab_SwitchName = 'Corpnet';
             VirtualEngineLab_ProcessorCount = 1;
@@ -51,25 +51,13 @@
             NodeName = 'CLIENT1';
             Role = 'CLIENT';
             VirtualEngineLab_Media = 'Win81_x64_Enterprise_EN_Eval';
-            VirtualEngineLab_CustomBootStrap = @'
-                ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
-                NET USER Administrator /active:yes;
-                Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;
-                ## Kick-start PowerShell remoting on clients to permit applying DSC configurations
-                Enable-PSRemoting -SkipNetworkProfileCheck -Force;
-'@
+            <# VirtualEngineLab_CustomBootStrap = 'Now implemented in the Media's CustomData.CustomBootstrap property' #>
         }
         @{
             NodeName = 'CLIENT2';
             Role = 'CLIENT';
             VirtualEngineLab_Media = 'Win10_x64_Enterprise_EN_Eval';
-            VirtualEngineLab_CustomBootStrap = @'
-                ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
-                NET USER Administrator /active:yes;
-                Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;
-                ## Kick-start PowerShell remoting on clients to permit applying DSC configurations
-                Enable-PSRemoting -SkipNetworkProfileCheck -Force;
-'@
+            <# VirtualEngineLab_CustomBootStrap = 'Now implemented in the Media's CustomData.CustomBootstrap property' #>
         }
     );
     NonNodeData = @{

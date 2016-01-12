@@ -13,6 +13,18 @@ Describe 'LabVMDefaults' {
 
     InModuleScope $moduleName {
 
+        Context 'Validates "Reset-LabVMDefault" method' {
+            
+            It 'Calls "RemoveConfigurationData" method' {
+                Mock RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
+            
+                $defaults = Reset-LabVMDefault;
+            
+                Assert-MockCalled RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -Scope It;
+            }
+        
+        } #end context Validates "Reset-LabMDefault" method
+
         Context 'Validates "Get-LabVMDefault" method' {
 
             It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
@@ -54,6 +66,7 @@ Describe 'LabVMDefaults' {
                 @{ RegisteredOwner = 'Virtual Engine Ltd'; }
                 @{ RegisteredOrganization = 'Virtual Engine Ltd'; }
                 @{ BootDelay = 42; }
+                @{ CustomBootstrapOrder = 'Disabled'; }
             )
             foreach ($property in $testProperties) {
                 It "Sets ""$($property.Keys[0])"" value" {

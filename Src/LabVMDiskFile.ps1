@@ -6,7 +6,8 @@ function SetLabVMDiskDscResource {
     [CmdletBinding()]
     param (
         ## The target VHDX modules path
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $DestinationPath
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $DestinationPath
     )
     process {
         $dscResourceModules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules";
@@ -27,9 +28,12 @@ function SetLabVMDiskResource {
     param (
         ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData,
+        
         ## Lab VM/Node name
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name
     )
     begin {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -62,15 +66,30 @@ function SetLabVMDiskFile {
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
         ## Lab VM/Node configuration data
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $NodeData,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable] $NodeData,
+        
         ## Local administrator password of the VM
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential,
+        
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
-        [Parameter()] [System.String] $Path,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $Path,
+        
         ## Custom bootstrap script
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $CustomBootstrap,
+
+        ## CoreCLR
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $CoreCLR
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -83,10 +102,6 @@ function SetLabVMDiskFile {
         [ref] $null = Get-PSDrive;
         $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
-
-        $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
-        WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
-        SetLabVMDiskDscResource -DestinationPath $destinationPath;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -106,16 +121,24 @@ function SetLabVMDiskFile {
         }
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
-        $unattendXml = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
+        [ref] $null = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
+
+        $destinationPath = '{0}:\Program Files\WindowsPowershell\Modules' -f $vhdDriveLetter;
+        WriteVerbose ($localized.AddingDSCResourceModules -f $destinationPath);
+        SetLabVMDiskDscResource -DestinationPath $destinationPath;
 
         $bootStrapPath = '{0}:\BootStrap' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingBootStrapFile -f $bootStrapPath);
-        if ($CustomBootStrap) { SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap; }
-        else { SetBootStrap -Path $bootStrapPath; }
+        if ($CustomBootStrap) {
+            SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
+        }
+        else {
+            SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
+        }
         
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
-        SetSetupCompleteCmd -Path $setupCompleteCmdPath;
+        SetSetupCompleteCmd -Path $setupCompleteCmdPath -CoreCLR:$CoreCLR;
 
         ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
         if ($Path) {

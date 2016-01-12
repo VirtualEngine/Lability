@@ -10,12 +10,17 @@ function ResolveLabVMProperties {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [System.String] $NodeName,
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $NodeName,
+        
         ## Lab DSC configuration data
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [System.Collections.Hashtable] $ConfigurationData,
+        
         ## Do not enumerate the AllNode.'*'
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
     )
     process {
         $node = @{ };
@@ -71,11 +76,14 @@ function Get-LabVM {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
         ## Lab VM/Node name
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String[]] $Name
+        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+
+        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -113,11 +121,14 @@ function Test-LabVM {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
         ## Lab VM/Node name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String[]] $Name
+        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+
+        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -171,23 +182,35 @@ function NewLabVM {
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $ConfigurationData,
+        [System.Collections.Hashtable] $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
         
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
         ## Virtual machine DSC .mof and .meta.mof location
-        [Parameter()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Skip creating baseline snapshots
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot,
+
+        ## Is a quick VM
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $IsQuickVM
     )
     begin {
         ## If we have only a secure string, create a PSCredential
@@ -202,36 +225,38 @@ function NewLabVM {
         $Name = $node.NodeName;
         [ref] $null = $node.Remove('NodeName');
 
-        ## Check for certificate before we (re)create the VM
-        if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
-            $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
-            if (-not (Test-Path -Path $expandedClientCertificatePath -PathType Leaf)) {
-                throw ($localized.CannotFindCertificateError -f 'Client', $node.ClientCertificatePath);
+        ## Don't attempt to check certificates or create virtual switch for quick VMs        
+        if (-not $IsQuickVM) {
+            ## Check for certificate before we (re)create the VM
+            if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
+                $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
+                if (-not (Test-Path -Path $expandedClientCertificatePath -PathType Leaf)) {
+                    throw ($localized.CannotFindCertificateError -f 'Client', $node.ClientCertificatePath);
+                }
             }
-        }
-        else {
-            WriteWarning ($localized.NoCertificateFoundWarning -f 'Client');
-        }
-        if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
-            $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
-            if (-not (Test-Path -Path $expandedRootCertificatePath -PathType Leaf)) {
-                throw ($localized.CannotFindCertificateError -f 'Root', $node.RootCertificatePath);
+            else {
+                WriteWarning ($localized.NoCertificateFoundWarning -f 'Client');
             }
-        }
-        else {
-            WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
-        }
-
+            if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
+                $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
+                if (-not (Test-Path -Path $expandedRootCertificatePath -PathType Leaf)) {
+                    throw ($localized.CannotFindCertificateError -f 'Root', $node.RootCertificatePath);
+                }
+            }
+            else {
+                WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
+            }
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
+            SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
+        } #end if not quick VM
+        
         if (-not (Test-LabImage -Id $node.Media)) {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
-
-        WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-        SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
-
-        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', $node.Media);
+        
+        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$Name.vhdx");
         ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
-
+        
         WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $Name);
         $setLabVirtualMachineParams = @{
             Name = $Name;
@@ -251,15 +276,24 @@ function NewLabVM {
             SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
         }
 
+        $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
         WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
         $setLabVMDiskFileParams = @{
             Name = $Name;
             NodeData = $node;
             Path = $Path;
             Credential = $Credential;
+            CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
         }
-        if ($node.CustomBootStrap) {
-            $setLabVMDiskFileParams['CustomBootStrap'] = ($node.CustomBootStrap).ToString();
+        
+        $resolveCustomBootStrapParams = @{
+            CustomBootstrapOrder = $node.CustomBootstrapOrder;
+            ConfigurationCustomBootstrap = $node.CustomBootstrap;
+            MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
+        }
+        $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
+        if ($customBootstrap) {
+            $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
         }
         SetLabVMDiskFile @setLabVMDiskFileParams;
 
@@ -268,7 +302,7 @@ function NewLabVM {
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
             Checkpoint-VM -Name $Name -SnapshotName $snapshotName;
         }
-
+        
         if ($node.WarningMessage) {
             if ($node.WarningMessage -is [System.String]) {
                 WriteWarning ($localized.NodeCustomMessageWarning -f $Name, $node.WarningMessage);
@@ -277,25 +311,30 @@ function NewLabVM {
                 WriteWarning ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
             }
         }
-
+        
         Write-Output -InputObject (Get-VM -Name $Name);
     } #end process
 } #end function NewLabVM
 
 function RemoveLabVM {
-    <#
-            .SYNOPSIS
-            Deletes a lab virtual machine.
-    #>
+<#
+    .SYNOPSIS
+        Deletes a lab virtual machine.
+#>
     [CmdletBinding()]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
+        
         ## Include removal of virtual switch(es). By default virtual switches are not removed.
-        [Parameter()] [System.Management.Automation.SwitchParameter] $RemoveSwitch
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
     process {
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
@@ -305,7 +344,10 @@ function RemoveLabVM {
         $Name = $node.NodeName;
         
         # Revert to oldest snapshot prior to VM removal to speed things up
-        Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue | Sort-Object -Property CreationTime | Select-Object -First 1 | Restore-VMSnapshot -Confirm:$false
+        Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue |
+            Sort-Object -Property CreationTime |
+                Select-Object -First 1 |
+                    Restore-VMSnapshot -Confirm:$false;
         
         RemoveLabVMSnapshot -Name $Name;
 
@@ -336,26 +378,34 @@ function Reset-LabVM {
     .SYNOPSIS
         Deletes and recreates a lab virtual machine, reapplying the MOF
 #>
-    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab VM/Node name
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+        
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory)] [System.Object] $ConfigurationData,
+        [System.Object] $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential = (& $credentialCheckScriptBlock),
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
         
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
         ## Directory path containing the VM .mof file(s)
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        
         ## Skip creating baseline snapshots
-        [Parameter()] [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     begin {
         ## If we have only a secure string, create a PSCredential
@@ -369,8 +419,212 @@ function Reset-LabVM {
     }
     process {
         foreach ($vmName in $Name) {
-            RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
-            NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
-        }
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
+            $verboseProcessMessage = $localized.ResettingVM -f $vmName;
+            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
+                NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+            } #end if should process
+        } #end foreach VMd
     } #end process    
 } #end function Reset-LabVM
+
+function New-LabVM {
+<#
+    .SYNOPSIS
+        Creates a simple bare-metal virtual machine.
+    .DESCRIPTION
+        The New-LabVM cmdlet creates a bare virtual machine using the specified media. No bootstrap or DSC configuration is applied.
+        
+        NOTE: The mandatory -MediaId parameter is dynamic and is not displayed in the help syntax output.
+
+        If optional values are not specified, the virtual machine default settings are applied. To list the current default settings run the `Get-LabVMDefault` command.
+        
+        NOTE: If a specified virtual switch cannot be found, an Internal virtual switch will automatically be created. To use any other virtual switch configuration, ensure the virtual switch is created in advance.
+    .LINK
+        Register-LabMedia
+        Unregister-LabMedia
+        Get-LabVMDefault
+        Set-LabVMDefault
+#>
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUserNameAndPassWordParams','')]
+    param (
+        ## Lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
+
+        ## Default virtual machine startup memory (bytes).
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $StartupMemory,
+        
+        ## Default virtual machine miniumum dynamic memory allocation (bytes).        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $MinimumMemory,
+        
+        ## Default virtual machine maximum dynamic memory allocation (bytes).
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [System.Int64] $MaximumMemory,
+        
+        ## Default virtual machine processor count.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [System.Int32] $ProcessorCount,
+
+        # Input Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
+        [System.String] $InputLocale,
+        
+        # System Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $SystemLocale,
+        
+        # User Locale
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $UserLocale,
+        
+        # UI Language
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [System.String] $UILanguage,
+        
+        # Timezone
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Timezone,
+        
+        # Registered Owner
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOwner,
+        
+        # Registered Organization
+        [Parameter(ValueFromPipelineByPropertyName)] [Alias('RegisteredOrganisation')] 
+        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOrganization,
+        
+        ## Local administrator password of the VM. The username is NOT used.
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential = (& $credentialCheckScriptBlock),
+        
+        ## Local administrator password of the VM.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [System.Security.SecureString] $Password,
+        
+        ## Virtual machine switch name.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+
+        ## Custom data
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Collections.Hashtable] $CustomData,
+        
+        ## Skip creating baseline snapshots
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoSnapshot
+    )
+    DynamicParam {
+        ## Adds a dynamic -MediaId parameter that returns the available media Ids
+        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
+        $parameterAttribute.ParameterSetName = '__AllParameterSets';
+        $parameterAttribute.Mandatory = $true;
+        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
+        $attributeCollection.Add($parameterAttribute);
+        $mediaIds = (Get-LabMedia).Id;
+        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
+        $attributeCollection.Add($validateSetAttribute);
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('MediaId', [System.String], $attributeCollection);
+        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
+        $runtimeParameterDictionary.Add('MediaId', $runtimeParameter);
+        return $runtimeParameterDictionary;
+    }
+    begin {
+        ## If we have only a secure string, create a PSCredential
+        if ($PSCmdlet.ParameterSetName -eq 'Password') {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+
+        
+    } #end begin
+    process {
+        ## Skeleton configuration node
+        $configurationNode = @{ }
+        
+        if ($CustomData) {
+            ## Add all -CustomData keys/values to the skeleton configuration
+            foreach ($key in $CustomData.Keys) {
+                $configurationNode[$key] = $CustomData.$key;
+            }
+        }
+        
+        ## Explicitly defined parameters override any -CustomData
+        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
+            'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
+        foreach ($key in $parameterNames) {
+            if ($PSBoundParameters.ContainsKey($key)) {
+                $configurationNode[$key] = $PSBoundParameters.$key;        
+            }
+        }
+    
+        ## Ensure the specified MediaId is applied after any CustomData media entry!
+        $configurationNode['Media'] = $PSBoundParameters.MediaId;
+
+        ## Ensure we have at lease the default switch if nothing was specified      
+        if (-not $configurationNode.ContainsKey('SwitchName')) {
+            $configurationNode['SwitchName'] = (GetConfigurationData -Configuration VM).SwitchName;
+        }
+        ## Ensure the specified/default virtual switch(es) exist
+        foreach ($switch in $configurationNode.SwitchName) {
+            if (-not (Get-VMSwitch -Name $switch -ErrorAction SilentlyContinue)) {
+                WriteWarning -Message ($localized.MissingVirtualSwitchWarning -f $switch);
+                $switchConfigurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Network = @( @{ Name = $switch; Type = 'Internal'; } )
+                        }
+                    }
+                }
+                WriteVerbose -Message ($localized.CreatingInternalVirtualSwitch  -f $switch);
+                SetLabSwitch -Name $switch -ConfigurationData $switchConfigurationData;
+            }
+        } #end foreach switch
+        
+        foreach ($vmName in $Name) {
+            ## Update the node name before creating the VM
+            $configurationNode['NodeName'] = $vmName;
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
+            $verboseProcessMessage = $localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId;
+            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                $configurationData = @{ AllNodes = @( $configurationNode ) };                
+                NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+            }
+        } #end foreach name
+    } #end process
+} #end function New-LabVM
+
+function Remove-LabVM {
+<#
+    .SYNOPSIS
+        Removes one or more lab virtual machines and differencing VHD(X)s.
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        ## Lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()] [System.String[]] $Name
+    )
+    process {
+        foreach ($vmName in $Name) {
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
+            $verboseProcessMessage = $localized.RemovingQuickVM -f $vmName;
+            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                ## Create a skeleton config data
+                $skeletonConfigurationData = @{
+                    AllNodes = @(
+                        @{  NodeName = $vmName; }
+                    )
+                };
+                RemoveLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData; 
+            } #end if should process
+        } #end foreach VM
+    } #end process
+} #end function Remove-LabVM
