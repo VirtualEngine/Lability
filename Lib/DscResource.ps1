@@ -271,14 +271,14 @@ function InvokeDscResourceDownloadFromGitHub {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Owner,
         
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Repository,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Repository = $Name,
         
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Branch = 'master',
         
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $OverrideRepositoryName,
+        [System.String] $OverrideRepositoryName = $Name,
         
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
@@ -295,9 +295,7 @@ function InvokeDscResourceDownloadFromGitHub {
             Owner = $Owner;
             Repository = $Repository;
             Branch = $Branch;
-        }
-        if ($OverrideRepositoryName) {
-            $installGitHubRepositoryParams['OverrideRepository'] = $OverrideRepositoryName;
+            OverrideRepository = $OverrideRepositoryName;
         }
         return (Install-GitHubRepository @installGitHubRepositoryParams -Force);
     } #end process
