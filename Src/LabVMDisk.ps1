@@ -4,7 +4,9 @@ function ResolveLabVMDiskPath {
         Resolves the specified VM name to it's target VHDX path.
 #>
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name
+        ## VM/node name.
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -23,8 +25,13 @@ function GetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $Name,
-        [Parameter(Mandatory)] [System.String] $Media
+        ## VM/node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Media Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Media
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -47,8 +54,13 @@ function TestLabVMDisk {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $Name,
-        [Parameter(Mandatory)] [System.String] $Media
+        ## VM/node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Media Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Media
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -73,8 +85,13 @@ function SetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $Name,
-        [Parameter(Mandatory)] [System.String] $Media
+        ## VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Media Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Media
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -99,8 +116,13 @@ function RemoveLabVMDisk {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $Name,
-        [Parameter(Mandatory)] [System.String] $Media
+        ## VM/node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Media Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Media
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -131,8 +153,13 @@ function ResetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $Name,
-        [Parameter(Mandatory)] [System.String] $Media
+        ## VM/node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Media Id
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Media
     )
     process {
         RemoveLabVMSnapshot -Name $Name;

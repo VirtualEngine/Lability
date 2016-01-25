@@ -13,7 +13,7 @@ function ImportDscResource {
     )
     process {
         ## Check whether the resource is already imported/registered
-        WriteVerbose ($localized.CheckingDscResource -f $ModuleName, $ResourceName);
+        Write-Debug ($localized.CheckingDscResource -f $ModuleName, $ResourceName);
         $testCommandName = 'Test-{0}TargetResource' -f $Prefix;
         if (-not (Get-Command -Name $testCommandName -ErrorAction SilentlyContinue)) {
             if ($UseDefault) {

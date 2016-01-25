@@ -12,28 +12,51 @@ function NewUnattendXml {
     [OutputType([System.Xml.XmlDocument])]
     param (
         # Local Administrator Password
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+         $Credential,
+        
         # Computer name
-        [Parameter()] [System.String] $ComputerName,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ComputerName,
+        
         # Product Key
-        [Parameter()] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')] [System.String] $ProductKey,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
+        [System.String] $ProductKey,
+        
         # Input Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $InputLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $InputLocale = 'en-US',
+        
         # System Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $SystemLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $SystemLocale = 'en-US',
+        
         # User Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UserLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $UserLocale = 'en-US',
+        
         # UI Language
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $UILanguage = 'en-US',
+        
         # Timezone
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Timezone, ##TODO: Validate timezones?
+        
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String] $RegisteredOwner = 'Virtual Engine',
+        
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String] $RegisteredOrganization = 'Virtual Engine',
+        
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
-        [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable[]] $ExecuteCommand
     )
     begin {
         $templateUnattendXml = [xml] @'
@@ -106,31 +129,23 @@ function NewUnattendXml {
 </unattend>
 '@
         [xml] $unattendXml = $templateUnattendXml;
-
-        $templateRunCommandXml = @'
-<RunSynchronousCommand wcm:action="add">
-    <Description>Description</Description>
-    <Order>1</Order>
-    <Path></Path>
-</RunSynchronousCommand>
-'@
     }
     process {
         foreach ($setting in $unattendXml.Unattend.Settings) {
             foreach($component in $setting.Component) {
                 if ($setting.'Pass' -eq 'specialize' -and $component.'Name' -eq 'Microsoft-Windows-Deployment') {
-                    if ($ExecuteCommand -ne $null -or $ExecuteCommand.Length -gt 0) {
+                    if (($null -ne $ExecuteCommand) -or ($ExecuteCommand.Length -gt 0)) {
                         $commandOrder = 1;
                         foreach ($synchronousCommand in $ExecuteCommand) {
                             $runSynchronousElement = $component.AppendChild($unattendXml.CreateElement('RunSynchronous','urn:schemas-microsoft-com:unattend'));
                             $syncCommandElement = $runSynchronousElement.AppendChild($unattendXml.CreateElement('RunSynchronousCommand','urn:schemas-microsoft-com:unattend'));
                             [ref] $null = $syncCommandElement.SetAttribute('action','http://schemas.microsoft.com/WMIConfig/2002/State','add');
                             $syncCommandDescriptionElement = $syncCommandElement.AppendChild($unattendXml.CreateElement('Description','urn:schemas-microsoft-com:unattend'));
-                            $syncCommandDescriptionTextNode = $syncCommandDescriptionElement.AppendChild($unattendXml.CreateTextNode($synchronousCommand['Description']));
+                            [ref] $null = $syncCommandDescriptionElement.AppendChild($unattendXml.CreateTextNode($synchronousCommand['Description']));
                             $syncCommandOrderElement = $syncCommandElement.AppendChild($unattendXml.CreateElement('Order','urn:schemas-microsoft-com:unattend'));
-                            $syncCommandOrderTextNode = $syncCommandOrderElement.AppendChild($unattendXml.CreateTextNode($commandOrder));
+                            [ref] $null = $syncCommandOrderElement.AppendChild($unattendXml.CreateTextNode($commandOrder));
                             $syncCommandPathElement = $syncCommandElement.AppendChild($unattendXml.CreateElement('Path','urn:schemas-microsoft-com:unattend'));
-                            $syncCommandPathTextNode = $syncCommandPathElement.AppendChild($unattendXml.CreateTextNode($synchronousCommand['Path']));
+                            [ref] $null = $syncCommandPathElement.AppendChild($unattendXml.CreateTextNode($synchronousCommand['Path']));
                             $commandOrder++;
                         }
                     }
@@ -138,11 +153,11 @@ function NewUnattendXml {
                 if (($setting.'Pass' -eq 'specialize') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
                     if ($ComputerName) {
                         $computerNameElement = $component.AppendChild($unattendXml.CreateElement('ComputerName','urn:schemas-microsoft-com:unattend'));
-                        $computerNameTextNode = $computerNameElement.AppendChild($unattendXml.CreateTextNode($ComputerName));
+                        [ref] $null = $computerNameElement.AppendChild($unattendXml.CreateTextNode($ComputerName));
                     }
                     if ($ProductKey) {
                         $productKeyElement = $component.AppendChild($unattendXml.CreateElement('ProductKey','urn:schemas-microsoft-com:unattend'));
-                        $productKeyTextNode = $productKeyElement.AppendChild($unattendXml.CreateTextNode($ProductKey.ToUpper()));
+                        [ref] $null = $productKeyElement.AppendChild($unattendXml.CreateTextNode($ProductKey.ToUpper()));
                     }
                 }
 
@@ -175,30 +190,55 @@ function SetUnattendXml {
     [OutputType([System.Xml.XmlDocument])]
     param (
         # Filename/path to save the unattend file as
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+        
         # Local Administrator Password
-        [Parameter(Mandatory)] [System.Management.Automation.PSCredential] $Credential,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential,
+        
         # Computer name
-        [Parameter()] [System.String] $ComputerName,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ComputerName,
+        
         # Product Key
-        [Parameter()] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')] [System.String] $ProductKey,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
+        [System.String] $ProductKey,
+        
         # Input Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $InputLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $InputLocale = 'en-US',
+        
         # System Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $SystemLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $SystemLocale = 'en-US',
+        
         # User Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UserLocale = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $UserLocale = 'en-US',
+        
         # UI Language
-        [Parameter(ValueFromPipelineByPropertyName)] [System.String] $UILanguage = 'en-US',
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $UILanguage = 'en-US',
+        
         # Timezone
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Timezone, ##TODO: Validate timezones?
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Timezone, ##TODO: Validate timezones?
+        
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOwner = 'Virtual Engine',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String] $RegisteredOwner = 'Virtual Engine',
+        
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()] [System.String] $RegisteredOrganization = 'Virtual Engine',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String] $RegisteredOrganization = 'Virtual Engine',
+        
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
-        [Parameter(ValueFromPipelineByPropertyName=$true)] [System.Collections.Hashtable[]] $ExecuteCommand
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable[]] $ExecuteCommand
     )
     process {
         [ref] $null = $PSBoundParameters.Remove('Path');

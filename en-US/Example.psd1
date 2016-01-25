@@ -51,25 +51,13 @@
             NodeName = 'CLIENT1';
             Role = 'CLIENT';
             VirtualEngineLab_Media = 'Win81_x64_Enterprise_EN_Eval';
-            VirtualEngineLab_CustomBootStrap = @'
-                ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
-                NET USER Administrator /active:yes;
-                Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;
-                ## Kick-start PowerShell remoting on clients to permit applying DSC configurations
-                Enable-PSRemoting -SkipNetworkProfileCheck -Force;
-'@
+            <# VirtualEngineLab_CustomBootStrap = 'Now implemented in the Media's CustomData.CustomBootstrap property' #>
         }
         @{
             NodeName = 'CLIENT2';
             Role = 'CLIENT';
             VirtualEngineLab_Media = 'Win10_x64_Enterprise_EN_Eval';
-            VirtualEngineLab_CustomBootStrap = @'
-                ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
-                NET USER Administrator /active:yes;
-                Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;
-                ## Kick-start PowerShell remoting on clients to permit applying DSC configurations
-                Enable-PSRemoting -SkipNetworkProfileCheck -Force;
-'@
+            <# VirtualEngineLab_CustomBootStrap = 'Now implemented in the Media's CustomData.CustomBootstrap property' #>
         }
     );
     NonNodeData = @{

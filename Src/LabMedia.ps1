@@ -3,21 +3,42 @@ function NewLabMedia {
     .SYNOPSIS
         Creates a new lab media object.
     .DESCRIPTION
-        Permits validation of custom NonNodeData\VirtualEngineLab\Media entries.
+        Permits validation of custom NonNodeData\Lability\Media entries.
 #>
     [CmdletBinding()]
     param (
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Id = $(throw ($localized.MissingParameterError -f 'Id')),
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Filename = $(throw ($localized.MissingParameterError -f 'Filename')),
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Description = '',
-        [Parameter()] [ValidateSet('x86','x64')] [System.String] $Architecture = $(throw ($localized.MissingParameterError -f 'Architecture')),
-        [Parameter()] [System.String] $ImageName = '',
-        [Parameter()] [ValidateSet('ISO','VHD')] [System.String] $MediaType = $(throw ($localized.MissingParameterError -f 'MediaType')),
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Uri = $(throw ($localized.MissingParameterError -f 'Uri')),
-        [Parameter()] [System.String] $Checksum = '',
-        [Parameter()] [System.String] $ProductKey = '',
-        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable] $CustomData = @{},
-        [Parameter()] [AllowNull()] [System.Array] $Hotfixes
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id = $(throw ($localized.MissingParameterError -f 'Id')),
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Filename = $(throw ($localized.MissingParameterError -f 'Filename')),
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Description = '',
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('x86','x64')]
+        [System.String] $Architecture = $(throw ($localized.MissingParameterError -f 'Architecture')),
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ImageName = '',
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('ISO','VHD')]
+        [System.String] $MediaType = $(throw ($localized.MissingParameterError -f 'MediaType')),
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri = $(throw ($localized.MissingParameterError -f 'Uri')),
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $Checksum = '',
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ProductKey = '',
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Collections.Hashtable] $CustomData = @{},
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.Array] $Hotfixes
     )
     begin {
         ## Confirm we have a valid Uri
@@ -56,9 +77,9 @@ function ResolveLabMedia {
     .SYNOPSIS
         Resolves the specified media using the registered media and configuration data.
     .DESCRIPTION
-        Resolves the specified lab media from the registered media, but permitting the defaults to be overridden
-        by configuration data. This also permits specifying of media within Configuration Data and not having
-        to be registered on the lab host.
+        Resolves the specified lab media from the registered media, but permitting the defaults to be overridden by configuration data.
+        
+        This also permits specifying of media within Configuration Data and not having to be registered on the lab host.
 #>
     [CmdletBinding()]
     param (
@@ -105,15 +126,24 @@ function ResolveLabMedia {
 function Get-LabMedia {
 <#
     .SYNOPSIS
-        Gets the currently registered built-in and custom lab media.
+        Gets registered lab media.
+    .DESCRIPTION
+        The Get-LabMedia cmdlet retrieves all built-in and registered custom media.
+    .PARAMETER Id
+        Specifies the specific media Id to return.
+    .PARAMETER CustomOnly
+        Specifies that only registered custom media are returned.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         ## Media ID
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id,
+        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id,
+        
         ## Only return custom media
-        [Parameter()] [System.Management.Automation.SwitchParameter] $CustomOnly
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $CustomOnly
     )
     process {
         ## Retrieve built-in media
@@ -121,7 +151,7 @@ function Get-LabMedia {
             $defaultMedia = GetConfigurationData -Configuration Media;
         }
         ## Retrieve custom media
-        $customMedia = GetConfigurationData -Configuration CustomMedia;
+        $customMedia = @(GetConfigurationData -Configuration CustomMedia);
         if (-not $customMedia) {
             $customMedia = @();
         }
@@ -157,12 +187,17 @@ function Get-LabMedia {
 function Test-LabMedia {
 <#
     .SYNOPSIS
-        Determines whether media has already been downloaded.
+        Tests whether lab media has already been downloaded.
+    .DESCRIPTION
+        The Test-LabMedia cmdlet will check whether the specified media Id has been downloaded and its checksum is correct.
+    .PARAMETER Id
+        Specifies the media Id to test.
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -192,8 +227,8 @@ function InvokeLabMediaImageDownload {
     .SYNOPSIS
         Downloads ISO/WIM/VHDX media resources.
     .DESCRIPTION
-        Initiates a download of a media resource. If the resource has already been downloaded and the checksum
-        is correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
+        Initiates a download of a media resource. If the resource has already been downloaded and the checksum is
+        correct, it won't be re-downloaded. To force download of a ISO/VHDX use the -Force switch.
     .NOTES
         ISO media is downloaded to the default IsoPath location. VHD(X) files are downloaded directly into the
         ParentVhdPath location.
@@ -202,9 +237,12 @@ function InvokeLabMediaImageDownload {
     [OutputType([System.IO.FileInfo])]
     param (
         ## Lab media object
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Media,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNull()]
+        [System.Object] $Media,
+        
         ## Force (re)download of the resource
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -258,10 +296,17 @@ function InvokeLabMediaHotfixDownload {
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Id,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Checksum,
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Checksum,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -283,34 +328,60 @@ function Register-LabMedia {
     .SYNOPSIS
         Registers a custom media entry.
     .DESCRIPTION
-        The Register-LabMedia cmdlet allows registering custom media circumventing the requirement of having to define custom media in the DSC Configuration Data.
+        The Register-LabMedia cmdlet allows adding custom media to the host's configuration. This circumvents the requirement of having to define custom media entries in the DSC configuration document (.psd1).
 
-        You can use the Register-LabMedia cmdlet to override the default media entries, e.g. you have the media hosted internally.
+        You can use the Register-LabMedia cmdlet to override the default media entries, e.g. you have the media hosted internally or you wish to replace the built-in media with your own implementation.
+        
+        To override a built-in media entry, specify the same media Id with the -Force switch.
+    .LINK
+        Get-LabMedia
+        Unregister-LabMedia
 #>
     [CmdletBinding()]
     param (
-        ## Unique media ID. You can override the built-in media if required.
-        [Parameter(Mandatory)] [System.String] $Id,
-        ## Media type
-        [Parameter(Mandatory)] [ValidateSet('VHD','ISO','WIM')] [System.String] $MediaType,
-        ## The source http/https/file Uri of the source file
-        [Parameter(Mandatory)] [System.Uri] $Uri,
-        ## Architecture of the source media
-        [Parameter(Mandatory)] [ValidateSet('x64','x86')] [System.String] $Architecture,
-        ## Media description
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Description,
-        ## ISO/WIM image name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $ImageName,
-        ## Target local filename for the locally cached resource
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Filename,
-        ## MD5 checksum of the resource
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $Checksum,
-        ## Media custom data
-        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable] $CustomData,
-        ## Media custom data
-        [Parameter()] [ValidateNotNull()] [System.Collections.Hashtable[]] $Hotfixes,
-        ## Override existing media entries
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        ## Specifies the media Id to register. You can override the built-in media if required.
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [System.String] $Id,
+        
+        ## Specifies the media's type.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('VHD','ISO','WIM')]
+        [System.String] $MediaType,
+        
+        ## Specifies the source Uri (http/https/file) of the media.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Uri] $Uri,
+        
+        ## Specifies the architecture of the media.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('x64','x86')]
+        [System.String] $Architecture,
+        
+        ## Specifies a description of the media.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Description,
+        
+        ## Specifies the image name containing the target WIM image. You can specify integer values.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ImageName,
+        
+        ## Specifies the local filename of the locally cached resource file.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Filename,
+        
+        ## Specifies the MD5 checksum of the resource file.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Checksum,
+        
+        ## Specifies custom data for the media. 
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Collections.Hashtable] $CustomData,
+        
+        ## Specifies additional Windows hotfixes to install post deployment.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Collections.Hashtable[]] $Hotfixes,
+        
+        ## Specifies that an exiting media entry should be overwritten.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         ## Validate ImageName when media type is ISO/WIM
@@ -373,12 +444,18 @@ function Unregister-LabMedia {
     .SYNOPSIS
         Unregisters a custom media entry.
     .DESCRIPTION
-        The Unregister-LabMedia cmdlet allows unregistering custom media entries.
+        The Unregister-LabMedia cmdlet allows removing custom media entries from the host's configuration.
+    .LINK
+        Get-LabMedia
+        Register-LabMedia
 #>
     [CmdletBinding(SupportsShouldProcess)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSProvideDefaultParameterValue', '')]
     param (
-        ## Unique media ID. You can override the built-in media if required.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $Id
+        ## Specifies the custom media Id to unregister. You cannot unregister the built-in media.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Id
     )
     process {
         ## Get the custom media list
@@ -413,7 +490,9 @@ function Unregister-LabMedia {
 function Reset-LabMedia {
 <#
     .SYNOPSIS
-        Reset the lab media back to default settings.
+        Reset the lab media entries to default settings.
+    .DESCRIPTION
+        The Reset-LabMedia removes all custom media entries, reverting them to default values.
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]

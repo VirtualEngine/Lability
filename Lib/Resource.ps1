@@ -6,17 +6,16 @@ function NewDirectory {
        The New-Directory cmdlet will create the target directory if it doesn't already exist. If the target path
        already exists, the cmdlet does nothing.
 #>
-    [CmdletBinding(DefaultParameterSetName = 'ByString', SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName = 'ByString', SupportsShouldProcess)]
     [OutputType([System.IO.DirectoryInfo])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Target filesystem directory to create
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true,
-            Position = 0, ParameterSetName = 'ByDirectoryInfo')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByDirectoryInfo')]
         [ValidateNotNullOrEmpty()] [System.IO.DirectoryInfo[]] $InputObject,
         
         # Target filesystem directory to create
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true,
-            Position = 0, ParameterSetName = 'ByString')] [Alias('PSPath')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByString')] [Alias('PSPath')]
         [ValidateNotNullOrEmpty()] [System.String[]] $Path
     )
     process {
@@ -62,7 +61,8 @@ function SetResourceChecksum {
 #>
     param (
         ## Path of file to create the checksum of
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path
     )
     process {
         $checksumPath = '{0}.checksum' -f $Path;
@@ -84,10 +84,17 @@ function GetResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum,
-        [Parameter()] [System.UInt32] $BufferSize = 64KB
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String] $Checksum,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
@@ -125,10 +132,17 @@ function TestResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum,
-        [Parameter()] [System.UInt32] $BufferSize = 64KB
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String] $Checksum,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {
@@ -155,10 +169,17 @@ function SetResourceDownload {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum,
-        [Parameter()] [System.UInt32] $BufferSize = 64KB
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String] $Checksum,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     begin {
@@ -166,7 +187,6 @@ function SetResourceDownload {
         [ref] $null = NewDirectory -Path $parentDestinationPath;
     }
     process {
-        $destinationFilename = [System.IO.Path]::GetFileName($DestinationPath);
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
         InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -Verbose -BufferSize $BufferSize;
 
@@ -185,10 +205,19 @@ function InvokeWebClientDownload {
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     param (
-        [Parameter(Mandatory)] [System.String] $DestinationPath,
-        [Parameter(Mandatory)] [System.String] $Uri,
-        [Parameter()] [System.UInt32] $BufferSize = 64KB,
-        [Parameter()] [AllowNull()] [System.Management.Automation.PSCredential] $Credential
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $DestinationPath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.UInt32] $BufferSize = 64KB,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $Credential
     )
     process {
         try {
@@ -252,11 +281,20 @@ function InvokeResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Uri,
-        [Parameter()] [AllowNull()] [System.String] $Checksum,
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force,
-        [Parameter()] [System.UInt32] $BufferSize = 64KB
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String] $Checksum,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
     )
     process {

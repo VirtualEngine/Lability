@@ -6,13 +6,27 @@ function NewLabSwitch {
         Permits validation of custom NonNodeData\VirtualEngineLab\Network entries.
 #>
     [CmdletBinding()]
-    [OutputType([System.Management.Automation.PSCustomObject])]
+    [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateSet('Internal','External','Private')] [System.String] $Type,
-        [Parameter()] [ValidateNotNull()] [System.String] $NetAdapterName,
-        [Parameter()] [ValidateNotNull()] [System.Boolean] $AllowManagementOS = $false,
-        [Parameter()] [ValidateSet('Present','Absent')] [System.String] $Ensure = 'Present'
+        ## Virtual switch name
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
+        ## Virtual switch type
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('Internal','External','Private')]
+        [System.String] $Type,
+        
+        ## Physical network adapter name (for external switches)
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String] $NetAdapterName,
+
+        ## Share host access (for external virtual switches)
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Boolean] $AllowManagementOS = $false,
+        
+        ## Virtual switch availability
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Present','Absent')]
+        [System.String] $Ensure = 'Present'
     )
     begin {
         if (($Type -eq 'External') -and (-not $NetAdapterName)) {
@@ -44,10 +58,13 @@ function ResolveLabSwitch {
     [OutputType([System.Collections.Hashtable])]
     param (
         ## Switch Id/Name
-        [Parameter(Mandatory)] [System.String] $Name,
-        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -81,10 +98,13 @@ function TestLabSwitch {
     [OutputType([System.Boolean])]
     param (
         ## Switch Id/Name
-        [Parameter(Mandatory)] [System.String] $Name,
-        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -106,10 +126,13 @@ function SetLabSwitch {
     [CmdletBinding()]
     param (
         ## Switch Id/Name
-        [Parameter(Mandatory)] [System.String] $Name,
-        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -131,10 +154,13 @@ function RemoveLabSwitch {
     [CmdletBinding()]
     param (
         ## Switch Id/Name
-        [Parameter(Mandatory)] [System.String] $Name,
-        ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Name,
+        
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;

@@ -3,3 +3,4 @@
 *.sln
 *.suo
 *.pssproj
+.vscode/settings.json

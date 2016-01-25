@@ -75,9 +75,22 @@ function GetConfigurationData {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
         if (Test-Path -Path $expandedPath) {
-            return Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+            $configurationData = Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+            
+            switch ($Configuration) {
+                'VM' {
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'CustomBootstrapOrder') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'CustomBootstrapOrder' -Value 'MediaFirst';
+                    }
+                }
+                Default {
+                    ## Do nothing
+                }
+            } #end switch
+            return $configurationData;
         }
-    }
+    } #end process
 } #end function GetConfigurationData
 
 function SetConfigurationData {
@@ -95,7 +108,7 @@ function SetConfigurationData {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
         [ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force;
+        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force -Confirm:$false;
     }
 } #end function SetConfigurationData
 

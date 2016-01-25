@@ -60,14 +60,15 @@ function InvokeExecutable {
     } #end process
 } #end function InvokeExecutable
 
-function WriteVerbose {
+function GetFormattedMessage {
 <#
     .SYNOPSIS
-        Wrapper around Write-Verbose that adds a timestamp to the output.
+        Generates a formatted output message.
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
     )
     process {
         if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
@@ -75,11 +76,27 @@ function WriteVerbose {
             $functionName = $parentCallStack.FunctionName;
             $lineNumber = $parentCallStack.ScriptLineNumber;
             $scriptName = ($parentCallStack.Location -split ':')[0];
-            $verboseMessage = '[{0}] [Script:{1}] [Function:{2}] [Line:{3}] {4}' -f (Get-Date).ToLongTimeString(), $scriptName, $functionName, $lineNumber, $Message;
+            $formattedMessage = '[{0}] [Script:{1}] [Function:{2}] [Line:{3}] {4}' -f (Get-Date).ToLongTimeString(), $scriptName, $functionName, $lineNumber, $Message;
         }
         else {
-            $verboseMessage = '[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message;
+            $formattedMessage = '[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message;
         }
+        return $formattedMessage;
+    } #end process
+} #end function GetFormattedMessage
+
+function WriteVerbose {
+<#
+    .SYNOPSIS
+        Wrapper around Write-Verbose that adds a timestamp and/or call stack information to the output.
+#>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
+    )
+    process {
+        $verboseMessage = GetFormattedMessage -Message $Message;
         Write-Verbose -Message $verboseMessage;
     }
 } #end function WriteVerbose
@@ -87,13 +104,15 @@ function WriteVerbose {
 function WriteWarning {
 <#
     .SYNOPSIS
-        Wrapper around Write-Warning that adds a timestamp to the output.
+        Wrapper around Write-Warning that adds a timestamp and/or call stack information to the output.
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Message
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Message
     )
     process {
-        Write-Warning -Message ('[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message);
+        $warningMessage = GetFormattedMessage -Message $Message;
+        Write-Warning -Message $warningMessage;
     }
 } #end function WriteWarning

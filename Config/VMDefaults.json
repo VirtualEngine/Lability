@@ -16,5 +16,6 @@
     "ClientCertificatePath": "%ALLUSERSPROFILE%\\VirtualEngineLab\\Certificates\\LabClient.pfx",
     "RootCertificatePath": "%ALLUSERSPROFILE%\\VirtualEngineLab\\Certificates\\LabRoot.cer",
     "BootOrder": 99,
-    "BootDelay": 0
+    "BootDelay": 0,
+	"CustomBootstrapOrder": "MediaFirst"
 }
