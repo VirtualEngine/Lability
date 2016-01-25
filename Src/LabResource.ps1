@@ -4,12 +4,12 @@ function Test-LabResource {
         Tests whether a lab's resources are present.
 #>
     param (
-        ## Lab DSC configuration data
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.Object] $ConfigurationData,
         
-        ## Lab resource Id
+        ## Lab resource Id to test.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ResourceId
     )
@@ -41,23 +41,45 @@ function Test-LabResource {
 function Invoke-LabResourceDownload {
 <#
     .SYNOPSIS
-        Downloads all required lab resources.
+        Starts a download of all required lab resources.
+    .DESCRIPTION
+        When a lab configuration is started, Lability will attempt to download all the required media and resources.
+        
+        In some scenarios you many need to download lab resources in advance, e.g. where internet access is not
+        readily available or permitted. The `Invoke-LabResourceDownload` cmdlet can be used to manually download
+        all required resources or specific media/resources as needed.
+    .PARAMETER ConfigurationData
+        Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+    .PARAMETER MediaId
+        Specifies the specific media IDs to download.
+    .PARAMETER ResourceId
+        Specifies the specific custom resource IDs to download.
+    .PARAMETER Force
+        Forces a download of all resources, overwriting any existing resources.
+    .EXAMPLE
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1
+
+        Downloads all required lab media and any custom resources defined in the 'MyLab.psd1' configuration.
+    .EXAMPLE
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -MediaId 'WIN10_x64_Enterprise_EN_Eval'
+
+        Downloads only the 'WIN10_x64_Enterprise_EN_Eval' media.
+    .EXAMPLE
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -ResourceId 'MyCustomResource'
+
+        Downloads only the 'MyCustomResource' resource defined in the 'MyLab.psd1' configuration.
 #>
     param (
-        ## Lab DSC configuration data
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.Object] $ConfigurationData = @{ },
         
-        ## Lab media Id
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String[]] $MediaId,
         
-        ## Lab resource Id
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String[]] $ResourceId,
         
-        ## Forces a checksum recalculations and a download if necessary.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
@@ -122,7 +144,7 @@ function ResolveLabResource {
         Resolves a lab resource by its ID
 #>
     param (
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.Object] $ConfigurationData,
@@ -175,7 +197,7 @@ function ExpandLabResource {
         Can expand ISO and ZIP files if the 'Expand' property is set to $true on the resource's properties.
 #>
     param (
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.Object] $ConfigurationData,

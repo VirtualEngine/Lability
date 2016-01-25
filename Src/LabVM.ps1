@@ -13,7 +13,7 @@ function ResolveLabVMProperties {
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $NodeName,
         
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Collections.Hashtable] $ConfigurationData,
@@ -59,8 +59,12 @@ function ResolveLabVMProperties {
 
         ## Default to SecureBoot On/$true unless otherwise specified
         ## TODO: Should this not be added to the LabVMDefaults?
-        if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) { $node['SecureBoot'] = $false; }
-        else { $node['SecureBoot'] = $true; }
+        if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) {
+            $node['SecureBoot'] = $false;
+        }
+        else {
+            $node['SecureBoot'] = $true;
+        }
 
         return $node;
     } #end process
@@ -76,11 +80,11 @@ function Get-LabVM {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        ## Lab VM/Node name
+        ## Specifies the lab virtual machine/node name.
         [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Object] $ConfigurationData
@@ -121,11 +125,11 @@ function Test-LabVM {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        ## Lab VM/Node name
+        ## Specifies the lab virtual machine/node name.
         [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Object] $ConfigurationData
@@ -181,11 +185,11 @@ function NewLabVM {
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
-        ## Lab VM/Node name
+        ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Collections.Hashtable] $ConfigurationData,
@@ -217,7 +221,7 @@ function NewLabVM {
         if ($PSCmdlet.ParameterSetName -eq 'Password') {
             $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
         }
-        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
+        if (-not $Credential) {throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
     }
     process {
@@ -323,11 +327,11 @@ function RemoveLabVM {
 #>
     [CmdletBinding()]
     param (
-        ## Lab VM/Node name
+        ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Object] $ConfigurationData,
@@ -376,34 +380,39 @@ function RemoveLabVM {
 function Reset-LabVM {
 <#
     .SYNOPSIS
-        Deletes and recreates a lab virtual machine, reapplying the MOF
+        Recreates a lab virtual machine.
+    .DESCRIPTION
+        The Reset-LabVM cmdlet deletes and recreates a lab virtual machine, reapplying the MOF.
+        
+        To revert a single VM to a previous state, use the Restore-VMSnapshot cmdlet. To revert an entire lab environment, use the Restore-Lab cmdlet.
+    
 #>
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     param (
-        ## Lab VM/Node name
+        ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
         
-        ## Lab DSC configuration data
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [System.Object] $ConfigurationData,
         
-        ## Local administrator password of the VM. The username is NOT used.
+        ## Local administrator password of the virtual machine. The username is NOT used.
         [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential = (& $credentialCheckScriptBlock),
         
-        ## Local administrator password of the VM.
+        ## Local administrator password of the virtual machine.
         [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
-        ## Directory path containing the VM .mof file(s)
+        ## Directory path containing the virtual machines' .mof file(s).
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Path = (GetLabHostDSCConfigurationPath),
         
-        ## Skip creating baseline snapshots
+        ## Skip creation of the initial baseline snapshot.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
@@ -450,7 +459,7 @@ function New-LabVM {
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUserNameAndPassWordParams','')]
     param (
-        ## Lab VM/Node name
+        ## Specifies the virtual machine name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
@@ -542,8 +551,6 @@ function New-LabVM {
         }
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
-
-        
     } #end begin
     process {
         ## Skeleton configuration node
@@ -604,11 +611,13 @@ function New-LabVM {
 function Remove-LabVM {
 <#
     .SYNOPSIS
-        Removes one or more lab virtual machines and differencing VHD(X)s.
+        Removes a bare-metal virtual machine and differencing VHD(X).
+    .DESCRIPTION
+        The Remove-LabVM cmdlet removes a virtual machine and it's VHD(X) file.
 #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        ## Lab VM/Node name
+        ## Virtual machine name
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()] [System.String[]] $Name
     )

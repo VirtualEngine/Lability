@@ -1,0 +1,114 @@
+TOPIC
+        about_CustomResources
+
+SHORT DESCRIPTION
+
+        Custom resources are binary files that can be deployed into virtual machines' VHD(X) disk file.
+
+LONG DESCRIPTION
+
+        Most lab environments require additional binary resources to be able to provision them end-to-end. These
+        resources may include .EXE, .MSI, .ISO and/or .ZIP files.
+        
+        Custom resources are defined in the NonNodeData section of the PowerShell DSC configuration document (.psd1)
+        and then referenced within each node where the resource is required. This process permits injecting a
+        resource into more than a single virtual machine if required.
+        
+        When defining custom resources, the Uri property can point to a http://, https:// or file:// location.
+        NOTE: Be careful when distributing lab configuration documents that contain file Uris. 
+        
+        @{
+            AllNodes = @(
+                @{
+                    NodeName = 'ResourceExample';
+                    
+                    ##  Specify the resource identifiers all of the resources to be copied to the target node during
+                    ##  VM creation.
+                    Lability_Resource = @('MyCustomResource');
+                }
+            )
+            
+            NonNodeData = @{
+                Lability = @{
+
+                    Resources = @(
+
+                        @{
+                            ##  Resource identifier. If the resource is to be expanded (ZIP or ISO), it will also be
+                            ##  expanded into the \Resources\<ResourceID> folder on the target node.
+                            Id = 'MyCustomResource';
+                            
+                            ##  When the file is downloaded, it will be placed in the host's 'ResourcePath' folder
+                            ##  using this filename.
+                            Filename = 'MyCustomResource.zip';
+
+                            ##  The source URI to download the file from if it is not present in the host's Resources
+                            ##  folder. This can be a http, https or file URI. If the path includes spaces, they must
+                            ##  be URL encoded.
+                            Uri = 'http://mybucket.s3.amazon.com/MyCustomFile.zip'
+
+                            ##  If you want the module to check the downloaded file, you can specify a MD5 checksum.
+                            ##  If you do specify a checksum you HAVE to ensure it's correct otherwise it will
+                            ##  continuously attempt to download the resource!
+                            Checksum = '';
+
+                            ## If the resource is a .ZIP or .ISO file, it can be expanded/decompressed when copied
+                            ## into the node's \Resources\<ResourceID> folder. If not specified, this value defaults
+                            ## to False.
+                            Expand = $true;
+                        }
+                    
+                    )                
+                }
+            }
+        }
+        
+RESOURCE DOWNLOAD
+
+        When a lab configuration is started, Lability will automatically download all missing media and custom
+        resources. In some scenarios you many need to download all required resources in advance, e.g. where internet
+        access is not readily available or permitted. The `Invoke-LabResourceDownload` cmdlet can be used to manually
+        download all required resources.
+
+        All downloaded resources are cached in the host's 'ResourcePath'. This path can be found by running the
+        following command:
+        
+            PS C:\> Get-LabHostDefault
+            
+        Use the `Set-LabHostDefault` cmdlet to set the host's 'ResourcePath' property. For example        
+
+COMPRESSED RESOURCES
+
+        Custom resources/media may be downloaded in a compressed foramt, i.e. ZIP files. Lability supports
+        decompressing or expanding .ISO and .ZIP resources into a node's VHD(X) file when the VM is created. To expand
+        a resource you need to set the 'Expand' property on the resource to '$true'. By default no resources are
+        automatically expanded.
+        
+        When expanding .ISO and .ZIP resources, they are placed into the \Resources\<ResourceId> folder. For example,
+        an .ISO resource with the Id of 'MyCustomIso' when set to expand, would be expanded into the
+        C:\Resources\MyCustomIso folder of the target node.
+        
+        NOTE: the compressed resource is still downloaded and stored on the host machine. 
+        
+MANUAL RESOURCE DOWNLOAD
+
+        It is also possible to manually prestage resources by placing them in the host's 'ResourcePath' directory.
+        If an existing filename (and checksum) already matches a resource definition, Lability will not attempt to
+        download it again.
+        
+        For example, when using the above configuration, manually placing a 'MyCustomResource.zip' file in the host's
+        'ResourcePath' directory will ensure that the file will not be downloaded (as there is no checksum). However,
+        if a MD5 checksum is defined, only if the MD5 checksum matches, it will won't be downloaded again.
+        
+        NOTE: if a MD5 checksum is incorrect, Lablility will always attempt to download the resource.
+
+KEYWORDS
+        Compressed resource
+        Custom resource
+        Media download
+
+SEE ALSO
+        CustomResources.psd1
+        Invoke-LabResourceDownload
+        Get-LabHostDefault
+    

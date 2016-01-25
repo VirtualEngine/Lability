@@ -57,9 +57,11 @@ function GetLabVMSnapshot {
 #>
     [CmdletBinding()]
     param (
+        ## VM/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
         
+        ## Snapshot name to restore.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $SnapshotName
     )

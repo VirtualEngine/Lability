@@ -4,6 +4,7 @@ function ResolveLabVMDiskPath {
         Resolves the specified VM name to it's target VHDX path.
 #>
     param (
+        ## VM/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Name
     )
@@ -24,9 +25,11 @@ function GetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
+        ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
+        ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Media
     )
@@ -51,9 +54,11 @@ function TestLabVMDisk {
 #>
     [CmdletBinding()]
     param (
+        ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
+        ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Media
     )
@@ -80,9 +85,11 @@ function SetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
+        ## VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
+        ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Media
     )
@@ -109,9 +116,11 @@ function RemoveLabVMDisk {
 #>
     [CmdletBinding()]
     param (
+        ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
+        ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Media
     )
@@ -144,9 +153,11 @@ function ResetLabVMDisk {
 #>
     [CmdletBinding()]
     param (
+        ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
+        ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Media
     )

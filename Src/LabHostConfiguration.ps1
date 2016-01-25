@@ -77,10 +77,13 @@ function GetLabHostSetupConfiguration {
 function Get-LabHostConfiguration {
 <#
     .SYNOPSIS
-        Retrieves the current Hyper-V host configuration.
+        Retrieves the current lab host configuration.
+    .LINK
+        Test-LabHostConfiguration
+        Start-LabHostConfiguration
 #>
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
+    [OutputType([System.Collections.Hashtable])]
     param ( )
     process {
         #$hostDefaults = GetConfigurationData -Configuration Host;
@@ -95,7 +98,14 @@ function Get-LabHostConfiguration {
 function Test-LabHostConfiguration {
 <#
     .SYNOPSIS
-        Tests whether the Hyper-V host is configured correctly.
+        Tests the lab host configuration.
+    .DESCRIPTION
+        The Test-LabHostConfiguration test the current configuration of the lab host.
+    .PARAMETER IgnorePendingReboot
+        Specifies a pending reboot does not fail the test.
+    .LINK
+        Get-LabHostConfiguration
+        Test-LabHostConfiguration
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -106,7 +116,6 @@ function Test-LabHostConfiguration {
         WriteVerbose $localized.StartedHostConfigurationTest;
         ## Test folders/directories
         $hostDefaults = GetConfigurationData -Configuration Host;
-        #$hostDefaultsPaths = $hostDefaults.PSObject.Properties | Where-Object { $_.Name -like '*Path' } | ForEach-Object { $_.Value }
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 WriteVerbose ($localized.TestingPathExists -f $property.Value);
@@ -118,7 +127,13 @@ function Test-LabHostConfiguration {
         
         $labHostSetupConfiguration = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguration) {
-            ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
+            $importDscResourceParams = @{
+                ModuleName = $configuration.ModuleName;
+                ResourceName = $configuration.ResourceName;
+                Prefix = $configuration.Prefix;
+                UseDefault = $configuration.UseDefault;
+            }
+            ImportDscResource @importDscResourceParams;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
             if (-not (TestDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
                 if ($configuration.Prefix -eq 'PendingReboot') {
@@ -140,15 +155,16 @@ function Test-LabHostConfiguration {
 function Start-LabHostConfiguration {
 <#
     .SYNOPSIS
-        Invokes the configuration of the Hyper-V lab host.
-    .NOTES
-        Should this support passing of a specific configuration file to support updated ISO configs?
+        Invokes the configuration of the lab host.
+    .DESCRIPTION
+        The Start-LabHostConfiguration cmdlet invokes the configuration of the local host computer.
+    .LINK
+        Test-LabHostConfiguration
+        Get-LabHostConfiguration
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param (
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
-    )
+    param ( )
     process {
         WriteVerbose $localized.StartedHostConfiguration;
         ## Create required directory structure
@@ -162,12 +178,12 @@ function Start-LabHostConfiguration {
         # Once all the path are created, check if the hostdefaults.Json file in the $env:ALLUSERSPROFILE is doesn't have entries with %SYSTEMDRIVE% in it
         # Many subsequent call are failing to Get-LabImage, Test-LabHostConfiguration which do not resolve the "%SYSTEMDRIVE%" in the path for Host defaults
         foreach ($property in $($hostDefaults.PSObject.Properties | Where-Object -Property TypeNameOfValue -eq 'System.String')) {
-            if ($property.Value.Contains("%")){
+            if ($property.Value.Contains('%')) {
                 # if the Path for host defaults contains a '%' character then resolve it
-                $resolvedPath = ResolvePathEx -Path $Property.Value
+                $resolvedPath = ResolvePathEx -Path $Property.Value;
                 # update the hostdefaults Object
-                $hostDefaults.($property.name)  = $resolvedPath
-                $hostdefaultupdated = $True
+                $hostDefaults.($property.Name)  = $resolvedPath;
+                $hostdefaultupdated = $true;
             }
         }
         if ($hostdefaultupdated) {
