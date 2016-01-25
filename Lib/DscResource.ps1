@@ -137,3 +137,168 @@ function InvokeDscResource {
         }
     } #end process
 } #end function InvokeDscResource
+
+function GetDscResourcePSGalleryUri {
+ <#
+    .SYNOPSIS
+        Returns the DSC resource direct download Uri
+#>  
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param (
+        ## PowerShell DSC resource module name
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        
+        ## The minimum version of the DSC module required
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Version] $MinimumVersion,
+        
+        ## The exact version of the DSC module required
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Version] $RequiredVersion,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Uri,
+        
+        [Parameter(ValueFromRemainingArguments)]
+        $RemainingArguments  
+    )
+    process {
+        if ($PSBoundParameters.ContainsKey('Uri')) {
+            return $Uri;
+        }
+        elseif ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+            ## Download the specific version
+            return ('http://www.powershellgallery.com/api/v2/package/{0}/{1}' -f $Name, $RequiredVersion);
+        }
+        else {
+            ## Download the latest version
+            return ('http://www.powershellgallery.com/api/v2/package/{0}' -f $Name);
+        }
+    } #end process
+} #end function GetDscResourcePSGalleryUri
+
+function InvokeDscResourceDownload {
+<#
+    .SYNOPSIS
+        Downloads a DSC resource if it has not already been downloaded or the checksum is incorrect.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable[]] $DSCResource,
+        
+        [Parameter(ValueFromRemainingArguments)]
+        $RemainingArguments
+    )
+    process {
+        
+        foreach ($resourceDefinition in $DSCResource) {
+            if (-not (TestModule @resourceDefinition)) {
+                switch ($resourceDefinition.Provider) {
+                    'GitHub' {
+                        InvokeDscResourceDownloadFromGitHub @resourceDefinition;
+                    }
+                    default {
+                        ## Use the PSGallery provider bu default.
+                        InvokeDscResourceDownloadFromPSGallery @resourceDefinition;
+                    }
+                }
+            } #end if module not present
+            else {
+                $module = GetModule -Name $resourceDefinition.Name;
+                Write-Output (Get-Item -Path $module.Path).Directory;
+            }
+        } #end foreach DSC resource
+    } #end process
+} #end function InvokeDscResourceDownload
+
+function InvokeDscResourceDownloadFromPSGallery {
+<#
+    .SYNOPSIS
+        Downloads a DSC resource if it has not already been downloaded from the Powershell Gallery.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param (
+        
+        ## PowerShell DSC resource module name
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        
+        ## The minimum version of the DSC module required
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Version] $MinimumVersion,
+        
+        ## The exact version of the DSC module required
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Version] $RequiredVersion,
+        
+        [Parameter(ValueFromRemainingArguments)]
+        $RemainingArguments
+    )
+    process {
+        $windowsPowerShellModules = Join-Path -Path $env:ProgramFiles -ChildPath '\WindowsPowerShell\Modules';
+        $tempModuleFilename = '{0}.zip' -f $Name;
+        $tempDestinationPath = Join-Path -Path $env:Temp -ChildPath $tempModuleFilename;
+        
+        $psGalleryUri = GetDscResourcePSGalleryUri @PSBoundParameters;
+        $tempFileInfo = SetResourceDownload -DestinationPath $tempDestinationPath -Uri $psGalleryUri;
+                    
+        ## Extract .Zip to PSModulePath
+        $modulePath = Join-Path $windowsPowerShellModules -ChildPath $Name;
+        [ref] $null = ExpandZipArchive -Path $tempFileInfo -DestinationPath $modulePath -ExcludeNuSpecFiles -Force;
+        return (Get-Item -Path $modulePath);
+    } #end process
+} #end function 
+
+function InvokeDscResourceDownloadFromGitHub {
+    <#
+    .SYNOPSIS
+        Downloads a DSC resource if it has not already been downloaded from Github.
+    .NOTES
+        Uses the GitHubRepository module!
+#>
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param (
+        ## PowerShell DSC resource module name
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Owner,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Repository,
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Branch = 'master',
+        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $OverrideRepositoryName,
+        
+        [Parameter(ValueFromRemainingArguments)]
+        $RemainingArguments
+    )
+    begin {
+        ## Bootstrap the GithubRepository module
+        if (-not (TestModule -Name GitHubRepository -MinimumVersion '0.9.3')) {
+            [ref] $null = InvokeDscResourceDownloadFromPSGallery -Name 'GitHubRepository';
+        }
+    }
+    process {
+        Import-Module -Name GitHubRepository -Verbose:$false;
+        $installGitHubRepositoryParams = @{
+            Owner = $Owner;
+            Repository = $Repository;
+            Branch = $Branch;
+        }
+        if ($OverrideRepositoryName) {
+            $installGitHubRepositoryParams['OverrideRepository'] = $OverrideRepositoryName;
+        }
+        return (Install-GitHubRepository @installGitHubRepositoryParams -Force);
+    } #end process
+} #end function Invoke-DscResourceDownloadFromGitHub

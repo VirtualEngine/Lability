@@ -90,9 +90,11 @@ ConvertFrom-StringData -StringData @'
     DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
+    DownloadingAllDSCResources      = Downloading all required DSC resources.
     NoHotfixesSpecified             = No hotfixes were specified.
     NoMediaDefined                  = No media resources were defined.
     NoResourcesDefined              = No custom resources were defined.
+    NoDSCResourcesDefined           = No DSC resources were defined.
     ProvideAdministratorPassword    = Please provide the local Administrator password.
     AddingCustomMediaEntry          = Adding '{0}' media entry.
     OverwritingCustomMediaEntry     = Overwriting existing '{0}' media entry.

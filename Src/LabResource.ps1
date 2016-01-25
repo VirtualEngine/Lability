@@ -50,14 +50,22 @@ function Invoke-LabResourceDownload {
         all required resources or specific media/resources as needed.
     .PARAMETER ConfigurationData
         Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+    .PARAMETER All
+        Specifies all media and custom resources should be downloaded.
     .PARAMETER MediaId
         Specifies the specific media IDs to download.
     .PARAMETER ResourceId
         Specifies the specific custom resource IDs to download.
+    .PARAMETER MediaOnly
+        Specifies all media IDs should be downloaded.
+    .PARAMETER ResourceOnly
+        Specifies all custom resource IDs should be downloaded.
     .PARAMETER Force
         Forces a download of all resources, overwriting any existing resources.
+    .PARAMETER DestinationPath
+        Specifies the target destination path of downloaded resources (not media).
     .EXAMPLE
-        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -All
 
         Downloads all required lab media and any custom resources defined in the 'MyLab.psd1' configuration.
     .EXAMPLE
@@ -68,17 +76,40 @@ function Invoke-LabResourceDownload {
         Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -ResourceId 'MyCustomResource'
 
         Downloads only the 'MyCustomResource' resource defined in the 'MyLab.psd1' configuration.
+    .EXAMPLE
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -MediaOnly
+
+        Downloads only the media defined in the 'MyLab.psd1' configuration.    
 #>
+    [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [System.Object] $ConfigurationData = @{ },
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+         $ConfigurationData = @{ },
         
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'All')]
+        [System.Management.Automation.SwitchParameter] $All,
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'MediaId')]
         [System.String[]] $MediaId,
         
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String[]] $ResourceId,
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ResourceId')]
+        [System.String[]] $ResourceId,     
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Media')]
+        [System.Management.Automation.SwitchParameter] $Media,
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Resources')]
+        [System.Management.Automation.SwitchParameter] $Resources,
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'DSCResources')]
+        [System.Management.Automation.SwitchParameter] $DSCResources,
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Resources')]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ResourceId')]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
         
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
@@ -86,55 +117,72 @@ function Invoke-LabResourceDownload {
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         $hostDefaults = GetConfigurationData -Configuration Host;
+        if (-not $DestinationPath) { $DestinationPath = $hostDefaults.ResourcePath; }
     }
     process {
-        if (-not $MediaId) {
-            WriteVerbose ($Localized.DownloadingAllRequiredMedia);
-            $uniqueMediaIds = @();
-            $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
-                $id = (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
-                if ($uniqueMediaIds -notcontains $id) { $uniqueMediaIds += $id; }
+        if ($PSCmdlet.ParameterSetName -in 'MediaId','Media','All') {
+            if (-not $MediaId) {
+                WriteVerbose ($Localized.DownloadingAllRequiredMedia);
+                $uniqueMediaIds = @();
+                $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
+                    $id = (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
+                    if ($uniqueMediaIds -notcontains $id) { $uniqueMediaIds += $id; }
+                }
+                $MediaId = $uniqueMediaIds;
             }
-            $MediaId = $uniqueMediaIds;
-        }
 
-        if ($MediaId) {
-            foreach ($id in $MediaId) {
-                $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
-                InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
+            if ($MediaId) {
+                foreach ($id in $MediaId) {
+                    $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
+                    InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
 
-                WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
-                if ($labMedia.Hotfixes.Count -gt 0) {
-                    foreach ($hotfix in $labMedia.Hotfixes) {
-                        InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                    WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
+                    if ($labMedia.Hotfixes.Count -gt 0) {
+                        foreach ($hotfix in $labMedia.Hotfixes) {
+                            InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                        }
+                    }
+                    else {
+                        WriteVerbose ($localized.NoHotfixesSpecified);
                     }
                 }
-                else {
-                    WriteVerbose ($localized.NoHotfixesSpecified);
+            }
+            else {
+                WriteVerbose ($localized.NoMediaDefined);
+            } 
+        } #end if MediaId or MediaOnly
+
+        if ($PSCmdlet.ParameterSetName -in 'ResourceId','Resources','All') {
+            if (-not $ResourceId) {
+                WriteVerbose ($Localized.DownloadingAllDefinedResources);
+                $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
+            }
+
+            if (($ResourceId.Count -gt 0) -and (-not $MediaOnly)) {
+                foreach ($id in $ResourceId) {
+                    $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
+                    $fileName = $resource.Id;
+                    if ($resource.Filename) { $fileName = $resource.Filename; }
+                    $destinationPath = Join-Path -Path $targetPath -ChildPath $fileName;
+                    InvokeResourceDownload -DestinationPath $destinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
                 }
             }
-        }
-        else {
-            WriteVerbose ($localized.NoMediaDefined);
-        }
-
-        if (-not $ResourceId) {
-            WriteVerbose ($Localized.DownloadingAllDefinedResources);
-            $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
-        }
-
-        if ($ResourceId.Count -gt 0) {
-            foreach ($id in $ResourceId) {
-                $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
-                $fileName = $resource.Id;
-                if ($resource.Filename) { $fileName = $resource.Filename; }
-                $destinationPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $fileName;
-                InvokeResourceDownload -DestinationPath $destinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+            else {
+                WriteVerbose ($localized.NoResourcesDefined);
+            }
+        } #end if ResourceId or ResourceOnly
+        
+        if ($PSCmdlet.ParameterSetName -in 'DSCResources','All') {
+            $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
+            if ($dscResources.Count -gt 0) {
+                WriteVerbose ($Localized.DownloadingAllDSCResources);
+                InvokeDscResourceDownload -DSCResource $dscResourceDefinitions;
+            }
+            else {
+                WriteVerbose ($localized.NoDSCResourcesDefined);
             }
         }
-        else {
-            WriteVerbose ($localized.NoResourcesDefined);
-        }
+        
     } #end process
 } #end function Invoke-LabResourceDownload
 
