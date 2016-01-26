@@ -163,8 +163,9 @@ function Invoke-LabResourceDownload {
                     $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $id;
                     $fileName = $resource.Id;
                     if ($resource.Filename) { $fileName = $resource.Filename; }
-                    $destinationPath = Join-Path -Path $targetPath -ChildPath $fileName;
-                    InvokeResourceDownload -DestinationPath $destinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+                    $resourceDestinationPath = Join-Path -Path $DestinationPath -ChildPath $fileName;
+                    [ref] $null = InvokeResourceDownload -DestinationPath $resourceDestinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+                    Write-Output (Get-Item -Path $resourceDestinationPath);
                 }
             }
             else {
@@ -173,13 +174,15 @@ function Invoke-LabResourceDownload {
         } #end if ResourceId or ResourceOnly
         
         if ($PSCmdlet.ParameterSetName -in 'DSCResources','All') {
-            $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
-            if ($dscResources.Count -gt 0) {
-                WriteVerbose ($Localized.DownloadingAllDSCResources);
-                InvokeDscResourceDownload -DSCResource $dscResourceDefinitions;
-            }
-            else {
-                WriteVerbose ($localized.NoDSCResourcesDefined);
+            if ($ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource) {
+                $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
+                if ($dscResources.Count -gt 0) {
+                    WriteVerbose ($Localized.DownloadingAllDSCResources);
+                    InvokeDscResourceDownload -DSCResource $dscResourceDefinitions -Force:$Force;
+                }
+                else {
+                    WriteVerbose ($localized.NoDSCResourcesDefined);
+                }
             }
         }
         
