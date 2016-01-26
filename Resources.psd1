@@ -115,6 +115,10 @@ ConvertFrom-StringData -StringData @'
     RemovingQuickVM                 = Removing quick VM '{0}'.
     ResettingVM                     = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.
+    TestingNodeDscModule            = Testing node DSC '{0}' module.
+    TestingNodeResource             = Testing node resource '{0}'.
+    ResourceNotFound                = Resource '{0}' was not found.
+    ResourceFound                   = Resource '{0}' was found.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -125,7 +129,9 @@ ConvertFrom-StringData -StringData @'
     NoCustomMediaFoundWarning       = No custom media '{0}' registered.
     UnsupportedConfigurationWarning = Configuration '{0}' is not supported by {1}.
     ShouldProcessWarning            = Are you sure you want to perform this action?
-    MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing. 
+    MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing.
+    MissingRequiredModuleWarning    = Module '{0}' is missing.
+    MissingRequiredResourceWarning  = Resource '{0}' is missing.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.

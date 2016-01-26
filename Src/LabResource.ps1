@@ -3,6 +3,8 @@ function Test-LabResource {
     .SYNOPSIS
         Tests whether a lab's resources are present.
 #>
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param (
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
@@ -11,11 +13,18 @@ function Test-LabResource {
         
         ## Lab resource Id to test.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $ResourceId
+        [System.String] $ResourceId,
+        
+        ## Lab resource path
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ResourcePath
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        if (-not $ResourcePath) {
+            $hostDefaults = GetConfigurationData -Configuration Host;
+            $ResourcePath = $hostDefaults.ResourcePath;
+        }
     }
     process {
         if ($resourceId) { $resources = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId }
@@ -26,7 +35,7 @@ function Test-LabResource {
             if ($resource.Filename) { $fileName = $resource.Filename; }
             
             $testResourceDownloadParams = @{
-                DestinationPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $fileName;;
+                DestinationPath = Join-Path -Path $ResourcePath -ChildPath $fileName;;
                 Uri = $resource.Uri;
             }
             if ($resource.Checksum) { $testResourceDownloadParams['Checksum'] = $resource.Checksum }
@@ -37,6 +46,62 @@ function Test-LabResource {
         return $true;
     } #end process
 } #end Test-LabResource
+
+function TestLabLocalResource {
+<#
+    .SYNOPSIS
+        Test whether a lab resource is available locally
+#>
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param (
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData,
+        
+        ## Lab resource Id to test.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ResourceId,
+        
+        ## Node's target resource folder
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $LocalResourcePath
+    )
+    process {
+        $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId;
+        
+        if (($resource.Expand) -and ($resource.Expand -eq $true)) {
+            ## Check the ResourceId folder is present
+            $resourcePath = Join-Path -Path $LocalResourcePath -ChildPath $resourceId;
+            $resourceExtension = [System.IO.Path]::GetExtension($resource.Filename);
+            switch ($resourceExtension) {
+                '.iso' {
+                    $isPresent = Test-Path -Path $resourcePath -PathType Container;
+                }
+                '.zip' {
+                    $isPresent = Test-Path -Path $resourcePath -PathType Container;
+                }
+                default {
+                    throw ($localized.ExpandNotSupportedError -f $resourceExtension);
+                }
+            }
+        }
+        else {
+            $resourcePath = Join-Path -Path $LocalResourcePath -ChildPath $resource.Filename;
+            $isPresent = Test-Path -Path $resourcePath -PathType Leaf; 
+        }
+        
+        if ($isPresent) {
+            WriteVerbose -Message ($localized.ResourceFound -f $resourcePath);
+            return $true;
+        }
+        else {
+            WriteVerbose -Message ($localized.ResourceNotFound -f $resourcePath);
+            return $false;
+        }
+    } #end process
+} #end function TestLabResourceLocal
 
 function Invoke-LabResourceDownload {
 <#
@@ -51,23 +116,25 @@ function Invoke-LabResourceDownload {
     .PARAMETER ConfigurationData
         Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
     .PARAMETER All
-        Specifies all media and custom resources should be downloaded.
+        Specifies all media, custom and DSC resources should be downloaded.
     .PARAMETER MediaId
         Specifies the specific media IDs to download.
     .PARAMETER ResourceId
         Specifies the specific custom resource IDs to download.
-    .PARAMETER MediaOnly
+    .PARAMETER Media
         Specifies all media IDs should be downloaded.
-    .PARAMETER ResourceOnly
+    .PARAMETER Resources
         Specifies all custom resource IDs should be downloaded.
+    .PARAMETER DSCResources
+        Specifies all DSC resources should be downloaded.
     .PARAMETER Force
         Forces a download of all resources, overwriting any existing resources.
     .PARAMETER DestinationPath
-        Specifies the target destination path of downloaded resources (not media).
+        Specifies the target destination path of downloaded custom resources (not media or DSC resources).
     .EXAMPLE
         Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -All
 
-        Downloads all required lab media and any custom resources defined in the 'MyLab.psd1' configuration.
+        Downloads all required lab media, any custom resources and DSC resources defined in the 'MyLab.psd1' configuration.
     .EXAMPLE
         Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -MediaId 'WIN10_x64_Enterprise_EN_Eval'
 
@@ -77,9 +144,13 @@ function Invoke-LabResourceDownload {
 
         Downloads only the 'MyCustomResource' resource defined in the 'MyLab.psd1' configuration.
     .EXAMPLE
-        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -MediaOnly
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -Media
 
-        Downloads only the media defined in the 'MyLab.psd1' configuration.    
+        Downloads only the media defined in the 'MyLab.psd1' configuration.
+    .EXAMPLE
+        Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -Resources -DSCResources
+
+        Downloads only the custom file resources and DSC resources defined in the 'MyLab.psd1' configuration.    
 #>
     [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
@@ -259,11 +330,18 @@ function ExpandLabResource {
         
         ## Destination mounted VHDX path to expand resources into
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath
+        [System.String] $DestinationPath,
+        
+        ## Source resource path
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ResourcePath
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        if (-not $ResourcePath) {
+            $hostDefaults = GetConfigurationData -Configuration Host;
+            $ResourcePath = $hostDefaults.ResourcePath;
+        }
     }
     process {
         if (-not (Test-Path -Path $DestinationPath -PathType Container)) {
@@ -277,9 +355,9 @@ function ExpandLabResource {
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
             
             ## Default to resource.Id unless there is a filename property defined!
-            $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Id;
+            $resourceItemPath = Join-Path -Path $ResourcePath -ChildPath $resource.Id;
             if ($resource.Filename) {
-                $resourceItemPath = Join-Path -Path $hostDefaults.ResourcePath -ChildPath $resource.Filename;
+                $resourceItemPath = Join-Path -Path $ResourcePath -ChildPath $resource.Filename;
             }
             if (-not (Test-Path -Path $resourceItemPath)) {
                 [ref] $null = Invoke-LabResourceDownload -ConfigurationData $ConfigurationData -ResourceId $resourceId;
@@ -289,9 +367,16 @@ function ExpandLabResource {
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
                 [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
                 switch ($resourceItem.Extension) {
-                    '.iso' { ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath; }
-                    '.zip' { [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false; }
-                    Default { throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension); }
+                    '.iso' {
+                        ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
+                    }
+                    '.zip' {
+                        WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
+                        [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false;
+                    }
+                    Default {
+                        throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension);
+                    }
                 } #end switch
             }
             else {

@@ -92,12 +92,14 @@ function WriteVerbose {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(ValueFromPipeline)] [AllowNull()]
         [System.String] $Message
     )
     process {
-        $verboseMessage = GetFormattedMessage -Message $Message;
-        Write-Verbose -Message $verboseMessage;
+        if (-not [System.String]::IsNullOrEmpty($Message)) {
+            $verboseMessage = GetFormattedMessage -Message $Message;
+            Write-Verbose -Message $verboseMessage;
+        }
     }
 } #end function WriteVerbose
 
@@ -108,11 +110,13 @@ function WriteWarning {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(ValueFromPipeline)] [AllowNull()]
         [System.String] $Message
     )
     process {
-        $warningMessage = GetFormattedMessage -Message $Message;
-        Write-Warning -Message $warningMessage;
+        if (-not [System.String]::IsNullOrEmpty($Message)) {
+            $warningMessage = GetFormattedMessage -Message $Message;
+            Write-Warning -Message $warningMessage;
+        }
     }
 } #end function WriteWarning
