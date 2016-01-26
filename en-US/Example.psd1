@@ -71,9 +71,15 @@
                     IPAddress: The desired IP address.
                     InterfaceAlias: Alias of the network interface for which the IP address should be set. <- Use NetAdapterName
                     DefaultGateway: Specifies the IP address of the default gateway for the host. <- Not needed for internal switch
-                    SubnetMask: Local subnet size.
+                    Subnet: Local subnet CIDR (used for cloud routing).
                     AddressFamily: IP address family: { IPv4 | IPv6 }
                 #>
+            );
+            DSCResource = @(
+                ## Download from the PowerShell Gallery
+                @{ Name = 'xSQLServer'; MinimumVersion = '1.3.0.0'; Provider = 'PSGallery'; }
+                ## Download from a Github repository. NOTE: bootstraps the GitHubRepositoryModule
+                @{ Name = 'xSqlPs'; MinimumVersion = '1.1.3.1'; Provider = 'GitHub'; Owner = 'Powershell'; Repository = 'xSqlPs'; Branch = 'dev'; }
             );
         };
     };

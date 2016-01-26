@@ -81,6 +81,7 @@ ConvertFrom-StringData -StringData @'
     CopyingFileResource             = Copying file resource '{0}'.
     ExpandingZipResource            = Expanding Zip archive '{0}'.
     ExtractingZipArchiveEntry       = Extracting Zip archive entry '{0}'.
+    IgnoringNuspecZipArchiveEntry   = Ignoring NuSpec Zip archive entry '{0}'.
     ClosingZipArchive               = Closing Zip archive '{0}'.
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
@@ -89,9 +90,11 @@ ConvertFrom-StringData -StringData @'
     DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
+    DownloadingAllDSCResources      = Downloading all required DSC resources.
     NoHotfixesSpecified             = No hotfixes were specified.
     NoMediaDefined                  = No media resources were defined.
     NoResourcesDefined              = No custom resources were defined.
+    NoDSCResourcesDefined           = No DSC resources were defined.
     ProvideAdministratorPassword    = Please provide the local Administrator password.
     AddingCustomMediaEntry          = Adding '{0}' media entry.
     OverwritingCustomMediaEntry     = Overwriting existing '{0}' media entry.
@@ -103,10 +106,20 @@ ConvertFrom-StringData -StringData @'
     LocatingWimImageName            = Locating WIM image '{0}' name.
     LocatingWimImageIndex           = Locating WIM image '{0}' index.
     MediaFileCachingDisabled        = Caching of file-based media is disabled. Skipping media '{0}' download.
+    QueryingModuleVersion           = Querying '{0}' module version.
+    ExistingModuleVersion           = Existing module version is '{0}'.
+    LocatingModule                  = Locating module '{0}'.
+    ModuleNotFound                  = Module '{0}' was not found.
+    ModuleFoundInPath               = Found module in '{0}'.
     CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
     RemovingQuickVM                 = Removing quick VM '{0}'.
     ResettingVM                     = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.
+    TestingNodeDscModule            = Testing node DSC '{0}' module.
+    TestingNodeResource             = Testing node resource '{0}'.
+    TestingNodeCertificate          = Testing node certificate '{0}'.
+    ResourceNotFound                = Resource '{0}' was not found.
+    ResourceFound                   = Resource '{0}' was found.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -117,7 +130,10 @@ ConvertFrom-StringData -StringData @'
     NoCustomMediaFoundWarning       = No custom media '{0}' registered.
     UnsupportedConfigurationWarning = Configuration '{0}' is not supported by {1}.
     ShouldProcessWarning            = Are you sure you want to perform this action?
-    MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing. 
+    MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing.
+    MissingRequiredModuleWarning    = Module '{0}' is missing.
+    MissingRequiredResourceWarning  = Resource '{0}' is missing.
+    MissingRequiredCertWarning      = Certificate '{0}' is missing'
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.

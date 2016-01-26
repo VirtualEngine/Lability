@@ -175,7 +175,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeLabMediaImageDownload -Exactly 1 -Scope It;
             }
-
+            
             It 'Downloads all required hotfixes' {
                 $testMediaId = 'TestMedia';
                 $configurationData = @{
@@ -203,7 +203,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeLabMediaHotfixDownload -Exactly 2 -Scope It;
             }
-
+            
             It 'Downloads all resources when "ResourceId" parameter is not specified' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -216,12 +216,13 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaImageDownload -MockWith { }
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeResourceDownload -MockWith { }
+                Mock Get-Item -ParameterFilter { $Path -match 'Resource\d\.' } -MockWith { }
 
                 Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
                 Assert-MockCalled InvokeResourceDownload -Exactly 3 -Scope It;
             }
-
+            
             It 'Downloads single resource when "ResourceId" parameter is specified' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -234,10 +235,46 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaImageDownload -MockWith { }
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeResourceDownload -MockWith { }
-
+                
                 Invoke-LabResourceDownload -ConfigurationData $configurationData -ResourceId 'Resource1.exe';
 
                 Assert-MockCalled InvokeResourceDownload -Exactly 1 -Scope It;
+            }
+            
+            It 'Downloads a single DSC resource' {
+                $configurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            DSCResource = @(
+                                @{ Name = 'TestResource'; }
+                            ) } } }
+                Mock InvokeLabMediaImageDownload -MockWith { }
+                Mock InvokeLabMediaHotfixDownload -MockWith { }
+                Mock InvokeDscResourceDownload -MockWith { }
+                Mock InvokeResourceDownload -MockWith { }
+                
+                Invoke-LabResourceDownload -ConfigurationData $configurationData;
+                
+                Assert-MockCalled InvokeDscResourceDownload -Scope It;
+            }
+            
+            It 'Downloads multiple DSC resources' {
+                $configurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            DSCResource = @(
+                                @{ Name = 'TestResource1'; }
+                                @{ Name = 'TestResource2'; }
+                                @{ Name = 'TestResource3'; }
+                            ) } } }
+                Mock InvokeLabMediaImageDownload -MockWith { }
+                Mock InvokeLabMediaHotfixDownload -MockWith { }
+                Mock InvokeDscResourceDownload -MockWith { }
+                Mock InvokeResourceDownload -MockWith { }
+                
+                Invoke-LabResourceDownload -ConfigurationData $configurationData;
+                
+                Assert-MockCalled InvokeDscResourceDownload -Exactly 1 -Scope It;
             }
 
             It 'Uses resource "Filename" property if specified' {
@@ -258,12 +295,13 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaImageDownload -MockWith { }
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -MockWith { }
+                Mock Get-Item -ParameterFilter { $Path -match 'Custom Resource Filename.test' } -MockWith { }
 
                 Invoke-LabResourceDownload -ConfigurationData $filenameConfigurationData -ResourceId $testResourceId;
 
                 Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -Scope It
             }
-
+            
         } #end context Validates "Invoke-LabResourceDownload" method
 
         Context 'Validates "ResolveLabResource" method' {
@@ -529,6 +567,117 @@ Describe 'LabResource' {
             }
 
         } #end context Validates "ExpandLabResource" method
+        
+        Context 'Validates "TestLabLocalResource" method' {
+
+            $testResourceId = 'TestResource';
+            
+            It 'Returns "System.Boolean" object type' {
+                $configurationData= @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; }
+                            )
+                        }
+                    }
+                }
+                
+                $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
+                
+                $result -is [System.Boolean] | Should Be $true;
+            }
+            
+            It 'Passes when local .EXE exists' {
+                $testResourceFilename = "$testResourceId.exe";
+                $configurationData= @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Filename = $testResourceFilename; }
+                            )
+                        }
+                    }
+                }
+                New-Item -Path "TestDrive:\$testResourceFilename" -ItemType File -Force;
+                
+                $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
+                
+                $result | Should Be $true;
+            }
+            
+            It 'Fails when local .EXE does not exist' {
+                $testResourceFilename = "$testResourceId.exe";
+                $configurationData= @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Filename = $testResourceFilename; }
+                            )
+                        }
+                    }
+                }
+                Remove-Item -Path "TestDrive:\$testResourceFilename" -Force -ErrorAction SilentlyContinue;
+                
+                $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
+                
+                $result | Should Be $false;
+            }
+            
+            foreach ($extension in @('iso','zip')) {
+                It "Passes when local $($extension.ToUpper()) folder exists" {
+                    $testResourceFilename = "$testResourceId.$extension";
+                    $configurationData= @{
+                        NonNodeData = @{
+                            $labDefaults.ModuleName = @{
+                                Resource = @(
+                                    @{ Id = $testResourceId; Filename = $testResourceFilename; Expand = $true; }
+                                )
+                            }
+                        }
+                    }
+                    New-Item -Path "TestDrive:\$testResourceFilename" -ItemType File -Force;
+                    
+                    $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
+                    
+                    $result | Should Be $false;
+                }
+                
+                It "Fails when local $($extension.ToUpper()) folder does not exist" {
+                    $testResourceFilename = "$testResourceId.$extension";
+                    $configurationData= @{
+                        NonNodeData = @{
+                            $labDefaults.ModuleName = @{
+                                Resource = @(
+                                    @{ Id = $testResourceId; Filename = $testResourceFilename; Expand = $true; }
+                                )
+                            }
+                        }
+                    }
+                    Remove-Item -Path "TestDrive:\$testResourceFilename" -Force -ErrorAction SilentlyContinue;
+                    
+                    $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
+                    
+                    $result | Should Be $false;
+                }
+            } #end foreach
+             
+            It 'Throws when local .EXE has "Expand" = "True"' {
+                $testResourceFilename = "$testResourceId.exe";
+                $configurationData= @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Filename = $testResourceFilename; Expand = $true; }
+                            )
+                        }
+                    }
+                }
+                
+                { TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:' } | Should Throw;
+            }
+        
+        } #end context Validates "TestLabLocalResource" method
 
     } #end InModuleScope
 
