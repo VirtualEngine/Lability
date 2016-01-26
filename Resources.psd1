@@ -117,6 +117,7 @@ ConvertFrom-StringData -StringData @'
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.
     TestingNodeDscModule            = Testing node DSC '{0}' module.
     TestingNodeResource             = Testing node resource '{0}'.
+    TestingNodeCertificate          = Testing node certificate '{0}'.
     ResourceNotFound                = Resource '{0}' was not found.
     ResourceFound                   = Resource '{0}' was found.
 
@@ -132,6 +133,7 @@ ConvertFrom-StringData -StringData @'
     MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing.
     MissingRequiredModuleWarning    = Module '{0}' is missing.
     MissingRequiredResourceWarning  = Resource '{0}' is missing.
+    MissingRequiredCertWarning      = Certificate '{0}' is missing'
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.

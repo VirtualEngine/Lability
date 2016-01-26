@@ -12,7 +12,7 @@ Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 Describe 'LabNode' {
     
     InModuleScope $moduleName {
-        
+               
         Context 'Validates "Test-LabNodeConfiguration" method' {
             
             It 'Passes when single DSC module exists' {
@@ -30,6 +30,7 @@ Describe 'LabNode' {
                         }
                     }
                 }
+                Mock TestLabNodeCertificate { return $true; }
                 Mock TestModule { return $true; }
                 
                 $result = Test-LabNodeConfiguration -ConfigurationData $configurationData -NodeName $testNode;
@@ -238,6 +239,62 @@ Describe 'LabNode' {
                 Assert-MockCalled TestLabLocalResource -Exactly 0 -Scope It;
             }
             
+            It 'Passes when certificates are present' {
+                $testNode = 'TestNode'
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testNode; }
+                    )
+                }
+                Mock TestLabNodeCertificate { return $true; }
+                
+                $testLabNodeConfigurationParams = @{
+                    ConfigurationData = $configurationData;
+                    NodeName = $testNode;
+                }
+                $result = Test-LabNodeConfiguration @testLabNodeConfigurationParams;
+                
+                $result | Should Be $true;
+            }
+            
+            It 'Fails when certificates are not present' {
+                $testNode = 'TestNode'
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testNode; }
+                    )
+                }
+                Mock TestLabNodeCertificate { return $false; }
+                
+                $testLabNodeConfigurationParams = @{
+                    ConfigurationData = $configurationData;
+                    NodeName = $testNode;
+                    WarningAction = 'SilentlyContinue';
+                }
+                $result = Test-LabNodeConfiguration @testLabNodeConfigurationParams;
+                
+                $result | Should Be $false;
+            }
+            
+            It 'Does not call "TestLabNodeCertificate" when "SkipCertificateCheck" specified' {
+                $testNode = 'TestNode'
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testNode; }
+                    )
+                }
+                Mock TestLabNodeCertificate { }
+                
+                $testLabNodeConfigurationParams = @{
+                    ConfigurationData = $configurationData;
+                    NodeName = $testNode;
+                    SkipCertificateCheck = $true;
+                }
+                $result = Test-LabNodeConfiguration @testLabNodeConfigurationParams;
+                
+                Assert-MockCalled TestLabNodeCertificate -Exactly 0 -Scope It;
+            }
+            
             It 'Throws is node cannot be resolved' {
                 $testNode = 'TestNode'
                 $configurationData = @{
@@ -257,26 +314,25 @@ Describe 'LabNode' {
         
         Context 'Validates "Invoke-LabNodeConfiguration" method' {
             
-            It 'Calls "InstallNodeCertificates' {
+            Mock Test-LabNodeConfiguration { return $true; }
+            
+            It 'Calls "InstallLabNodeCertificates' {
                 $testNode = 'TestNode'
                 $configurationData = @{
                     AllNodes = @(
                         @{ NodeName = $testNode;  }
                     )
                 }
-                #Mock TestLabLocalResource { return $true; }
-                
-                Mock InstallNodeCertificates -MockWith { }
+                Mock InstallLabNodeCertificates -MockWith { }
 
                 $invokeLabNodeConfigurationParams = @{
                     ConfigurationData = $configurationData;
                     NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
                     DestinationPath = 'TestDrive:';
                 }
                 Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams;
                 
-                Assert-MockCalled InstallNodeCertificates -Scope It;
+                Assert-MockCalled InstallLabNodeCertificates -Scope It;
             }
             
             It 'Calls "InvokeDscResourceDownload" when DSC module does not exist' {
@@ -300,7 +356,6 @@ Describe 'LabNode' {
                 $invokeLabNodeConfigurationParams = @{
                     ConfigurationData = $configurationData;
                     NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
                     DestinationPath = 'TestDrive:';
                 }
                 Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams;
@@ -329,7 +384,6 @@ Describe 'LabNode' {
                 $invokeLabNodeConfigurationParams = @{
                     ConfigurationData = $configurationData;
                     NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
                     DestinationPath = 'TestDrive:';
                 }
                 Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams;
@@ -337,7 +391,7 @@ Describe 'LabNode' {
                 Assert-MockCalled InvokeDscResourceDownload -Exactly 0 -Scope It;
             }
             
-            It 'Calls "ExpandLabResource" when DSC module does not exist' {
+            It 'Calls "Test-LabNodeConfiguration"' {
                 $testNode = 'TestNode';
                 $testResourceId = 'TestResource';
                 $configurationData = @{
@@ -345,43 +399,19 @@ Describe 'LabNode' {
                         @{ NodeName = $testNode; Resource = $testResourceId; }
                     )
                 }
-                Mock TestLabLocalResource { return $false; }
-                Mock ExpandLabResource { }
+                Mock Test-LabNodeConfiguration { return $true; }
                 
                 $invokeLabNodeConfigurationParams = @{
                     ConfigurationData = $configurationData;
                     NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
                     DestinationPath = 'TestDrive:';
                 }
                 Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams;
                 
-                Assert-MockCalled ExpandLabResource -Scope It;
+                Assert-MockCalled Test-LabNodeConfiguration -Scope It;
             }
             
-            It 'Does not call "ExpandLabResource" when DSC module exists' {
-                $testNode = 'TestNode';
-                $testResourceId = 'TestResource';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testNode; Resource = $testResourceId; }
-                    )
-                }
-                Mock TestLabLocalResource { return $true; }
-                Mock ExpandLabResource { }
-                
-                $invokeLabNodeConfigurationParams = @{
-                    ConfigurationData = $configurationData;
-                    NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
-                    DestinationPath = 'TestDrive:';
-                }
-                Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams;
-                
-                Assert-MockCalled ExpandLabResource -Exactly 0 -Scope It;
-            }
-            
-             It 'Throws is node cannot be resolved' {
+            It 'Throws is node cannot be resolved' {
                 $testNode = 'TestNode'
                 $configurationData = @{
                     AllNodes = @(
@@ -392,14 +422,12 @@ Describe 'LabNode' {
                 $invokeLabNodeConfigurationParams = @{
                     ConfigurationData = $configurationData;
                     NodeName = $testNode;
-                    ResourcePath = 'TestDrive:';
                     DestinationPath = 'TestDrive:';
                 }
                 { Invoke-LabNodeConfiguration @invokeLabNodeConfigurationParams } | Should Throw;
             }
             
         } #end context Validates "Invoke-LabNodeConfiguration" method
-        
         
     } #end inmodulescope
 } #end describe

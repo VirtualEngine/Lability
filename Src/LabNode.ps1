@@ -1,18 +1,101 @@
+function TestLabNodeCertificate {
+<#
+    .SYNOPSIS
+        Tests whether the certificate is installed.
+#>
+    param (
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $CertificatePath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('My','Root')]
+        [System.String] $Store
+    )
+    process {
+        $CertificatePath = ResolvePathEx -Path $CertificatePath;
+        if (-not (Test-Path -Path $CertificatePath)) {
+            return $false;
+        }
+        $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate]::CreateFromCertFile($CertificatePath);
+        
+        $localCertificate = Get-ChildItem -Path "Cert:\LocalMachine\$Store" |
+            Where-Object { $_.Subject -eq $certificate.Subject }
+        
+        return ($null -ne $localCertificate);
+    } #end process
+} #end function TestLabNodeCertificate
+
+function InstallLabNodeCertificates {
+<#
+    .SYNOPSIS
+        Installs lab node certificates
+    .NOTES
+        Enables easier unit testing!
+#>
+    param (
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $RootCertificatePath,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ClientCertificatePath,
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $Force
+    )
+    process {
+        ## Import certificates
+        $resolvedRootCertificatePath = ResolvePathEx -Path $RootCertificatePath;
+        if ($Force -or (-not (TestLabNodeCertificate -CertificatePath $resolvedRootCertificatePath -Store 'Root'))) {
+            WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $resolvedRootCertificatePath);
+            certutil.exe -addstore -f "Root" $resolvedRootCertificatePath | WriteVerbose;
+        }
+        ## Import the .PFX certificate with a blank password
+        $resolvedClientCertificatePath = ResolvePathEx -Path $ClientCertificatePath;
+        if ($Force -or (-not (TestLabNodeCertificate -CertificatePath $resolvedClientCertificatePath -Store 'My'))) {
+            WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $resolvedClientCertificatePath);
+            "" | certutil.exe -f -importpfx $resolvedClientCertificatePath | WriteVerbose;
+        }
+    } #end process
+} #end function InstallLabNodeCertificates
+
 function Test-LabNodeConfiguration {
 <#
     .SYNOPSIS
         Test a node's configuration for manual deployment.
+    .DESCRIPTION
+        The Test-LabNodeConfiguration determines whether the local node has all the required defined prerequisites
+        available locally. When invoked, defined custom resources, certificates and DSC resources are checked.
+
+        WARNING: Only metadata defined in the Powershell DSC configuration document can be tested!
+    .PARAMETER ConfigurationData
+        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
+        configuration document used to create the virtual machines. Each node defined in the AllNodes array is
+        tested.
+    .PARAMETER NodeName
+        Specifies the node name in the PowerShell DSC configuration document to check. If not specified, the
+        local hostname is used.
+    .PARAMETER DestinationPath
+        Specifies the local directory path that resources are expected to be located in. If not specified, it
+        defaults to the default ResourceShareName in the root of the system drive, i.e. C:\Resources.
+    .PARAMETER SkipDscCheck
+        Specifies that checking of the local DSC resource availability is skipped.
+    .PARAMETER SkipResourceCheck
+        Specifies that checking of the local custom resource availability is skipped.
+    .PARAMETER SkipCertificateCheck
+        Specifies that checking of the local certificates is skipped.
+    .LINK
+        Invoke-LabNodeConfiguration
 #>
     [CmdletBinding(DefaultParameterSetName = 'All')]
     [OutputType([System.Boolean])]    
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
-        [System.String] $NodeName,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $NodeName= ([System.Net.Dns]::GetHostName()),
         
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
@@ -21,7 +104,10 @@ function Test-LabNodeConfiguration {
         [System.Management.Automation.SwitchParameter] $SkipDscCheck,
         
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'SkipResourceCheck')]
-        [System.Management.Automation.SwitchParameter] $SkipResourceCheck
+        [System.Management.Automation.SwitchParameter] $SkipResourceCheck,
+        
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'SkipResourceCheck')]
+        [System.Management.Automation.SwitchParameter] $SkipCertificateCheck
     )
     process {
         $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
@@ -33,6 +119,22 @@ function Test-LabNodeConfiguration {
         }
         
         $inDesiredState = $true;
+        
+        if (-not $SkipCertificateCheck) {
+            ## Test node certificates
+            $clientCertificatePath = ResolvePathEx -Path $node.ClientCertificatePath;
+            WriteVerbose -Message ($localized.TestingNodeCertificate -f $clientCertificatePath);
+            if (-not (TestLabNodeCertificate -CertificatePath $clientCertificatePath -Store 'My')) {
+                WriteWarning -Message ($localized.MissingRequiredCertWarning -f $clientCertificatePath);
+                $inDesiredState = $false;
+            }
+            $rootCertificatePath = ResolvePathEx -Path $node.RootCertificatePath;
+            WriteVerbose -Message ($localized.TestingNodeCertificate -f $rootCertificatePath);
+            if (-not (TestLabNodeCertificate -CertificatePath $rootCertificatePath -Store 'Root')) {
+                WriteWarning -Message ($localized.MissingRequiredCertWarning -f $rootCertificatePath);
+                $inDesiredState = $false;
+            }
+        } #end if not skip certificates
         
         # Test DSC modules
         if (-not $SkipDscCheck -and $ConfigurationData.NonNodeData.($labDefaults.ModuleName).DSCResource) {
@@ -71,50 +173,44 @@ function Test-LabNodeConfiguration {
     } #end process
 } #end function Test-LabNodeConfiguration
 
-function InstallNodeCertificates {
-<#
-    .SYNOPSIS
-        Installs lab node certificates
-    .NOTES
-        Enables easier unit testing!
-#>
-    param (
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $RootCertificatePath,
-        
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $ClientCertificatePath
-    )
-    process {
-        ## Import certificates
-        $resolvedRootCertificatePath = ResolvePathEx -Path $RootCertificatePath;
-        WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $resolvedRootCertificatePath);
-        certutil.exe -addstore -f "Root" $resolvedRootCertificatePath | WriteVerbose;
-        ## Import the .PFX certificate with a blank password
-        $resolvedClientCertificatePath = ResolvePathEx -Path $ClientCertificatePath;
-        WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $resolvedClientCertificatePath);
-        "" | certutil.exe -f -importpfx $resolvedClientCertificatePath | WriteVerbose;
-    } #end process
-} #end function InstallCertificates
-
 function Invoke-LabNodeConfiguration {
 <#
     .SYNOPSIS
-        Configures a node for manual deployment.
+        Configures a node for manual lab deployment.
+    .DESCRIPTION
+        The Invoke-LabNodeConfiguration installs the client certificates, downloads all required DSC
+        resources and checks whether all resources are present locally. This is convenient when using
+        alternative hypervisors that cannot be auto-provisioned by Lability. Examples include virtual
+        machines deployed on VMware Workstation or AmazonW Web Services.
+        
+        NOTE: The Invoke-LabConfiguration will not download custom resources but will test for their presence.
+        
+        WARNING: Only metadata defined in the Powershell DSC configuration document can be tested!
+    .PARAMETER ConfigurationData
+        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
+        configuration document used to create the virtual machines. Each node defined in the AllNodes array is
+        tested.
+    .PARAMETER NodeName
+        Specifies the node name in the PowerShell DSC configuration document to check. If not specified, the
+        local hostname is used.
+    .PARAMETER DestinationPath
+        Specifies the local directory path that resources are expected to be located in. If not specified, it
+        defaults to the default ResourceShareName in the root of the system drive, i.e. C:\Resources.
+    .PARAMETER Force
+        Specifies that DSC resources should be re-downloaded, overwriting existing versions.
+    .LINK
+        Test-LabNodeConfiguration
 #>
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Collections.Hashtable] $ConfigurationData,
-        
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
-        [System.String] $NodeName,
-        
-        ## File share/folder pointing to downloaded resources
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('Path')] [System.String] $ResourcePath,
+        $ConfigurationData,
+               
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $NodeName= ([System.Net.Dns]::GetHostName()),
         
         ## Node's local target resource folder
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -133,7 +229,12 @@ function Invoke-LabNodeConfiguration {
         }
         
         ## Install lab root CA and client certificate
-        InstallNodeCertificates -RootCertificatePath $node.RootCertificatePath -ClientCertificatePath $node.ClientCertificatePath;
+        $installLabNodeCertificatesParams = @{
+            RootCertificatePath = $node.RootCertificatePath;
+            ClientCertificatePath = $node.ClientCertificatePath;
+            Force = $Force;
+        }
+        InstallLabNodeCertificates @installLabNodeCertificatesParams;
 
         # Test DSC modules
         if ($ConfigurationData.NonNodeData.($labDefaults.ModuleName).DSCResource) {
@@ -147,27 +248,7 @@ function Invoke-LabNodeConfiguration {
             } #end foreach module
         }
         
-        ## Test local resources
-        if ($node.Resource) {
-            foreach ($resourceId in $node.Resource) {
-                ## Check resource is available locally
-                WriteVerbose -Message ($localized.TestingNodeResource -f $resourceId);
-                $testLabLocalResourceParams = @{
-                    ConfigurationData = $ConfigurationData;
-                    ResourceId = $resourceId;
-                    LocalResourcePath = $DestinationPath;
-                }
-                $isAvailableLocally = TestLabLocalResource @testLabLocalResourceParams;
-                if (-not $isAvailableLocally -or $Force) {
-                    $expandLabResourceParams = @{
-                        ConfigurationData = $ConfigurationData;
-                        Name = $node.NodeName;
-                        DestinationPath = $DestinationPath;
-                        ResourcePath = $ResourcePath;
-                    }
-                    ExpandLabResource @expandLabResourceParams;
-                }
-            } #end foreach resource
-        }
+        ## Call Test-LabNodeConfiguration to display any remaining warnings
+        [ref] $null = Test-LabNodeConfiguration -ConfigurationData $ConfigurationData -DestinationPath $DestinationPath -NodeName $NodeName -SkipDscCheck;
     } #end process
 } #end function Invoke-LabNodeConfiguration
