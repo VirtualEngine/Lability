@@ -17,7 +17,7 @@
             Tags = @('VirtualEngine','Powershell','Test','Lab','TestLab');
             LicenseUri = 'https://github.com/VirtualEngine/Lability/blob/master/LICENSE';
             ProjectUri = 'https://github.com/VirtualEngine/Lability';
-            IconUri = 'https://raw.githubusercontent.com/VirtualEngine/Lability/dev/VirtualEngineLab.png';
+            IconUri = 'https://raw.githubusercontent.com/VirtualEngine/Lability/master/Lability.png';
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
