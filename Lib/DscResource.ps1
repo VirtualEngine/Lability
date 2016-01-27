@@ -1,15 +1,27 @@
 function ImportDscResource {
 <#
-    .NOTES
-        Imports a DSC module resource as Test-<Prefix>TargetResource and Set-<Prefix>TargetResource etc.
+    .SYNOPSIS
+        Imports a DSC module resource.
+    .DESCRIPTION
+        Imports a DSC resource as Test-<Prefix>TargetResource and Set-<Prefix>TargetResource etc.
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $ModuleName,
-        [Parameter(Mandatory)] [System.String] $ResourceName,
-        [Parameter()] [System.String] $Prefix = $ResourceName,
-        ## Use the built-in/default resource
-        [Parameter()] [System.Management.Automation.SwitchParameter] $UseDefault
+        ##  DSC resource's module name containing the resource
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $ModuleName,
+        
+        ## DSC resource's name to import
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ResourceName,
+        
+        ## Local prefix, defaults to the resource name
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Prefix = $ResourceName,
+        
+        ## Use the built-in/default DSC resource
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $UseDefault
     )
     process {
         ## Check whether the resource is already imported/registered
@@ -48,8 +60,13 @@ function GetDscResource {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory)] [System.String] $ResourceName,
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $Parameters
+        ## Name of the DSC resource to get
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $ResourceName,
+        
+        ## The DSC resource's Get-TargetResource parameter hashtable
+        [Parameter(Mandatory)]
+        [System.Collections.Hashtable] $Parameters
     )
     process {
         $getTargetResourceCommand = 'Get-{0}TargetResource' -f $ResourceName;
@@ -70,8 +87,13 @@ function TestDscResource {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory)] [System.String] $ResourceName,
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $Parameters
+        ## Name of the DSC resource to test
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $ResourceName,
+        
+        ## The DSC resource's Test-TargetResource parameter hashtable
+        [Parameter(Mandatory)]
+        [System.Collections.Hashtable] $Parameters
     )
     process {
         $testTargetResourceCommand = 'Test-{0}TargetResource' -f $ResourceName;
@@ -97,8 +119,13 @@ function SetDscResource {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $ResourceName,
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $Parameters
+        ## Name of the DSC resource to invoke
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $ResourceName,
+        
+        ## The DSC resource's Set-TargetResource parameter hashtable
+        [Parameter(Mandatory)]
+        [System.Collections.Hashtable] $Parameters
     )
     process {
         $setTargetResourceCommand = 'Set-{0}TargetResource' -f $ResourceName;
@@ -158,9 +185,11 @@ function GetDscResourcePSGalleryUri {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Version] $RequiredVersion,
         
+        ## Direct download Uri 
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
         
+        ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments  
     )
@@ -187,12 +216,15 @@ function InvokeDscResourceDownload {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
+        ## PowerShell DSC resource modules
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable[]] $DSCResource,
         
+        ## Force a download, overwriting any existing resources
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
         
+        ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
     )
@@ -209,7 +241,7 @@ function InvokeDscResourceDownload {
                         [ref] $null = InvokeDscResourceDownloadFromGitHub @resourceDefinition -Force:$Force;
                     }
                     default {
-                        ## Use the PSGallery provider bu default.
+                        ## Use the PSGallery provider by default.
                         [ref] $null = InvokeDscResourceDownloadFromPSGallery @resourceDefinition -Force:$Force;
                     }
                 }
@@ -230,7 +262,6 @@ function InvokeDscResourceDownloadFromPSGallery {
     [CmdletBinding()]
     [OutputType([System.IO.DirectoryInfo])]
     param (
-        
         ## PowerShell DSC resource module name
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()] [System.String] $Name,
@@ -243,12 +274,18 @@ function InvokeDscResourceDownloadFromPSGallery {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.Version] $RequiredVersion,
         
+        ## Force a download, overwriting any existing resources
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
         
+        ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
     )
+    begin {
+        ## Cannot pass -Force to GetDscResourcePSGalleryUri or SetResourceDownload
+        [ref] $null = $PSBoundParameters.Remove('Force');
+    }
     process {
         $windowsPowerShellModules = Join-Path -Path $env:ProgramFiles -ChildPath '\WindowsPowerShell\Modules';
         $tempModuleFilename = '{0}.zip' -f $Name;
@@ -278,21 +315,28 @@ function InvokeDscResourceDownloadFromGitHub {
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()] [System.String] $Name,
         
+        ## The GitHub repository owner, typically 'PowerShell'
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Owner,
         
+        ## The GitHub repository name, normally the DSC module's name
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Repository = $Name,
         
+        ## The GitHub branch to download, defaults to the 'master' branch
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Branch = 'master',
         
+        ## Override the local directory name. Only used if the repository name does not
+        ## match the DSC module name
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $OverrideRepositoryName = $Name,
         
+        ## Force a download, overwriting any existing resources
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
         
+        ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
     )

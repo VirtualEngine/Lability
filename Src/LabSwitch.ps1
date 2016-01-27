@@ -3,7 +3,7 @@ function NewLabSwitch {
     .SYNOPSIS
         Creates a new lab network switch object.
     .DESCRIPTION
-        Permits validation of custom NonNodeData\VirtualEngineLab\Network entries.
+        Permits validation of custom NonNodeData\Lability\Network entries.
 #>
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -62,9 +62,10 @@ function ResolveLabSwitch {
         [System.String] $Name,
         
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -102,9 +103,10 @@ function TestLabSwitch {
         [System.String] $Name,
         
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -130,9 +132,10 @@ function SetLabSwitch {
         [System.String] $Name,
         
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -158,9 +161,10 @@ function RemoveLabSwitch {
         [System.String] $Name,
         
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;

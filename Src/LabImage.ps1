@@ -18,8 +18,8 @@ function Get-LabImage {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -63,8 +63,8 @@ function Test-LabImage {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Id
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id
     )
     process {
         if (Get-LabImage -Id $Id) { return $true; }
@@ -109,8 +109,9 @@ function New-LabImage {
         
         ## Lab DSC configuration data
         [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Force the re(creation) of the master/parent image
         [Parameter(ValueFromPipelineByPropertyName)]

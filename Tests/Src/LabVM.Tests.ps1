@@ -1,7 +1,7 @@
 #requires -RunAsAdministrator
 #requires -Version 4
 
-$moduleName = 'VirtualEngineLab';
+$moduleName = 'Lability';
 if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
     $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 }

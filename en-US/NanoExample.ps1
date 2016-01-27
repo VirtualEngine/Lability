@@ -1,8 +1,12 @@
 Configuration NanoExample {
 <#
-    Requires the following custom DSC resources:
+    Requires the following DSC resources:
+        
         xNetworking (v2.5.0.0 or later): https://github.com/PowerShell/xNetworking
+        
         xPSDesiredStateConfiguration   : https://github.com/PowerShell/xPSDesiredStateConfiguration
+            Requires DEVELOPMENT branch as xWindowsOptionalFeature is not currently supported
+            See https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/42
 #>
     param ()
     
@@ -62,12 +66,10 @@ Configuration NanoExample {
             Profile = 'Any';
         }
 
-        ## xWindowsOptionalFeature not (yet) supported on server OSes
-        ## See https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/42
-        ## xWindowsOptionalFeature 'DNS-Server-Full-Role' {
-        ##     Name = 'Microsoft-Hyper-V';
-        ##     Ensure = 'Present';
-        ## }
+        xWindowsOptionalFeature 'MicrosoftHyperV' {
+            Name = 'Microsoft-Hyper-V';
+            Ensure = 'Present';
+        }
 
     } #end nodes ALL 
 

@@ -15,8 +15,9 @@ function ResolveLabVMProperties {
         
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Collections.Hashtable] $ConfigurationData,
+        $ConfigurationData,
         
         ## Do not enumerate the AllNode.'*'
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -86,8 +87,9 @@ function Get-LabVM {
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -131,8 +133,9 @@ function Test-LabVM {
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -191,8 +194,9 @@ function NewLabVM {
         
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Collections.Hashtable] $ConfigurationData,
+        $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
         [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -333,8 +337,9 @@ function RemoveLabVM {
         
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Include removal of virtual switch(es). By default virtual switches are not removed.
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -367,7 +372,7 @@ function RemoveLabVM {
         }
         RemoveLabVirtualMachine @removeLabVirtualMachineParams;
 
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHDX', $node.Media);
+        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHDX', "$Name.vhdx");
         RemoveLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
 
         if ($RemoveSwitch) {
@@ -395,8 +400,9 @@ function Reset-LabVM {
         
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Local administrator password of the virtual machine. The username is NOT used.
         [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]

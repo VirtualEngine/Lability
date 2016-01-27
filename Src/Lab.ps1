@@ -32,8 +32,9 @@ function Start-Lab {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -91,8 +92,9 @@ function Stop-Lab {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -143,8 +145,9 @@ function Reset-Lab {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -185,8 +188,9 @@ function Checkpoint-Lab {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Snapshot name
         [Parameter(Mandatory)] [Alias('Name')]
@@ -246,8 +250,9 @@ function Restore-Lab {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Snapshot name
         [Parameter(Mandatory)] [Alias('Name')]

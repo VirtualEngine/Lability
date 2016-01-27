@@ -27,9 +27,10 @@ function SetLabVMDiskResource {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData,
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
         
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

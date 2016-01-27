@@ -7,9 +7,10 @@ function Test-LabResource {
     [OutputType([System.Boolean])]
     param (
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData,
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
         
         ## Lab resource Id to test.
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -56,9 +57,10 @@ function TestLabLocalResource {
     [OutputType([System.Boolean])]
     param (
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData,
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
         
         ## Lab resource Id to test.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
@@ -267,9 +269,10 @@ function ResolveLabResource {
 #>
     param (
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData,
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
         
         ## Lab resource ID
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
@@ -320,9 +323,10 @@ function ExpandLabResource {
 #>
     param (
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData,
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
         
         ## Lab VM name
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]

@@ -1,12 +1,11 @@
 @{
-    RootModule = 'VirtualEngineLab.psm1';
-    ModuleVersion = '0.8.13';
+    RootModule = 'Lability.psm1';
+    ModuleVersion = '0.9.0';
     GUID = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author = 'Iain Brighton';
     CompanyName = 'Virtual Engine';
     Copyright = '(c) 2016 Virtual Engine Limited. All rights reserved.';
-    Description = 'The VirtualEngineLab module contains cmdlets for provisioning Hyper-V test labs.';
-    RequiredModules = @('BitsTransfer');
+    Description = 'The Lability module contains cmdlets for provisioning Hyper-V test labs.';
     PowerShellVersion = '4.0';
     FunctionsToExport = '*-*';
     CmdletsToExport = '*-*';
@@ -16,9 +15,9 @@
     PrivateData = @{
         PSData = @{  # Private data to pass to the module specified in RootModule/ModuleToProcess
             Tags = @('VirtualEngine','Powershell','Test','Lab','TestLab');
-            LicenseUri = 'https://github.com/VirtualEngine/Lab/blob/master/LICENSE';
-            ProjectUri = 'https://github.com/VirtualEngine/Lab';
-            IconUri = 'https://cdn.rawgit.com/VirtualEngine/Compression/38aa3a3c879fd6564d659d41bffe62ec91fb47ab/icon.png';
+            LicenseUri = 'https://github.com/VirtualEngine/Lability/blob/master/LICENSE';
+            ProjectUri = 'https://github.com/VirtualEngine/Lability';
+            IconUri = 'https://raw.githubusercontent.com/VirtualEngine/Lability/dev/VirtualEngineLab.png';
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }

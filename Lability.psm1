@@ -3,7 +3,7 @@
 ## Set the global defaults
 $labDefaults = @{
     ModuleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
-    ModuleName = 'VirtualEngineLab';
+    ModuleName = 'Lability';
     ConfigurationData = 'Config';
     HostConfigFilename = 'HostDefaults.json';
     VmConfigFilename = 'VmDefaults.json';

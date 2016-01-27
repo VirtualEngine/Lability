@@ -21,8 +21,9 @@ function Test-LabConfiguration {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -49,8 +50,9 @@ function TestLabConfigurationMof {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Lab vm/node name
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -174,8 +176,9 @@ function Start-LabConfiguration {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Local administrator password of the VM. The username is NOT used.
         [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -275,8 +278,9 @@ function Remove-LabConfiguration {
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [System.Object] $ConfigurationData,
+        $ConfigurationData,
         
         ## Include removal of virtual switch(es). By default virtual switches are not removed.
         [Parameter(ValueFromPipelineByPropertyName)]
