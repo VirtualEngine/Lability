@@ -134,6 +134,7 @@ ConvertFrom-StringData -StringData @'
     MissingRequiredModuleWarning    = Module '{0}' is missing.
     MissingRequiredResourceWarning  = Resource '{0}' is missing.
     MissingRequiredCertWarning      = Certificate '{0}' is missing'
+    UsingExistingSwitchWarning      = Using existing '{0}' virtual switch.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.

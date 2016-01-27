@@ -422,32 +422,6 @@ Describe 'LabVM' {
                 Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
 
-            It 'Does not call "SetLabSwitch" when "IsQuickVM" = "$true"' {
-                $testVMName = 'TestVM';
-                $testMedia = 'Test-Media';
-                $testVMSwitch = 'Test Switch';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
-                    )
-                }
-                Mock ResolveLabMedia -MockWith { return $Id; }
-                Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
-                Mock SetLabVMDiskResource -MockWith { }
-                Mock SetLabVMDiskFile -MockWith { }
-                Mock Checkpoint-VM -MockWith { }
-                Mock Get-VM -MockWith { }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock New-LabImage -MockWith { }
-                Mock SetLabSwitch -MockWith { }
-
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -IsQuickVM;
-
-                Assert-MockCalled SetLabSwitch -Scope It -Exactly 0;
-            
-            }
-
             It 'Calls "ResetLabVMDisk" to create VM disk' {
                 $testVMName = 'TestVM';
                 $testMedia = 'Test-Media';

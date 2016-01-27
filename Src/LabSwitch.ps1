@@ -79,6 +79,19 @@ function ResolveLabSwitch {
             }
             $networkSwitch = NewLabSwitch @networkHashtable;
         }
+        elseif (Get-VMSwitch -Name $Name -ErrorAction SilentlyContinue) {
+            ## Use an existing virtual switch with a matching name if one exists
+            WriteWarning -Message ($localized.UsingExistingSwitchWarning -f $Name);
+            $existingSwitch = Get-VMSwitch -Name $Name;
+            $networkSwitch = @{
+                Name = $existingSwitch.Name;
+                Type = $existingSwitch.SwitchType;
+                AllowManagementOS = $existingSwitch.AllowManagementOS;
+            }
+            if ($existingSwitch.NetAdapterInterfaceDescription) {
+                $networkSwitch['NetAdapterName'] = (Get-NetAdapter -InterfaceDescription $existingSwitch.NetAdapterInterfaceDescription).Name;
+            } 
+        }
         else {
             ## Resolve to default host virtual switch
             $vmDefaults = GetConfigurationData -Configuration VM;
