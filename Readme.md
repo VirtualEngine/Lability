@@ -18,7 +18,7 @@ __VirtualEngineLab__ will parse a DSC configuration document and automagically
 provision the following resources:
 * Virtual machine disk images
  * Download required evaluation Operating System installation media
- * Expand Windows Image (WIM) image files into Sysprep'd virtual machine parent disks, including Nano server
+ * Expand Windows Image (WIM) image files into Sysprep'd virtual machine parent disks, including Server 2016 TP4 and Nano server
  * Apply required/recommended DSC Windows updates
 * Virtual networks
  * Create internal and external Hyper-V switches
