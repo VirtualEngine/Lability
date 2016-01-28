@@ -256,8 +256,10 @@ function NewLabVM {
             }
         } #end if not quick VM
         
-        WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-        SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
+        foreach ($switchName in $node.SwitchName) {
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switchName);
+            SetLabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
+        }
         
         if (-not (Test-LabImage -Id $node.Media)) {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
@@ -275,6 +277,7 @@ function NewLabVM {
             MinimumMemory = $node.MinimumMemory;
             MaximumMemory = $node.MaximumMemory;
             ProcessorCount = $node.ProcessorCount;
+            MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
@@ -369,6 +372,7 @@ function RemoveLabVM {
             StartupMemory = $node.StartupMemory;
             MinimumMemory = $node.MinimumMemory;
             MaximumMemory = $node.MaximumMemory;
+            MACAddress = $node.MACAddress;
             ProcessorCount = $node.ProcessorCount;
         }
         RemoveLabVirtualMachine @removeLabVirtualMachineParams;
@@ -524,9 +528,13 @@ function New-LabVM {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
-        ## Virtual machine switch name.
+        ## Virtual machine switch name(s).
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
+        
+        ## Virtual machine MAC address(es).
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $MACAddress,
 
         ## Custom data
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
@@ -559,7 +567,7 @@ function New-LabVM {
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
     } #end begin
-    process {
+    process {      
         ## Skeleton configuration node
         $configurationNode = @{ }
         
@@ -571,7 +579,7 @@ function New-LabVM {
         }
         
         ## Explicitly defined parameters override any -CustomData
-        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
+        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage','MACAddress',
             'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
         foreach ($key in $parameterNames) {
             if ($PSBoundParameters.ContainsKey($key)) {

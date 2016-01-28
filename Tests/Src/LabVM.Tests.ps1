@@ -421,6 +421,31 @@ Describe 'LabVM' {
 
                 Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
+            
+            It 'Calls "SetLabSwitch" once per network switch' {
+                $testVMName = 'TestVM';
+                $testMedia = 'Test-Media';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch, $testVMSwitch; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return $Id; }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock New-LabImage -MockWith { }
+                Mock SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Exactly 2 -Scope It;
+            }
 
             It 'Calls "ResetLabVMDisk" to create VM disk' {
                 $testVMName = 'TestVM';

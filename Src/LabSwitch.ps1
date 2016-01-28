@@ -87,6 +87,7 @@ function ResolveLabSwitch {
                 Name = $existingSwitch.Name;
                 Type = $existingSwitch.SwitchType;
                 AllowManagementOS = $existingSwitch.AllowManagementOS;
+                IsExisting = $true;
             }
             if ($existingSwitch.NetAdapterInterfaceDescription) {
                 $networkSwitch['NetAdapterName'] = (Get-NetAdapter -InterfaceDescription $existingSwitch.NetAdapterInterfaceDescription).Name;
@@ -126,6 +127,10 @@ function TestLabSwitch {
     }
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
+        if (($null -ne $networkSwitch.IsExisting) -and ($networkSwitch.IsExisting -eq $true)) {
+            ## The existing virtual switch may be of a type not supported by the DSC resource.
+            return $true;
+        }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
         return TestDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
     } #end process
@@ -155,8 +160,10 @@ function SetLabSwitch {
     } #end begin
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+            [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;   
+        }
     } #end process
 } #end function SetLabSwitch
 
@@ -181,11 +188,13 @@ function RemoveLabSwitch {
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        $networkSwitch['Ensure'] = 'Absent';
     } #end begin
     process {
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
+        if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
+            $networkSwitch['Ensure'] = 'Absent';
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+            [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        }
     } #end process
 } #end function RemoveLabSwitch

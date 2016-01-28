@@ -494,7 +494,7 @@ function Test-TargetResource
                     return $false
                 }
             }
-            if($Generation -ne $vmObj.Generation){return $false}
+            if($PSBoundParameters.ContainsKey('Generation') -and ($Generation -ne $vmObj.Generation)){return $false}
             if($ProcessorCount -and ($vmObj.ProcessorCount -ne $ProcessorCount)){return $false}
             if($MaximumMemory -and ($vmObj.MemoryMaximum -ne $MaximumMemory)){return $false}
             if($MinimumMemory -and ($vmObj.MemoryMinimum -ne $MinimumMemory)){return $false}

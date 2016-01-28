@@ -11,7 +11,7 @@ function GetVirtualMachineProperties {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [AllowNull()] [System.String[]] $MACAddress,
         [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
@@ -52,7 +52,7 @@ function TestLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [AllowNull()] [System.String[]] $MACAddress,
         [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
@@ -80,7 +80,7 @@ function SetLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [AllowNull()] [System.String[]] $MACAddress,
         [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
@@ -106,7 +106,7 @@ function RemoveLabVirtualMachine {
         [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
         [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
         [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
+        [Parameter()] [AllowNull()] [System.String[]] $MACAddress,
         [Parameter()] [System.Boolean] $SecureBoot
     )
     process {
