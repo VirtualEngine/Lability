@@ -233,7 +233,7 @@ function NewLabVM {
         $Name = $node.NodeName;
         [ref] $null = $node.Remove('NodeName');
 
-        ## Don't attempt to check certificates or create virtual switch for quick VMs        
+        ## Don't attempt to check certificates for 'Quick VMs'   
         if (-not $IsQuickVM) {
             ## Check for certificate before we (re)create the VM
             if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
@@ -254,9 +254,12 @@ function NewLabVM {
             else {
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
             }
-            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-            SetLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         } #end if not quick VM
+        
+        foreach ($switchName in $node.SwitchName) {
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switchName);
+            SetLabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
+        }
         
         if (-not (Test-LabImage -Id $node.Media)) {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
@@ -274,6 +277,7 @@ function NewLabVM {
             MinimumMemory = $node.MinimumMemory;
             MaximumMemory = $node.MaximumMemory;
             ProcessorCount = $node.ProcessorCount;
+            MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
@@ -368,6 +372,7 @@ function RemoveLabVM {
             StartupMemory = $node.StartupMemory;
             MinimumMemory = $node.MinimumMemory;
             MaximumMemory = $node.MaximumMemory;
+            MACAddress = $node.MACAddress;
             ProcessorCount = $node.ProcessorCount;
         }
         RemoveLabVirtualMachine @removeLabVirtualMachineParams;
@@ -523,9 +528,13 @@ function New-LabVM {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
         
-        ## Virtual machine switch name.
+        ## Virtual machine switch name(s).
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
+        
+        ## Virtual machine MAC address(es).
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $MACAddress,
 
         ## Custom data
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
@@ -558,7 +567,7 @@ function New-LabVM {
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
     } #end begin
-    process {
+    process {      
         ## Skeleton configuration node
         $configurationNode = @{ }
         
@@ -570,7 +579,7 @@ function New-LabVM {
         }
         
         ## Explicitly defined parameters override any -CustomData
-        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage',
+        $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage','MACAddress',
             'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
         foreach ($key in $parameterNames) {
             if ($PSBoundParameters.ContainsKey($key)) {
@@ -581,26 +590,6 @@ function New-LabVM {
         ## Ensure the specified MediaId is applied after any CustomData media entry!
         $configurationNode['Media'] = $PSBoundParameters.MediaId;
 
-        ## Ensure we have at lease the default switch if nothing was specified      
-        if (-not $configurationNode.ContainsKey('SwitchName')) {
-            $configurationNode['SwitchName'] = (GetConfigurationData -Configuration VM).SwitchName;
-        }
-        ## Ensure the specified/default virtual switch(es) exist
-        foreach ($switch in $configurationNode.SwitchName) {
-            if (-not (Get-VMSwitch -Name $switch -ErrorAction SilentlyContinue)) {
-                WriteWarning -Message ($localized.MissingVirtualSwitchWarning -f $switch);
-                $switchConfigurationData = @{
-                    NonNodeData = @{
-                        $labDefaults.ModuleName = @{
-                            Network = @( @{ Name = $switch; Type = 'Internal'; } )
-                        }
-                    }
-                }
-                WriteVerbose -Message ($localized.CreatingInternalVirtualSwitch  -f $switch);
-                SetLabSwitch -Name $switch -ConfigurationData $switchConfigurationData;
-            }
-        } #end foreach switch
-        
         foreach ($vmName in $Name) {
             ## Update the node name before creating the VM
             $configurationNode['NodeName'] = $vmName;

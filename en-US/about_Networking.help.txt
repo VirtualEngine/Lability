@@ -9,13 +9,14 @@ SHORT DESCRIPTION
 
 LONG DESCRIPTION
     
-        When provisioning a lab environment, all virtual machines are, by default, attached to an internal virtual
+        When provisioning a lab environment, all virtual machines are, by default, attached to an existing virtual
+        switch when the node'sthere is one with a matching name. internal virtual
         switch. Additional virtual switches can be specified to support any lab configuration needed; the current
         implementation supports creating internal, external and private Hyper-V virtual switches.
         
-        When a lab environment requires an external/private or an additional virtual switch, the configuration can be
-        added to the configuration (.psd1) document. Lability will parse the configuration document for the existence
-        of a 'NonNodeData\Lability\Network' [System.Array] element:
+        When a lab environment requires an external/private or an additional virtual switch, the network configuration
+        can be added to the configuration (.psd1) document. Lability will parse the configuration document for the
+        existence of a 'NonNodeData\Lability\Network' [System.Array] element:
         
             @{
                 AllNodes = @()
@@ -53,8 +54,9 @@ LONG DESCRIPTION
         When referencing a virtual switch, the node's 'SwitchName' property must match the name of a defined virtual
         switch.
         
-        The following configuration will create a private virtual switch called 'Development'. The 'VM01' virtual
-        machine will be attached to the virtual switch:
+        The following configuration will create a private virtual switch called 'Development' if a private virtual
+        switch with the same name does not already exist. The 'VM01' virtual machine will then be attached to the
+        virtual switch:
         
             @{
                 AllNodes = @(
@@ -73,6 +75,20 @@ LONG DESCRIPTION
                         )
                     }
                 }
+            }
+        
+        It is possible to use existing virtual switches without specifying their type. The following configuration
+        will connect the 'VM01' virtual machine to an existing 'Development' virtual switch of any type - if one
+        exists with the same name. If a virtual switch named 'Development' cannot be found, an 'Internal' virtual
+        switch called 'Development' will be created.
+        
+            @{
+                AllNodes = @(
+                    @{
+                        NodeName = 'VM01';
+                        Lability_SwitchName = 'Development';
+                    }
+                )
             }
         
         It is possible to attach a virtual machine to more than one virtual switch by specifying multiple virtual

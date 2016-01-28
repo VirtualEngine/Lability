@@ -239,8 +239,7 @@ CONTRIBUTE
         
         https://github.com/VirtualEngine/Lability
         
-        As you run Lability and find what you believe to be are bugs, please submit
-        them to:
+        As you run Lability and find what you believe to be are bugs, please submit them to:
         
         https://github.com/VirtualEngine/Lability/issues
         

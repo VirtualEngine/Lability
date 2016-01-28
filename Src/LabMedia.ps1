@@ -88,9 +88,10 @@ function ResolveLabMedia {
         [System.String] $Id,
         
         ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         ## If we have configuration data specific instance, return that

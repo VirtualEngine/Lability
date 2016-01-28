@@ -40,7 +40,7 @@ New-Alias -Name Get-LabHostDefaults -Value Get-LabHostDefault
 function GetLabHostDSCConfigurationPath {
 <#
     .SYNOPSIS
-        Shortcut function to resolve the $labHostDefaults.ConfigurationPath property
+        Shortcut function to resolve the host's default ConfigurationPath property
 #>
     [CmdletBinding()]
     [OutputType([System.String])]
