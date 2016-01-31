@@ -23,15 +23,20 @@ function Get-LabImage {
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $parentVhdPath = $hostDefaults.ParentVhdPath;
-        $filter = '*.vhdx';
-        if ($Id) { $filter = '{0}.vhdx' -f $Id; }
-        $ids = Get-ChildItem -Path $parentVhdPath -Filter $filter;
-        foreach ($image in $ids) {
-            if (Test-Path -Path $image.FullName -PathType Leaf) {
-                $diskImage = Get-DiskImage -ImagePath $image.FullName;
+        $parentVhdPath = ResolvePathEx -Path $hostDefaults.ParentVhdPath;
+        
+        foreach ($media in (Get-LabMedia @PSBoundParameters)) {
+            $differencingVhdPath = '{0}.vhdx' -f $media.Id;
+            if ($media.MediaType -eq 'VHD') {
+                $differencingVhdPath = $media.Filename;
+            }
+            
+            $imagePath = Join-Path -Path $parentVhdPath -ChildPath $differencingVhdPath; 
+            if (Test-Path -Path $imagePath -PathType Leaf) {
+                $imageFileInfo = Get-Item -Path $imagePath;
+                $diskImage = Get-DiskImage -ImagePath $imageFileInfo.FullName;
                 $labImage = [PSCustomObject] @{
-                    Id = $image.BaseName;
+                    Id = $media.Id;
                     Attached = $diskImage.Attached;
                     ImagePath = $diskImage.ImagePath;
                     LogicalSectorSize = $diskImage.LogicalSectorSize;
@@ -41,7 +46,7 @@ function Get-LabImage {
                 }
                 Write-Output -InputObject $labImage;
             }
-        } #end foreach $image
+        } #end foreach media Id
     } #end process
 } #end function Get-LabImage
 
@@ -67,8 +72,12 @@ function Test-LabImage {
         [System.String] $Id
     )
     process {
-        if (Get-LabImage -Id $Id) { return $true; }
-        else { return $false; }
+        if (Get-LabImage -Id $Id) {
+            return $true;
+        }
+        else {
+            return $false;
+        }
     } #end process
 } #end function Test-LabImage
 
