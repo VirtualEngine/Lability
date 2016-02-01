@@ -254,7 +254,7 @@ function InvokeLabMediaImageDownload {
             Checksum = $media.Checksum;
         }
         if ($media.MediaType -eq 'VHD') {
-            $invokeResourceDownloadParams['DestinationPath'] = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
+            $invokeResourceDownloadParams['DestinationPath'] = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.ParentVhdPath) -ChildPath $media.Filename;
         }
         
         $mediaUri = New-Object -TypeName System.Uri -ArgumentList $Media.Uri;
@@ -311,7 +311,7 @@ function InvokeLabMediaHotfixDownload {
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $destinationPath = Join-Path -Path $hostDefaults.HotfixPath -ChildPath $Id;
+        $destinationPath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.HotfixPath) -ChildPath $Id;
         $invokeResourceDownloadParams = @{
             DestinationPath = $destinationPath;
             Uri = $Uri;

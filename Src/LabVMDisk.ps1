@@ -11,7 +11,7 @@ function ResolveLabVMDiskPath {
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
         $vhdName = '{0}.vhdx' -f $Name;
-        $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
+        $vhdPath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.DifferencingVhdPath) -ChildPath $vhdName;
         return $vhdPath;
     } #end process
 } #end function ResolaveLabVMVhdPath
@@ -129,7 +129,7 @@ function RemoveLabVMDisk {
         $image = Get-LabImage -Id $Media -ErrorAction Stop;
         if ($image) {
             ## If the parent image isn't there, the differencing VHD won't be either
-            $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath "$Name.vhdx";
+            $vhdPath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.DifferencingVhdPath) -ChildPath "$Name.vhdx";
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
                 $vhd = @{

@@ -148,7 +148,7 @@ function New-LabImage {
         
         WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
         $imageName = '{0}.vhdx' -f $Id;
-        $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+        $imagePath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.ParentVhdPath) -ChildPath $imageName;
         $imageCreationFailed = $false;
 
         try {
