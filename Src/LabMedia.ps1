@@ -206,7 +206,7 @@ function Test-LabMedia {
         if ($media) {
             if (-not $hostDefaults.DisableLocalFileCaching) {
                 $testResourceDownloadParams = @{
-                    DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
+                    DestinationPath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.IsoPath) -ChildPath $media.Filename;
                     Uri = $media.Uri;
                     Checksum = $media.Checksum;
                 }
@@ -249,7 +249,7 @@ function InvokeLabMediaImageDownload {
         $hostDefaults = GetConfigurationData -Configuration Host;
 
         $invokeResourceDownloadParams = @{
-            DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
+            DestinationPath = Join-Path -Path $(ResolvePathEx -Path $hostDefaults.IsoPath) -ChildPath $media.Filename;
             Uri = $media.Uri;
             Checksum = $media.Checksum;
         }
