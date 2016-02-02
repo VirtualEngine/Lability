@@ -77,6 +77,13 @@ function GetConfigurationData {
         if (Test-Path -Path $expandedPath) {
             $configurationData = Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
             
+            # Expand any environment variables in configuration data
+            $configurationData.psobject.Members | Where-Object {
+                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String')
+            } | ForEach-Object {
+                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) 
+            }
+            
             switch ($Configuration) {
                 'VM' {
                     ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
