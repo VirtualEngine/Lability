@@ -78,7 +78,11 @@ function GetConfigurationData {
             $configurationData = Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
             
             # Expand any environment variables in configuration data
-            $configurationData.psobject.Members | Where-Object { ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable -eq $true) } | ForEach-Object { $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) }
+            $configurationData.psobject.Members | Where-Object {
+                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) 
+            } | ForEach-Object {
+                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) 
+            }
             
             switch ($Configuration) {
                 'VM' {
