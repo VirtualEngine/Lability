@@ -79,7 +79,7 @@ function GetConfigurationData {
             
             # Expand any environment variables in configuration data
             $configurationData.psobject.Members | Where-Object {
-                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) 
+                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String')
             } | ForEach-Object {
                 $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) 
             }
