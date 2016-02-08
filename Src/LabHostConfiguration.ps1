@@ -77,7 +77,7 @@ function GetLabHostSetupConfiguration {
 function Get-LabHostConfiguration {
 <#
     .SYNOPSIS
-        Retrieves the current lab host configuration.
+        Retrieves the current lab host's configuration default values.
     .LINK
         Test-LabHostConfiguration
         Start-LabHostConfiguration
@@ -98,7 +98,7 @@ function Get-LabHostConfiguration {
 function Test-LabHostConfiguration {
 <#
     .SYNOPSIS
-        Tests the lab host configuration.
+        Tests the lab host's configuration.
     .DESCRIPTION
         The Test-LabHostConfiguration test the current configuration of the lab host.
     .PARAMETER IgnorePendingReboot

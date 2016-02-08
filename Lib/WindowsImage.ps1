@@ -6,43 +6,44 @@ function ExpandWindowsImage {
     [CmdletBinding(DefaultParameterSetName = 'Index')]
     param (
         ## File path to WIM file or ISO file containing the WIM image
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $MediaPath,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $MediaPath,
         
         ## WIM image index to apply
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Index')]
         [System.Int32] $WimImageIndex,
         
         ## WIM image name to apply
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [ValidateNotNullOrEmpty()] [System.String] $WimImageName,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')] [ValidateNotNullOrEmpty()]
+        [System.String] $WimImageName,
         
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
         
         ## Disk image partition scheme
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('MBR','GPT')]
+        [System.String] $PartitionStyle,
         
         ## Optional Windows features to add to the image after expansion (ISO only)
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String[]] $WindowsOptionalFeature,
         
         ## Optional Windows features source path
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $SourcePath = '\sources\sxs',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $SourcePath = '\sources\sxs',
 
         ## Relative source WIM file path (only used for ISOs)
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $WimPath = '\sources\install.wim',
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $WimPath = '\sources\install.wim',
 
         ## Optional Windows packages to add to the image after expansion (primarily used for Nano Server)
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.String[]] $Package,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String[]] $Package,
         
         ## Relative packages (.cab) file path (primarily used for Nano Server)
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $PackagePath = '\packages'
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $PackagePath = '\packages'
     )
     process {
         ## Assume the media path is a literal path to a WIM file
@@ -129,19 +130,20 @@ function AddWindowsOptionalFeature {
     [CmdletBinding()]
     param (
         ## Source package file path
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $ImagePath,
         
         ## Mounted VHD(X) Operating System disk drive
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
         
         ## Windows packages to add to the image after expansion
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.String[]] $WindowsOptionalFeature,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String[]] $WindowsOptionalFeature,
         
         ## DISM log path
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LogPath = $DestinationPath
     )
     process {
         WriteVerbose ($localized.AddingWindowsFeature -f ($WindowsOptionalFeature -join ','), $DestinationPath);
@@ -166,19 +168,20 @@ function AddWindowsPackage {
     [CmdletBinding()]
     param (
         ## Windows packages (.cab) files to add to the image after expansion
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNull()] [System.String[]] $Package,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.String[]] $Package,
 
         ## Path to the .cab files
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $PackagePath,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $PackagePath,
         
         ## Mounted VHD(X) Operating System disk drive
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
         
         ## DISM log path
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogPath = $DestinationPath
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LogPath = $DestinationPath
     )
     process {
         foreach ($packageName in $Package) {
@@ -201,11 +204,12 @@ function GetWindowsImageIndex {
     [OutputType([System.Int32])]
     param (
         # WIM image path
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $ImagePath,
+        
         # Windows image name
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $ImageName
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ImageName
     )
     process {
         WriteVerbose ($localized.LocatingWimImageIndex -f $ImageName);
@@ -224,11 +228,12 @@ function GetWindowsImageName {
     [OutputType([System.String])]
     param (
         # WIM image path
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String] $ImagePath,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $ImagePath,
+        
         # Windows image index
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.Int32] $ImageIndex
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.Int32] $ImageIndex
     )
     process {
         WriteVerbose ($localized.LocatingWimImageName -f $ImageIndex);

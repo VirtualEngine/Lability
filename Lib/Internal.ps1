@@ -9,7 +9,8 @@ function ResolvePathEx {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        [Parameter(Mandatory)] [System.String] $Path
+        [Parameter(Mandatory)]
+        [System.String] $Path
     )
     process {
         try {
@@ -34,11 +35,16 @@ function InvokeExecutable {
     [OutputType([System.Int32])]
     param (
         # Executable path
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+        
         # Executable arguments
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Array] $Arguments,
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Array] $Arguments,
+        
         # Redirected StdOut and StdErr log name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogName = ('{0}.log' -f $Path)
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LogName = ('{0}.log' -f $Path)
     )
     process {
         $processArgs = @{

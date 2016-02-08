@@ -90,8 +90,8 @@ function SetSetupCompleteCmd {
     [OutputType([System.Management.Automation.ScriptBlock])]
     param (
         ## Destination SetupComplete.cmd directory path.
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
 
         ## Is a CoreCLR VM. The bootstrapping via Powershell.exe in the CoreCLR doesn't work in its current format, i.e. with Nano Server
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -127,8 +127,8 @@ function SetBootStrap {
         [System.String] $Path,
         
         ## Custom bootstrap script
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $CustomBootStrap,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $CustomBootStrap,
 
         ## Is a CoreCLR VM. The PowerShell switches are different in the CoreCLR, i.e. Nano Server
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -159,12 +159,12 @@ function ResolveCustomBootStrap {
         [System.String] $CustomBootstrapOrder,
         
         ## Node/configuration custom bootstrap script
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [AllowNull()] [System.String] $ConfigurationCustomBootStrap,
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String] $ConfigurationCustomBootStrap,
 
         ## Media custom bootstrap script
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [AllowNull()] [System.String[]] $MediaCustomBootStrap
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.String[]] $MediaCustomBootStrap
     )
     begin {
         if ([System.String]::IsNullOrWhiteSpace($ConfigurationCustomBootStrap)) {

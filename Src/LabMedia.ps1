@@ -188,7 +188,7 @@ function Get-LabMedia {
 function Test-LabMedia {
 <#
     .SYNOPSIS
-        Tests whether lab media has already been downloaded.
+        Tests whether lab media has already been successfully downloaded.
     .DESCRIPTION
         The Test-LabMedia cmdlet will check whether the specified media Id has been downloaded and its checksum is correct.
     .PARAMETER Id

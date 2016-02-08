@@ -6,12 +6,13 @@ function GetModule {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name
     )
     process {
         WriteVerbose -Message ($localized.LocatingModule -f $Name);
-        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false;
+        ## Only return modules in the C:\Program Files\WindowsPowerShell\Modules location, ignore other $env:PSModulePaths
+        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false | Where-Object Path -match '\\Program Files\\WindowsPowerShell\\Modules';
         if (-not $module) {
             WriteVerbose -Message ($localized.ModuleNotFound -f $Name);
         }
@@ -31,12 +32,12 @@ function TestModuleVersion {
     [OutputType([System.Boolean])]
     param (
         ## Path to the module's manifest file
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $ModulePath,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ModulePath,
         
         ## The minimum version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')]
-        [ValidateNotNullOrEmpty()] [System.Version] $MinimumVersion,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')] [ValidateNotNullOrEmpty()]
+        [System.Version] $MinimumVersion,
         
         ## The exact version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
@@ -71,12 +72,12 @@ function TestModule {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
         
         ## The minimum version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')]
-        [ValidateNotNullOrEmpty()] [System.Version] $MinimumVersion,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')] [ValidateNotNullOrEmpty()]
+        [System.Version] $MinimumVersion,
         
         ## The exact version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]

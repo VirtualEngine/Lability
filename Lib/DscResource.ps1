@@ -148,8 +148,11 @@ function InvokeDscResource {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $ResourceName,
-        [Parameter(Mandatory)] [System.Collections.Hashtable] $Parameters
+        [Parameter(Mandatory)]
+        [System.String] $ResourceName,
+        
+        [Parameter(Mandatory)]
+        [System.Collections.Hashtable] $Parameters
     )
     process {
         if (-not (TestDscResource @PSBoundParameters)) {
@@ -174,8 +177,8 @@ function GetDscResourcePSGalleryUri {
     [OutputType([System.String])]
     param (
         ## PowerShell DSC resource module name
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
         
         ## The minimum version of the DSC module required
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -263,8 +266,8 @@ function InvokeDscResourceDownloadFromPSGallery {
     [OutputType([System.IO.DirectoryInfo])]
     param (
         ## PowerShell DSC resource module name
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
         
         ## The minimum version of the DSC module required
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -312,8 +315,8 @@ function InvokeDscResourceDownloadFromGitHub {
     [OutputType([System.IO.DirectoryInfo])]
     param (
         ## PowerShell DSC resource module name
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
         
         ## The GitHub repository owner, typically 'PowerShell'
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
