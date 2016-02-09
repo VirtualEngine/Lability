@@ -40,6 +40,7 @@ ConvertFrom-StringData -StringData @'
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
     AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
+    RemovingDSCResourceModule       = Removing existing DSC resource module '{0}'.'
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
     CreatingBaselineSnapshot        = Creating baseline snapshot '{0}'.
