@@ -399,7 +399,7 @@ function Register-LabMedia {
         }
     
         ## Get the custom media list (not the built in media)
-        $existingCustomMedia = GetConfigurationData -Configuration CustomMedia;
+        $existingCustomMedia = @(GetConfigurationData -Configuration CustomMedia);
         if (-not $existingCustomMedia) {
             WriteWarning ($localized.NoCustomMediaFoundWarning  -f $Id);
             $existingCustomMedia = @();

@@ -348,6 +348,7 @@ function ExpandLabResource {
         }
     }
     process {
+        ## Create the root container
         if (-not (Test-Path -Path $DestinationPath -PathType Container)) {
             [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
         }
@@ -355,7 +356,6 @@ function ExpandLabResource {
         foreach ($resourceId in $node.Resource) {
             
             WriteVerbose ($localized.InjectingVMResource -f $resourceId);
-            $destinationResourcePath = Join-Path -Path $DestinationPath -ChildPath $resourceId;
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
             
             ## Default to resource.Id unless there is a filename property defined!
@@ -367,6 +367,18 @@ function ExpandLabResource {
                 [ref] $null = Invoke-LabResourceDownload -ConfigurationData $ConfigurationData -ResourceId $resourceId;
             }
             $resourceItem = Get-Item -Path $resourceItemPath;
+
+            if ($resource.DestinationPath -and (-not [System.String]::IsNullOrEmpty($resource.DestinationPath))) {
+                ## Use the explicit $Resource.DestinationPath\ResourceId path
+                $destinationDrive = Split-Path -Path $DestinationPath -Qualifier;
+                $destinationRootPath = Join-Path -Path $destinationDrive -ChildPath $resource.DestinationPath;
+                $destinationResourcePath = Join-Path -Path $destinationRootPath -ChildPath $resourceId;
+            }
+            else {
+                ## Otherwise default to (Resources)\ResourceId
+                $destinationRootPath = $DestinationPath;
+                $destinationResourcePath = Join-Path -Path $DestinationPath -ChildPath $resourceId;
+            }
 
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
                 [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
@@ -384,8 +396,8 @@ function ExpandLabResource {
                 } #end switch
             }
             else {
-                WriteVerbose ($localized.CopyingFileResource -f (Join-Path -Path $DestinationPath -ChildPath $resourceItem.Name));
-                Copy-Item -Path $resourceItem.FullName -Destination $destinationPath -Force -Verbose:$false;
+                WriteVerbose ($localized.CopyingFileResource -f $destinationResourcePath);
+                Copy-Item -Path $resourceItem.FullName -Destination $destinationRootPath -Force -Verbose:$false;
             }
         } #end foreach ResourceId
     } #end process

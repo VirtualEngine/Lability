@@ -487,6 +487,36 @@ Describe 'LabResource' {
 
                 Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testHostResourcePath -and $Force -eq $true } -Scope It;
             }
+            
+            It 'Copies resource to explicit target destination path' {
+                $testVM = 'VM1';
+                $testResourceId = 'Resource1.exe';
+                $defaultDestinationPath = 'Resources';
+                $defaultHostResourcePath = "TestDrive:\$defaultDestinationPath";
+                $testDestinationPath = 'MyResources';
+                $testResourcePath = "TestDrive:\$testDestinationPath";
+                $configurationData= @{
+                    AllNodes = @(
+                        @{ NodeName = $testVM; Resource = $testResourceId; }
+                    )
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Uri = 'http://test-resource.com/resource1.exe'; DestinationPath = "\$testDestinationPath"; }
+                            )
+                        }
+                    }
+                }
+                $fakeConfigurationData = @{ ResourcePath = "TestDrive:\$defaultDestinationPath";}
+                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
+                New-Item -Path "$testResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
+                Mock Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -MockWith { }
+                
+                ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $defaultHostResourcePath;
+
+                Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -Scope It;
+            }
 
             It 'Calls "ExpandZipArchive" if "Expand" property is specified on a "ZIP" resource' {
                 $testVM = 'VM1';
