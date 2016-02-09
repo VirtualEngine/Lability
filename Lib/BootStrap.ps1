@@ -11,7 +11,6 @@ function NewBootStrap {
     )
     process {
         $coreCLRScriptBlock = {
-
 ## Lability CoreCLR DSC Bootstrap
 $VerbosePreference = 'Continue';
 
@@ -36,11 +35,9 @@ if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
         }
     } #end while
 } #end if localhost.mof
-
 } #end CoreCLR bootstrap scriptblock
         
         $sciptBlock = {
-            
 ## Lability DSC Bootstrap
 $VerbosePreference = 'Continue';
 $DebugPreference = 'Continue';
@@ -62,7 +59,7 @@ if (Test-Path -Path $localhostMofPath) {
         ## Convert the .mof to v4 compatible - credit to Mike Robbins
         ## http://mikefrobbins.com/2014/10/30/powershell-desired-state-configuration-error-undefined-property-configurationname/
         $mof = Get-Content -Path $localhostMofPath;
-        $mof -replace $Pattern | Set-Content -Path $localhostMofPath -Force;
+        $mof -replace '^\sName=.*;$|^\sConfigurationName\s=.*;$' | Set-Content -Path $localhostMofPath -Force;
     }
     while ($true) {
         ## Replay the configuration until the LCM bloody-well takes it!
@@ -78,7 +75,6 @@ if (Test-Path -Path $localhostMofPath) {
 } #end if localhost.mof
 
 Stop-Transcript;
-
 } #end bootstrap scriptblock
         
         if ($CoreCLR) {
