@@ -56,6 +56,9 @@ LONG DESCRIPTION
                             ## into the node's \Resources\<ResourceID> folder. If not specified, this value defaults
                             ## to False.
                             Expand = $true;
+                            
+                            ## If specified, overrides the default \Resources destination path.
+                            DestinationPath = '\ProgramData\VirtualEngine';
                         }
                     
                     )                

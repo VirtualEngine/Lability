@@ -9,8 +9,11 @@ function TestDscResourceModule {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Path,
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $ModuleName
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Path,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ModuleName
     )
     process {
         ## This module contains a \DSCResources folder, but we don't want to enumerate this!
@@ -53,7 +56,8 @@ function GetDscResourceModule {
     [OutputType([System.Boolean])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock','')]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String[]] $Path
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String[]] $Path
     )
     process {
         foreach ($basePath in $Path) {

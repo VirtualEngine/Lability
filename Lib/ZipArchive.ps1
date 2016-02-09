@@ -14,12 +14,12 @@ function ExpandZipArchive {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Source path to the Zip Archive.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [ValidateNotNullOrEmpty()] [Alias('PSPath','FullName')] [System.String[]] $Path,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)] [ValidateNotNullOrEmpty()]
+        [Alias('PSPath','FullName')] [System.String[]] $Path,
         
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
-        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -90,8 +90,8 @@ function ExpandZipArchiveItem {
         [ValidateNotNullOrEmpty()] [System.IO.Compression.ZipArchiveEntry[]] [ref] $InputObject,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 1)]
-        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 1)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
         [Parameter(ValueFromPipelineByPropertyName)]

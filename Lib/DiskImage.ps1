@@ -5,8 +5,11 @@ function GetDiskImageDriveLetter {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $DiskImage,
-        [Parameter(Mandatory)] [ValidateSet('Basic','System','IFS')] [System.String] $PartitionType
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $DiskImage,
+        
+        [Parameter(Mandatory)] [ValidateSet('Basic','System','IFS')]
+        [System.String] $PartitionType
     )
     process {
         # Microsoft.Vhd.PowerShell.VirtualHardDisk
@@ -29,7 +32,8 @@ function NewDiskImageMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -52,8 +56,11 @@ function NewDiskPartFat32Partition {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.Int32] $DiskNumber,
-        [Parameter(Mandatory)] [System.Int32] $PartitionNumber
+        [Parameter(Mandatory)]
+        [System.Int32] $DiskNumber,
+        
+        [Parameter(Mandatory)]
+        [System.Int32] $PartitionNumber
     )
     process {
         @"
@@ -72,7 +79,8 @@ function NewDiskImageGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
@@ -98,15 +106,24 @@ function NewDiskImage {
     [CmdletBinding()]
     param (
         ## VHD/x file path
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+        
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle,
+        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
+        [System.String] $PartitionStyle,
+        
         ## Disk image size in bytes
-        [Parameter()] [System.UInt64] $Size = 127GB,
+        [Parameter()]
+        [System.UInt64] $Size = 127GB,
+        
         ## Overwrite/recreate existing disk image
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force,
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter] $Force,
+        
         ## Do not dismount the VHD/x and return a reference
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Passthru
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter] $Passthru
     )
     begin {
         if ((Test-Path -Path $Path -PathType Leaf) -and (-not $Force)) {
@@ -148,7 +165,8 @@ function SetDiskImageBootVolumeMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         $bcdBootExe = 'bcdboot.exe';
@@ -193,7 +211,8 @@ function SetDiskImageBootVolumeGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
         $bcdBootExe = 'bcdboot.exe';
@@ -223,9 +242,12 @@ function SetDiskImageBootVolume {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
+        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
+        [System.String] $PartitionStyle
     )
     process {
         switch ($PartitionStyle) {
@@ -248,11 +270,16 @@ function AddDiskImageHotfix {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()] [System.String] $Id,
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $Id,
+        
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
+        
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')] [System.String] $PartitionStyle
+        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
+        [System.String] $PartitionStyle
     )
     process {
         if ($PartitionStyle -eq 'MBR') { $partitionType = 'IFS'; }
@@ -281,16 +308,16 @@ function AddDiskImagePackage {
     [CmdletBinding()]
     param (
         ## Package name (used for logging)
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Name,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
 
         ## File path to the package (.cab) file
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
 
         ## Destination operating system path (mounted VHD), i.e. G:\
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $DestinationPath
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $DestinationPath
     )
     begin {
         ## We just want the drive letter
