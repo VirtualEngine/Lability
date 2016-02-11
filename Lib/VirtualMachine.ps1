@@ -34,10 +34,22 @@ function GetVirtualMachineProperties {
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
         $labMedia = Get-LabMedia -Id $Media;
-        if ($labMedia.Architecture -eq 'x86') {
+        $labMediaArchitecture = $labMedia.Architecture;
+
+        if (-not [System.String]::IsNullOrEmpty($labMedia.CustomData.PartitionStyle)) {
+            ## The partition style has been overridden so use this
+            if ($labMedia.CustomData.PartitionStyle -eq 'MBR') {
+                $labMediaArchitecture = 'x86';
+            }
+            elseif ($labMedia.CustomData.PartitionStyle -eq 'GPT') {
+                $labMediaArchitecture = 'x64';
+            }
+        }
+        
+        if ($labMediaArchitecture -eq 'x86') {
             $PSBoundParameters.Add('Generation', 1);
         }
-        elseif ($labMedia.Architecture -eq 'x64') {
+        elseif ($labMediaArchitecture -eq 'x64') {
             $PSBoundParameters.Add('Generation', 2);
         }
         [ref] $null = $PSBoundParameters.Remove('Media');

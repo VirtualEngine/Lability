@@ -41,7 +41,8 @@ if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
 ## Lability DSC Bootstrap
 $VerbosePreference = 'Continue';
 $DebugPreference = 'Continue';
-Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force;
+$transcriptPath = '{0}\BootStrap\Bootstrap {0}.log' -f $env:SystemDrive, (Get-Date).ToString('yyyyMMdd-hhmmss');
+Start-Transcript -Path $transcriptPath -Force;
 
 certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
 ## Import the .PFX certificate with a blank password
@@ -59,7 +60,7 @@ if (Test-Path -Path $localhostMofPath) {
         ## Convert the .mof to v4 compatible - credit to Mike Robbins
         ## http://mikefrobbins.com/2014/10/30/powershell-desired-state-configuration-error-undefined-property-configurationname/
         $mof = Get-Content -Path $localhostMofPath;
-        $mof -replace '^\sName=.*;$|^\sConfigurationName\s=.*;$' | Set-Content -Path $localhostMofPath -Force;
+        $mof -replace '^\sName=.*;$|^\sConfigurationName\s=.*;$' | Set-Content -Path $localhostMofPath -Encoding Ascii -Force;
     }
     while ($true) {
         ## Replay the configuration until the LCM bloody-well takes it!
@@ -69,6 +70,9 @@ if (Test-Path -Path $localhostMofPath) {
         }
         catch {
             Write-Error -Message $_;
+            ## SIGH. Try removing the configuration and restarting WMI..
+            Remove-DscConfigurationDocument -Stage Current,Pending,Previous -Force;
+            Restart-Service -Name Winmgmt -Force;
             Start-Sleep -Seconds 5;
         }
     } #end while

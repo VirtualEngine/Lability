@@ -32,6 +32,7 @@ ConvertFrom-StringData -StringData @'
     ApplyingWindowsImage            = Applying Windows Image '{0}' to '{1}'.
     DismountingDiskImage            = Dismounting disk image '{0}'.
     RemovingDiskImage               = Removing disk image '{0}'.
+    ImportingExistingDiskImage      = Importing existing VHD(X) image '{0}'.
     CreatingDiskImage               = Creating disk image '{0}'.
     InitializingDiskImage           = Initializing disk image '{0}'.
     CreatingDiskPartition           = Creating '{0}' disk partition.

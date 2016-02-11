@@ -101,16 +101,15 @@ Describe 'LabMedia' {
         
             It 'Returns default media if configuration data entry does not exist' {
                 $testMediaId = '2012R2_x64_Standard_EN_Eval';
-                $testMediaFilename = 'test-media.iso';
-                $builtinMediaFilename = '2012R2_x64_EN_Eval.iso';
                 $configurationData = @{
                     NonNodeData = @{
-                        $labDefaults.ModuleName = @{ Media = @( ) } } }
+                        $labDefaults.ModuleName = @{ } } }
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
         
                 $labMedia = ResolveLabMedia -Id $testMediaId -ConfigurationData $configurationData;
         
-                $labMedia.Filename | Should Be $builtinMediaFilename;
+                $labMedia.Id | Should Be $testMediaId
+                $labMedia.Filename | Should Not BeNullOrEmpty;
             }
         
         } #end context Validates "ResolveLabMedia" method

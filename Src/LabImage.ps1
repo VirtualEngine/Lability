@@ -143,85 +143,92 @@ function New-LabImage {
         [ref] $null = $PSBoundParameters.Remove('Confirm');
         $media = ResolveLabMedia @PSBoundParameters;
         $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
-        
         $hostDefaults = GetConfigurationData -Configuration Host;
-        
-        WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
-        $imageName = '{0}.vhdx' -f $Id;
-        $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
-        $imageCreationFailed = $false;
 
-        try {
-            ## Create VHDX
-            if ($media.CustomData.PartitionStyle) {
-                ## Custom partition style has been defined so use that
-                $partitionStyle = $media.CustomData.PartitionStyle;
-            }
-            elseif ($media.Architecture -eq 'x86') {
-                ## Otherwise default to MBR for x86 media
-                $partitionStyle = 'MBR';
-            }
-            else {
-                $partitionStyle = 'GPT';
-            }
+        if ($media.MediaType -eq 'VHD') {
+            WriteVerbose ($localized.ImportingExistingDiskImage -f $media.Description);
+            $imageName = $media.Filename;
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+        } #end if VHD
+        else {
+            WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
+            $imageName = '{0}.vhdx' -f $Id;
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+            $imageCreationFailed = $false;
             
-            ## Create disk image and refresh PSDrives
-            $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
-            [ref] $null = Get-PSDrive;
-            
-            ## Apply WIM (ExpandWindowsImage) and add specified features
-            $expandWindowsImageParams = @{
-                Vhd = $image;
-                MediaPath = $mediaFileInfo.FullName;
-                PartitionStyle = $partitionStyle;
+            try {
+                ## Create VHDX
+                if ($media.CustomData.PartitionStyle) {
+                    ## Custom partition style has been defined so use that
+                    $partitionStyle = $media.CustomData.PartitionStyle;
+                }
+                elseif ($media.Architecture -eq 'x86') {
+                    ## Otherwise default to MBR for x86 media
+                    $partitionStyle = 'MBR';
+                }
+                else {
+                    $partitionStyle = 'GPT';
+                }
+                
+                ## Create disk image and refresh PSDrives
+                $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
+                [ref] $null = Get-PSDrive;
+                
+                ## Apply WIM (ExpandWindowsImage) and add specified features
+                $expandWindowsImageParams = @{
+                    Vhd = $image;
+                    MediaPath = $mediaFileInfo.FullName;
+                    PartitionStyle = $partitionStyle;
+                }
+                
+                ## Determine whether we're using the WIM image index or image name. This permits
+                ## specifying an integer image index in a media's 'ImageName' property.
+                [System.Int32] $wimImageIndex = $null;
+                if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
+                    $expandWindowsImageParams['WimImageIndex'] = $wimImageIndex;
+                }
+                else {
+                    $expandWindowsImageParams['WimImageName'] = $media.ImageName;
+                }
+
+                if ($media.CustomData.SourcePath) {
+                    $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+                }
+                if ($media.CustomData.WimPath) {
+                    $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
+                }
+                if ($media.CustomData.WindowsOptionalFeature) {
+                    $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
+                }
+                if ($media.CustomData.PackagePath) {
+                    $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
+                }
+                if ($media.CustomData.Package) {
+                    $expandWindowsImageParams['Package'] = $media.CustomData.Package;
+                }
+
+                ExpandWindowsImage @expandWindowsImageParams;
+                ## Apply hotfixes (AddDiskImageHotfix)
+                AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+                ## Configure boot volume (SetDiskImageBootVolume)
+                SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
             }
-            
-            ## Determine whether we're using the WIM image index or image name. This permits
-            ## specifying an integer image index in a media's 'ImageName' property.
-            [System.Int32] $wimImageIndex = $null;
-            if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
-                $expandWindowsImageParams['WimImageIndex'] = $wimImageIndex;
+            catch {
+                ## Have to ensure VHDX is dismounted before we can delete!
+                $imageCreationFailed = $true;
+                Write-Error -Message $_;
             }
-            else {
-                $expandWindowsImageParams['WimImageName'] = $media.ImageName;
+            finally {
+                ## Dismount VHDX
+                Dismount-VHD -Path $imagePath;
             }
 
-            if ($media.CustomData.SourcePath) {
-                $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+            if ($imageCreationFailed -eq $true) {
+                WriteWarning ($localized.RemovingIncompleteImageWarning -f $imagePath);
+                Remove-Item -Path $imagePath -Force;
             }
-            if ($media.CustomData.WimPath) {
-                $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
-            }
-            if ($media.CustomData.WindowsOptionalFeature) {
-                $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
-            }
-            if ($media.CustomData.PackagePath) {
-                $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
-            }
-            if ($media.CustomData.Package) {
-                $expandWindowsImageParams['Package'] = $media.CustomData.Package;
-            }
+        } #end if ISO/WIM
 
-            ExpandWindowsImage @expandWindowsImageParams;
-            ## Apply hotfixes (AddDiskImageHotfix)
-            AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
-            ## Configure boot volume (SetDiskImageBootVolume)
-            SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
-        }
-        catch {
-            ## Have to ensure VHDX is dismounted before we can delete!
-            $imageCreationFailed = $true;
-            Write-Error -Message $_;
-        }
-        finally {
-            ## Dismount VHDX
-            Dismount-VHD -Path $imagePath;
-        }
-
-        if ($imageCreationFailed -eq $true) {
-            WriteWarning ($localized.RemovingIncompleteImageWarning -f $imagePath);
-            Remove-Item -Path $imagePath -Force;
-        }
         return (Get-Item -Path $imagePath -ErrorAction Ignore);
 
     } #end process
