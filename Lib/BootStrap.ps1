@@ -41,7 +41,7 @@ if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
 ## Lability DSC Bootstrap
 $VerbosePreference = 'Continue';
 $DebugPreference = 'Continue';
-$transcriptPath = '{0}\BootStrap\Bootstrap {0}.log' -f $env:SystemDrive, (Get-Date).ToString('yyyyMMdd-hhmmss');
+$transcriptPath = '{0}\BootStrap\Bootstrap-{1}.log' -f $env:SystemDrive, (Get-Date).ToString('yyyyMMdd-hhmmss');
 Start-Transcript -Path $transcriptPath -Force;
 
 certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";

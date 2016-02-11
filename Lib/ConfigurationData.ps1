@@ -123,7 +123,7 @@ function SetConfigurationData {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
         [ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force -Confirm:$false;
+        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
     }
 } #end function SetConfigurationData
 
