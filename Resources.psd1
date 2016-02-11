@@ -32,6 +32,7 @@ ConvertFrom-StringData -StringData @'
     ApplyingWindowsImage            = Applying Windows Image '{0}' to '{1}'.
     DismountingDiskImage            = Dismounting disk image '{0}'.
     RemovingDiskImage               = Removing disk image '{0}'.
+    ImportingExistingDiskImage      = Importing existing VHD(X) image '{0}'.
     CreatingDiskImage               = Creating disk image '{0}'.
     InitializingDiskImage           = Initializing disk image '{0}'.
     CreatingDiskPartition           = Creating '{0}' disk partition.
@@ -40,6 +41,7 @@ ConvertFrom-StringData -StringData @'
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
     AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
+    RemovingDSCResourceModule       = Removing existing DSC resource module '{0}'.'
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
     CreatingBaselineSnapshot        = Creating baseline snapshot '{0}'.
