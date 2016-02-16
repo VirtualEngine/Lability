@@ -71,7 +71,10 @@ function GetDscResource {
     process {
         $getTargetResourceCommand = 'Get-{0}TargetResource' -f $ResourceName;
         WriteVerbose ($localized.InvokingCommand -f $getTargetResourceCommand);
-        $Parameters.Remove('Ensure');
+        # Code to factor in the parameters which can be passed to the Get-<Prefix>TargetResource function.
+        $CommandInfo = Get-Command -Name $getTargetResourceCommand;
+        $RemoveParameters = $Parameters.Keys | where -filter {$($CommandInfo.Parameters.Keys) -notcontains $PSItem};
+        $RemoveParameters | ForEach-Object -Process {$Parameters.Remove($PSitem)};                             
         return (& $getTargetResourceCommand @Parameters);
     } #end process
 } #end function GetDscResource
