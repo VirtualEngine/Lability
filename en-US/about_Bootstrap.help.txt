@@ -1,15 +1,17 @@
 TOPIC
-    about_Bootstrap
+        about_Bootstrap
 
 SHORT DESCRIPTION
+
         A virtual machine is customised during the deployment process by injecting a custom bootstrap. This process
         can be extended to support nearly any scenario, if required.
 
 LONG DESCRIPTION
-        Conflab will deploy virtual machines (VMs) from a master/parent image. Each virtual machine (VM) master/
+
+        Lability will deploy virtual machines (VMs) from a master/parent image. Each virtual machine (VM) master/
         parent image should be prepared correctly (typically via Sysprep) before deployment. When a VM is deployed,
-        Conflab will customise the virtual machine by using a custom bootstrap. The bootstrap is applied at the end of
-        the deployment process and, by default, initiates the PowerShell Desired State Configuration (DSC) Local
+        Lability will customise the virtual machine by using a custom bootstrap. The bootstrap is applied at the end
+        of the deployment process and, by default, initiates the PowerShell Desired State Configuration (DSC) Local
         Configuration Manager (LCM) configuration process.
         
         If needed, this custom bootstrap process can be extended either within the media's definition and/or within a
@@ -18,8 +20,8 @@ LONG DESCRIPTION
         System images' configurations to enable the local Administrator account and enable PowerShell Remoting after
         the Unattend.xml file has been applied.
         
-        The following default bootstrap is applied to all virtual machines deployed by Conflab (other than Nano Server
-        images).
+        The following default bootstrap is applied to all virtual machines deployed by Lability (other than Nano
+        Server images).
         
         {
             ## VirtualEngine.Lab DSC Bootstrap
@@ -58,6 +60,7 @@ LONG DESCRIPTION
         template scriptblock at the `<#CustomBootStrapInjectionPoint#>` marker above.
     
 MEDIA BOOTSTRAP
+
         If an image/media requires additional configuration during the deployment process, a custom bootstrap can be
         defined within the media's CustomData hashtable.
         
@@ -78,6 +81,7 @@ MEDIA BOOTSTRAP
         NOTE: THE MEDIA CUSTOM BOOTSTRAP IS SPECIFIED AS A STRING ARRAY [STRING[]]
 
 NODE BOOTSTRAP
+
         If an individual node requires additional configuration during the deployment process, a custom bootstrap can
         be defined within the node's configuration data. The following example shows enabling the local Administrator
         account and enabling PowerShell Remoting as these are not enabled by default on Windows client Operating
@@ -102,17 +106,18 @@ NODE BOOTSTRAP
         NOTE: THE NODE CUSTOM BOOTSTRAP IS SPECIFIED AS A [STRING] TYPE, NOT A STRING ARRAY [STRING[]]
 
 BOOTSTRAP ORDER
+
         If a custom bootstrap is specified in both the media's definition and on a node's bootstrap, the media-
         specific bootstrap is applied during deployment first, followed by the node's custom bootstrap.
         
         You can change the default custom bootstrap order using the `Set-LabVMDefault` command. The following options
         are available on the `Set-LabVMDefault -CustomBootstrapOrder` command:
         
-            * Disabled
-            * ConfigurationFirst
-            * ConfigurationOnly
-            * MediaFirst
-            * MediaOnly
+            *  Disabled
+            *  ConfigurationFirst
+            *  ConfigurationOnly
+            *  MediaFirst
+            *  MediaOnly
             
        The default custom bootstrap order can also be overridden in a node's configuration.
 
@@ -122,5 +127,6 @@ KEYWORDS
 
 SEE ALSO
     about_Media
+    about_CustomResource
     Register-LabMedia
-    	
+        

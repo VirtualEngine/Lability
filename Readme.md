@@ -1,10 +1,10 @@
-### VirtualEngineLab ###
-<img align="right" alt="VirtualEngineLab logo" src="https://raw.githubusercontent.com/VirtualEngine/Lab/dev/VirtualEngineLab.png">
+### Lability ###
+<img align="right" alt="Lability logo" src="https://raw.githubusercontent.com/VirtualEngine/Lability/dev/Lability.png">
 
-The __VirtualEngineLab__ module enables simple provisioning of Windows Hyper-V development and
+The __Lability__ module enables simple provisioning of Windows Hyper-V development and
 testing environments. It uses a declarative document for machine configuration.
 However, rather than defining configurations in an external custom domain-specific
-language (DSL) document, __VirtualEngineLab__ extends existing PowerShell Desired
+language (DSL) document, __Lability__ extends existing PowerShell Desired
 State Configuration (DSC) configuration .psd1 documents with metadata that can
 be interpreted by the module.
 
@@ -12,9 +12,9 @@ By using this approach, it allows the use of a single confiugration document to
 describe all properties for provisioning Windows-centric development and/or test
 environments.
 
-The __VirtualEngineLab__ module will parse the DSC configuration document and provision
+The __Lability__ module will parse the DSC configuration document and provision
 Hyper-V virtual machines according to the metadata contained within. When invoked,
-__VirtualEngineLab__ will parse a DSC configuration document and automagically
+__Lability__ will parse a DSC configuration document and automagically
 provision the following resources:
 * Virtual machine disk images
  * Download required evaluation Operating System installation media
@@ -32,26 +32,26 @@ provision the following resources:
  
 An example DSC configuration document might look the following. Note: this is a
 standard DSC .psd1 configuration document, but has been extended with specific
-properties which the __VirtualEngineLab__ module can interpret.
+properties which the __Lability__ module can interpret.
 
 ```powershell
 @{
     AllNodes = @(
 		@{
 			NodeName = 'DC1';
-            VirtualEngineLab_ProcessorCount = 2;
-			VirtualEngineLab_SwitchName = 'CORPNET';
-			VirtualEngineLab_Media = '2012R2_x64_Standard_EN_Eval';
+            Lability_ProcessorCount = 2;
+			Lability_SwitchName = 'CORPNET';
+			Lability_Media = '2012R2_x64_Standard_EN_Eval';
 		},
 		@{
 			NodeName = 'APP1';
-            VirtualEngineLab_ProcessorCount = 1;
-			VirtualEngineLab_SwitchName = 'CORPNET';
-			VirtualEngineLab_Media = '2012R2_x64_Standard_EN_Eval';
+            Lability_ProcessorCount = 1;
+			Lability_SwitchName = 'CORPNET';
+			Lability_Media = '2012R2_x64_Standard_EN_Eval';
 		}	
 	)
 	NonNodeData = @{
-        VirtualEngineLab = @{
+        Lability = @{
             Network = @(
                 @{ Name = 'CORPNET'; Type = 'Internal'; }
 			)
@@ -76,4 +76,4 @@ will:
 A brief introduction to the __VirtualEngineLab__ module presented at the European
 PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__.
 
-[__VirtualEngineLab__ image/logo attribution credit](https://openclipart.org/image/300px/svg_to_png/22734/papapishu-Lab-icon-1.png)
+[__Lability__ image/logo attribution credit](https://openclipart.org/image/300px/svg_to_png/22734/papapishu-Lab-icon-1.png)

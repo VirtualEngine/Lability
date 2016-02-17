@@ -1,7 +1,7 @@
 #requires -RunAsAdministrator
 #requires -Version 4
 
-$moduleName = 'VirtualEngineLab';
+$moduleName = 'Lability';
 if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
     $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 }
@@ -15,44 +15,17 @@ Describe 'LabImage' {
 
         Context 'Validates "Get-LabImage" method' {
             
-            It 'Returns all available parent images when no Id is specified' {
-                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
-                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
-                $testVMs = @('VM1','VM2','VM3');
-                foreach ($vm in $testVMs) {
-                    New-Item -Path "TestDrive:\$vm.vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
-                }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
-                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-
-                $images = Get-LabImage;
-
-                $images.Count | Should Be $testVMs.Count;
-            }
-
-            It 'Returns a single parent image when Id specified' {
-                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
-                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
-                $testVMs = @('VM1','VM2','VM3');
-                foreach ($vm in $testVMs) {
-                    New-Item -Path "TestDrive:\$vm.vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
-                }
-
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
-                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-
-                $image = Get-LabImage -Id ($testVMs[0]);
-
-                $image | Should Not BeNullOrEmpty;
-                $image.Count | Should BeNullOrEmpty;
-            }
-
             It 'Returns null when there is no parent image when Id specified' {
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
                 $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
-                $testVMs = @('VM1','VM2','VM3');
-                foreach ($vm in $testVMs) {
-                    New-Item -Path "TestDrive:\$vm.vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
+                $fakeLabMediaId1 = 'IMG1';
+                $fakeLabMediaId2 = 'IMG2';
+                $fakeLabMedia = @(
+                    [PSCustomObject] @{ Id = $fakeLabMediaId1; Filename = "$fakeLabMediaId1.vhdx"; MediaType = 'VHD'; }
+                    [PSCustomObject] @{ Id = $fakeLabMediaId2; Filename = "$fakeLabMediaId2.vhdx"; MediaType = 'VHD'; }
+                )
+                foreach ($media in $fakeLabMedia) {
+                    New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
                 Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -66,11 +39,55 @@ Describe 'LabImage' {
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\EmptyPath'; }
                 New-Item -Path 'TestDrive:\EmptyPath' -ItemType Directory -Force -ErrorAction SilentlyContinue;
                 Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
                 Mock Get-DiskImage -MockWith { }
 
                 $images = Get-LabImage;
 
                 $image | Should BeNullOrEmpty;
+            }
+
+            It 'Returns all available parent images when no Id is specified' {
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeLabMediaId1 = 'IMG1';
+                $fakeLabMediaId2 = 'IMG2';
+                $fakeLabMedia = @(
+                    [PSCustomObject] @{ Id = $fakeLabMediaId1; Filename = "$fakeLabMediaId1.vhdx"; MediaType = 'VHD'; }
+                    [PSCustomObject] @{ Id = $fakeLabMediaId2; Filename = "$fakeLabMediaId2.vhdx"; MediaType = 'VHD'; }
+                )
+                foreach ($media in $fakeLabMedia) {
+                    New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
+                }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+
+                $images = Get-LabImage;
+
+                $images.Count | Should Be $fakeLabMedia.Count;
+            }
+
+            It 'Returns a single parent image when Id specified' {
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeLabMediaId1 = 'IMG1';
+                $fakeLabMediaId2 = 'IMG2';
+                $fakeLabMedia = @(
+                    [PSCustomObject] @{ Id = $fakeLabMediaId1; Filename = "$fakeLabMediaId1.vhdx"; MediaType = 'VHD'; }
+                    [PSCustomObject] @{ Id = $fakeLabMediaId2; Filename = "$fakeLabMediaId2.vhdx"; MediaType = 'VHD'; }
+                )
+                foreach ($media in $fakeLabMedia) {
+                    New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
+                }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $fakeLabMediaId1 } -MockWith { return $fakeLabMedia[0]; }
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+
+                $image = Get-LabImage -Id $fakeLabMediaId1;
+
+                $image | Should Not BeNullOrEmpty;
+                $image.Count | Should BeNullOrEmpty;
             }
 
         } #end context Validates "Get-LabImage" method
@@ -141,10 +158,11 @@ Describe 'LabImage' {
                 $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
                 $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
                 $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+                $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $true; }
-                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                Mock Get-LabImage -MockWith { return $fakeLabImage; }
                 Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }

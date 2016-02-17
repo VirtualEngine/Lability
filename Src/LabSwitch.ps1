@@ -3,23 +3,28 @@ function NewLabSwitch {
     .SYNOPSIS
         Creates a new lab network switch object.
     .DESCRIPTION
-        Permits validation of custom NonNodeData\VirtualEngineLab\Network entries.
+        Permits validation of custom NonNodeData\Lability\Network entries.
 #>
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
+        ## Virtual switch name
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
         
+        ## Virtual switch type
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('Internal','External','Private')]
         [System.String] $Type,
         
+        ## Physical network adapter name (for external switches)
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.String] $NetAdapterName,
 
+        ## Share host access (for external virtual switches)
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Boolean] $AllowManagementOS = $false,
         
+        ## Virtual switch availability
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Present','Absent')]
         [System.String] $Ensure = 'Present'
     )
@@ -56,10 +61,11 @@ function ResolveLabSwitch {
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -72,6 +78,20 @@ function ResolveLabSwitch {
                 [ref] $null = $networkHashtable.Add($key, $networkSwitch.$Key);
             }
             $networkSwitch = NewLabSwitch @networkHashtable;
+        }
+        elseif (Get-VMSwitch -Name $Name -ErrorAction SilentlyContinue) {
+            ## Use an existing virtual switch with a matching name if one exists
+            WriteWarning -Message ($localized.UsingExistingSwitchWarning -f $Name);
+            $existingSwitch = Get-VMSwitch -Name $Name;
+            $networkSwitch = @{
+                Name = $existingSwitch.Name;
+                Type = $existingSwitch.SwitchType;
+                AllowManagementOS = $existingSwitch.AllowManagementOS;
+                IsExisting = $true;
+            }
+            if ($existingSwitch.NetAdapterInterfaceDescription) {
+                $networkSwitch['NetAdapterName'] = (Get-NetAdapter -InterfaceDescription $existingSwitch.NetAdapterInterfaceDescription).Name;
+            } 
         }
         else {
             ## Resolve to default host virtual switch
@@ -96,16 +116,21 @@ function TestLabSwitch {
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
     }
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
+        if (($null -ne $networkSwitch.IsExisting) -and ($networkSwitch.IsExisting -eq $true)) {
+            ## The existing virtual switch may be of a type not supported by the DSC resource.
+            return $true;
+        }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
         return TestDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
     } #end process
@@ -124,18 +149,21 @@ function SetLabSwitch {
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        ## PowerShell DSC configuration document (.psd1) containing lab metadata.
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
     } #end begin
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+            [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;   
+        }
     } #end process
 } #end function SetLabSwitch
 
@@ -152,18 +180,21 @@ function RemoveLabSwitch {
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
         
-        ## Lab DSC configuration data
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
-        $networkSwitch['Ensure'] = 'Absent';
     } #end begin
     process {
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        $networkSwitch = ResolveLabSwitch @PSBoundParameters;
+        if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
+            $networkSwitch['Ensure'] = 'Absent';
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+            [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        }
     } #end process
 } #end function RemoveLabSwitch

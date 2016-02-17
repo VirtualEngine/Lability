@@ -9,8 +9,11 @@ function TestDscResourceModule {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String] $Path,
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [System.String] $ModuleName
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Path,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $ModuleName
     )
     process {
         ## This module contains a \DSCResources folder, but we don't want to enumerate this!
@@ -53,7 +56,8 @@ function GetDscResourceModule {
     [OutputType([System.Boolean])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock','')]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.String[]] $Path
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String[]] $Path
     )
     process {
         foreach ($basePath in $Path) {
@@ -62,7 +66,8 @@ function GetDscResourceModule {
                 ## Check to see if we have a MOF or class resource in the module
                 if (TestDscResourceModule -Path $moduleInfo.FullName -ModuleName $moduleInfo.Name) {
                     Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f $moduleInfo.FullName);
-                    $module = Test-ModuleManifest -Path "$($moduleInfo.FullName)\$($moduleInfo.Name).psd1";
+                    $testModuleManifestPath = '{0}\{1}.psd1' -f $moduleInfo.FullName, $moduleInfo.Name;
+                    $module = Test-ModuleManifest -Path $testModuleManifestPath -Verbose:$false;
                     Write-Output -InputObject ([PSCustomObject] @{
                         ModuleName = $moduleInfo.Name;
                         ModuleVersion = [System.Version] $module.Version;

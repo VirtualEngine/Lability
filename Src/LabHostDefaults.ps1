@@ -1,7 +1,12 @@
 function Reset-LabHostDefault {
 <#
     .SYNOPSIS
-        Reset the current Hyper-V host default settings back to defaults.
+        Resets lab host default settings to default.
+    .DESCRIPTION
+        The Reset-LabHostDefault cmdlet resets the lab host's settings to default values.
+    .LINK
+        Get-LabHostDefault
+        Set-LabHostDefault
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
@@ -16,7 +21,12 @@ New-Alias -Name Reset-LabHostDefaults -Value Reset-LabHostDefault
 function Get-LabHostDefault {
 <#
     .SYNOPSIS
-        Gets the current Hyper-V host default settings.
+        Gets the lab host's default settings.
+    .DESCRIPTION
+        The Get-LabHostDefault cmdlet returns the lab host's current settings.
+    .LINK
+        Set-LabHostDefault
+        Reset-LabHostDefault
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
@@ -30,7 +40,7 @@ New-Alias -Name Get-LabHostDefaults -Value Get-LabHostDefault
 function GetLabHostDSCConfigurationPath {
 <#
     .SYNOPSIS
-        Shortcut function to resolve the $labHostDefaults.ConfigurationPath property
+        Shortcut function to resolve the host's default ConfigurationPath property
 #>
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -44,31 +54,55 @@ function GetLabHostDSCConfigurationPath {
 function Set-LabHostDefault {
 <#
     .SYNOPSIS
-        Sets the current Hyper-V host default settings.
+        Sets the lab host's default settings.
+    .DESCRIPTION
+        The Set-LabHostDefault cmdlet sets one or more lab host default settings.
+    .LINK
+        Get-LabHostDefault
+        Reset-LabHostDefault
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        ## Lab host default configuration document path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ConfigurationPath,
-        ## Lab host Media/ISO path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $IsoPath,
-        ## Lab host parent/master VHD(X) path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ParentVhdPath,
-        ## Lab host virtual machine differencing VHD(X) path.        
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $DifferencingVhdPath,
-        ## Lab host DSC resource path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ResourcePath,
+        ## Lab host .mof configuration document search path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ConfigurationPath,
+        
+        ## Lab host Media/ISO storage location/path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $IsoPath,
+        
+        ## Lab host parent/master VHD(X) storage location/path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ParentVhdPath,
+        
+        ## Lab host virtual machine differencing VHD(X) storage location/path.        
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $DifferencingVhdPath,
+        
+        ## Lab custom resource storage location/path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ResourcePath,
+        
         ## Lab host DSC resource share name (for SMB Pull Server).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $ResourceShareName,
-        ## Lab host Windows media update/hotfix path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $HotfixPath,
-        ## Lab host Windows additional update/offline WSUS path.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()] [System.String] $UpdatePath,
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ResourceShareName,
+        
+        ## Lab host media hotfix storage location/path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $HotfixPath,
+        
+        ## Lab host Windows update/offline WSUS path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $UpdatePath,
+        
         ## Disable local caching of file-based ISO and WIM files.
-        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $DisableLocalFileCaching,
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $DisableLocalFileCaching,
+        
         ## Enable call stack logging in verbose output
-        [Parameter(ValueFromPipelineByPropertyName)] [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;

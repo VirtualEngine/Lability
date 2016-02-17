@@ -187,8 +187,14 @@ function SetResourceDownload {
         [ref] $null = NewDirectory -Path $parentDestinationPath;
     }
     process {
+        if (-not $PSBoundParameters.ContainsKey('BufferSize')) {
+             $systemUri = New-Object -TypeName System.Uri -ArgumentList @($uri);
+            if ($systemUri.IsFile) {
+                $BufferSize = 1MB;
+            }
+        }
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
-        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -Verbose -BufferSize $BufferSize;
+        InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -BufferSize $BufferSize;
 
         ## Create the checksum file for future reference
         [ref] $null = SetResourceChecksum -Path $DestinationPath;
@@ -243,6 +249,7 @@ function InvokeWebClientDownload {
             [System.Byte[]] $buffer = New-Object -TypeName System.Byte[] -ArgumentList $BufferSize;
             [System.UInt64] $bytesRead = 0;
             [System.UInt64] $totalBytes = 0;
+            $writeProgessActivity = $localized.DownloadingActivity -f $Uri;
             do {
                 $bytesRead = $inputStream.Read($buffer, 0, $buffer.Length);
                 $totalBytes += $bytesRead;
@@ -251,7 +258,7 @@ function InvokeWebClientDownload {
                 if ($contentLength -gt 0) {
                     [System.Byte] $percentComplete = ($totalBytes/$contentLength) * 100;
                     $writeProgressParams = @{
-                        Activity = $localized.DownloadingActivity -f $Uri;
+                        Activity = $writeProgessActivity;
                         PercentComplete = $percentComplete;
                         Status = $localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete;
                     }
@@ -266,6 +273,7 @@ function InvokeWebClientDownload {
             throw ($localized.ResourceDownloadFailedError -f $Uri);
         }
         finally {
+            Write-Progress -Activity $writeProgessActivity -Completed;
             if ($null -ne $outputStream) { $outputStream.Close(); }
             if ($null -ne $inputStream) { $inputStream.Close(); }
             if ($null -ne $webClient) { $webClient.Dispose(); }

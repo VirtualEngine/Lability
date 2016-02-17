@@ -9,7 +9,8 @@ function ResolvePathEx {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        [Parameter(Mandatory)] [System.String] $Path
+        [Parameter(Mandatory)]
+        [System.String] $Path
     )
     process {
         try {
@@ -34,11 +35,16 @@ function InvokeExecutable {
     [OutputType([System.Int32])]
     param (
         # Executable path
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Path,
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
+        
         # Executable arguments
-        [Parameter(Mandatory)] [ValidateNotNull()] [System.Array] $Arguments,
+        [Parameter(Mandatory)] [ValidateNotNull()]
+        [System.Array] $Arguments,
+        
         # Redirected StdOut and StdErr log name
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $LogName = ('{0}.log' -f $Path)
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $LogName = ('{0}.log' -f $Path)
     )
     process {
         $processArgs = @{
@@ -92,12 +98,14 @@ function WriteVerbose {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(ValueFromPipeline)] [AllowNull()]
         [System.String] $Message
     )
     process {
-        $verboseMessage = GetFormattedMessage -Message $Message;
-        Write-Verbose -Message $verboseMessage;
+        if (-not [System.String]::IsNullOrEmpty($Message)) {
+            $verboseMessage = GetFormattedMessage -Message $Message;
+            Write-Verbose -Message $verboseMessage;
+        }
     }
 } #end function WriteVerbose
 
@@ -108,11 +116,13 @@ function WriteWarning {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(ValueFromPipeline)] [AllowNull()]
         [System.String] $Message
     )
     process {
-        $warningMessage = GetFormattedMessage -Message $Message;
-        Write-Warning -Message $warningMessage;
+        if (-not [System.String]::IsNullOrEmpty($Message)) {
+            $warningMessage = GetFormattedMessage -Message $Message;
+            Write-Warning -Message $warningMessage;
+        }
     }
 } #end function WriteWarning

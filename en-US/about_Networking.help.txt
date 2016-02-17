@@ -1,0 +1,134 @@
+TOPIC
+        about_Networking
+
+SHORT DESCRIPTION
+    
+        A default internal virtual switch is created and attached to all lab virtual machines. Additional networking
+        configurations can be defined in the PowerShell Desired State Configuration (.psd1) document. Lability
+        uses the configuration document to create and configure virtual switches.
+
+LONG DESCRIPTION
+    
+        When provisioning a lab environment, all virtual machines are, by default, attached to an existing virtual
+        switch when the node'sthere is one with a matching name. internal virtual
+        switch. Additional virtual switches can be specified to support any lab configuration needed; the current
+        implementation supports creating internal, external and private Hyper-V virtual switches.
+        
+        When a lab environment requires an external/private or an additional virtual switch, the network configuration
+        can be added to the configuration (.psd1) document. Lability will parse the configuration document for the
+        existence of a 'NonNodeData\Lability\Network' [System.Array] element:
+        
+            @{
+                AllNodes = @()
+                NonNodeData = @{
+                    Lability = @{
+                        Network = @(
+                        
+                        )
+                    }
+                }
+            }
+        
+        Each virtual switch requires a hashtable with the following properties:
+        
+            @{
+                ## Name of the virtual switch.
+                Name = 'Example';
+                
+                ## Supported values are 'Internal', 'External' and 'Private'.
+                Type = 'Private';
+                
+                ## The NetAdapterName is only required for 'External' switch types.
+                NetAdapterName = 'Ethernet 2';
+                
+                ## The AllowManagementOS is only supported with 'External' switch types.
+                AllowManagementOS = $true;
+            }
+
+        Virtual switches defined in the configuration document will only be created when they are attached to a
+        virtual machine. For example, if there are 5 virtual switches defined in the configuration document, but only
+        one is referenced, only one virtual switch will be created.
+        
+        To attach a virtual machine to a virtual switch, the node's declaration must include the 'SwitchName'
+        property. If the 'SwitchName' property is not declared, the default internal virtual switch will be used.
+        When referencing a virtual switch, the node's 'SwitchName' property must match the name of a defined virtual
+        switch.
+        
+        The following configuration will create a private virtual switch called 'Development' if a private virtual
+        switch with the same name does not already exist. The 'VM01' virtual machine will then be attached to the
+        virtual switch:
+        
+            @{
+                AllNodes = @(
+                    @{
+                        NodeName = 'VM01';
+                        SwitchName = 'Development';
+                    }
+                )
+                NonNodeData = @{
+                    Lability = @{
+                        Network = @(
+                            @{
+                                Name = 'Development';
+                                Type = 'Private';
+                            }
+                        )
+                    }
+                }
+            }
+        
+        It is possible to use existing virtual switches without specifying their type. The following configuration
+        will connect the 'VM01' virtual machine to an existing 'Development' virtual switch of any type - if one
+        exists with the same name. If a virtual switch named 'Development' cannot be found, an 'Internal' virtual
+        switch called 'Development' will be created.
+        
+            @{
+                AllNodes = @(
+                    @{
+                        NodeName = 'VM01';
+                        Lability_SwitchName = 'Development';
+                    }
+                )
+            }
+        
+        It is possible to attach a virtual machine to more than one virtual switch by specifying multiple virtual
+        switches. When mutliple networks are specified, Lability will attach a virtual network adapter to the virtual
+        machine for each network defined. For example, the following configuration creates a single virtual machine
+        and attaches it to both the private 'Development' switch and the external 'Internet' switch.
+        
+            @{
+                AllNodes = @(
+                    @{
+                        NodeName = 'VM01';
+                        SwitchName = 'Development','Internet';
+                    }
+                )
+                NonNodeData = @{
+                    Lability = @{
+                        Network = @(
+                            @{
+                                Name = 'Development';
+                                Type = 'Private';
+                            },
+                            @{
+                                Name = 'Internet';
+                                Type = 'External';
+                                NetAdapterName = 'Ethernet';
+                                AllowManagementOS = $true;
+                            }
+                        )
+                    }
+                }
+            }
+        
+
+KEYWORDS
+    Lab networking
+    Lab network switch
+
+SEE ALSO
+    about_Lability 
+    about_ConfigurationData
+    Get-LabVMDefault
+    Set-LabVMDefault
+    

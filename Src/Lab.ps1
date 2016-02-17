@@ -1,6 +1,6 @@
 function Start-Lab {
 <#
-     .SYNOPSIS
+    .SYNOPSIS
         Starts all VMs in a lab in a predefined order.
     .DESCRIPTION
         The Start-Lab cmdlet starts all nodes defined in a PowerShell DSC configuration document, in a preconfigured
@@ -31,8 +31,10 @@ function Start-Lab {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -58,7 +60,7 @@ function Start-Lab {
 
 function Stop-Lab {
 <#
-     .SYNOPSIS
+    .SYNOPSIS
         Stops all VMs in a lab in a predefined order.
     .DESCRIPTION
         The Stop-Lab cmdlet stops all nodes defined in a PowerShell DSC configuration document, in a preconfigured
@@ -89,8 +91,10 @@ function Stop-Lab {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -140,8 +144,10 @@ function Reset-Lab {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        $ConfigurationData
     )
     begin {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
@@ -181,10 +187,15 @@ function Checkpoint-Lab {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        $ConfigurationData,
+        
         ## Snapshot name
-        [Parameter(Mandatory)] [System.String] [Alias('Name')] $SnapshotName,
+        [Parameter(Mandatory)] [Alias('Name')]
+        [System.String] $SnapshotName,
+        
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
@@ -238,10 +249,15 @@ function Restore-Lab {
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData,
+        $ConfigurationData,
+        
         ## Snapshot name
-        [Parameter(Mandatory)] [System.String] [Alias('Name')] $SnapshotName,
+        [Parameter(Mandatory)] [Alias('Name')]
+        [System.String] $SnapshotName,
+        
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )

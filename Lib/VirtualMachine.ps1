@@ -4,23 +4,52 @@ function GetVirtualMachineProperties {
         Gets the DSC xVMHyperV properties.
 #>
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
-        [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
-        [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
-        [Parameter()] [System.Boolean] $SecureBoot
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Media,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $StartupMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MinimumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MaximumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.Int32] $ProcessorCount,
+        
+        [Parameter()] [AllowNull()]
+        [System.String[]] $MACAddress,
+        
+        [Parameter()]
+        [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
         $labMedia = Get-LabMedia -Id $Media;
-        if ($labMedia.Architecture -eq 'x86') {
+        $labMediaArchitecture = $labMedia.Architecture;
+
+        if (-not [System.String]::IsNullOrEmpty($labMedia.CustomData.PartitionStyle)) {
+            ## The partition style has been overridden so use this
+            if ($labMedia.CustomData.PartitionStyle -eq 'MBR') {
+                $labMediaArchitecture = 'x86';
+            }
+            elseif ($labMedia.CustomData.PartitionStyle -eq 'GPT') {
+                $labMediaArchitecture = 'x64';
+            }
+        }
+        
+        if ($labMediaArchitecture -eq 'x86') {
             $PSBoundParameters.Add('Generation', 1);
         }
-        elseif ($labMedia.Architecture -eq 'x64') {
+        elseif ($labMediaArchitecture -eq 'x64') {
             $PSBoundParameters.Add('Generation', 2);
         }
         [ref] $null = $PSBoundParameters.Remove('Media');
@@ -45,15 +74,32 @@ function TestLabVirtualMachine {
         Tests the current configuration a virtual machine using the xVMHyperV DSC resource.
 #>
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
-        [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
-        [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
-        [Parameter()] [System.Boolean] $SecureBoot
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Media,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $StartupMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MinimumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MaximumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.Int32] $ProcessorCount,
+        
+        [Parameter()] [AllowNull()]
+        [System.String[]] $MACAddress,
+        
+        [Parameter()]
+        [System.Boolean] $SecureBoot
     )
     process {
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
@@ -73,15 +119,32 @@ function SetLabVirtualMachine {
         Invokes/sets a virtual machine configuration using the xVMHyperV DSC resource.
 #>
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
-        [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
-        [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
-        [Parameter()] [System.Boolean] $SecureBoot
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Media,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $StartupMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MinimumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MaximumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.Int32] $ProcessorCount,
+        
+        [Parameter()] [AllowNull()]
+        [System.String[]] $MACAddress,
+        
+        [Parameter()]
+        [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the xVMHyperV resource parameters
@@ -99,15 +162,32 @@ function RemoveLabVirtualMachine {
         Invokes/sets a virtual machine configuration using the xVMHyperV DSC resource.
 #>
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Name,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String[]] $SwitchName,
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [System.String] $Media,
-        [Parameter(Mandatory)] [System.UInt64] $StartupMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MinimumMemory,
-        [Parameter(Mandatory)] [System.UInt64] $MaximumMemory,
-        [Parameter(Mandatory)] [System.Int32] $ProcessorCount,
-        [Parameter()] [AllowNull()] [System.String] $MACAddress,
-        [Parameter()] [System.Boolean] $SecureBoot
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Name,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String[]] $SwitchName,
+        
+        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [System.String] $Media,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $StartupMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MinimumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.UInt64] $MaximumMemory,
+        
+        [Parameter(Mandatory)]
+        [System.Int32] $ProcessorCount,
+        
+        [Parameter()] [AllowNull()]
+        [System.String[]] $MACAddress,
+        
+        [Parameter()]
+        [System.Boolean] $SecureBoot
     )
     process {
         ## Resolve the xVMHyperV resource parameters

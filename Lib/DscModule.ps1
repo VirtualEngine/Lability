@@ -5,10 +5,17 @@ function ExpandDscModule {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [System.String] $ModuleName,
-        [Parameter(Mandatory)] [System.String] $Path,
-        [Parameter(Mandatory)] [System.String] $DestinationPath,
-        [Parameter()] [System.Management.Automation.SwitchParameter] $Force
+        [Parameter(Mandatory)]
+        [System.String] $ModuleName,
+        
+        [Parameter(Mandatory)]
+        [System.String] $Path,
+        
+        [Parameter(Mandatory)]
+        [System.String] $DestinationPath,
+        
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter] $Force
     )
     process {
         $targetPath = Join-Path -Path $DestinationPath -ChildPath $ModuleName;
@@ -39,9 +46,14 @@ function TestDscModule {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory)] [System.String] $ModuleName,
-        [Parameter()] [System.String] $ResourceName,
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $MinimumVersion
+        [Parameter(Mandatory)]
+        [System.String] $ModuleName,
+        
+        [Parameter()]
+        [System.String] $ResourceName,
+        
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $MinimumVersion
     )
     process {
         if (GetDscModule @PSBoundParameters -ErrorAction SilentlyContinue) { return $true; }
@@ -57,9 +69,14 @@ function GetDscModule {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        [Parameter(Mandatory)] [System.String] $ModuleName,
-        [Parameter()] [System.String] $ResourceName,
-        [Parameter()] [ValidateNotNullOrEmpty()] [System.String] $MinimumVersion
+        [Parameter(Mandatory)]
+        [System.String] $ModuleName,
+        
+        [Parameter()]
+        [System.String] $ResourceName,
+        
+        [Parameter()] [ValidateNotNullOrEmpty()]
+        [System.String] $MinimumVersion
     )
     process {
         $module = Get-Module -Name $ModuleName -ListAvailable;

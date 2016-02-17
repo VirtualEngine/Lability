@@ -1,7 +1,7 @@
 #requires -RunAsAdministrator
 #requires -Version 4
 
-$moduleName = 'VirtualEngineLab';
+$moduleName = 'Lability';
 if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
     $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 }
@@ -421,14 +421,14 @@ Describe 'LabVM' {
 
                 Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
-
-            It 'Does not call "SetLabSwitch" when "IsQuickVM" = "$true"' {
+            
+            It 'Calls "SetLabSwitch" once per network switch' {
                 $testVMName = 'TestVM';
                 $testMedia = 'Test-Media';
                 $testVMSwitch = 'Test Switch';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
+                        @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch, $testVMSwitch; }
                     )
                 }
                 Mock ResolveLabMedia -MockWith { return $Id; }
@@ -440,12 +440,11 @@ Describe 'LabVM' {
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
-                Mock SetLabSwitch -MockWith { }
+                Mock SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -MockWith { }
 
-                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -IsQuickVM;
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabSwitch -Scope It -Exactly 0;
-            
+                Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Exactly 2 -Scope It;
             }
 
             It 'Calls "ResetLabVMDisk" to create VM disk' {

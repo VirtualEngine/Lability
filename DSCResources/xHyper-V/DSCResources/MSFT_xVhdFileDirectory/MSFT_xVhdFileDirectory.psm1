@@ -39,7 +39,7 @@ function Get-TargetResource
     {
         $item = GetItemToCopy -item $item
         $mountedDrive =  $mountVHD | Get-Disk | Get-Partition | Get-Volume
-        $letterDrive  = "$($mountedDrive.DriveLetter):\" 
+        $letterDrive  = (-join $mountedDrive.DriveLetter) + ":\"
        
         # show the drive letters.
         Get-PSDrive | Write-Verbose       
@@ -103,7 +103,7 @@ function Set-TargetResource
             foreach ($item in $FileDirectory)
             {
                 $itemToCopy = GetItemToCopy -item $item
-                $letterDrive = "$($mountedDrive.DriveLetter):\"
+                $letterDrive  = (-join $mountedDrive.DriveLetter) + ":\"
                 $finalDestinationPath = $letterDrive
                 $finalDestinationPath = Join-Path  $letterDrive  $itemToCopy.DestinationPath
                
@@ -186,7 +186,7 @@ function Test-TargetResource
         Get-PSDrive | Write-Verbose
 
         $mountedDrive = $mountedVHD | Get-Disk | Get-Partition | Get-Volume
-        $letterDrive  = "$($mountedDrive.DriveLetter):\"
+        $letterDrive  = (-join $mountedDrive.DriveLetter) + ":\"
         Write-Verbose $letterDrive
 
         # return test result equal to true unless one of the tests in the loop below fails.

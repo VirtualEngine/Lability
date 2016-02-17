@@ -1,7 +1,7 @@
 #requires -RunAsAdministrator
 #requires -Version 4
 
-$moduleName = 'VirtualEngineLab';
+$moduleName = 'Lability';
 if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
     $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 }
@@ -147,31 +147,51 @@ Describe 'Resource' {
         } #end context Validates "TestResourceDownload" method
 
         Context 'Validates "SetResourceDownload" method' {
+            
+            $testResourcePath = 'TestDrive:\TestResource.txt';
+            $testResourceContent = 'MyResourceFileContent';
 
             It 'Calls "InvokeWebClientDownload" with specified Uri' {
-                $testResourcePath = 'TestDrive:\TestResource.txt';
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
                 Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
                 Mock InvokeWebClientDownload -ParameterFilter { $Uri -eq $testResourceUri } -MockWith { }
 
-                InvokeWebClientDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
+                SetResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
 
                 Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $Uri -eq $testResourceUri } -Scope It;
             }
-
+            
             It 'Calls "InvokeWebClientDownload" with specified destination Path' {
-                $testResourcePath = 'TestDrive:\TestResource.txt';
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
                 Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
                 Mock InvokeWebClientDownload -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
 
-                InvokeWebClientDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
+                SetResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
 
                 Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $DestinationPath -eq $testResourcePath }  -Scope It;
             }
+            
+            It 'Calls "InvokeWebClientDownload" with default 64KB buffer size' {
+                $testResourceUri = 'http://testresourcedomain.com/testresource.txt'
+                Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
+                Mock InvokeWebClientDownload -ParameterFilter { $BufferSize -eq 64KB } -MockWith { }
+
+                SetResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
+
+                Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $BufferSize -eq 64KB } -Scope It;
+            }
+            
+            It 'Calls "InvokeWebClientDownload" with 1MB buffer size for file resource' {
+                $testResourceUri = ("file:///$testResourcePath").Replace('\','/');
+                Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
+                Mock InvokeWebClientDownload -ParameterFilter { $BufferSize -eq 1MB } -MockWith { }
+
+                SetResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
+
+                Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $BufferSize -eq 1MB } -Scope It;
+            }
 
             It 'Creates checksum file after download' {
-                $testResourcePath = 'TestDrive:\TestResource.txt';
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
                 $testResourceContent = 'MyResourceFileContent';
                 $testResourceChecksum = '0BA549AA1F04E4E788AF574AF0FF7668';

@@ -7,7 +7,8 @@ function ConvertToConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $ConfigurationData
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $ConfigurationData
     )
     process {
         if ($ConfigurationData -is [System.String]) {
@@ -39,8 +40,11 @@ function ResolveConfigurationDataPath {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
-        [Parameter()] [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [System.String] $Configuration,
+        
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
     process {
         switch ($Configuration) {
@@ -69,13 +73,21 @@ function GetConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [System.String] $Configuration
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
         if (Test-Path -Path $expandedPath) {
             $configurationData = Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+            
+            # Expand any environment variables in configuration data
+            $configurationData.PSObject.Members | Where-Object {
+                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String')
+            } | ForEach-Object {
+                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) 
+            }
             
             switch ($Configuration) {
                 'VM' {
@@ -101,14 +113,17 @@ function SetConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration,
-        [Parameter(Mandatory, ValueFromPipeline)] [System.Object] $InputObject
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [System.String] $Configuration,
+        
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.Object] $InputObject
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
         [ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject) -Force -Confirm:$false;
+        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
     }
 } #end function SetConfigurationData
 
@@ -119,7 +134,8 @@ function RemoveConfigurationData {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')] [System.String] $Configuration
+        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [System.String] $Configuration
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;

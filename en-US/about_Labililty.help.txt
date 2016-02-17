@@ -1,24 +1,25 @@
 TOPIC
-        about_Conflab
+        about_Lability
         
 SHORT DESCRIPTION
-        Conflab is a local Hyper-V lab provisioning framework.
+
+        Lability is a local Hyper-V lab provisioning framework.
 
 LONG DESCRIPTION
         
-        The Conflab module enables simple provisioning of local Windows Hyper-V development and testing lab
+        The Lability module enables simple provisioning of local Windows Hyper-V development and testing lab
         environments. The intended purpose is to enable the sharing and collaboration of lab environment
         configurations in a standardised format.
         
         It uses a declarative document for machine configuration. However, rather than defining configurations in an
-        external custom domain-specific language (DSL) document, Conflab extends existing PowerShell Desired State
+        external custom domain-specific language (DSL) document, Lability extends existing PowerShell Desired State
         Configuration (DSC) configuration .psd1 documents with metadata that can be interpreted by the module.
         
         By using this approach, it allows the use of a single confiugration document to describe all properties for
         provisioning Windows-centric development and/or test environments.
         
-        The Conflab module will parse the DSC configuration document and provision Hyper-V virtual machines according
-        to the metadata contained within. When invoked, Conflab will parse a DSC configuration document and
+        The Lability module will parse the DSC configuration document and provision Hyper-V virtual machines according
+        to the metadata contained within. When invoked, Lability will parse a DSC configuration document and
         automagically provision the following resources:
         
             *  Virtual machine disk images
@@ -55,7 +56,7 @@ DSC CONFIGURATIONS
                 }
             }
         
-        This exact same document can be extended with specific properties which the Conflab module can interpret.
+        This exact same document can be extended with specific properties which the Lability module can interpret.
         NOTE: this is still a valid PowerShell DSC configuration (.psd1) document that can be supplied to an
         existing PowerShell DSC configuration.
         
@@ -63,20 +64,20 @@ DSC CONFIGURATIONS
                 AllNodes = @(
                     @{
                         NodeName               = '*';
-                        Conflab_SwitchName     = 'CORPNET';
-                        Conflab_Media          = '2012R2_x64_Standard_EN_Eval';
+                        Lability_SwitchName     = 'CORPNET';
+                        Lability_Media          = '2012R2_x64_Standard_EN_Eval';
                     },
                     @{
                         NodeName               = 'DC1';
-                        Conflab_ProcessorCount = 2;
+                        Lability_ProcessorCount = 2;
                     },
                     @{
                         NodeName               = 'APP1';
-                        Conflab_ProcessorCount = 1;
+                        Lability_ProcessorCount = 1;
                     }   
                 )
                 NonNodeData = @{
-                    Conflab = @{
+                    Lability = @{
                         Network = @(
                             @{
                                 Name = 'CORPNET';
@@ -103,18 +104,18 @@ DSC CONFIGURATIONS
             
         For a full list of supported metadata, see about_ConfigurationData.
 
-SETTING UP CONFLAB  
+SETTING UP LABILITY
         
         Initiating a lab deployment requires a number of prerequisites:
         
-            *  The Conflab module must be running with administrative credentials
+            *  The Lability module must be running with administrative credentials
                 - Creating virtual machines requires administrative permissions.
             
             *  Installation of the Hyper-V role and PowerShell management cmdlets
-                - Conflab will take care of the local host configuration.
+                - Lability will take care of the local host configuration.
                 - Manually installing the Hyper-V role will remove the need to reboot the host.
                    
-        To start the configuration of the Conflab host, run the following command at an elevated PowerShell prompt:
+        To start the configuration of the Lability host, run the following command at an elevated PowerShell prompt:
         
             PS C:\> Start-LabHostConfiguration
             
@@ -129,7 +130,7 @@ SETTING UP CONFLAB
 
 CONFIGURING HOST DEFAULT VALUES
 
-        Conflab uses numerous defaults for all virtual machines that are created. These default values include the
+        Lability uses numerous defaults for all virtual machines that are created. These default values include the
         location of the parent virtual disk files, the location of differencing virtual disk files and the default
         location searched for PowerShell DSC .mof files etc.
         
@@ -137,14 +138,14 @@ CONFIGURING HOST DEFAULT VALUES
         
             PS C:\> Get-LabHostDefault
             
-        By default, Conflab stores all media and virtual machine disk files on the host's system drive. If any of the
+        By default, Lability stores all media and virtual machine disk files on the host's system drive. If any of the
         default values need changing to reflect your particualar environment or configuration, it is recommended that
         you set these default before creating any virtual machines.
         
         To change any of the default values, use the `Set-LabHostDefault` cmdlet. For example, to set the location of
-        all .ISO files to `D:\Conflab\ISOs` run the following command:
+        all .ISO files to `D:\Lability\ISOs` run the following command:
 
-            PS C:\> Set-LabHostDefault -IsoPath D:\Conflab\ISOs
+            PS C:\> Set-LabHostDefault -IsoPath D:\Lability\ISOs
         
         For more information about setting the host's default values run the following command:
         
@@ -152,7 +153,7 @@ CONFIGURING HOST DEFAULT VALUES
         
 CONFIGURING VIRTUAL MACHINE DEFAULT VALUES
 
-        Conflab applies numerous default values to a virtual machine if they are not explicitly specified, for example
+        Lability applies numerous default values to a virtual machine if they are not explicitly specified, for example
         the number of processors to assign or the virtual switch to attach the VM to.
         
         The default values can always be overridden within the PowerShell DSC configuration document (.psd1). There is
@@ -175,20 +176,20 @@ CONFIGURING VIRTUAL MACHINE DEFAULT VALUES
         
             PS C:\> Get-Help -Name Set-LabVMDefault
     
-RUNNING CONFLAB
+RUNNING LABILITY
 
-        Once the Conflab host is configured, the host default values and the virtual machine defaults set, you can
+        Once the Lability host is configured, the host default values and the virtual machine defaults set, you can
         initiate a lab deployment. In order to successfully deploy a lab, you will need to following prerequisites in
         place:
         
             *  A PowerShell DSC configuration (.ps1) file and an associated PowerShell DSC configuration (.psd1)
                document.
-                - The configuration document (.psd1) should be annotated with the Conflab metadata to ensure that the
+                - The configuration document (.psd1) should be annotated with the Lability metadata to ensure that the
                   correct settings will be applied to each virtual machine.
-                - If an option is not defined on a node within the configuration (.psd1) document, the Conflab VM
+                - If an option is not defined on a node within the configuration (.psd1) document, the Lability VM
                   default value will be used.
         
-            *  Have already run the required PowerShell DSC configuration on the Conflab host.
+            *  Have already run the required PowerShell DSC configuration on the Lability host.
                 - The configuration (.ps1) file must have already been run successfully and generated the required
                   .mof files.
                 - This will ensure that all the .mof files are available locally.
@@ -206,21 +207,21 @@ RUNNING CONFLAB
         
         NOTE: If any .mof files cannot be located, an error will be shown and the configuration aborted.
 
-        Once all prerequisite checks have passed, Conflab will perform the following actions for each node within the
+        Once all prerequisite checks have passed, Lability will perform the following actions for each node within the
         configuration (.psd1) document:
 
             *  Create a virtual machine
                 - Any values specified will be used, e.g. Media (Operating System).
-                - If a value is not specified, the Conflab VM defult value will be used.
+                - If a value is not specified, the Lability VM defult value will be used.
         
             *  Create the VM's differencing VHD(X) file:
-                - If the master VHD(X) file has not been created, Conflab will dynamically create it.
-                - If the required media (.ISO) file is not available, Conflab will attempt to download it.
+                - If the master VHD(X) file has not been created, Lability will dynamically create it.
+                - If the required media (.ISO) file is not available, Lability will attempt to download it.
         
             *  Inject required resources into the VM's VHD(X) file:
                 - Copy all local PowerShell DSC resources.
                 - Copy the VM's .mof and .meta.mof file(s).
-                - Copy the Conflab certificate and bootstrap files.
+                - Copy the Lability certificate and bootstrap files.
                 - Copy a unattend.xml file that will configure the virtual machine as required and invoke the DSC
                   configuration after the Sysprep process has completed.
                     - The local Administrator password will be set to the value supplied
@@ -230,23 +231,23 @@ RUNNING CONFLAB
         
             PS C:\> Get-Help -Name Start-LabConfiguration
             PS C:\> Get-Help -Name Media
-            PS C:\> Get-Help -Name Resources
+            PS C:\> Get-Help -Name CustomResources
   
 CONTRIBUTE
 
-        Conflab is open source on GitHub:
+        Lability is open source on GitHub:
         
-        https://github.com/VirtualEngine/Conflab
+        https://github.com/VirtualEngine/Lability
         
-        As you run Conflab and find what you believe to be are bugs, please submit
-        them to:
+        As you run Lability and find what you believe to be are bugs, please submit them to:
         
-        https://github.com/VirtualEngine/Conflab/issues
+        https://github.com/VirtualEngine/Lability/issues
         
         Better yet, fix the bug and submit a pull request.
         
 SEE ALSO
         Start-LabConfiguration
-        about_Bootstrap
         about_ConfigurationData
+        about_Bootstrap
         about_Media
+        about_CustomResources

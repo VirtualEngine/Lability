@@ -1,7 +1,7 @@
 #requires -RunAsAdministrator
 #requires -Version 4
 
-$moduleName = 'VirtualEngineLab';
+$moduleName = 'Lability';
 if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
     $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
 }
@@ -39,6 +39,26 @@ Describe 'VirtualMachine' {
 
             It 'Returns generation 2 VM for x64 media architecture' {
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+                
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
+
+                $vmProperties.Generation | Should Be 2;
+            }
+            
+            It 'Returns generation 1 VM when custom "MBR" partition style is defined' {
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
+                    return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'MBR'; } } }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+                
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
+
+                $vmProperties.Generation | Should Be 1;
+            }
+            
+            It 'Returns generation 2 VM when custom "GPT" partition style is defined' {
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
+                    return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ PartitionStyle = 'GPT'; } } }
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
                 
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;

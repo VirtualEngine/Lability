@@ -3,7 +3,7 @@
 ## Set the global defaults
 $labDefaults = @{
     ModuleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
-    ModuleName = 'VirtualEngineLab';
+    ModuleName = 'Lability';
     ConfigurationData = 'Config';
     HostConfigFilename = 'HostDefaults.json';
     VmConfigFilename = 'VmDefaults.json';
@@ -24,7 +24,6 @@ Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tes
         Write-Verbose -Message ('Importing library\source file ''{0}''.' -f $_.FullName);
         . $_.FullName;
     }
-
 
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
