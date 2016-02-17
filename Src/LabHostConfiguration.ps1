@@ -67,6 +67,7 @@ function GetLabHostSetupConfiguration {
             Prefix = 'PendingReboot';
             Parameters = @{
                 Name = 'TestingForHypervReboot';
+                SkipCcmClientSDK = $true;
             }
         };
         
@@ -86,7 +87,6 @@ function Get-LabHostConfiguration {
     [OutputType([System.Management.Automation.PSObject])]
     param ( )
     process {
-        #$hostDefaults = GetConfigurationData -Configuration Host;
         $labHostSetupConfiguation = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
             $importDscResourceParams = @{
