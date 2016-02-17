@@ -74,7 +74,7 @@ function GetDscResource {
         # Code to factor in the parameters which can be passed to the Get-<Prefix>TargetResource function.
         $CommandInfo = Get-Command -Name $getTargetResourceCommand;
         $RemoveParameters = $Parameters.Keys | where -filter {$($CommandInfo.Parameters.Keys) -notcontains $PSItem};
-        $RemoveParameters | ForEach-Object -Process {[ref] $null =]$Parameters.Remove($PSitem)};                           
+        $RemoveParameters | ForEach-Object -Process { [ref] $null = $Parameters.Remove($PSItem) };                           
         return (& $getTargetResourceCommand @Parameters);
     } #end process
 } #end function GetDscResource
