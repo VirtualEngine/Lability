@@ -368,11 +368,13 @@ function ExpandLabResource {
             }
             $resourceItem = Get-Item -Path $resourceItemPath;
 
+            $isCustomDestinationPath = $false;
             if ($resource.DestinationPath -and (-not [System.String]::IsNullOrEmpty($resource.DestinationPath))) {
                 ## Use the explicit $Resource.DestinationPath\ResourceId path
                 $destinationDrive = Split-Path -Path $DestinationPath -Qualifier;
                 $destinationRootPath = Join-Path -Path $destinationDrive -ChildPath $resource.DestinationPath;
                 $destinationResourcePath = Join-Path -Path $destinationRootPath -ChildPath $resourceId;
+                $isCustomDestinationPath = $true;
             }
             else {
                 ## Otherwise default to (Resources)\ResourceId
@@ -381,14 +383,28 @@ function ExpandLabResource {
             }
 
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
-                [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
                 switch ($resourceItem.Extension) {
                     '.iso' {
-                        ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
+                        if ($isCustomDestinationPath) {
+                            ## Use the custom DestinationPath
+                            ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationRootPath;
+                        }
+                        else {
+                            [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
+                            ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
+                        }
                     }
                     '.zip' {
-                        WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
-                        [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false;
+                        if ($isCustomDestinationPath) {
+                            ## Use the custom DestinationPath
+                            WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
+                            [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationRootPath -Verbose:$false;
+                        }
+                        else {
+                            [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
+                            WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
+                            [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false;
+                        }
                     }
                     Default {
                         throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension);
