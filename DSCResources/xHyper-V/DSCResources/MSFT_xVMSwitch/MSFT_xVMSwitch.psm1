@@ -20,7 +20,7 @@ function Get-TargetResource
 
     $switch = Get-VMSwitch -Name $Name -SwitchType $Type -ErrorAction SilentlyContinue
 
-    @{
+    $returnValue = @{
         Name              = $switch.Name
         Type              = $switch.SwitchType
         NetAdapterName    = $( if($switch.NetAdapterInterfaceDescription){
@@ -30,6 +30,13 @@ function Get-TargetResource
         Id                = $switch.Id
         NetAdapterInterfaceDescription = $switch.NetAdapterInterfaceDescription
     }
+
+    if($switch.BandwidthReservationMode -ne $null)
+    {
+        $returnValue['BandwidthReservationMode'] = $switch.BandwidthReservationMode
+    }
+
+    return $returnValue
 }
 
 
@@ -50,13 +57,21 @@ function Set-TargetResource
 
         [Boolean]$AllowManagementOS,
 
+        [ValidateSet("Default","Weight","Absolute","None","NA")]
+        [String]$BandwidthReservationMode = "NA",
+
         [ValidateSet("Present","Absent")]
         [String]$Ensure = "Present"
     )
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if(!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
+        Throw "Please ensure that the Hyper-V role is installed with its PowerShell module"
+    }
+    # Check to see if the BandwidthReservationMode chosen is supported in the OS
+    elseif(($BandwidthReservationMode -ne "NA") -and ([version](Get-WmiObject -Class 'Win32_OperatingSystem').Version -lt [version]'6.2.0'))
+    {
+        Throw "The BandwidthReservationMode cannot be set on a Hyper-V version lower than 2012"
     }
 
     if($Ensure -eq 'Present')
@@ -66,21 +81,37 @@ function Set-TargetResource
         # If switch is present and it is external type, that means it doesn't have right properties (TEST code ensures that)
         if($switch -and ($switch.SwitchType -eq 'External'))
         {
-            Write-Verbose -Message "Checking switch $Name NetAdapterInterface ..."
+            $removeReaddSwitch = $false
+
+            Write-Verbose -Message "Checking switch $Name NetAdapterInterface and BandwidthReservationMode ..."
             if((Get-NetAdapter -Name $NetAdapterName).InterfaceDescription -ne $switch.NetAdapterInterfaceDescription)
             {
-                Write-Verbose -Message "Removing switch $Name and creating with right netadapter ..."
+                Write-Verbose -Message "The switch $Name NetAdapterInterface is incorrect ..."
+                $removeReaddSwitch = $true
+            }
+            elseif(($BandwidthReservationMode -ne "NA") -and ($switch.BandwidthReservationMode -ne $BandwidthReservationMode))
+            {
+                Write-Verbose -Message "The switch $Name BandwidthReservationMode is incorrect ..."
+                $removeReaddSwitch = $true
+            }
+
+            if($removeReaddSwitch)
+            {
+                Write-Verbose -Message "Removing switch $Name and creating with the correct properties ..."
                 $switch | Remove-VMSwitch -Force
                 $parameters = @{}
                 $parameters["Name"] = $Name
                 $parameters["NetAdapterName"] = $NetAdapterName
+                $parameters["MinimumBandwidthMode"] = $BandwidthReservationMode
                 if($PSBoundParameters.ContainsKey("AllowManagementOS")){$parameters["AllowManagementOS"]=$AllowManagementOS}
                 $null = New-VMSwitch @parameters
                 Write-Verbose -Message "Switch $Name has right netadapter $NetAdapterName"
+                # Since the switch is recreated, the $switch variable is stale and needs to be reassigned
+                $switch = (Get-VMSwitch -Name $Name -SwitchType $Type -ErrorAction SilentlyContinue)
             }
             else
             {
-                Write-Verbose -Message "Switch $Name has right netadapter $NetAdapterName"
+                Write-Verbose -Message "Switch $Name has right netadapter $NetAdapterName and BandwidthReservationMode $BandwidthReservationMode"
             }
 
             Write-Verbose -Message "Checking switch $Name AllowManagementOS ..."
@@ -103,6 +134,12 @@ function Set-TargetResource
             Write-Verbose -Message "Creating Switch ..."
             $parameters = @{}
             $parameters["Name"] = $Name
+
+            if($BandwidthReservationMode -ne "NA")
+            {
+                $parameters["MinimumBandwidthMode"] = $BandwidthReservationMode
+            }
+
             if($NetAdapterName)
             {
                 $parameters["NetAdapterName"] = $NetAdapterName
@@ -146,6 +183,9 @@ function Test-TargetResource
 
         [Boolean]$AllowManagementOS,
 
+        [ValidateSet("Default","Weight","Absolute","None","NA")]
+        [String]$BandwidthReservationMode = "NA",
+
         [ValidateSet("Present","Absent")]
         [String]$Ensure = "Present"
     )
@@ -158,16 +198,21 @@ function Test-TargetResource
         Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
     }
 
-    If($Type -eq 'External' -and !($NetAdapterName))
+    if($Type -eq 'External' -and !($NetAdapterName))
     {
         Throw "For external switch type, NetAdapterName must be specified"
     }
     
     
-    If($Type -ne 'External' -and $NetAdapterName)
+    if($Type -ne 'External' -and $NetAdapterName)
     {
         Throw "For Internal or Private switch type, NetAdapterName should not be specified"
-    }  
+    }
+
+    if(($BandwidthReservationMode -ne "NA") -and ([version](Get-WmiObject -Class 'Win32_OperatingSystem').Version -lt [version]'6.2.0'))
+    {
+        Throw "The BandwidthReservationMode cannot be set on a Hyper-V version lower than 2012"
+    }
     #endregion
 
     try
@@ -183,36 +228,47 @@ function Test-TargetResource
             # If switch should be present, check the switch type
             if($Ensure -eq 'Present')
             {
-                # If switch is the external type, check additional propeties
-                if($switch.SwitchType -eq 'External')
+                # If the BandwidthReservsationMode is correct, or if $switch.BandwidthReservationMode is $null which means it isn't supported on the OS
+                Write-Verbose -Message "Checking if Switch $Name has correct BandwidthReservationMode ..."
+                if($switch.BandwidthReservationMode -eq $BandwidthReservationMode -or $switch.BandwidthReservationMode -eq $null)
                 {
-                    Write-Verbose -Message "Checking if Switch $Name has correct NetAdapterInterface ..."
-                    if((Get-NetAdapter -Name $NetAdapterName -ErrorAction SilentlyContinue).InterfaceDescription -ne $switch.NetAdapterInterfaceDescription)
+                    Write-Verbose -Message "Switch $Name has correct BandwidthReservationMode or it does not apply to this OS"
+
+                    # If switch is the external type, check additional propeties
+                    if($switch.SwitchType -eq 'External')
                     {
-                        return $false
-                    }
-                    else
-                    {
-                        Write-Verbose -Message "Switch $Name has correct NetAdapterInterface"
-                    }
-                    
-                    if($PSBoundParameters.ContainsKey("AllowManagementOS"))
-                    {
-                        Write-Verbose -Message "Checking if Switch $Name has AllowManagementOS set correctly..."
-                        if(($switch.AllowManagementOS -ne $AllowManagementOS))
+                        Write-Verbose -Message "Checking if Switch $Name has correct NetAdapterInterface ..."
+                        if((Get-NetAdapter -Name $NetAdapterName -ErrorAction SilentlyContinue).InterfaceDescription -ne $switch.NetAdapterInterfaceDescription)
                         {
                             return $false
                         }
                         else
                         {
-                            Write-Verbose -Message "Switch $Name has AllowManagementOS set correctly"
+                            Write-Verbose -Message "Switch $Name has correct NetAdapterInterface"
                         }
+                    
+                        if($PSBoundParameters.ContainsKey("AllowManagementOS"))
+                        {
+                            Write-Verbose -Message "Checking if Switch $Name has AllowManagementOS set correctly..."
+                            if(($switch.AllowManagementOS -ne $AllowManagementOS))
+                            {
+                                return $false
+                            }
+                            else
+                            {
+                                Write-Verbose -Message "Switch $Name has AllowManagementOS set correctly"
+                            }
+                        }
+                        return $true
                     }
-                    return $true
+                    else
+                    {
+                        return $true
+                    }
                 }
                 else
                 {
-                    return $true
+                    return $false
                 }
             }
             # If switch should be absent, but is there, return $false
@@ -232,4 +288,3 @@ function Test-TargetResource
 }
 
 Export-ModuleMember -Function *-TargetResource
-

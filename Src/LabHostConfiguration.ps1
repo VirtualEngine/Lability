@@ -67,6 +67,7 @@ function GetLabHostSetupConfiguration {
             Prefix = 'PendingReboot';
             Parameters = @{
                 Name = 'TestingForHypervReboot';
+                SkipCcmClientSDK = $true;
             }
         };
         
@@ -83,14 +84,24 @@ function Get-LabHostConfiguration {
         Start-LabHostConfiguration
 #>
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
+    [OutputType([System.Management.Automation.PSObject])]
     param ( )
     process {
-        #$hostDefaults = GetConfigurationData -Configuration Host;
         $labHostSetupConfiguation = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
-            ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix;
-            GetDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
+            $importDscResourceParams = @{
+                ModuleName = $configuration.ModuleName;
+                ResourceName = $configuration.ResourceName;
+                Prefix = $configuration.Prefix;
+                UseDefault  = $configuration.UseDefault;
+            }
+            ImportDscResource @importDscResourceParams;
+            $resource = GetDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
+            $resourceObject = New-Object -TypeName System.Management.Automation.PSObject -Property @{ Resource = $configuration.ResourceName; };
+            foreach ($propertyName in ($resource.Keys | Sort-Object)) {
+                Add-Member -InputObject $resourceObject -MemberType NoteProperty -Name $propertyName -Value $resource.$propertyName;
+            }
+            Write-Output -InputObject $resourceObject;
         }
     } #end process
 } #end function Get-LabHostConfiguration

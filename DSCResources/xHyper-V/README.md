@@ -1,4 +1,4 @@
-﻿[![Build status](https://ci.appveyor.com/api/projects/status/tsdbv0hgrxvmbo5y/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xhyper-v/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/tsdbv0hgrxvmbo5y/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xhyper-v/branch/master)
 
 # xHyper-V
 
@@ -62,6 +62,7 @@ The following xVMHyper-V properties **cannot** be changed after VM creation:
 * **Type**: The desired type of switch: { External | Internal | Private }
 * **NetAdapterName**: Network adapter name for external switch type
 * **AllowManagementOS**: Specify if the VM host has access to the physical NIC
+* **BandwidthReservationMode**: Specify the QoS mode used (options other than NA are only supported on Hyper-V 2012+): { Default | Weight | Absolute | None | NA }.
 * **Ensure**: Ensures that the VM Switch is Present or Absent 
 
 ### xVhdFile
@@ -74,9 +75,17 @@ Please see the Examples section for more details.
 
 ### Unreleased
 
-* MSFT_xVMHyperV: Added SecureBoot parameter to enable control of the secure boot BIOS setting on generation 2 VMs.
+* MSFT_xVMHyperV: Fixed bug causing Test-TargetResource to fail when VM had snapshots.
+* MSFT_xVMHyperV: Adds localization support.
+
+### 3.3.0.0
+
+* xHyperV: Added SecureBoot parameter to enable control of the secure boot BIOS setting on generation 2 VMs.
+-  Fixed drive letter when mounting VHD when calling resource xVhdFile. Fixes #20.
 * MSFT_xVMHyperV: Changed the SwitchName parameter to string[] to support assigning multiple NICs to virtual machines.
 * MSFT_xVMHyperV: Changed the MACAddress parameter to string[] to support assigning multiple MAC addresses to virtual machines.
+* MSFT_xVMHyperV: Added enabling of Guest Service Interface.
+* MSFT_xVMSwitch: Added the BandwidthReservationMode parameter which specifies how minimum bandwidth is to be configured on a virtual switch
 
 ### 3.2.0.0
 
@@ -107,7 +116,7 @@ Please see the Examples section for more details.
 
 ### 2.1
 
-* Added logic to automatically adjust VM’s startup memory when only minimum and maximum memory is specified in configuration
+* Added logic to automatically adjust VM's startup memory when only minimum and maximum memory is specified in configuration
 * Fixed the issue that a manually stopped VM cannot be brought back to running state with DSC
 
 ### 2.0

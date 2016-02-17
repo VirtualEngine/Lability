@@ -1,3 +1,34 @@
+# Fallback message strings in en-US
+DATA localizedData
+{
+    # culture = "en-US"
+    ConvertFrom-StringData @'
+        RoleMissingError = Please ensure that '{0}' role is installed with its PowerShell module.
+        MoreThanOneVMExistsError = More than one VM with the name '{0}' exists.
+        PathDoesNotExistError = Path '{0}' does not exist.
+        VhdPathDoesNotExistError = Vhd '{0}' does not exist.
+        MinMemGreaterThanStartupMemError = MinimumMemory '{0}' should not be greater than StartupMemory '{1}'
+        MinMemGreaterThanMaxMemError = MinimumMemory '{0}' should not be greater than MaximumMemory '{1}'
+        StartUpMemGreaterThanMaxMemError = StartupMemory '{0}' should not be greater than MaximumMemory '{1}'.
+        VhdUnsupportedOnGen2VMError = Generation 2 virtual machines do not support the .VHD virtual disk extension.
+        CannotUpdatePropertiesOnlineError = Can not change properties for VM '{0}' in '{1}' state unless 'RestartIfNeeded' is set to true.
+        
+        AdjustingGreaterThanMemoryWarning = VM {0} '{1}' is greater than {2} '{3}'. Adjusting {0} to be '{3}'.
+        AdjustingLessThanMemoryWarning = VM {0} '{1}' is less than {2} '{3}'. Adjusting {0} to be '{3}'.
+        VMStateWillBeOffWarning = VM '{0}' state will be 'OFF' and not 'Paused'.
+        
+        CheckingVMExists = Checking if VM '{0}' exists ...
+        VMExists = VM '{0}' exists.
+        VMDoesNotExist = VM '{0}' does not exist.
+        CreatingVM = Creating VM '{0}' ...
+        VMCreated = VM '{0}' created.
+        VMPropertyShouldBe = VM property '{0}' should be '{1}', actual '{2}'.
+        VMPropertySet = VM property '{0}' is '{1}'.
+        VMPropertiesUpdated = VM '{0}' properties have been updated.
+        WaitingForVMIPAddress = Waiting for IP Address for VM '{0}' ...
+'@
+}
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -16,7 +47,7 @@ function Get-TargetResource
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if(!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
+        Throw ($localizedData.RoleMissingError -f 'Hyper-V')
     }
 
     $vmobj = Get-VM -Name $Name -ErrorAction SilentlyContinue
@@ -24,17 +55,23 @@ function Get-TargetResource
     # Check if 1 or 0 VM with name = $name exist
     if($vmobj.count -gt 1)
     {
-       Throw "More than one VM with the name $Name exist." 
+       Throw ($localizedData.MoreThanOneVMExistsError -f $Name) 
     }
+    
+    ## Retrieve the Vhd hierarchy to ensure we enumerate snapshots/differencing disks
+    ## Fixes #28
+    $vhdChain = @(Get-VhdHierarchy -VhdPath ($vmObj.HardDrives[0].Path))
     
     $vmSecureBootState = $false;
     if ($vmobj.Generation -eq 2) {
+       # Retrieve secure boot status (can only be enabled on Generation 2 VMs) and convert to a boolean.
        $vmSecureBootState = ($vmobj | Get-VMFirmware).SecureBoot -eq 'On'
     } 
     
     @{
         Name             = $Name
-        VhdPath          = $vmObj.HardDrives[0].Path
+        ## Return the Vhd specified if it exists in the Vhd chain
+        VhdPath          = if ($vhdChain -contains $VhdPath) { $VhdPath };
         SwitchName       = $vmObj.NetworkAdapters.SwitchName
         State            = $vmobj.State
         Path             = $vmobj.Path
@@ -54,6 +91,7 @@ function Get-TargetResource
         CreationTime     = $vmobj.CreationTime
         HasDynamicMemory = $vmobj.DynamicMemoryEnabled
         NetworkAdapters  = $vmobj.NetworkAdapters.IPAddresses
+        EnableGuestService = ($vmobj | Get-VMIntegrationService -Name 'Guest Service Interface').Enabled
     }
 }
 
@@ -116,29 +154,32 @@ function Set-TargetResource
         $Notes,
 
         # Enable secure boot for Generation 2 VMs
-        [Boolean]$SecureBoot = $true
+        [Boolean]$SecureBoot = $true,
+
+        # Enable Guest Services
+        [Boolean]$EnableGuestService = $false
     )
 
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if(!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
+        Throw ($localizedData.RoleMissingError -f 'Hyper-V')
     }
 
-    Write-Verbose -Message "Checking if VM $Name exists ..."
+    Write-Verbose -Message ($localizedData.CheckingVMExists -f $Name)
     $vmObj = Get-VM -Name $Name -ErrorAction SilentlyContinue
 
     # VM already exists
     if($vmObj)
     {
-        Write-Verbose -Message "VM $Name exists"
+        Write-Verbose -Message ($localizedData.VMExists -f $Name)
 
         # If VM shouldn't be there, stop it and remove it
         if($Ensure -eq "Absent")
         {
-            Write-Verbose -Message "VM $Name should be $Ensure"
+            Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'Ensure', $Ensure, 'Present')
             Get-VM $Name | Stop-VM -Force -Passthru -WarningAction SilentlyContinue | Remove-VM -Force
-            Write-Verbose -Message "VM $Name is $Ensure"
+            Write-Verbose -Message ($localizedData.VMPropertySet -f 'Ensure', $Ensure)
         }
 
         # If VM is present, check its state, startup memory, minimum memory, maximum memory,processor countand mac address
@@ -148,26 +189,26 @@ function Set-TargetResource
             # If state has been specified and the VM is not in right state, set it to right state
             if($State -and ($vmObj.State -ne $State))
             {
-                Write-Verbose -Message "VM $Name is not $State. Expected $State, actual $($vmObj.State)"
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'State', $State, $vmObj.State)
                 Set-VMState -Name $Name -State $State -WaitForIP $WaitForIP
-                Write-Verbose -Message "VM $Name is now $State"
+                Write-Verbose -Message ($localizedData.VMPropertySet -f 'State', $State)
             }
 
             $changeProperty = @{}
             # If the VM does not have the right startup memory
             if($StartupMemory -and ($vmObj.MemoryStartup -ne $StartupMemory))
             {
-                Write-Verbose -Message "VM $Name does not have correct startup memory. Expected $StartupMemory, actual $($vmObj.MemoryStartup)"
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MemoryStartup', $StartupMemory, $vmObj.MemoryStartup)
                 $changeProperty["MemoryStartup"]=$StartupMemory
             }
             elseif($MinimumMemory -and ($vmObj.MemoryStartup -lt $MinimumMemory))
             {
-                Write-Verbose -Message "VM $Name has a startup memory $($vmObj.MemoryStartup) lesser than minimum memory $MinimumMemory. Setting startup memory to be equal to $MinimumMemory" 
+                Write-Verbose -Message ($localizedData.AdjustingLessThanMemoryWarning -f 'StartupMemory', $vmObj.MemoryStartup, 'MinimumMemory', $MinimumMemory)
                 $changeProperty["MemoryStartup"]=$MinimumMemory
             }
             elseif($MaximumMemory -and ($vmObj.MemoryStartup -gt $MaximumMemory))
             {
-                Write-Verbose -Message "VM $Name has a startup memory $($vmObj.MemoryStartup) greater than maximum memory $MaximumMemory. Setting startup memory to be equal to $MaximumMemory"
+                Write-Verbose -Message ($localizedData.AdjustingGreaterThanMemoryWarning -f 'StartupMemory', $vmObj.MemoryStartup, 'MaximumMemory', $MaximumMemory)
                 $changeProperty["MemoryStartup"]=$MaximumMemory
             }
             
@@ -178,12 +219,12 @@ function Set-TargetResource
 
                 if($MinimumMemory -and ($vmObj.Memoryminimum -ne $MinimumMemory))
                 {
-                    Write-Verbose -Message "VM $Name does not have correct minimum memory. Expected $MinimumMemory, actual $($vmObj.MemoryMinimum)"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MinimumMemory', $MinimumMemory, $vmObj.MemoryMinimum)
                     $changeProperty["MemoryMinimum"]=$MinimumMemory
                 }
                 if($MaximumMemory -and ($vmObj.Memorymaximum -ne $MaximumMemory))
                 {
-                    Write-Verbose -Message "VM $Name does not have correct maximum memory. Expected $MaximumMemory, actual $($vmObj.MemoryMaximum)"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MaximumMemory', $MaximumMemory, $vmObj.MemoryMaximum)
                     $changeProperty["MemoryMaximum"]=$MaximumMemory
                 }
             }
@@ -191,40 +232,41 @@ function Set-TargetResource
             # If the VM does not have the right processor count, stop the VM, set the right memory, start the VM
             if($ProcessorCount -and ($vmObj.ProcessorCount -ne $ProcessorCount))
             {
-                Write-Verbose -Message "VM $Name does not have correct processor count. Expected $ProcessorCount, actual $($vmObj.ProcessorCount)"
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'ProcessorCount', $ProcessorCount, $vmObj.ProcessorCount)
                 $changeProperty["ProcessorCount"]=$ProcessorCount
             }
 
             # Stop the VM, set the right properties, start the VM only if there are properties to change
             if ($changeProperty.Count -gt 0) {
                 Change-VMProperty -Name $Name -VMCommand "Set-VM" -ChangeProperty $changeProperty -WaitForIP $WaitForIP -RestartIfNeeded $RestartIfNeeded
-                Write-Verbose -Message "VM $Name updated"
+                Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
             }
 
             ## Set VM network switches. This can be done while the VM is running.
             for ($i = 0; $i -lt $SwitchName.Count; $i++)
             {
+                ### Change-VMProperty -Name $Name -VMCommand "Set-VMNetworkAdapter" -ChangeProperty @{StaticMacAddress=$MACAddress} -WaitForIP $WaitForIP -RestartIfNeeded $RestartIfNeeded
                 $switch = $SwitchName[$i]
                 $nic = $vmObj.NetworkAdapters[$i]
                 if ($nic) {
-                    ## We cannot change the MAC address whilst the VM is running..
+                    ## We cannot change the MAC address whilst the VM is running.. This is changed later
                     if ($nic.SwitchName -ne $switch) {
-                        Write-Verbose -Message "VM $Name NIC $i is not connected to the correct switch. Expected $switch, actual $($nic.SwitchName)"
+                        Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'NIC', $switch, $nic.SwitchName)
                         $nic | Connect-VMNetworkAdapter -SwitchName $switch
-                        Write-Verbose -Message "VM $Name NIC $i connected to the $switch switch."
+                        Write-Verbose -Message ($localizedData.VMPropertySet -f 'NIC', $switch)
                     }
                 }
                 else {
-                    Write-Verbose -Message "VM $Name NIC $i is not present. Expected $switch, actual <missing>"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'NIC', $switch, '<missing>')
                     if ($MACAddress -and (-not [System.String]::IsNullOrEmpty($MACAddress[$i])))
                     {
                         Add-VMNetworkAdapter -VMName $Name -SwitchName $switch -StaticMacAddress $MACAddress[$i]
-                        Write-Verbose -Message "VM $Name NIC $i added to the correct switch $switch with MAC address $($MACAddress[$i])."
+                        Write-Verbose -Message ($localizedData.VMPropertySet -f 'NIC', $switch)
                     }
                     else
                     {
                         Add-VMNetworkAdapter -VMName $Name -SwitchName $switch
-                        Write-Verbose -Message "VM $Name NIC $i added to the correct switch $switch."
+                        Write-Verbose -Message ($localizedData.VMPropertySet -f 'NIC', $switch)
                     }
                     ## Refresh the NICs after we've added one
                     $vmObj = Get-VM -Name $Name -ErrorAction SilentlyContinue
@@ -238,19 +280,21 @@ function Set-TargetResource
                 $nic = $vmObj.NetworkAdapters[$i]
                 if ($nic.MacAddress -ne $address)
                 {
-                    Write-Verbose -Message "VM $Name NIC $i does not have correct MACAddress. Expected $address, actual $($nic.MacAddress)"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MACAddress', $address, $nic.MacAddress)
                     Change-VMMACAddress -Name $Name -NICIndex $i -MACAddress $address -WaitForIP $WaitForIP -RestartIfNeeded $RestartIfNeeded
                 }
             }
 
             if ($Generation -eq 2)
             {
-                $vmSecureBoot = Get-VMSecureBoot -Name $Name
+                ## Retrive the current secure boot state
+                $vmSecureBoot = Test-VMSecureBoot -Name $Name
                 if ($SecureBoot -ne $vmSecureBoot)
                 {
-                    Write-Verbose -Message "VM $Name secure boot is incorrect. Expected $SecureBoot, actual $vmSecureBoot"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'SecureBoot', $SecureBoot, $vmSecureBoot)
+                    ## Cannot change the secure boot state whilst the VM is powered on.
                     Change-VMSecureBoot -Name $Name -SecureBoot $SecureBoot -RestartIfNeeded $RestartIfNeeded
-                    Write-Verbose -Message "VM $Name secure boot is now correct."
+                    Write-Verbose -Message ($localizedData.VMPropertySet -f 'SecureBoot', $SecureBoot)
                 }
             }
 
@@ -262,16 +306,31 @@ function Set-TargetResource
                     Set-Vm -Name $Name -Notes $Notes
                 }
             }
+
+            #If the VM doesn't have Guest Service Interface correctly configured, update it.
+            $GuestServiceStatus = $vmObj | Get-VMIntegrationService -Name 'Guest Service Interface'
+            if ($GuestServiceStatus.Enabled -eq $false -and $EnableGuestService)
+            {
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'EnableGuestService', $EnableGuestService, $GuestServiceStatus.Enabled)
+                $vmObj | Enable-VMIntegrationService -Name 'Guest Service Interface'
+                Write-Verbose -Message ($localizedData.VMPropertySet -f 'EnableGuestService', $EnableGuestService)
+            }
+            elseif ($GuestServiceStatus.Enabled -and -not $EnableGuestService)
+            {
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'EnableGuestService', $EnableGuestService, $GuestServiceStatus.Enabled)
+                $vmObj | Disable-VMIntegrationService -Name 'Guest Service Interface'
+                Write-Verbose -Message ($localizedData.VMPropertySet -f 'EnableGuestService', $EnableGuestService)
+            }
         }
     }
 
     # VM is not present, create one
     else
     {
-        Write-Verbose -Message "VM $Name does not exists"
+        Write-Verbose -Message ($localizedData.VMDoesNotExist -f $Name)
         if($Ensure -eq "Present")
         {
-            Write-Verbose -Message "Creating VM $Name ..."
+            Write-Verbose -Message ($localizedData.CreatingVM -f $Name)
             
             $parameters = @{}
             $parameters["Name"] = $Name
@@ -328,23 +387,30 @@ function Set-TargetResource
                 {
                     $addVMNetworkAdapterParams['StaticMacAddress'] = $MACAddress[$i];
                 }
-                Write-Verbose -Message "Adding additional NIC to '$($SwitchName[$i])' switch"
                 Add-VMNetworkAdapter @addVMNetworkAdapterParams
+                Write-Verbose -Message ($localizedData.VMPropertySet -f 'NIC', $SwitchName[$i])
             }
 
             if ($Generation -eq 2) {
+                # Secure boot is only applicable to Generation 2 VMs and it defaults to on.
+                # Therefore, we only need to explicitly set it to off if specified.
                 if ($SecureBoot -eq $false)
                 {
                     Set-VMFirmware -VMName $Name -EnableSecureBoot Off
                 }
             }
+
+            if ($EnableGuestService)
+            {
+                Enable-VMIntegrationService -VMName $Name -Name 'Guest Service Interface'
+            }
             
-            Write-Verbose -Message "VM $Name created"
+            Write-Verbose -Message ($localizedData.VMCreated -f $Name)
 
             if ($State)
             {
                 Set-VMState -Name $Name -State $State -WaitForIP $WaitForIP
-                Write-Verbose -Message "VM $Name is $State"
+                Write-Verbose -Message ($localizedData.VMPropertySet -f 'State', $State)
             }
             
         }
@@ -411,7 +477,9 @@ function Test-TargetResource
         $Notes,
 
         # Enable secure boot for Generation 2 VMs
-        [Boolean]$SecureBoot = $true
+        [Boolean]$SecureBoot = $true,
+
+        [Boolean]$EnableGuestService = $false
     )
 
     #region input validation
@@ -419,68 +487,73 @@ function Test-TargetResource
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if(!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
+        Throw ($localizedData.RoleMissingError -f 'Hyper-V')
     }
 
     # Check if 1 or 0 VM with name = $name exist
     if((Get-VM -Name $Name -ErrorAction SilentlyContinue).count -gt 1)
     {
-       Throw "More than one VM with the name $Name exist." 
+       Throw ($localizedData.MoreThanOneVMExistsError -f $Name)
     }
     
     # Check if $VhdPath exist
     if(!(Test-Path $VhdPath))
     {
-        #Throw "$VhdPath does not exists"
+        Throw ($localizedData.VhdPathDoesNotExistError -f $VhdPath)
     }
 
     # Check if Minimum memory is less than StartUpmemory
     if($StartupMemory -and $MinimumMemory -and  ($MinimumMemory -gt $StartupMemory))
     {
-        Throw "MinimumMemory($MinimumMemory) should not be greater than StartupMemory($StartupMemory)"
+        Throw ($localizedData.MinMemGreaterThanStartupMemError -f $MinimumMemory, $StartupMemory)
     }
     
     # Check if Minimum memory is greater than Maximummemory
     if($MaximumMemory -and $MinimumMemory -and ($MinimumMemory -gt $MaximumMemory))
     {
-        Throw "MinimumMemory($MinimumMemory) should not be greater than MaximumMemory($MaximumMemory)"
+        Throw ($localizedData.MinMemGreaterThanMaxMemError -f $MinimumMemory, $MaximumMemory)
     }
     
     # Check if Startup memory is greater than Maximummemory
     if($MaximumMemory -and $StartupMemory -and ($StartupMemory -gt $MaximumMemory))
     {
-        Throw "StartupMemory($StartupMemory) should not be greater than MaximumMemory($MaximumMemory)"
+        Throw ($localizedData.StartUpMemGreaterThanMaxMemError -f $StartupMemory, $MaximumMemory)
     }        
 
     <#  VM Generation has no direct relation to the virtual hard disk format and cannot be changed
         after the virtual machine has been created. Generation 2 VMs do not support .VHD files.  #>
     if(($Generation -eq 2) -and ($VhdPath.Split('.')[-1] -eq 'vhd'))
     {
-        Throw "Generation 2 virtual machines do not support the .VHD virtual disk extension."
+        Throw ($localizedData.VhdUnsupportedOnGen2VMError)
     }
-
 
     # Check if $Path exist
     if($Path -and !(Test-Path -Path $Path))
     {
-        Throw "$Path does not exists"
+        Throw ($localizedData.PathDoesNotExistError -f $Path)
     }
 
     #endregion
-
-    $result = $false
 
     try
     {
         $vmObj = Get-VM -Name $Name -ErrorAction Stop
         if($Ensure -eq "Present")
         {
+            $vhdChain = @(Get-VhdHierarchy -VhdPath ($vmObj.HardDrives[0].Path))
+            if($vhdChain -notcontains $VhdPath)
+            {
+                Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'VhdPath', $VhdPath, ($vhdChain -join ','))
+                return $false
+            }
+            if($state -and ($vmObj.State -ne $State)){return $false}
+            if($StartupMemory -and ($vmObj.MemoryStartup -ne $StartupMemory)){return $false}
             if($vmObj.HardDrives.Path -notcontains $VhdPath){return $false}
             for ($i = 0; $i -lt $SwitchName.Count; $i++)
             {
                 if ($vmObj.NetworkAdapters[$i].SwitchName -ne $SwitchName[$i])
                 {
-                    Write-Verbose -Message "Network Adapter '$i' is not connected to the correct switch. Expected '$($SwitchName[$i])', actual '$($vmObj.NetworkAdapters[$i].SwitchName)'"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'SwitchName', $SwitchName[$i], $vmObj.NetworkAdapters[$i].SwitchName)
                     return $false
                 }
             }
@@ -490,19 +563,27 @@ function Test-TargetResource
             { 
                 if ($vmObj.NetworkAdapters[$i].MACAddress -ne $MACAddress[$i])
                 {
-                    Write-Verbose -Message "Network Adapter '$i' MAC address is incorrect. Expected '$($MACAddress[$i])', actual '$($vmObj.NetworkAdapters[$i].MACAddress)'"
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MACAddress', $MACAddress[$i], $vmObj.NetworkAdapters[$i].MACAddress)
                     return $false
                 }
             }
+
+            ## $Generation always exists, only check if parameter has been explicitly specified
             if($PSBoundParameters.ContainsKey('Generation') -and ($Generation -ne $vmObj.Generation)){return $false}
+
             if($ProcessorCount -and ($vmObj.ProcessorCount -ne $ProcessorCount)){return $false}
             if($MaximumMemory -and ($vmObj.MemoryMaximum -ne $MaximumMemory)){return $false}
             if($MinimumMemory -and ($vmObj.MemoryMinimum -ne $MinimumMemory)){return $false}
 
             if($vmObj.Generation -eq 2) {
-                if ($SecureBoot -ne (Get-VMSecureBoot -Name $Name)){return $false}
+                $vmSecureBoot = Test-VMSecureBoot -Name $Name
+                if ($SecureBoot -ne $vmSecureBoot)
+                {
+                    Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'SecureBoot', $SecureBoot, $vmSecureBoot)
+                    return $false
+                }
             }
-
+            if (($vmObj | Get-VMIntegrationService -Name 'Guest Service Interface').Enabled -ne $EnableGuestService) {return $false}
             return $true
         }
         else
@@ -517,6 +598,23 @@ function Test-TargetResource
 }
 
 #region Helper function
+
+<# Returns VM VHDs, including snapshots and differencing disks #>
+function Get-VhdHierarchy
+{
+    param(
+        [Parameter(Mandatory)]
+        [System.String] $VhdPath
+    )
+
+    $vmVhdPath = Get-VHD -Path $VhdPath
+    Write-Output -InputObject $vmVhdPath.Path
+    while($vmVhdPath.ParentPath -ne [String]::Empty)
+    {
+        $vmVhdPath.ParentPath
+        $vmVhdPath = (Get-VHD -Path $vmVhdPath.ParentPath)
+    }
+}
 
 function Set-VMState
 {
@@ -577,23 +675,21 @@ function Change-VMMACAddress
         {
             Set-VMState -Name $Name -State Running -WaitForIP $WaitForIP
         }
-
-        Write-Verbose -Message "VM $Name NIC $NICIndex now has $MACAddress MACAddress."
-
+        
         # Cannot make a paused VM to go back to Paused state after turning Off
         if($originalState -eq "Paused")
         {
-            Write-Warning -Message "VM $Name state will be OFF and not Paused"
+            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
         }
     }
     elseif($originalState -eq "Off")
     {
         $vmObj.NetworkAdapters[$NICIndex] | Set-VMNetworkAdapter -StaticMacAddress $MACAddress
-        Write-Verbose -Message "VM $Name NIC $NICIndex now has $MACAddress MACAddress."
+        Write-Verbose -Message ($localizedData.VMPropertySet -f 'MACAddress', $MACAddress)
     }
     else
     {
-        Write-Error -Message "Can not change properties for VM $Name in $($vmObj.State) state unless RestartIfNeeded is set to true"
+        Write-Error -Message ($localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmObj.State)
     }
 }
 
@@ -628,25 +724,27 @@ function Change-VMProperty
             Set-VMState -Name $Name -State Running -WaitForIP $WaitForIP
         }
 
-        Write-Verbose -Message "VM $Name now has correct properties."
+        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
 
         # Cannot make a paused VM to go back to Paused state after turning Off
         if($originalState -eq "Paused")
         {
-            Write-Warning -Message "VM $Name state will be OFF and not Paused"
+            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
         }
     }
     elseif($originalState -eq "Off")
     {
         &$VMCommand -Name $Name @ChangeProperty 
-        Write-Verbose -Message "VM $Name now has correct properties."
+        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
     }
     else
     {
-        Write-Error -Message "Can not change properties for VM $Name in $($vmObj.State) state unless RestartIfNeeded is set to true"
+        Write-Error -Message ($localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmObj.State)
     }
 }
 
+# The 'Change-VMProperty' method cannot be used as it's hard-coded to use the -Name
+# parameter and unfortunately, the Set-VMFirmware cmdlet uses the -VMName parameter instead!
 function Change-VMSecureBoot
 {
     param
@@ -678,12 +776,12 @@ function Change-VMSecureBoot
             Set-VMState -Name $Name -State Running -WaitForIP $true
         }
 
-        Write-Verbose -Message "VM $Name now has correct properties."
+        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
 
         # Cannot make a paused VM to go back to Paused state after turning Off
         if($originalState -eq "Paused")
         {
-            Write-Warning -Message "VM $Name state will be OFF and not Paused"
+            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
         }
     }
     elseif($originalState -eq "Off")
@@ -698,11 +796,11 @@ function Change-VMSecureBoot
     }
     else
     {
-        Write-Error -Message "Can not change properties for VM $Name in $($vmObj.State) state unless RestartIfNeeded is set to true"
+        Write-Error -Message ($localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmObjState)
     }
 }
 
-function Get-VMSecureBoot
+function Test-VMSecureBoot
 {
     param (
         [Parameter(Mandatory)]
@@ -722,7 +820,7 @@ function Get-VMIPAddress
 
     while((Get-VMNetworkAdapter -VMName $Name).ipaddresses.count -lt 2)
     {
-        Write-Verbose -Message "Waiting for IP Address for VM $Name ..." -Verbose
+        Write-Verbose -Message ($localizedData.WaitingForVMIPAddress -f $Name)
         Start-Sleep -Seconds 3;
     }
 }

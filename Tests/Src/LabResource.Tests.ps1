@@ -544,6 +544,34 @@ Describe 'LabResource' {
 
                 Assert-MockCalled ExpandZipArchive -Scope It;
             }
+            
+            It 'Calls "ExpandZipArchive" to explicit target path when "Expand" is specified on a "ZIP" resource' {
+                $testVM = 'VM1';
+                $testResourceId = 'Resource1.zip';
+                $testDestinationPath = 'MyResources';
+                $testResourcePath = "TestDrive:\$testDestinationPath";
+                $configurationData= @{
+                    AllNodes = @(
+                        @{ NodeName = $testVM; Resource = $testResourceId; }
+                    )
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Uri = 'http://test-resource.com/resource1.zip'; Expand = $true; DestinationPath = "\$testDestinationPath" }
+                            )
+                        }
+                    }
+                }
+                $testHostResourcePath = 'TestDrive:\Resources';
+                $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
+                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
+                Mock ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
+                
+                ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
+
+                Assert-MockCalled ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
+            }
 
             It 'Calls "ExpandIsoResource" if "Expand" property is specified on an "ISO" resource' {
                 $testVM = 'VM1';
@@ -570,6 +598,35 @@ Describe 'LabResource' {
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled ExpandIsoResource -Scope It;
+            }
+            
+            It 'Calls "ExpandIsoResource" to explicit target path when "Expand" is specified on a "ISO" resource' {
+                $testVM = 'VM1';
+                $testResourceId = 'Resource1.iso';
+                $testDestinationPath = 'MyResources';
+                $testResourcePath = "TestDrive:\$testDestinationPath";
+                $configurationData= @{
+                    AllNodes = @(
+                        @{ NodeName = $testVM; Resource = $testResourceId; }
+                    )
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Resource = @(
+                                @{ Id = $testResourceId; Uri = 'http://test-resource.com/resource1.iso'; Expand = $true; DestinationPath = "\$testDestinationPath" }
+                            )
+                        }
+                    }
+                }
+                $testHostResourcePath = 'TestDrive:\Resources';
+                $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
+                
+                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
+                Mock ExpandIsoResource -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
+                
+                ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
+
+                Assert-MockCalled ExpandIsoResource -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
             }
 
             It 'Throws if "Expand" property is specified on an "EXE" resource' {

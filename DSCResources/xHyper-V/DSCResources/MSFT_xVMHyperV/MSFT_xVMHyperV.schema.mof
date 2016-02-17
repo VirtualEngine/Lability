@@ -17,6 +17,7 @@ class MSFT_xVMHyperV : OMI_BaseResource
     [Write, Description("Should the VM be created or deleted"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Notes about the VM.")] String Notes;
     [Write, Description("Enable secure boot for Generation 2 VMs.")] Boolean SecureBoot;
+    [Write, Description("Enable Guest Service Interface for the VM.")] Boolean EnableGuestService;
     [Read, Description("VM unique ID")] String ID;
     [Read, Description("Status of the VM")] String Status;
     [Read, Description("CPU Usage of the VM")] Uint32 CPUUsage;
@@ -26,5 +27,3 @@ class MSFT_xVMHyperV : OMI_BaseResource
     [Read, Description("Does VM has dynamic memory enabled")] Boolean HasDynamicMemory;
     [Read, Description("Network adapters' IP addresses of the VM")] String NetworkAdapters[];
 };
-
-

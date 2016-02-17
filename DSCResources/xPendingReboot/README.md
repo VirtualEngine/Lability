@@ -16,8 +16,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 The **xPendingReboot** module containes the **xPendingReboot** resource, which examines three specific registry locations where a Windows Server might indicate that a reboot is pending, and allows DSC to predictably handle the condition.
 DSC determines how to handle pending reboot conditions using the Local Configuration Management (LCM) setting RebootNodeIfNeeded. 
-When DSC resources require reboot, within a Set statement in a DSC Resource the global variable DSCMachineStatus is set to value “1”.
-When this condition occurs and RebootNodeIfNeeded is set to “True”, DSC reboots the machine after a successful Set.
+When DSC resources require reboot, within a Set statement in a DSC Resource the global variable DSCMachineStatus is set to value '1'.
+When this condition occurs and RebootNodeIfNeeded is set to 'True', DSC reboots the machine after a successful Set.
 Otherwise, the reboot is postponed.
 
 ## Resources
@@ -29,12 +29,26 @@ Details for all read-only properties are returned by Get-DscConfiguration
 * **Name**: Required parameter that must be unique per instance of the resource within a configuration.
 * **ComponentBasedServicing**: (Read-only) One of the locations that are examined by the resource.
 Details are returned by Get-DSCConfiguration.
+* **SkipComponentBasedServicing**: (Write) Skip reboots triggered by the Component-Based Servicing component.
 * **WindowsUpdate**: (Read-only) One of the locations that are examined by the resource.
+* **SkipWindowsUpdate**: (Write) Skip reboots triggered by Windows Update.
 * **PendingFileRename**: (Read-only) One of the locations that are examined by the resource.
+* **SkipPendingFileRename**: (Write) Skip pending file rename reboots.
 * **PendingComputerRename**: (Read-only) One of the locations that are examined by the resource.
+* **SkipCcmClientSDK**: (Write) Skip reboots triggered by the ConfigMgr client
 * **CcmClientSDK**: (Read-only) One of the locations that are examined by the resource.
 
 ## Versions
+
+### Unreleased
+
+* Suppresses warning output in Test-TargetResource when 'SkipCcmClientSDK' is specified.
+* Fixes 'Null-valued expression' bug when 'Auto Update' or 'Component Based Servicing' registry keys are empty.
+
+### 0.2.0.0
+
+* Added parameters which allow you to skip reboots triggered by the individual components. For example, you can choose not to
+	reboot if Windows Update requested a reboot.
 
 ### 0.1.0.2
 
@@ -60,11 +74,11 @@ This configuration leverages xPendingReboot and sets the LCM setting to allow au
 ```powershell
 Configuration CheckForPendingReboot 
 {        
-    Node ‘NodeName’ 
+    Node 'NodeName' 
     {  
         xPendingReboot Reboot1
         { 
-            Name = ‘BeforeSoftwareInstall’
+            Name = 'BeforeSoftwareInstall'
         }
         LocalConfigurationManager
         {
@@ -82,11 +96,11 @@ It then leverages xPendingReboot and configures the LCM to allow automatic reboo
 ```powershell
 Configuration CheckForPendingReboot 
 {        
-    Node ‘NodeName’ 
+    Node 'NodeName' 
     {  
         xPendingReboot Reboot1
         { 
-            Name = ‘BeforeSoftwareInstall’
+            Name = 'BeforeSoftwareInstall'
         }
         LocalConfigurationManager
         {
