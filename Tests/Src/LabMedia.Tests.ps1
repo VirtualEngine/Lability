@@ -369,6 +369,14 @@ Describe 'LabMedia' {
                 [PSObject] $testMediaParams,
                 [PSObject] @{ Id = 'TestId2'; Uri = 'http://contoso.com/testmedia'; Architecture = 'x64'; }
             )
+            
+            It 'Throws when custom media type is "ISO" and OperatingSystem is "Linux"' {
+                { Register-LabMedia @testMediaParams -OperatingSystem Linux -MediaType ISO } | Should Throw;
+            }
+
+            It 'Throws when custom media type is "WIM" and OperatingSystem is "Linux"' {
+                { Register-LabMedia @testMediaParams -OperatingSystem Linux -MediaType WIM } | Should Throw;
+            }
         
             It 'Throws when custom media type is "ISO" and "ImageName" is not specified' {
                 { Register-LabMedia @testMediaParams -MediaType ISO } | Should Throw;

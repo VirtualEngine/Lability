@@ -40,8 +40,8 @@ SUPPORTED MEDIA PROPERTIES
         Uri
         Checksum
         MediaType { VHD | ISO | WIM }
-        OSType { Windows | Linux } (defaults to Windows if not specified)
-        ImageName [string] (supports [int32] for image numbers)
+        ImageName [string] ( supports [int32] for image numbers )
+        OperatingSystem { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
             PartitionStyle { MBR | GPT }
             WimPath

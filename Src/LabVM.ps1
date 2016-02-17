@@ -281,33 +281,38 @@ function NewLabVM {
             SecureBoot = $node.SecureBoot;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
-        
-        ## Only mount the VHDX to copy resources if needed!
-        if ($node.Resource) {
-            WriteVerbose ($localized.AddingVMResource -f 'VM');
-            SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
-        }
 
         $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
-        WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
-        $setLabVMDiskFileParams = @{
-            Name = $Name;
-            NodeData = $node;
-            Path = $Path;
-            Credential = $Credential;
-            CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+        if ($media.OperatingSystem -eq 'Linux') {
+            ## Skip injecting files for Linux VMs..
         }
-        
-        $resolveCustomBootStrapParams = @{
-            CustomBootstrapOrder = $node.CustomBootstrapOrder;
-            ConfigurationCustomBootstrap = $node.CustomBootstrap;
-            MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
-        }
-        $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
-        if ($customBootstrap) {
-            $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
-        }
-        SetLabVMDiskFile @setLabVMDiskFileParams;
+        else {
+            ## Only mount the VHDX to copy resources if needed!
+            if ($node.Resource) {
+                WriteVerbose ($localized.AddingVMResource -f 'VM');
+                SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
+            }
+            
+            WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
+            $setLabVMDiskFileParams = @{
+                Name = $Name;
+                NodeData = $node;
+                Path = $Path;
+                Credential = $Credential;
+                CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+            }
+            
+            $resolveCustomBootStrapParams = @{
+                CustomBootstrapOrder = $node.CustomBootstrapOrder;
+                ConfigurationCustomBootstrap = $node.CustomBootstrap;
+                MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
+            }
+            $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
+            if ($customBootstrap) {
+                $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
+            }
+            SetLabVMDiskFile @setLabVMDiskFileParams;           
+        } #end Windows VMs
 
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;

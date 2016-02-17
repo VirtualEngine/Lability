@@ -168,4 +168,5 @@ ConvertFrom-StringData -StringData @'
     StartMemLessThanMinMemError     = Startup memory '{0}' cannot be less than minimum memory '{1}'.
     StartMemGreaterThanMaxMemError  = Startup memory '{0}' cannot be greater than maximum memory '{1}'.
     SwitchDoesNotExistError         = Virtual switch '{0}' cannot be found.
+    InvalidOSMediaTypeError         = Media type '{0}' is not supported by Operating system type '{1}'.
 '@

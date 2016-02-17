@@ -96,6 +96,14 @@ function GetConfigurationData {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'CustomBootstrapOrder' -Value 'MediaFirst';
                     }
                 }
+                { $_ -in 'Media','CustomMedia' } {
+                    foreach ($mediaItem in $configurationData) {
+                        ## Add missing OperatingSystem property
+                        if ($mediaItem.PSObject.Properties.Name -notcontains 'OperatingSystem') {
+                            [ref] $null = Add-Member -InputObject $mediaItem -MemberType NoteProperty -Name 'OperatingSystem' -Value 'Windows';
+                        }
+                    } #end foreach media item
+                }
                 Default {
                     ## Do nothing
                 }

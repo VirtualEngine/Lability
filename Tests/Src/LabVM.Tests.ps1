@@ -496,6 +496,27 @@ Describe 'LabVM' {
 
                 Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
+            
+            It 'Does not inject resources when "OperatingSystem" is "Linux"' {
+                $testVMName = 'TestVM';
+                $configurationData = @{ AllNodes = @( @{ NodeName = $testVMName; } ) }
+                Mock ResolveLabMedia -MockWith { return @{ Id = $Id; OperatingSystem = 'Linux'; } }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock New-LabImage -MockWith { }
+                Mock SetLabSwitch -MockWith { }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabVMDiskFile -Scope It -Exactly 0;
+                Assert-MockCalled SetLabVMDiskFile -Scope It -Exactly 0;
+            }
 
             It 'Injects VM DSC custom resources' {
                 $testVMName = 'TestVM';

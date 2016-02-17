@@ -5,6 +5,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2016 Technical Preview 4 SERVERSTANDARD",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum": "935BA77651210BD1BD71A114C92B0CAA",
 	"CustomData": {
@@ -19,6 +20,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2016 Technical Preview 4 SERVERSTANDARDCORE",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum": "935BA77651210BD1BD71A114C92B0CAA",
 	"CustomData": {
@@ -33,6 +35,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2016 Technical Preview 4 SERVERDATACENTER",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum": "935BA77651210BD1BD71A114C92B0CAA",
 	"CustomData": {
@@ -47,6 +50,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2016 Technical Preview 4 SERVERDATACENTERCORE",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum": "935BA77651210BD1BD71A114C92B0CAA",
 	"CustomData": {
@@ -61,6 +65,7 @@
 	"Architecture":  "x64",
 	"ImageName":  "1",
 	"MediaType":  "ISO",
+    "OperatingSystem": "Windows",
 	"Uri":  "http://download.microsoft.com/download/C/2/5/C257AD1A-45C1-48F9-B31C-5D37D6463123/10586.0.151029-1700.TH2_RELEASE_SERVER_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum":  "935BA77651210BD1BD71A114C92B0CAA",
 	"CustomData":  {
@@ -84,6 +89,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2012 R2 SERVERSTANDARD",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
 	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
 	"CustomData": {
@@ -127,6 +133,7 @@
     "Architecture": "x64",
     "ImageName": "Windows Server 2012 R2 SERVERSTANDARDCORE",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
 	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
 	"CustomData": {
@@ -170,6 +177,7 @@
     "Architecture": "x64",
 	"ImageName": "Windows Server 2012 R2 SERVERDATACENTER",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
 	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
 	"CustomData": {
@@ -213,6 +221,7 @@
     "Architecture": "x64",
 	"ImageName": "Windows Server 2012 R2 SERVERDATACENTERCORE",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
 	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
 	"CustomData": {
@@ -256,6 +265,7 @@
 	"Architecture": "x64",
 	"ImageName": "Windows 8.1 Enterprise Evaluation",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X64FREE_EN-US_DV9.ISO",
 	"Checksum": "EE63618E3BE220D86B993C1ABBCF32EB",
     "CustomData": {
@@ -306,6 +316,7 @@
 	"Architecture": "x86",
 	"ImageName": "Windows 8.1 Enterprise Evaluation",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X86FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X86FREE_EN-US_DV9.ISO",
 	"Checksum": "B2ACCD5F135C3EEDE256D398856AEEAD",
     "CustomData": {
@@ -352,6 +363,7 @@
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
 	"Checksum": "6CD2F47F2C32FAA7BE85F1DC81AF3220",
     "CustomData": {
@@ -373,6 +385,7 @@
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
 	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X86FRE_EN-US.ISO",
 	"Checksum": "5531E6EE40A69E22A7386864A9087CDD",
     "CustomData": {

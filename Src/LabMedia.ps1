@@ -34,6 +34,9 @@ function NewLabMedia {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ProductKey = '',
         
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Windows','Linux')]
+        [System.String] $OperatingSystem = 'Windows',
+        
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Collections.Hashtable] $CustomData = @{},
         
@@ -60,6 +63,7 @@ function NewLabMedia {
             Architecture = $Architecture;
             ImageName = $ImageName;
             MediaType = $MediaType;
+            OperatingSystem = $OperatingSystem;
             Uri = [System.Uri] $Uri;
             Checksum = $Checksum;
             CustomData = $CustomData;
@@ -106,6 +110,7 @@ function ResolveLabMedia {
                 $media = NewLabMedia @mediaHash;
             }
         }
+        
         ## If we have custom media, return that
         if (-not $media) {
             $media = GetConfigurationData -Configuration CustomMedia;
@@ -113,6 +118,7 @@ function ResolveLabMedia {
                 $media = $media | Where-Object { $_.Id -eq $Id };
             }
         }
+        
         ## If we still don't have a media image, return the built-in object
         if (-not $media) {
             $media = Get-LabMedia -Id $Id;
@@ -120,6 +126,7 @@ function ResolveLabMedia {
         if (-not $media) {
             throw ($localized.CannotLocateMediaError -f $Id);
         }
+        
         return $media;
     } #end process
 } #end function ResolveLabMedia
@@ -380,11 +387,20 @@ function Register-LabMedia {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Collections.Hashtable[]] $Hotfixes,
         
+        ## Specifies the media type. Linux VHD(X)s do not inject resources.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Windows','Linux')]
+        [System.String] $OperatingSystem = 'Windows',
+        
         ## Specifies that an exiting media entry should be overwritten.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
     process {
+        ## Validate Linux VM media type is VHD
+        if (($OperatingSystem -eq 'Linux') -and ($MediaType -ne 'VHD')) {
+            throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
+        }
+        
         ## Validate ImageName when media type is ISO/WIM
         if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
             if (-not $PSBoundParameters.ContainsKey('ImageName')) {
@@ -412,6 +428,7 @@ function Register-LabMedia {
             Architecture = $Architecture;
             ImageName = $ImageName;
             MediaType = $MediaType;
+            OperatingSystem = $OperatingSystem;
             Uri = $Uri;
             Checksum = $Checksum;
             CustomData = $CustomData;

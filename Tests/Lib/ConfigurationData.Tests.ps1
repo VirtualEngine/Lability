@@ -91,6 +91,21 @@ Describe 'ConfigurationData' {
                 
                 $vmConfiguration.CustomBootstrapOrder | Should Be 'MediaFirst';
             }
+            
+            It 'Adds missing "OperatingSystem" property to Media/CustomMedia configuration' {
+                $testConfigurationFilename = 'TestMediaConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
+                $fakeConfiguration = '[{ "Id": "TestMedia" }]';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $mediaConfiguration = GetConfigurationData -Configuration Media;
+                $customMediaConfiguration = GetConfigurationData -Configuration CustomMedia;
+
+                $mediaConfiguration.OperatingSystem | Should Be 'Windows';
+                $customMediaConfiguration.OperatingSystem | Should Be 'Windows';
+            }
 
         } #end context Validates "GetConfigurationData" method
 
