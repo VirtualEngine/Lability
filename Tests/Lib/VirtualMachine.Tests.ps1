@@ -126,9 +126,11 @@ Describe 'VirtualMachine' {
                 MaximumMemory = 2GB;
                 ProcessorCount = 1;
             }
+            
+            Mock ResolveLabMedia -MockWith { }
+            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
 
             It 'Imports Hyper-V DSC resource' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
 
@@ -138,7 +140,6 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns true when VM matches specified configuration' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
 
@@ -146,7 +147,6 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns false when VM does not match specified configuration' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $false; }
 
@@ -154,13 +154,11 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns false when error is thrown' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { Write-Error 'Something went wrong' }
 
                 TestLabVirtualMachine @testLabVirtualMachineParams | Should Be $false;
             }
-            
 
         } #end context Validates "TestLabVirtualMachine" method
 
@@ -179,8 +177,10 @@ Describe 'VirtualMachine' {
                 ProcessorCount = 1;
             }
             
+            Mock ResolveLabMedia -MockWith { }
+            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+            
             It 'Imports Hyper-V DSC resource' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
@@ -190,7 +190,6 @@ Describe 'VirtualMachine' {
             }
 
             It 'Invokes Hyper-V DSC resource' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
 
@@ -216,8 +215,10 @@ Describe 'VirtualMachine' {
                 ProcessorCount = 1;
             }
             
+            Mock ResolveLabMedia -MockWith { }
+            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+            
             It 'Imports Hyper-V DSC resource' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
@@ -227,7 +228,6 @@ Describe 'VirtualMachine' {
             }
 
             It 'Invokes Hyper-V DSC resource' {
-                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
                 

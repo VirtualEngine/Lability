@@ -534,11 +534,11 @@ Describe 'LabVM' {
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
-                Mock SetLabVMDiskResource -ParameterFilter { $Name -eq $testVMName } -MockWith { }
+                Mock SetLabVMDiskResource -ParameterFilter { $NodeName -eq $testVMName } -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabVMDiskResource -ParameterFilter { $Name -eq $testVMName } -Scope It;
+                Assert-MockCalled SetLabVMDiskResource -ParameterFilter { $NodeName -eq $testVMName } -Scope It;
             }
 
             It 'Injects VM DSC resources and certificates' {

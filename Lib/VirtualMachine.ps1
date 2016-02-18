@@ -33,8 +33,13 @@ function GetVirtualMachineProperties {
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
-        $labMedia = Get-LabMedia -Id $Media;
+        $labMedia = ResolveLabMedia -Id $Media;
         $labImage = Get-LabImage -Id $Media;
+        if (-not $labImage) {
+            ## Should only trigger during a Reset-VM where parent image is not available?!
+            ## It will be downloaded during any NewLabVM calls..
+            $labImage = @{ Generation = 'VHDX'; }
+        }
         $labMediaArchitecture = $labMedia.Architecture;
 
         if (-not [System.String]::IsNullOrEmpty($labMedia.CustomData.PartitionStyle)) {

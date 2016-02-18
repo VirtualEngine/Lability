@@ -97,11 +97,8 @@ function Get-LabHostConfiguration {
             }
             ImportDscResource @importDscResourceParams;
             $resource = GetDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
-            $resourceObject = New-Object -TypeName System.Management.Automation.PSObject -Property @{ Resource = $configuration.ResourceName; };
-            foreach ($propertyName in ($resource.Keys | Sort-Object)) {
-                Add-Member -InputObject $resourceObject -MemberType NoteProperty -Name $propertyName -Value $resource.$propertyName;
-            }
-            Write-Output -InputObject $resourceObject;
+            $resource['Resource'] = $configuration.ResourceName;
+            Write-Output -InputObject ([PSCustomObject] $resource);
         }
     } #end process
 } #end function Get-LabHostConfiguration
