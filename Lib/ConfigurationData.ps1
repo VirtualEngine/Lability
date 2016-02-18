@@ -95,8 +95,12 @@ function GetConfigurationData {
                     if ($configurationData.PSObject.Properties.Name -notcontains 'CustomBootstrapOrder') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'CustomBootstrapOrder' -Value 'MediaFirst';
                     }
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'SecureBoot') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'SecureBoot' -Value $true;
+                    }
                 }
-                { $_ -in 'Media','CustomMedia' } {
+                'CustomMedia' {
                     foreach ($mediaItem in $configurationData) {
                         ## Add missing OperatingSystem property
                         if ($mediaItem.PSObject.Properties.Name -notcontains 'OperatingSystem') {

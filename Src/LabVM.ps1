@@ -58,15 +58,6 @@ function ResolveLabVMProperties {
             }
         }
 
-        ## Default to SecureBoot On/$true unless otherwise specified
-        ## TODO: Should this not be added to the LabVMDefaults?
-        if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) {
-            $node['SecureBoot'] = $false;
-        }
-        else {
-            $node['SecureBoot'] = $true;
-        }
-
         return $node;
     } #end process
 } #end function Resolve-LabProperty

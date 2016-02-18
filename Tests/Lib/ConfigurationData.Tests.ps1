@@ -92,6 +92,19 @@ Describe 'ConfigurationData' {
                 $vmConfiguration.CustomBootstrapOrder | Should Be 'MediaFirst';
             }
             
+            It 'Adds missing "SecureBoot" property to VM configuration' {
+                $testConfigurationFilename = 'TestVMConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $vmConfiguration = GetConfigurationData -Configuration VM;
+                
+                $vmConfiguration.SecureBoot | Should Be $true;
+            }
+            
             It 'Adds missing "OperatingSystem" property to Media/CustomMedia configuration' {
                 $testConfigurationFilename = 'TestMediaConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
@@ -100,10 +113,8 @@ Describe 'ConfigurationData' {
                 Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
                 
-                $mediaConfiguration = GetConfigurationData -Configuration Media;
                 $customMediaConfiguration = GetConfigurationData -Configuration CustomMedia;
 
-                $mediaConfiguration.OperatingSystem | Should Be 'Windows';
                 $customMediaConfiguration.OperatingSystem | Should Be 'Windows';
             }
 

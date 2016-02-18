@@ -98,8 +98,11 @@ function ResolveLabMedia {
         $ConfigurationData
     )
     process {
+        ## Avoid any $media variable scoping issues
+        $media = $null;
+        
         ## If we have configuration data specific instance, return that
-        if ($ConfigurationData) {
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
             $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id });
             if ($customMedia) {
@@ -114,15 +117,15 @@ function ResolveLabMedia {
         ## If we have custom media, return that
         if (-not $media) {
             $media = GetConfigurationData -Configuration CustomMedia;
-            if ($Id) {
-                $media = $media | Where-Object { $_.Id -eq $Id };
-            }
+            $media = $media | Where-Object { $_.Id -eq $Id };
         }
         
         ## If we still don't have a media image, return the built-in object
         if (-not $media) {
             $media = Get-LabMedia -Id $Id;
         }
+        
+        ## We don't have any defined, custom or built-in media
         if (-not $media) {
             throw ($localized.CannotLocateMediaError -f $Id);
         }
