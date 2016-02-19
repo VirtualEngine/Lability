@@ -107,15 +107,6 @@ function Set-LabHostDefault {
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
         
-        ## This property may not be present in the original machine configuration file
-        if ($hostDefaults.PSObject.Properties.Name -notcontains 'DisableLocalFileCaching') {
-            [ref] $null = Add-Member -InputObject $hostDefaults -MemberType NoteProperty -Name 'DisableLocalFileCaching' -Value $DisableLocalFileCaching;
-        }
-        ## This property may not be present in the original machine configuration file
-        if ($hostDefaults.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
-            [ref] $null = Add-Member -InputObject $hostDefaults -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $DisableLocalFileCaching;
-        }
-
         foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
             if ($PSBoundParameters.ContainsKey($path)) {
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];

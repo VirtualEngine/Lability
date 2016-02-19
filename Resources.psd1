@@ -122,6 +122,13 @@ ConvertFrom-StringData -StringData @'
     TestingNodeCertificate          = Testing node certificate '{0}'.
     ResourceNotFound                = Resource '{0}' was not found.
     ResourceFound                   = Resource '{0}' was found.
+    ExportingConfiguration          = Exporting {0} configuration to '{1}'.
+    ShouldProcessActionConfirmation = Are you sure you want to perform this action?
+    ShouldProcessOperation          = Performing the operation '{0}' on target '{1}'.
+    ImportingConfiguration          = Importing {0} configuration from '{1}'.
+    ImportingConfigurationSettings  = Importing configuration settings generated '{0}' on host '{1}'.
+    RestoringConfigurationSettings  = Restoring imported '{0}' configuration settings.
+    ConfigurationRestoreComplete    = Restoration of '{0}' settings complete. 
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -135,7 +142,7 @@ ConvertFrom-StringData -StringData @'
     MissingVirtualSwitchWarning     = Virtual switch '{0}' is missing.
     MissingRequiredModuleWarning    = Module '{0}' is missing.
     MissingRequiredResourceWarning  = Resource '{0}' is missing.
-    MissingRequiredCertWarning      = Certificate '{0}' is missing'
+    MissingRequiredCertWarning      = Certificate '{0}' is missing.
     UsingExistingSwitchWarning      = Using existing '{0}' virtual switch.
 
     InvalidPathError                = {0} path '{1}' is invalid.
@@ -150,6 +157,8 @@ ConvertFrom-StringData -StringData @'
     CannotLocateNetworkError        = Cannot locate '{0}' network.
     MissingParameterError           = Missing required parameter '{0}'.
     ImageAlreadyExistsError         = Disk image '{0}' already exists.
+    FileAlreadyExistsError          = File '{0}' already exists.
+    InvalidConfigurationError       = Configuration document '{0}' is invalid. 
     ResourceDownloadFailedError     = Resource download failed: {0}.
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
