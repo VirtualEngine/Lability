@@ -76,4 +76,33 @@ will:
 A brief introduction to the __VirtualEngineLab__ module presented at the European
 PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__.
 
+## Versions
+
+### Unreleased
+
+### v0.9.7
+
+* Adds backup and restore of the Lability host's settings:
+ * New Export-LabHostConfiguration and Import-LabHostConfiguration cmdlets added.
+* Adds environment tagging:
+ * Adds NonNodeData\Lability\EnvironmentPrefix and EnvironmentSuffix directives.
+ * VM display names and VHD(X) files are named accordingly.
+* Adds Linux VM support:
+ * Custom media "OperatingSystem" property added.
+* Minor updates/fixes:
+ * Renames LabHostDefaults.ps1 to LabHostDefault.ps1.
+ * Renames LabVMDefaults.ps1 to LabVMDefault.ps1.
+ * Adds -SecureBoot to Set-LabVMDefault.
+ * Adds Generation property to LabMedia to ensure that VHD files result in Gen 1 VMs.
+ * Documentation updates.
+
+### v0.9.6
+
+* Adds DestinationPath directive to custom resources to permit specifying an alternative relative location (other than \Resources).
+* Updates bundled Hyper-V and xPendingReboot DSC resources.
+* Minor updates/fixes:
+ * Fixes parameter errors in WindowsFeature\Get-TargetResource calls (#62).
+ * Suppresses SCCM client warning output in Get-LabHostConfiguration.
+ * Changes Get-LabHostConfiguration output to PSObjects to improve readability.
+
 [__Lability__ image/logo attribution credit](https://openclipart.org/image/300px/svg_to_png/22734/papapishu-Lab-icon-1.png)
