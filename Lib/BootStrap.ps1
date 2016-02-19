@@ -65,15 +65,25 @@ if (Test-Path -Path $localhostMofPath) {
     while ($true) {
         ## Replay the configuration until the LCM bloody-well takes it!
         try {
-            Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
-            break;
+            if (Test-Path -Path "$env:SystemRoot\System32\Configuration\Pending.mof") {
+                Start-DscConfiguration -UseExisting -Force -Wait -Verbose -ErrorAction Stop;
+                break;
+            }
+            else {
+                Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
+                break;
+            }
         }
         catch {
             Write-Error -Message $_;
-            ## SIGH. Try removing the configuration and restarting WMI..
-            Remove-DscConfigurationDocument -Stage Current,Pending,Previous -Force;
-            Restart-Service -Name Winmgmt -Force;
+            ## SIGH. Try restarting WMI..
+            if (-not ($interation % 10)) {
+                ## SIGH. Try removing the configuration and restarting WMI..
+                Remove-DscConfigurationDocument -Stage Current,Pending,Previous -Force;
+                Restart-Service -Name Winmgmt -Force;
+            }
             Start-Sleep -Seconds 5;
+            $interation++;
         }
     } #end while
 } #end if localhost.mof

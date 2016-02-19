@@ -102,6 +102,10 @@ function Set-LabVMDefault {
         ## Boot delay/pause between VM operations
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt16] $BootDelay,
+        
+        ## Secure boot status. Could be a SwitchParameter but boolean is more explicit?
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Boolean] $SecureBoot,
 
         ## Custom bootstrap order
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -124,7 +128,9 @@ function Set-LabVMDefault {
             $vmDefaults.ProcessorCount = $ProcessorCount;
         }
         if ($PSBoundParameters.ContainsKey('Media')) {
-            $vmDefaults.Media = $Media;
+            ## ResolveLabMedia will throw if media cannot be resolved
+            $labMedia = ResolveLabMedia -Id $Media;
+            $vmDefaults.Media = $labMedia.Id;
         }
         if ($PSBoundParameters.ContainsKey('SwitchName')) {
             $vmDefaults.SwitchName = $SwitchName;
@@ -173,6 +179,9 @@ function Set-LabVMDefault {
         }
         if ($PSBoundParameters.ContainsKey('CustomBootstrapOrder')) {
             $vmDefaults.CustomBootstrapOrder = $CustomBootstrapOrder;
+        }
+        if ($PSBoundParameters.ContainsKey('SecureBoot')) {
+            $vmDefaults.SecureBoot = $SecureBoot;
         }
 
         if ($vmDefaults.StartupMemory -lt $vmDefaults.MinimumMemory) {

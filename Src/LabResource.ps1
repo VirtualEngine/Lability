@@ -280,8 +280,12 @@ function ResolveLabResource {
     )
     process {
         $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
-        if ($resource) { return $resource; }
-        else { throw ($localized.CannotResolveResourceIdError -f $resourceId); }
+        if ($resource) {
+            return $resource;
+        }
+        else {
+            throw ($localized.CannotResolveResourceIdError -f $resourceId);
+        }
     }
 } #end function ResolveLabResource
 

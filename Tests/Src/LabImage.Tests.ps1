@@ -89,6 +89,28 @@ Describe 'LabImage' {
                 $image | Should Not BeNullOrEmpty;
                 $image.Count | Should BeNullOrEmpty;
             }
+            
+            foreach ($generation in 'VHD','VHDX') {
+                It "Returns image generation '$generation' for $generation file" {
+                    $testLabMediaId = 'IMG1';
+                    $testImageGeneration = $generation;
+                    $testDiskImageFileName = '{0}.{1}' -f $testLabMediaId, $testImageGeneration;
+                    $testDiskImagePath = 'TestDrive:\{0}' -f $testDiskImageFileName;
+                    $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+                    $fakeLabMedia = @(
+                        [PSCustomObject] @{ Id = $testLabMediaId; Filename = $testDiskImageFileName; MediaType = $testImageGeneration; }
+                    )
+                    $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                    New-Item -Path $testDiskImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                    Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                    Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
+                    Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                    
+                    $image = Get-LabImage -Id $testLabMediaId;
+                    
+                    $image.Generation | Should Be $testImageGeneration;
+                }
+            }
 
         } #end context Validates "Get-LabImage" method
 

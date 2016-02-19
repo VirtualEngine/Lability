@@ -33,7 +33,7 @@ Describe 'LabVMDiskFile' {
                 Mock ExpandLabResource -MockWith { }
                 Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
-                SetLabVMDiskResource -ConfigurationData $configurationData -Name $testVMName;
+                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
 
                 Assert-MockCalled Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
             }
@@ -56,7 +56,7 @@ Describe 'LabVMDiskFile' {
                 Mock ExpandLabResource -ParameterFilter { $Name -eq $testVMName }  -MockWith { }
                 Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
-                SetLabVMDiskResource -ConfigurationData $configurationData -Name $testVMName;
+                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
 
                 Assert-MockCalled ExpandLabResource -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
@@ -79,7 +79,7 @@ Describe 'LabVMDiskFile' {
                 Mock ExpandLabResource -MockWith { }
                 Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
-                SetLabVMDiskResource -ConfigurationData $configurationData -Name $testVMName;
+                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
 
                 Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
             }
@@ -97,7 +97,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -123,7 +123,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; ProductKey = 'ABCDE-12345-FGHIJ-67890-KLMNO'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; ProductKey = 'ABCDE-12345-FGHIJ-67890-KLMNO'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -149,7 +149,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -175,7 +175,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -201,7 +201,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -227,7 +227,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -253,7 +253,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
@@ -279,7 +279,7 @@ Describe 'LabVMDiskFile' {
                 $testDriveLetter = 'Z';
                 $configurationData = @{
                     AllNodes = @(
-                        @{ NodeName = $testVMName; Timezone = 'GMT Standard Time'; }
+                        @{ NodeName = $testVMName; NodeDisplayName = $testVMName; Timezone = 'GMT Standard Time'; }
                     )
                 }
                 Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }

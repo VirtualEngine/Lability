@@ -19,12 +19,22 @@ function ResolveLabVMProperties {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
         
-        ## Do not enumerate the AllNode.'*'
+        ## Do not enumerate the AllNodes.'*' node
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
     )
     process {
         $node = @{ };
+        $moduleName = $labDefaults.ModuleName;
+        
+        ## Set the node's display name, if defined.
+        if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix) {
+            $node["$($moduleName)_EnvironmentPrefix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix;
+        }
+        if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix) {
+            $node["$($moduleName)_EnvironmentSuffix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix;
+        }
+        
         if (-not $NoEnumerateWildcardNode) {
             ## Retrieve the AllNodes.* properties
             $ConfigurationData.AllNodes.Where({ $_.NodeName -eq '*' }) | ForEach-Object {
@@ -46,25 +56,29 @@ function ResolveLabVMProperties {
         $properties = Get-Member -InputObject $labDefaultProperties -MemberType NoteProperty;
         foreach ($propertyName in $properties.Name) {
             ## Int32 values of 0 get coerced into $false!
-            if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.$propertyName)) {
+            if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.ContainsKey($propertyName))) {
                 $node[$propertyName] = $labDefaultProperties.$propertyName;
             }
         }
 
+        ## Set the node's friendly/display name
+        $nodeDisplayName = $node.NodeName;
+        $environmentPrefix = '{0}_EnvironmentPrefix' -f $moduleName;
+        $environmentSuffix = '{0}_EnvironmentSuffix' -f $moduleName;
+        if (-not [System.String]::IsNullOrEmpty($node[$environmentPrefix])) {
+            $nodeDisplayName = '{0}{1}' -f $node[$environmentPrefix], $nodeDisplayName;
+        }
+        if (-not [System.String]::IsNullOrEmpty($node[$environmentSuffix])) {
+            $nodeDisplayName = '{0}{1}' -f $nodeDisplayName, $node[$environmentSuffix];
+        }
+        $node["$($moduleName)_NodeDisplayName"] = $nodeDisplayName;
+        
         ## Rename/overwrite existing parameter values where $moduleName-specific parameters exist
         foreach ($key in @($node.Keys)) {
-            if ($key.StartsWith("$($labDefaults.ModuleName)_")) {
-                $node[($key.Replace("$($labDefaults.ModuleName)_",''))] = $node.$key;
+            if ($key.StartsWith("$($moduleName)_")) {
+                $node[($key.Replace("$($moduleName)_",''))] = $node.$key;
+                $node.Remove($key);
             }
-        }
-
-        ## Default to SecureBoot On/$true unless otherwise specified
-        ## TODO: Should this not be added to the LabVMDefaults?
-        if (($null -ne $node.SecureBoot) -and ($node.SecureBoot -eq $false)) {
-            $node['SecureBoot'] = $false;
-        }
-        else {
-            $node['SecureBoot'] = $true;
         }
 
         return $node;
@@ -230,9 +244,10 @@ function NewLabVM {
     }
     process {
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
-        $Name = $node.NodeName;
-        [ref] $null = $node.Remove('NodeName');
-
+        $NodeName = $node.NodeName;
+        ## Display name includes any environment prefix/suffix
+        $DisplayName = $node.NodeDisplayName;
+        
         ## Don't attempt to check certificates for 'Quick VMs'   
         if (-not $IsQuickVM) {
             ## Check for certificate before we (re)create the VM
@@ -265,12 +280,12 @@ function NewLabVM {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
         
-        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$Name.vhdx");
-        ResetLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
+        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$DisplayName.vhdx");
+        ResetLabVMDisk -Name $DisplayName -Media $node.Media -ErrorAction Stop;
         
-        WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $Name);
+        WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $DisplayName);
         $setLabVirtualMachineParams = @{
-            Name = $Name;
+            Name = $DisplayName;
             SwitchName = $node.SwitchName;
             Media = $node.Media;
             StartupMemory = $node.StartupMemory;
@@ -281,50 +296,60 @@ function NewLabVM {
             SecureBoot = $node.SecureBoot;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
-        
-        ## Only mount the VHDX to copy resources if needed!
-        if ($node.Resource) {
-            WriteVerbose ($localized.AddingVMResource -f 'VM');
-            SetLabVMDiskResource -ConfigurationData $ConfigurationData -Name $Name;
-        }
 
         $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
-        WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
-        $setLabVMDiskFileParams = @{
-            Name = $Name;
-            NodeData = $node;
-            Path = $Path;
-            Credential = $Credential;
-            CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+        if ($media.OperatingSystem -eq 'Linux') {
+            ## Skip injecting files for Linux VMs..
         }
-        
-        $resolveCustomBootStrapParams = @{
-            CustomBootstrapOrder = $node.CustomBootstrapOrder;
-            ConfigurationCustomBootstrap = $node.CustomBootstrap;
-            MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
-        }
-        $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
-        if ($customBootstrap) {
-            $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
-        }
-        SetLabVMDiskFile @setLabVMDiskFileParams;
+        else {
+            ## Only mount the VHDX to copy resources if needed!
+            if ($node.Resource) {
+                WriteVerbose ($localized.AddingVMResource -f 'VM');
+                $setLabVMDiskResourceParams = @{
+                    ConfigurationData = $ConfigurationData;
+                    NodeName = $NodeName;
+                    DisplayName = $DisplayName;
+                }
+                SetLabVMDiskResource @setLabVMDiskResourceParams;
+            }
+            
+            WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
+            $setLabVMDiskFileParams = @{
+                Name = $NodeName;
+                NodeData = $node;
+                Path = $Path;
+                Credential = $Credential;
+                CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+            }
+            
+            $resolveCustomBootStrapParams = @{
+                CustomBootstrapOrder = $node.CustomBootstrapOrder;
+                ConfigurationCustomBootstrap = $node.CustomBootstrap;
+                MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
+            }
+            $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
+            if ($customBootstrap) {
+                $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
+            }
+            SetLabVMDiskFile @setLabVMDiskFileParams;           
+        } #end Windows VMs
 
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
-            Checkpoint-VM -Name $Name -SnapshotName $snapshotName;
+            Checkpoint-VM -Name $DisplayName -SnapshotName $snapshotName;
         }
         
         if ($node.WarningMessage) {
             if ($node.WarningMessage -is [System.String]) {
-                WriteWarning ($localized.NodeCustomMessageWarning -f $Name, $node.WarningMessage);
+                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage);
             }
             else {
                 WriteWarning ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
             }
         }
         
-        Write-Output -InputObject (Get-VM -Name $Name);
+        Write-Output -InputObject (Get-VM -Name $DisplayName);
     } #end process
 } #end function NewLabVM
 
@@ -354,7 +379,7 @@ function RemoveLabVM {
         if (-not $node.NodeName) {
             throw ($localized.CannotLocateNodeError -f $Name);
         }
-        $Name = $node.NodeName;
+        $Name = $node.NodeDisplayName;
         
         # Revert to oldest snapshot prior to VM removal to speed things up
         Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue |
@@ -440,7 +465,7 @@ function Reset-LabVM {
     process {
         foreach ($vmName in $Name) {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
-            $verboseProcessMessage = $localized.ResettingVM -f $vmName;
+            $verboseProcessMessage = GetFormattedMessage -Message ($localized.ResettingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
                 RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
                 NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
@@ -535,6 +560,10 @@ function New-LabVM {
         ## Virtual machine MAC address(es).
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String[]] $MACAddress,
+        
+        ## Secure boot status
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Boolean] $SecureBoot,
 
         ## Custom data
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
@@ -580,7 +609,7 @@ function New-LabVM {
         
         ## Explicitly defined parameters override any -CustomData
         $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage','MACAddress',
-            'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization')
+            'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization','SecureBoot')
         foreach ($key in $parameterNames) {
             if ($PSBoundParameters.ContainsKey($key)) {
                 $configurationNode[$key] = $PSBoundParameters.$key;        
@@ -594,7 +623,7 @@ function New-LabVM {
             ## Update the node name before creating the VM
             $configurationNode['NodeName'] = $vmName;
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
-            $verboseProcessMessage = $localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId;
+            $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
                 $configurationData = @{ AllNodes = @( $configurationNode ) };                
                 NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;

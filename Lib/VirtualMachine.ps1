@@ -33,7 +33,13 @@ function GetVirtualMachineProperties {
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
-        $labMedia = Get-LabMedia -Id $Media;
+        $labMedia = ResolveLabMedia -Id $Media;
+        $labImage = Get-LabImage -Id $Media;
+        if (-not $labImage) {
+            ## Should only trigger during a Reset-VM where parent image is not available?!
+            ## It will be downloaded during any NewLabVM calls..
+            $labImage = @{ Generation = 'VHDX'; }
+        }
         $labMediaArchitecture = $labMedia.Architecture;
 
         if (-not [System.String]::IsNullOrEmpty($labMedia.CustomData.PartitionStyle)) {
@@ -46,7 +52,11 @@ function GetVirtualMachineProperties {
             }
         }
         
-        if ($labMediaArchitecture -eq 'x86') {
+        if ($labImage.Generation -eq 'VHD') {
+            ## VHD files are only supported in G1 VMs
+            $PSBoundParameters.Add('Generation', 1);
+        }
+        elseif ($labMediaArchitecture -eq 'x86') {
             $PSBoundParameters.Add('Generation', 1);
         }
         elseif ($labMediaArchitecture -eq 'x64') {
@@ -58,7 +68,7 @@ function GetVirtualMachineProperties {
             [ref] $null = $PSBoundParameters.Remove('MACAddress');
         }
 
-        $vhdPath = ResolveLabVMDiskPath -Name $Name;
+        $vhdPath = ResolveLabVMDiskPath -Name $Name -Generation $labImage.Generation;
         [ref] $null = $PSBoundParameters.Add('VhdPath', $vhdPath);
         [ref] $null = $PSBoundParameters.Add('RestartIfNeeded', $true);
 

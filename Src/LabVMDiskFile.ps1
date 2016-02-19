@@ -39,7 +39,11 @@ function SetLabVMDiskResource {
         
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
-        [System.String] $Name
+        [System.String] $NodeName,
+        
+        ## Prefixed/suffixed lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $DisplayName
     )
     begin {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -49,7 +53,7 @@ function SetLabVMDiskResource {
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
 
-        $vhdPath = ResolveLabVMDiskPath -Name $Name;
+        $vhdPath = ResolveLabVMDiskPath -Name $DisplayName;
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
@@ -57,7 +61,7 @@ function SetLabVMDiskResource {
         Start-Service -Name 'ShellHWDetection';
 
         $destinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
-        ExpandLabResource -ConfigurationData $ConfigurationData -Name $Name -DestinationPath $destinationPath;
+        ExpandLabResource -ConfigurationData $ConfigurationData -Name $NodeName -DestinationPath $destinationPath;
 
         WriteVerbose ($localized.DismountingDiskImage -f $VhdPath);
         Dismount-Vhd -Path $VhdPath;
@@ -102,7 +106,7 @@ function SetLabVMDiskFile {
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
 
-        $vhdPath = ResolveLabVMDiskPath -Name $Name;
+        $vhdPath = ResolveLabVMDiskPath -Name $NodeData.NodeDisplayName;
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
@@ -111,7 +115,7 @@ function SetLabVMDiskFile {
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
-            ComputerName = $Name;
+            ComputerName = $NodeData.NodeName;
             Credential = $Credential;
             InputLocale = $NodeData.InputLocale;
             SystemLocale = $NodeData.SystemLocale;
@@ -148,13 +152,13 @@ function SetLabVMDiskFile {
 
         ## Copy MOF files to \BootStrap\localhost.mof and \BootStrap\localhost.meta.mof
         if ($Path) {
-            $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $Name);
+            $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $NodeData.NodeName);
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
             if (-not (Test-Path -Path $mofPath)) { WriteWarning ($localized.CannotLocateMofFileError -f $mofPath); }
             else { Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop; }
 
-            $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $Name);
+            $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $NodeData.NodeName);
             if (Test-Path -Path $metaMofPath -PathType Leaf) {
                 $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
                 WriteVerbose ($localized.AddingDscConfiguration -f $destinationMetaMofPath);

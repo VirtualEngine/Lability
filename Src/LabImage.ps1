@@ -43,6 +43,7 @@ function Get-LabImage {
                     BlockSize = $diskImage.BlockSize;
                     FileSize = $diskImage.FileSize;
                     Size = $diskImage.Size;
+                    Generation = ($imagePath.Split('.')[-1]).ToUpper();
                 }
                 Write-Output -InputObject $labImage;
             }

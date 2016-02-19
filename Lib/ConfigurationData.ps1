@@ -60,6 +60,7 @@ function ResolveConfigurationDataPath {
                 $resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
             }
         }
+        $resolvedPath = ResolvePathEx -Path $resolvedPath;
         Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
     } #end process
@@ -78,9 +79,8 @@ function GetConfigurationData {
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
-        $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
-        if (Test-Path -Path $expandedPath) {
-            $configurationData = Get-Content -Path $expandedPath -Raw | ConvertFrom-Json;
+        if (Test-Path -Path $configurationPath) {
+            $configurationData = Get-Content -Path $configurationPath -Raw | ConvertFrom-Json;
             
             # Expand any environment variables in configuration data
             $configurationData.PSObject.Members | Where-Object {
@@ -94,6 +94,28 @@ function GetConfigurationData {
                     ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
                     if ($configurationData.PSObject.Properties.Name -notcontains 'CustomBootstrapOrder') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'CustomBootstrapOrder' -Value 'MediaFirst';
+                    }
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'SecureBoot') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'SecureBoot' -Value $true;
+                    }
+                }
+                'CustomMedia' {
+                    foreach ($mediaItem in $configurationData) {
+                        ## Add missing OperatingSystem property
+                        if ($mediaItem.PSObject.Properties.Name -notcontains 'OperatingSystem') {
+                            [ref] $null = Add-Member -InputObject $mediaItem -MemberType NoteProperty -Name 'OperatingSystem' -Value 'Windows';
+                        }
+                    } #end foreach media item
+                }
+                'Host' {
+                    ## This property may not be present in the original machine configuration file
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'DisableLocalFileCaching') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'DisableLocalFileCaching' -Value $false;
+                    }
+                    ## This property may not be present in the original machine configuration file
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $false;
                     }
                 }
                 Default {
@@ -110,7 +132,7 @@ function SetConfigurationData {
     .SYNOPSIS
         Saves lab configuration data.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
@@ -121,9 +143,8 @@ function SetConfigurationData {
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
-        $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
-        [ref] $null = NewDirectory -Path (Split-Path -Path $expandedPath -Parent);
-        Set-Content -Path $expandedPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
+        [ref] $null = NewDirectory -Path (Split-Path -Path $configurationPath -Parent) -Verbose:$false;
+        Set-Content -Path $configurationPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
     }
 } #end function SetConfigurationData
 
@@ -139,10 +160,9 @@ function RemoveConfigurationData {
     )
     process {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
-        $expandedPath = [System.Environment]::ExpandEnvironmentVariables($configurationPath);
-        if (Test-Path -Path $expandedPath) {
+        if (Test-Path -Path $configurationPath) {
             WriteVerbose ($localized.ResettingConfigurationDefaults -f $Configuration);
-            Remove-Item -Path $expandedPath -Force;
+            Remove-Item -Path $configurationPath -Force;
         }
     }
 } # end function RemoveConfigurationData

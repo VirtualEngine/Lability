@@ -55,7 +55,7 @@ Describe 'LabVMDefaults' {
                 @{ MinimumMemory = 1GB; }
                 @{ MaximumMemory = 2GB; }
                 @{ ProcessorCount = 4; }
-                @{ Media = 'Test-Media'; }
+                @{ Media = '2012R2_x64_Standard_EN_Eval'; }
                 @{ SwitchName = 'Test Switch'; }
                 @{ Timezone = 'Eastern Standard Time'; }
                 @{ InputLocale = 'DE-de'; }
@@ -109,6 +109,10 @@ Describe 'LabVMDefaults' {
 
             It 'Throws if "StartupMemory" is greater than "MaximumMemory"' {
                 { Set-LabVMDefault -StartupMemory 2GB -MaximumMemory 1GB } | Should Throw;
+            }
+            
+            It 'Throws if "Media" cannot be resolved' {
+                { Set-LabVMDefault -Media 'LabilityTestMedia' } | Should Throw;
             }
 
             It 'Calls "SetConfigurationData" to write data to disk' {

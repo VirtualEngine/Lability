@@ -61,35 +61,83 @@ Describe 'ConfigurationData' {
                 }
 
             } #end foreach $config
+            
+            It 'Resolves environment variables in resulting path' {
+                Mock Test-Path -MockWith { return $true }
+                Mock ResolvePathEx -MockWith { }
+                
+                ResolveConfigurationDataPath -Configuration Media;
+                
+                Assert-MockCalled ResolvePathEx -Scope It;
+            }
 
         } #end context Validates "ResolveConfigurationDataPath" method
 
         Context 'Validates "GetConfigurationData" method' {
 
-            It 'Resolves environment variables in path' {
-                $testConfigurationFilename = 'TestConfiguration.json';
-                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
-                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
-                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
-                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
-                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-
-                GetConfigurationData -Configuration Host;
-
-                Assert-MockCalled Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -Scope It;
-            }
-            
             It 'Adds missing "CustomBootstrapOrder" property to VM configuration' {
                 $testConfigurationFilename = 'TestVMConfiguration.json';
-                $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
                 $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
-                Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
                 
                 $vmConfiguration = GetConfigurationData -Configuration VM;
                 
                 $vmConfiguration.CustomBootstrapOrder | Should Be 'MediaFirst';
+            }
+            
+            It 'Adds missing "SecureBoot" property to VM configuration' {
+                $testConfigurationFilename = 'TestVMConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $vmConfiguration = GetConfigurationData -Configuration VM;
+                
+                $vmConfiguration.SecureBoot | Should Be $true;
+            }
+            
+            It 'Adds missing "OperatingSystem" property to CustomMedia configuration' {
+                $testConfigurationFilename = 'TestMediaConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '[{ "Id": "TestMedia" }]';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $customMediaConfiguration = GetConfigurationData -Configuration CustomMedia;
+
+                $customMediaConfiguration.OperatingSystem | Should Be 'Windows';
+            }
+            
+            It 'Adds missing "DisableLocalFileCaching" property to Host configuration' {
+                $testConfigurationFilename = 'TestMediaConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $customMediaConfiguration = GetConfigurationData -Configuration Host;
+
+                $customMediaConfiguration.DisableLocalFileCaching | Should Be $false;
+            }
+            
+            It 'Adds missing "EnableCallStackLogging" property to Host configuration' {
+                $testConfigurationFilename = 'TestMediaConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+                
+                $customMediaConfiguration = GetConfigurationData -Configuration Host;
+
+                $customMediaConfiguration.EnableCallStackLogging | Should Be $false;
             }
 
         } #end context Validates "GetConfigurationData" method

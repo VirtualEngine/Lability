@@ -188,7 +188,7 @@ function SetResourceDownload {
     }
     process {
         if (-not $PSBoundParameters.ContainsKey('BufferSize')) {
-             $systemUri = New-Object -TypeName System.Uri -ArgumentList @($uri);
+            $systemUri = New-Object -TypeName System.Uri -ArgumentList @($uri);
             if ($systemUri.IsFile) {
                 $BufferSize = 1MB;
             }

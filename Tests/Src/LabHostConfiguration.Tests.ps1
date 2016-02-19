@@ -55,7 +55,7 @@ Describe 'LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'PendingReboot'; Parameters = @{ P1 = 1; } }
                 )
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
-                Mock GetDscResource -MockWith { }
+                Mock GetDscResource -MockWith { return $fakeConfiguration[0]; }
                 Mock ImportDscResource -MockWith { }
 
                 Get-LabHostConfiguration;
@@ -69,7 +69,7 @@ Describe 'LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'PendingReboot'; Parameters = @{ P1 = 1; } }
                 )
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
-                Mock GetDscResource -MockWith { }
+                Mock GetDscResource -MockWith { return $fakeConfiguration[0]; }
                 Mock ImportDscResource -MockWith { }
 
                 Get-LabHostConfiguration;
