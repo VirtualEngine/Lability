@@ -1,11 +1,12 @@
 Configuration Example {
 <#
     Requires the following custom DSC resources:
-        xComputerManagement (v1.3.0 or later): https://github.com/PowerShell/xComputerManagement
-        ! xNetworking/dev (v2.5.0.0 or later): https://github.com/PowerShell/xNetworking/dev (due to issue #34)
-        xActiveDirectory (v2.7.0.0 or later):  https://github.com/PowerShell/xActiveDirectory
-        xSmbShare (v1.1.0.0 or later):         https://github.com/PowerShell/xSmbShare
-        ! xDhcpServer (v1.3.0 or later):       https://github.com/iainbrighton/xDhcpServer/dev (due to xDhcpServerAuthorization resource)
+        xComputerManagement (v1.4.0.0 or later): https://github.com/PowerShell/xComputerManagement
+        xNetworking/dev (v2.7.0.0 or later):     https://github.com/PowerShell/xNetworking
+        xActiveDirectory (v2.9.0.0 or later):    https://github.com/PowerShell/xActiveDirectory
+        xSmbShare (v1.1.0.0 or later):           https://github.com/PowerShell/xSmbShare
+        xDhcpServer (v1.3.0 or later):           https://github.com/PowerShell/xDhcpServer
+        xDnsServer (v1.5.0 or later):            https://github.com/PowerShell/xDnsServer
 #>
     param (
         [Parameter()] [ValidateNotNull()] [PSCredential] $Credential = (Get-Credential -Credential 'Administrator')

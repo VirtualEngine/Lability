@@ -91,13 +91,38 @@ EXISTING DISK IMAGES
             *  PowerShell Desired State Configuration hotfixes must either be installed in the disk image or specified
                in the Hotfixes property in the custom media definition.
             *  Disk images with Windows installed must be generalised with Sysprep.
-
             
+        Existing VHD(X) images can be registered with the `Register-LabMedia` cmdlet. The following example registers
+        an existing `2012R2_x64_Standard_EN_VL.vhdx` virtual hard disk file.
+        
+            PS C:\> $customMedia = @{
+                Id = 2012R2_x64_Standard_EN_VL;
+                Filename = 2012R2_x64_Standard_EN_VL.vhdx;
+                Description = 'Windows Server 2012 R2 Standard 64bit English Volume License';
+                Architecture = x64;
+                MediaType = VHD;
+                Uri = '\\MyFileServer\Images\2012R2_x64_Standard_EN_VL.vhdx';
+            }
+            PS C:\> Register-LabMedia @customMedia
+
 LINUX DISK IMAGES
 
-        Deploying a Linux-based virtual machine from a master VHD(X) file is supported, but configuration of the
-        virtual machine is not (currently) possible. For example, deploying a Citrix NetScaler VM from a master VHD(X)
-        is supported, but there is no (current) way of injecting files or applying an additional configuration.  
+        Deploying a Linux-based virtual machine from a master VHD(X) file is supported, but configuration inside of
+        the virtual machine is not (currently) possible. For example, deploying a Citrix NetScaler VM from a master
+        VHD(X) is supported, but there is no (current) way of injecting files or applying an additional configuration.
+        
+        The following example registers a Citrix NetScaler image:
+        
+            PS C:\> $NSVPX11 = @{
+                Id = "NSVPX_11";
+                Filename = "NSVPX-11.0-63.16_nc.vhd"
+                Description = "Citrix NetScaler 11.0 VPX Build 63.16_nc";
+                Architecture = "x64";
+	            MediaType = "VHD";
+                OperatingSystem = "Linux";
+                Uri = "\\MyFileServer\Images\NSVPX-11.0-63.16_nc.vhd";
+            }
+            PS C:\> Register-LabMedia @NSVPX11 -Force;  
         
 KEYWORDS
 

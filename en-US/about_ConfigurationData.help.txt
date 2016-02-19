@@ -103,7 +103,7 @@ SUPPORTED CONFIGURATION PROPERTIES
             *  RegisteredOwner [System.String]
                 - The registered owner applied to the virtual machine's operating system.
                 
-            *  RegisteredOrganization
+            *  RegisteredOrganization [System.String]
                 - The registered owner applied to the virtual machine's operating system.
                 
             *  CustomBootstrap [System.String]
@@ -126,6 +126,10 @@ SUPPORTED CONFIGURATION PROPERTIES
             *  WarningMessage [System.String]
                 - Displays a warning message when the virtual machine is deployed.
                 - This is typically used to display additional manual configuration tasks.
+                
+            *  SecureBoot [System.Boolean]
+                - Specifies whether Secure Boot is enabled.
+                - Secure Boot is typically disabled/unsupported on non-UEFI (Generation 2) virtual machines.
 
 KEYWORDS
     Lab configuration data

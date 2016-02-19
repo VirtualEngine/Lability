@@ -79,16 +79,13 @@
             );
             DSCResource = @(
                 ## Download published version from the PowerShell Gallery
-                ## If not specified, it defaults to the PSGallery provider type
                 @{ Name = 'xComputerManagement'; MinimumVersion = '1.3.0.0'; Provider = 'PSGallery'; }
+                ## If not specified, the provider defaults to the PSGallery
                 @{ Name = 'xSmbShare'; MinimumVersion = '1.1.0.0'; }
-                ## Download development/unpublished version from a Github repository.
-                ## If not specified, the repository name defaults to the DSC module name
-                ## NOTE: bootstraps the GitHubRepository module
-                @{ Name = 'xNetworking'; MinimumVersion = '2.5.0.0'; Provider = 'GitHub'; Owner = 'Powershell'; Repository = 'xNetworking'; Branch = 'dev'; }
-                @{ Name = 'xActiveDirectory'; MinimumVersion = '2.8.0.0'; Provider = 'GitHub'; Owner = 'PowerShell'; Branch = 'dev'; }
-                @{ Name = 'xDnsServer'; MinimumVersion = '1.4.0.0'; Provider = 'GitHub'; Owner = 'PowerShell'; Branch = 'dev'; }
-                @{ Name = 'xDhcpServer'; MinimumVersion = '1.2'; Provider = 'GitHub'; Owner = 'PowerShell'; Branch = 'dev'; }
+                @{ Name = 'xNetworking'; MinimumVersion = '2.7.0.0'; }
+                @{ Name = 'xActiveDirectory'; MinimumVersion = '2.9.0.0'; }
+                @{ Name = 'xDnsServer'; MinimumVersion = '1.5.0.0'; }
+                @{ Name = 'xDhcpServer'; MinimumVersion = '1.3.0.0'; }
             );
         };
     };

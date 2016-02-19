@@ -150,7 +150,7 @@ CONFIGURING HOST DEFAULT VALUES
         For more information about setting the host's default values run the following command:
         
             PS C:\> Get-Help -Name Set-LabHostDefault
-        
+                   
 CONFIGURING VIRTUAL MACHINE DEFAULT VALUES
 
         Lability applies numerous default values to a virtual machine if they are not explicitly specified, for example

@@ -23,8 +23,8 @@
     NonNodeData = @{
         Lability = @{
             DSCResource = @(
-                @{ Name = 'xNetworking'; MinimumVersion = '2.5.0.0'; Provider = 'GitHub'; Owner = 'Powershell'; Branch = 'dev'; }
-                @{ Name = 'xPSDesiredStateConfiguration'; MinimumVersion = '3.6.0.0'; Provider = 'GitHub'; Owner = 'Powershell'; Branch = 'dev'; }
+                @{ Name = 'xNetworking'; MinimumVersion = '2.5.0.0'; }
+                @{ Name = 'xPSDesiredStateConfiguration'; MinimumVersion = '3.7.0.0'; }
             )
         };
     };

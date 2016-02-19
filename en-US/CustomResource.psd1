@@ -32,6 +32,10 @@
                     ## If the resource is a .ZIP or .ISO file, it can be expanded/decompressed when copied into the node's
                     ## \Resources\<ResourceID> folder. If not specified, this value defaults to False.
                     Expand = $true;
+                    
+                    ## The default target path can be overridden by specifying a destination path. This path is relative to
+                    ## the root of the operating system drive. Resources will be placed inside this directory.
+                    DestinationPath = '\Windows'
                 }
             );
             Network = @(
