@@ -278,6 +278,12 @@ Describe 'xVMSwitch' {
                 $targetResource = Test-TargetResource -Name 'SomeSwitch' -BandwidthReservationMode 'NA' -Type 'External' -NetAdapterName 'SomeNIC' -Ensure 'Present' -AllowManagementOS $true
                 $targetResource | Should Be $true
             }
+            
+            It 'Passes when "BandwidthReservationMode" does not match but is not specified (#48)' {
+                $global:mockedVMSwitch = New-MockedVMSwitch -Name 'SomeSwitch' -BandwidthReservationMode 'Absolute'
+                $targetResource = Test-TargetResource -Name 'SomeSwitch' -Type 'Internal' -Ensure 'Present'
+                $targetResource | Should Be $true
+            }
         }
 
 

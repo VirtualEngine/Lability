@@ -14,6 +14,7 @@
             PSDscAllowDomainUser = $true; # Removes 'It is not recommended to use domain credential for node X' messages
             Lability_SwitchName = 'Corpnet';
             Lability_ProcessorCount = 1;
+            Lability_StartupMemory = 2GB;
             Lability_Media = '2012R2_x64_Standard_EN_Eval';
         }
         @{
@@ -26,9 +27,11 @@
         @{
             NodeName = 'EDGE1';
             IPAddress = '10.0.0.2';
+            DnsConnectionSuffix = 'corp.contoso.com';
             SecondaryIPAddress = '131.107.0.2';
             SecondaryDnsServerAddress = '131.107.0.1';
             SecondaryInterfaceAlias = 'Ethernet 2';
+            SecondaryDnsConnectionSuffix = 'isp.example.com';
             SecondarySubnetMask = 24;
             Role = 'EDGE';
             ## Windows sees the two NICs in reverse order, e.g. first switch is 'Ethernet 2' and second is 'Ethernet'!?
@@ -44,9 +47,8 @@
             IPAddress = '131.107.0.1';
             DnsServerAddress = '127.0.0.1';
             DefaultGateway = '';
+            DnsConnectionSuffix = 'isp.example.com';
             Role = 'INET';
-            
-            ## If no network is specified, the virtual machine will be attached to a default internal virtual switch. 
             Lability_SwitchName = 'Internet';
         }
         @{
@@ -64,6 +66,7 @@
     );
     NonNodeData = @{
         Lability = @{
+            EnvironmentPrefix = 'TLG-';
             Media = @();
             Network = @(
                 @{ Name = 'Corpnet'; Type = 'Internal'; }

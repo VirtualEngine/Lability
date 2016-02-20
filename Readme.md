@@ -80,6 +80,9 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+* Fixes BandwidthReservationMode bug where duplicate virtual switches are created.
+* Moves examples into the \Examples directory.
+
 ### v0.9.7
 
 * Adds backup and restore of the Lability host's settings:
