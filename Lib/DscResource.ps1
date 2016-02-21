@@ -55,7 +55,7 @@ function GetDscResource {
         Gets the ResourceName DSC resource configuration.
     .DESCRIPTION
         The GetDscResource cmdlet invokes the target $ResourceName\Get-TargetResource function using the supplied
-        $Parameters hastable.
+        $Parameters hashtable.
 #>
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
