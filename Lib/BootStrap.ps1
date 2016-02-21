@@ -37,7 +37,7 @@ if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
 } #end if localhost.mof
 } #end CoreCLR bootstrap scriptblock
         
-        $sciptBlock = {
+        $scriptBlock = {
 ## Lability DSC Bootstrap
 $VerbosePreference = 'Continue';
 $DebugPreference = 'Continue';
@@ -95,7 +95,7 @@ Stop-Transcript;
             return $coreCLRScriptBlock;
         }
         else {
-            return $sciptBlock;
+            return $scriptBlock;
         }
     } #end process
 } #end function NewBootStrap
