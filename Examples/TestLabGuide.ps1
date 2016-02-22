@@ -1,4 +1,4 @@
-Configuration Example {
+Configuration TestLabGuide {
 <#
     Requires the following custom DSC resources:
         xComputerManagement (v1.4.0.0 or later): https://github.com/PowerShell/xComputerManagement
@@ -13,7 +13,7 @@ Configuration Example {
     )
     Import-DscResource -Module xComputerManagement, xNetworking, xActiveDirectory;
     Import-DscResource -Module xSmbShare, PSDesiredStateConfiguration;
-    Import-DscResource -Module xDHCPServer;
+    Import-DscResource -Module xDHCPServer, xDnsServer;
 
     node $AllNodes.Where({$true}).NodeName {
         LocalConfigurationManager {
@@ -31,14 +31,6 @@ Configuration Example {
                 AddressFamily  = $node.AddressFamily;
             }
 
-            if (-not [System.String]::IsNullOrEmpty($node.DnsServerAddress)) {
-                xDnsServerAddress 'PrimaryDNSClient' {
-                    Address        = $node.DnsServerAddress;
-                    InterfaceAlias = $node.InterfaceAlias;
-                    AddressFamily  = $node.AddressFamily;
-                }
-            }
-
             if (-not [System.String]::IsNullOrEmpty($node.DefaultGateway)) {
                 xDefaultGatewayAddress 'PrimaryDefaultGateway' {
                     InterfaceAlias = $node.InterfaceAlias;
@@ -46,6 +38,22 @@ Configuration Example {
                     AddressFamily = $node.AddressFamily;
                 }
             }
+            
+            if (-not [System.String]::IsNullOrEmpty($node.DnsServerAddress)) {
+                xDnsServerAddress 'PrimaryDNSClient' {
+                    Address        = $node.DnsServerAddress;
+                    InterfaceAlias = $node.InterfaceAlias;
+                    AddressFamily  = $node.AddressFamily;
+                }
+            }
+            
+            if (-not [System.String]::IsNullOrEmpty($node.DnsConnectionSuffix)) {
+                xDnsConnectionSuffix 'PrimaryConnectionSuffix' {
+                    InterfaceAlias = $node.InterfaceAlias;
+                    ConnectionSpecificSuffix = $node.DnsConnectionSuffix;
+                }
+            }
+            
         } #end if IPAddress
         
         xFirewall 'FPS-ICMP4-ERQ-In' {
@@ -81,7 +89,9 @@ Configuration Example {
         foreach ($feature in @(
                 'AD-Domain-Services',
                 'GPMC',
-                'RSAT-AD-Tools'
+                'RSAT-AD-Tools',
+                'DHCP',
+                'RSAT-DHCP'
             )) {
             WindowsFeature $feature.Replace('-','') {
                 Ensure = 'Present';
@@ -97,21 +107,9 @@ Configuration Example {
             DependsOn = '[WindowsFeature]ADDomainServices';
         }
 
-        foreach ($feature in @(
-                'DHCP',
-                'RSAT-DHCP'
-            )) {
-            WindowsFeature $feature.Replace('-','') {
-                Ensure = 'Present';
-                Name = $feature;
-                IncludeAllSubFeature = $true;
-                DependsOn = '[xADDomain]ADDomain';
-            }
-        }
-
         xDhcpServerAuthorization 'DhcpServerAuthorization' {
             Ensure = 'Present';
-            DependsOn = '[WindowsFeature]DHCP';
+            DependsOn = '[WindowsFeature]DHCP','[xADDomain]ADDomain';
         }
         
         xDhcpServerScope 'DhcpScope10_0_0_0' {
@@ -129,25 +127,40 @@ Configuration Example {
             ScopeID = '10.0.0.0';
             DnsDomain = 'corp.contoso.com';
             DnsServerIPAddress = '10.0.0.1';
-            Router = '10.0.0.2';
+            #Router = '10.0.0.2';
             AddressFamily = 'IPv4';
             DependsOn = '[xDhcpServerScope]DhcpScope10_0_0_0';
         }
         
         xADUser User1 { 
             DomainName = $node.DomainName;
-            DomainAdministratorCredential = $domainCredential;
             UserName = 'User1';
+            Description = 'Lability Test Lab user';
             Password = $Credential;
             Ensure = 'Present';
             DependsOn = '[xADDomain]ADDomain';
         }
+        
+        xADGroup DomainAdmins {
+            GroupName = 'Domain Admins';
+            MembersToInclude = 'User1';
+            DependsOn = '[xADUser]User1';
+        }
+        
+        xADGroup EnterpriseAdmins {
+            GroupName = 'Enterprise Admins';
+            GroupScope = 'Universal';
+            MembersToInclude = 'User1';
+            DependsOn = '[xADUser]User1';
+        }
+
     } #end nodes DC
     
     ## INET1 is on the 'Internet' subnet and not domain-joined
     node $AllNodes.Where({$_.Role -in 'CLIENT','APP','EDGE'}).NodeName {
         ## Flip credential into username@domain.com
-        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
+        $upn = '{0}@{1}' -f $Credential.UserName, $node.DomainName;
+        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($upn, $Credential.Password);
 
         xComputer 'DomainMembership' {
             Name = $node.NodeName;
@@ -158,8 +171,9 @@ Configuration Example {
     
     node $AllNodes.Where({$_.Role -in 'APP'}).NodeName {
         ## Flip credential into username@domain.com
-        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ("$($Credential.UserName)@$($node.DomainName)", $Credential.Password);
-        
+        $upn = '{0}@{1}' -f $Credential.UserName, $node.DomainName;
+        $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($upn, $Credential.Password);
+
         foreach ($feature in @(
                 'Web-Default-Doc',
                 'Web-Dir-Browsing',
@@ -193,13 +207,14 @@ Configuration Example {
         xSmbShare 'FilesShare' {
             Name = 'Files';
             Path = 'C:\Files';
-            ChangeAccess = 'BUILTIN\Administrators';
+            ChangeAccess = 'CORP\User1';
             DependsOn = '[File]FilesFolder';
             Ensure = 'Present';
         }
     } #end nodes APP
 
     node $AllNodes.Where({$_.Role -in 'EDGE'}).NodeName {
+
         xIPAddress 'SecondaryIPAddress' {
             IPAddress      = $node.SecondaryIPAddress;
             InterfaceAlias = $node.SecondaryInterfaceAlias;
@@ -212,6 +227,12 @@ Configuration Example {
             InterfaceAlias = $node.SecondaryInterfaceAlias;
             AddressFamily  = $node.AddressFamily
         }
+        
+        xDnsConnectionSuffix 'SecondarySuffix' {
+            InterfaceAlias = $node.SecondaryInterfaceAlias;
+            ConnectionSpecificSuffix = $node.SecondaryDnsConnectionSuffix;
+        }
+
     }
 
     node $AllNodes.Where({$_.Role -in 'INET'}).NodeName {
@@ -262,6 +283,53 @@ Configuration Example {
             Type = 'File';
             Contents = 'Microsoft NCSI';
             DependsOn = '[WindowsFeature]WebDefaultDoc';
+        }
+        
+        xDnsServerPrimaryZone 'isp_example_com' {
+            Name = 'isp.example.com';
+            DependsOn = '[WindowsFeature]DNS';
+        }
+        
+        xDnsRecord 'inet1_isp_example_com' {
+            Name = 'inet1';
+            Target = '131.107.0.1';
+            Zone = 'isp.example.com';
+            Type = 'ARecord';
+            DependsOn = '[xDnsServerPrimaryZone]isp_example_com';
+        }
+        
+        xDnsServerPrimaryZone 'contoso_com' {
+            Name = 'contoso.com';
+            DependsOn = '[WindowsFeature]DNS';
+        }
+        
+        xDnsRecord 'edge1_contoso_com' {
+            Name = 'edge1';
+            Target = '131.107.0.2';
+            Zone = 'contoso.com';
+            Type = 'ARecord';
+            DependsOn = '[xDnsServerPrimaryZone]contoso_com';
+        }
+        
+        xDnsServerPrimaryZone 'msftncsi_com' {
+            Name = 'msftncsi.com';
+            DependsOn = '[WindowsFeature]DNS';
+        }
+        
+        xDnsRecord 'www_msftncsi_com' {
+            Name = 'www';
+            Target = '131.107.0.1';
+            Zone = 'msftncsi.com';
+            Type = 'ARecord';
+            DependsOn = '[xDnsServerPrimaryZone]msftncsi_com';
+        }
+        
+        xDnsRecord 'dns_msftncsi_com' {
+            Name = 'dns';
+            Target = '131.107.255.255';
+            Zone = 'msftncsi.com';
+            Type = 'ARecord';
+            DependsOn = '[xDnsServerPrimaryZone]msftncsi_com';
         }
 
     } #end nodes INET

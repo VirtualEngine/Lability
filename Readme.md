@@ -80,6 +80,11 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+* Fixes BandwidthReservationMode bug where duplicate virtual switches are created.
+* Moves examples into the \Examples directory.
+* Removes trailing space causing Resources.psd1 here string to not appear correctly in certain editors (like VS Code).
+* Adds missing EnvironmentPrefix/Suffix support and tests to Start-Lab, Stop-Lab, Checkpoint-Lab and Restore-Lab.
+
 ### v0.9.7
 
 * Adds backup and restore of the Lability host's settings:

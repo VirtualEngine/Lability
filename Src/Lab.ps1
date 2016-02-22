@@ -48,10 +48,10 @@ function Start-Lab {
                 };
         $nodes | Sort-Object { $_.BootOrder } |
             ForEach-Object {
-                WriteVerbose ($localized.StartingVirtualMachine -f $_.NodeName);
-                Start-VM -Name $_.NodeName;
+                WriteVerbose ($localized.StartingVirtualMachine -f $_.NodeDisplayName);
+                Start-VM -Name $_.NodeDisplayName;
                 if ($_.BootDelay -gt 0) {
-                    WriteVerbose ($localized.WaitingForVirtualMachine -f $_.BootDelay, $_.NodeName);
+                    WriteVerbose ($localized.WaitingForVirtualMachine -f $_.BootDelay, $_.NodeDisplayName);
                     Start-Sleep -Seconds $_.BootDelay;
                 }
             };
@@ -108,10 +108,10 @@ function Stop-Lab {
                 };
         $nodes | Sort-Object { $_.BootOrder } -Descending |
             ForEach-Object {
-                WriteVerbose ($localized.StoppingVirtualMachine -f $_.NodeName);
-                Stop-VM -Name $_.NodeName;
+                WriteVerbose ($localized.StoppingVirtualMachine -f $_.NodeDisplayName);
+                Stop-VM -Name $_.NodeDisplayName;
                 if ($_.BootDelay -gt 0) {
-                    WriteVerbose ($localized.WaitingForVirtualMachine -f $_.BootDelay, $_.NodeName);
+                    WriteVerbose ($localized.WaitingForVirtualMachine -f $_.BootDelay, $_.NodeDisplayName);
                     Start-Sleep -Seconds $_.BootDelay;
                 }
             };
@@ -203,19 +203,21 @@ function Checkpoint-Lab {
         $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
     }
     process {
-         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' } | ForEach-Object { $_.NodeName };
-         $runningNodes = Get-VM -Name $nodes | Where-Object { $_.State -ne 'Off' }
-         if ($runningNodes -and $Force) {
-            NewLabVMSnapshot -Name $nodes -SnapshotName $SnapshotName;
-         }
-         elseif ($runningNodes) {
+        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' } | ForEach-Object {
+             ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
+        };
+        $runningNodes = Get-VM -Name $nodes.NodeDisplayName | Where-Object { $_.State -ne 'Off' }
+        if ($runningNodes -and $Force) {
+            NewLabVMSnapshot -Name $nodes.NodeDisplayName -SnapshotName $SnapshotName;
+        }
+        elseif ($runningNodes) {
             foreach ($runningNode in $runningNodes) {
                 Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.Name);
             }
-         }
-         else {
-            NewLabVMSnapshot -Name $nodes -SnapshotName $SnapshotName;
-         }
+        }
+        else {
+            NewLabVMSnapshot -Name $nodes.NodeDisplayName -SnapshotName $SnapshotName;
+        }
     } #end process
 } #end function Checkpoint-Lab
 
@@ -272,26 +274,26 @@ function Restore-Lab {
                     $nodes += ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
                 };
         $runningNodes = $nodes | ForEach-Object {
-            Get-VM -Name $_.NodeName } |
+            Get-VM -Name $_.NodeDisplayName } |
                 Where-Object { $_.State -ne 'Off' }
             
         if ($runningNodes -and $Force) {
             $nodes | Sort-Object { $_.BootOrder } |
                 ForEach-Object {
-                    WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeName,  $SnapshotName);
-                    GetLabVMSnapshot -Name $_.NodeName -SnapshotName $SnapshotName | Restore-VMSnapshot;
+                    WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName,  $SnapshotName);
+                    GetLabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
                 }
         }
         elseif ($runningNodes) {
             foreach ($runningNode in $runningNodes) {
-                Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.NodeName);
+                Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.NodeDisplayName);
             }
         }
         else {
             $nodes | Sort-Object { $_.BootOrder } |
                 ForEach-Object {
-                    WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeName,  $SnapshotName);
-                    GetLabVMSnapshot -Name $_.NodeName -SnapshotName $SnapshotName | Restore-VMSnapshot -Confirm:$false;
+                    WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName,  $SnapshotName);
+                    GetLabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot -Confirm:$false;
                 }
         }
     } #end process
