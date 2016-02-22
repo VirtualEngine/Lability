@@ -29,6 +29,28 @@ Describe 'Lab' {
                 
                 Assert-MockCalled Start-VM -Exactly ($configurationData.AllNodes).Count -Scope It;
             }
+            
+            It 'Starts VM using display name' {
+                $testVMName = 'VM1';
+                $testEnvironmentPrefix = 'Test_';
+                $testVMDisplayName = '{0}{1}' -f $testEnvironmentPrefix, $testVMName;
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; }
+                    )
+                    NonNodeData = @{
+                        Lability = @{
+                            EnvironmentPrefix = $testEnvironmentPrefix;
+                        }
+                    }
+                }
+                Mock Start-VM -ParameterFilter { $Name -eq $testVMDisplayName }  -MockWith { }
+                Mock Start-Sleep -MockWith { }
+                
+                Start-Lab -ConfigurationData $configurationData;
+                
+                Assert-MockCalled Start-VM -ParameterFilter { $Name -eq $testVMDisplayName } -Scope It;
+            }
 
             It 'Starts VMs in boot order' {
                 $configurationData = @{
@@ -78,6 +100,28 @@ Describe 'Lab' {
                 Assert-MockCalled Stop-VM -Exactly ($configurationData.AllNodes).Count -Scope It;
             }
 
+            It 'Stops VM using display name' {
+                $testVMName = 'VM1';
+                $testEnvironmentPrefix = 'Test_';
+                $testVMDisplayName = '{0}{1}' -f $testEnvironmentPrefix, $testVMName;
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; }
+                    )
+                    NonNodeData = @{
+                        Lability = @{
+                            EnvironmentPrefix = $testEnvironmentPrefix;
+                        }
+                    }
+                }
+                Mock Stop-VM -ParameterFilter { $Name -eq $testVMDisplayName }  -MockWith { }
+                Mock Start-Sleep -MockWith { }
+                
+                Stop-Lab -ConfigurationData $configurationData;
+                
+                Assert-MockCalled Stop-VM -ParameterFilter { $Name -eq $testVMDisplayName } -Scope It;
+            }
+            
             It 'Stops VMs in boot order' {
                 $configurationData = @{
                     AllNodes = @(
@@ -142,6 +186,29 @@ Describe 'Lab' {
                 Checkpoint-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
                 Assert-MockCalled NewLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName };
+            }
+            
+            It 'Snapshots VM using display name' {
+                $testVMName = 'VM1';
+                $testEnvironmentPrefix = 'Test_';
+                $testVMDisplayName = '{0}{1}' -f $testEnvironmentPrefix, $testVMName;
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; }
+                    )
+                    NonNodeData = @{
+                        Lability = @{
+                            EnvironmentPrefix = $testEnvironmentPrefix;
+                        }
+                    }
+                }
+                $testSnapshotName = 'Test Snapshot';
+                Mock Get-VM -MockWith { return [PSCustomObject] @{ State = 'Off' }; }
+                Mock NewLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName } -MockWith { }
+
+                Checkpoint-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
+
+                Assert-MockCalled NewLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
             }
 
             It 'Errors when there is one running VM' {
@@ -210,6 +277,30 @@ Describe 'Lab' {
                 Restore-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
                 Assert-MockCalled GetLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName } -Scope It;
+            }
+            
+            It 'Restores VM snapshot using display name' {
+                $testVMName = 'VM1';
+                $testEnvironmentPrefix = 'Test_';
+                $testVMDisplayName = '{0}{1}' -f $testEnvironmentPrefix, $testVMName;
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; }
+                    )
+                    NonNodeData = @{
+                        Lability = @{
+                            EnvironmentPrefix = $testEnvironmentPrefix;
+                        }
+                    }
+                }
+                $testSnapshotName = 'Test Snapshot';
+                Mock Get-VM -MockWith { return [PSCustomObject] @{ State = 'Off' }; }
+                Mock Restore-VMSnapshot -MockWith { } #TODO: Cannot mock pipeline input to Restore-VMSnapshot?
+                Mock GetLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName } -MockWith { }
+                
+                Restore-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
+
+                Assert-MockCalled GetLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
             }
 
             It 'Errors when there is a running VM' {
