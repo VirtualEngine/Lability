@@ -5,30 +5,30 @@ SHORT DESCRIPTION
 
         Additional custom media/images can be used to either supplement the default built-in media or to override
         the built-in media with alternative media/images.
-    
+
 LONG DESCRIPTION
 
         By default, Lability only includes evaluation media (and will automatically download this if it is not present
         on the host machine). If you wish to use VLK or MAK media you must provide your own media.
-        
+
         You can also override the default media with your own implementation(s). This is useful if you have an
         existing image that you wish to use instead of the built-in media or wish to specify a shared file server in a
         team environment.
-            
+
         Additional media can be added to the default Lability media either by registering it (in advance) in the
         host's configuration or by defining it within the PowerShell DSC configuration (.psd1) document. The following
         custom media types are supported:
-        
+
             * VHD
             * WIM
             * ISO
-        
+
         This media can be downloaded from a web server or from an accessible file server as long as it is contactable
         from the host machine. It is possible to manually download media on to the host machine.
         See about_CustomResource for more infomation.
-        
-        NOTE: when using ISO media only Windows 8.1/Server 2012R2 (and onwards) operating systems are supported.        
-        
+
+        NOTE: WHEN USING ISO MEDIA, ONLY WINDOWS 8.1/SERVER 2012R2 (AND NEWER) OPERATING SYSTEMS ARE SUPPORTED.
+
         WMF 4+ must already be included for ISO images - does not support Win 7, 2008 R2, Win 8 and 2012
 
 SUPPORTED MEDIA PROPERTIES
@@ -59,9 +59,9 @@ NANO DISK IMAGES
         Deploying Nano server images is possible, but requires registering custom media specifying the packages to
         include. The built-in Nano server media only contains the Guest, DSC, Compute, Containers and DNS packages.
         To see an example of the existing Nano server configuration, run the following command:
-        
+
             PS C:\> Get-LabMedia -Id 2016TP4_x64_NANO_EN
-            
+
             Id           : 2016TP4_x64_NANO_EN
             Filename     : 2016TP4_x64_EN.iso
             Description  : Windows Server 2016 Technical Preview 4 Nano 64bit English
@@ -77,24 +77,29 @@ NANO DISK IMAGES
 
         The Nano specific packages included in the VHDX are contained in the CustomData property. Custom media can be
         added to installed alternate packages, as required.
-        
+
+        NOTE: DUE TO THE CURRENT RESTRICTIONS IN THE CORECLE IMPLEMENTATION ON NANO SERVER, IMPORTING .PFX CERTIFICATES
+              IS UNRELIABLE. THEREFORE, IT IS NOT PRESENTLY POSSIBLE TO USE ENCRYPTED CREDENTIALS. THIS WILL HOPEFULLY
+              BE RESOLVED IN A LATER SERVER 2016 RELEASE.
+
 EXISTING DISK IMAGES
 
         Lability natively supports all Windows operating systems that include the Windows Management Framework (WMF)
         v4 or later: Windows 8.1, Windows Server 2012 R2, Windows 10 and Windows Server 2016. To support earlier
         operating systems, for example Windows 7, registering existing custom VHD(X) disk images is required.
-        
+
         To use an existing disk image, the following prerequisites are required:
-        
+
             *  WMF 4+ must be installed on Win 7, 2008 R2, Win 8 and 2012 disk images to support PowerShell Desired
                State Configuration within the VM.
+                - KB3109118 should also be installed on pre- Win 8.1 and 2012 R2 disk images.
             *  PowerShell Desired State Configuration hotfixes must either be installed in the disk image or specified
                in the Hotfixes property in the custom media definition.
             *  Disk images with Windows installed must be generalised with Sysprep.
-            
+
         Existing VHD(X) images can be registered with the `Register-LabMedia` cmdlet. The following example registers
         an existing `2012R2_x64_Standard_EN_VL.vhdx` virtual hard disk file.
-        
+
             PS C:\> $customMedia = @{
                 Id = 2012R2_x64_Standard_EN_VL;
                 Filename = 2012R2_x64_Standard_EN_VL.vhdx;
@@ -110,9 +115,9 @@ LINUX DISK IMAGES
         Deploying a Linux-based virtual machine from a master VHD(X) file is supported, but configuration inside of
         the virtual machine is not (currently) possible. For example, deploying a Citrix NetScaler VM from a master
         VHD(X) is supported, but there is no (current) way of injecting files or applying an additional configuration.
-        
+
         The following example registers a Citrix NetScaler image:
-        
+
             PS C:\> $NSVPX11 = @{
                 Id = "NSVPX_11";
                 Filename = "NSVPX-11.0-63.16_nc.vhd"
@@ -122,8 +127,8 @@ LINUX DISK IMAGES
                 OperatingSystem = "Linux";
                 Uri = "\\MyFileServer\Images\NSVPX-11.0-63.16_nc.vhd";
             }
-            PS C:\> Register-LabMedia @NSVPX11 -Force;  
-        
+            PS C:\> Register-LabMedia @NSVPX11 -Force;
+
 KEYWORDS
 
         Custom Media
@@ -136,4 +141,3 @@ SEE ALSO
         about_CustomResources
         Register-LabMedia
         Unregister-LabMedia
-     

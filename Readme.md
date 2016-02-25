@@ -26,10 +26,10 @@ provision the following resources:
  * Connect to the correct virtual switches
  * Inject DSC resources from the host machine
  * Inject a dynamically created Unattend.xml file
- * Inject external ISO, EXE and ZIP resources 
+ * Inject external ISO, EXE and ZIP resources
  * Inject the virtual machine's DSC document
  * Invoke the Local Configuration Manager (LCM) after Sysprep
- 
+
 An example DSC configuration document might look the following. Note: this is a
 standard DSC .psd1 configuration document, but has been extended with specific
 properties which the __Lability__ module can interpret.
@@ -48,7 +48,7 @@ properties which the __Lability__ module can interpret.
             Lability_ProcessorCount = 1;
 			Lability_SwitchName = 'CORPNET';
 			Lability_Media = '2012R2_x64_Standard_EN_Eval';
-		}	
+		}
 	)
 	NonNodeData = @{
         Lability = @{
@@ -84,6 +84,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Moves examples into the \Examples directory.
 * Removes trailing space causing Resources.psd1 here string to not appear correctly in certain editors (like VS Code).
 * Adds missing EnvironmentPrefix/Suffix support and tests to Start-Lab, Stop-Lab, Checkpoint-Lab and Restore-Lab.
+* Adds Windows Management Framework v5 media IDs for Windows 8.1 and Server 2012 R2 evaluations.
 
 ### v0.9.7
 
