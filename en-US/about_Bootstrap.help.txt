@@ -13,21 +13,22 @@ LONG DESCRIPTION
         Lability will customise the virtual machine by using a custom bootstrap. The bootstrap is applied at the end
         of the deployment process and, by default, initiates the PowerShell Desired State Configuration (DSC) Local
         Configuration Manager (LCM) configuration process.
-        
+
         If needed, this custom bootstrap process can be extended either within the media's definition and/or within a
         node's configuration. For example, desktop Operating Systems do not have the local Administrator account
         enabled and PowerShell Remoting disabled. A customised bootstrap is included in the built-in client Operating
         System images' configurations to enable the local Administrator account and enable PowerShell Remoting after
         the Unattend.xml file has been applied.
-        
+
         The following default bootstrap is applied to all virtual machines deployed by Lability (other than Nano
         Server images).
-        
+
         {
-            ## VirtualEngine.Lab DSC Bootstrap
+            ## Lability DSC Bootstrap
             $VerbosePreference = 'Continue';
             $DebugPreference = 'Continue';
-            Start-Transcript -Path "$env:SystemDrive\BootStrap\BootStrap.log" -Force;
+            $transcriptPath = '{0}\BootStrap\Bootstrap-{1}.log' -f $env:SystemDrive, (Get-Date).ToString('yyyyMMdd-hhmmss');
+            Start-Transcript -Path $transcriptPath -Force;
 
             certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
             ## Import the .PFX certificate with a blank password
@@ -39,35 +40,55 @@ LONG DESCRIPTION
                 Set-DscLocalConfigurationManager -Path "$env:SystemDrive\BootStrap\" -Verbose;
             }
 
-            while ($true) {
-                ## Replay the configuration until the LCM takes it!
-                try {
-                    if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.mof") {
-                        Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
+            $localhostMofPath = "$env:SystemDrive\BootStrap\localhost.mof";
+            if (Test-Path -Path $localhostMofPath) {
+                if ($PSVersionTable.PSVersion.Major -eq 4) {
+                    ## Convert the .mof to v4 compatible - credit to Mike Robbins
+                    ## http://mikefrobbins.com/2014/10/30/powershell-desired-state-configuration-error-undefined-property-configurationname/
+                    $mof = Get-Content -Path $localhostMofPath;
+                    $mof -replace '^\sName=.*;$|^\sConfigurationName\s=.*;$' | Set-Content -Path $localhostMofPath -Encoding Ascii -Force;
+                }
+                while ($true) {
+                    ## Replay the configuration until the LCM bloody-well takes it!
+                    try {
+                        if (Test-Path -Path "$env:SystemRoot\System32\Configuration\Pending.mof") {
+                            Start-DscConfiguration -UseExisting -Force -Wait -Verbose -ErrorAction Stop;
+                            break;
+                        }
+                        else {
+                            Start-DscConfiguration -Path "$env:SystemDrive\Bootstrap\" -Force -Wait -Verbose -ErrorAction Stop;
+                            break;
+                        }
                     }
-                    break;
-                }
-                catch {
-                    Write-Error -Message $_;
-                    Start-Sleep -Seconds 5;
-                }
-            } #end while
-            
+                    catch {
+                        Write-Error -Message $_;
+                        ## SIGH. Try restarting WMI..
+                        if (-not ($interation % 10)) {
+                            ## SIGH. Try removing the configuration and restarting WMI..
+                            Remove-DscConfigurationDocument -Stage Current,Pending,Previous -Force;
+                            Restart-Service -Name Winmgmt -Force;
+                        }
+                        Start-Sleep -Seconds 5;
+                        $interation++;
+                    }
+                } #end while
+            } #end if localhost.mof
+
             Stop-Transcript;
         }
-        
+
         An additional custom bootstrap can be injected into the default bootstrap script block. It is inserted into the
         template scriptblock at the `<#CustomBootStrapInjectionPoint#>` marker above.
-    
+
 MEDIA BOOTSTRAP
 
         If an image/media requires additional configuration during the deployment process, a custom bootstrap can be
         defined within the media's CustomData hashtable.
-        
+
         NOTE: THE BUILT-IN WINDOWS 8.1 AND WINDOWS 10 MEDIA INCLUDES THE FOLLOWING CUSTOM BOOTSTRAP.
-        
+
         The following example adds a custom bootstrap:
-        
+
         $customData = @{
             CustomBootstrap = @(
                 '## Unattend.xml will set the Administrator password, but it won''t enable the account on client OSes',
@@ -77,7 +98,7 @@ MEDIA BOOTSTRAP
             )
         }
         Register-LabMedia -Id CustomBootstrap -CustomData $customData ...
-        
+
         NOTE: THE MEDIA CUSTOM BOOTSTRAP IS SPECIFIED AS A STRING ARRAY [STRING[]]
 
 NODE BOOTSTRAP
@@ -86,9 +107,9 @@ NODE BOOTSTRAP
         be defined within the node's configuration data. The following example shows enabling the local Administrator
         account and enabling PowerShell Remoting as these are not enabled by default on Windows client Operating
         Systems.
-        
+
         NOTE: THIS IS ALREADY INCLUDED FOR THE BUILT-IN CLIENT OPERATING SYSTEMS' MEDIA AND IS SHOWN AS AN EXAMPLE.
-        
+
         @{
             AllNodes = @(
                 NodeName       = 'CLIENT1';
@@ -102,23 +123,23 @@ NODE BOOTSTRAP
 '@
             )
         }
-        
+
         NOTE: THE NODE CUSTOM BOOTSTRAP IS SPECIFIED AS A [STRING] TYPE, NOT A STRING ARRAY [STRING[]]
 
 BOOTSTRAP ORDER
 
         If a custom bootstrap is specified in both the media's definition and on a node's bootstrap, the media-
         specific bootstrap is applied during deployment first, followed by the node's custom bootstrap.
-        
+
         You can change the default custom bootstrap order using the `Set-LabVMDefault` command. The following options
         are available on the `Set-LabVMDefault -CustomBootstrapOrder` command:
-        
+
             *  Disabled
             *  ConfigurationFirst
             *  ConfigurationOnly
             *  MediaFirst
             *  MediaOnly
-            
+
        The default custom bootstrap order can also be overridden in a node's configuration.
 
 KEYWORDS
@@ -129,4 +150,3 @@ SEE ALSO
     about_Media
     about_CustomResource
     Register-LabMedia
-        
