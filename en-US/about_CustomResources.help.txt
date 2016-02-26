@@ -32,7 +32,7 @@ LONG DESCRIPTION
             NonNodeData = @{
                 Lability = @{
 
-                    Resources = @(
+                    Resource = @(
 
                         @{
                             ##  Resource identifier. If the resource is to be expanded (ZIP or ISO), it will also be
