@@ -80,11 +80,12 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
-* Fixes BandwidthReservationMode bug where duplicate virtual switches are created.
+* Fixes BandwidthReservationMode bug where duplicate 'Internal' virtual switches are created.
 * Moves examples into the \Examples directory.
 * Removes trailing space causing Resources.psd1 here string to not appear correctly in certain editors (like VS Code).
 * Adds missing EnvironmentPrefix/Suffix support and tests to Start-Lab, Stop-Lab, Checkpoint-Lab and Restore-Lab.
 * Adds Windows Management Framework v5 media IDs for Windows 8.1 and Server 2012 R2 evaluations.
+* Updates bootstrap MOF encoding to Unicode and increases MaxEnvelopeSizekb to 1024Kb to support large .mof files.
 
 ### v0.9.7
 
