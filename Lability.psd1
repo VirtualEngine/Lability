@@ -13,7 +13,8 @@
         'Test-LabImage', 'New-LabImage', 'Get-LabMedia', 'Test-LabMedia', 'Register-LabMedia', 'Unregister-LabMedia',
         'Reset-LabMedia', 'Test-LabNodeConfiguration', 'Invoke-LabNodeConfiguration', 'Test-LabResource',
         'Invoke-LabResourceDownload', 'Get-LabVM', 'Test-LabVM', 'Reset-LabVM', 'New-LabVM', 'Remove-LabVM',
-        'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault','Export-LabHostConfiguration','Import-LabHostConfiguration');
+        'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault','Export-LabHostConfiguration','Import-LabHostConfiguration'
+        'Get-LabNodeResourceList','Show-LabNodeResourceList');
     PrivateData = @{
         PSData = @{  # Private data to pass to the module specified in RootModule/ModuleToProcess
             Tags = @('VirtualEngine','Lability','Powershell','Development','Test','Lab','TestLab');
