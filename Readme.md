@@ -87,6 +87,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Adds Windows Management Framework v5 media IDs for Windows 8.1 and Server 2012 R2 evaluations.
 * Updates bootstrap MOF encoding to Unicode and increases MaxEnvelopeSizekb to 1024Kb to support large .mof files.
 * Adds Get-LabNodeResourceList and Show-LabNodeResourceList cmdlets to support bootstrapping manually configured VMs.
+* Fixes bug in Quick VM switch creation always creating the switch using the default switch name.
 
 ### v0.9.7
 
