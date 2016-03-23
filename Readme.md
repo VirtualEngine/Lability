@@ -86,6 +86,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Adds missing EnvironmentPrefix/Suffix support and tests to Start-Lab, Stop-Lab, Checkpoint-Lab and Restore-Lab.
 * Adds Windows Management Framework v5 media IDs for Windows 8.1 and Server 2012 R2 evaluations.
 * Updates bootstrap MOF encoding to Unicode and increases MaxEnvelopeSizekb to 1024Kb to support large .mof files.
+* Adds Get-LabNodeResourceList and Show-LabNodeResourceList cmdlets to support bootstrapping manually configured VMs.
 
 ### v0.9.7
 
