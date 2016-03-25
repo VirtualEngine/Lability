@@ -1,6 +1,6 @@
+/Release
 /bin
 /obj
 *.sln
 *.suo
 *.pssproj
-.vscode/settings.json
