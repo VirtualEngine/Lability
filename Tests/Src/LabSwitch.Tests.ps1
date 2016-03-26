@@ -14,7 +14,7 @@ Describe 'LabSwitch' {
     InModuleScope $moduleName {
 
         Context 'Validates "NewLabSwitch" method' {
-            
+
             It 'Returns a "System.Collections.Hashtable" object type' {
                 $testSwitchName = 'TestSwitch';
                 $newSwitchParams = @{
@@ -31,7 +31,7 @@ Describe 'LabSwitch' {
                     Name = $testSwitchName;
                     Type = 'External';
                 }
-                
+
                 { NewLabSwitch @newSwitchParams } | Should Throw;
             }
 
@@ -41,9 +41,9 @@ Describe 'LabSwitch' {
                     Name = $testSwitchName;
                     Type = 'Internal';
                 }
-                
+
                 $labSwitch = NewLabSwitch @newSwitchParams;
-                
+
                 $labSwitch.NetAdapaterName | Should BeNullOrEmpty;
             }
 
@@ -53,17 +53,17 @@ Describe 'LabSwitch' {
                     Name = $testSwitchName;
                     Type = 'Internal';
                 }
-                
+
                 $labSwitch = NewLabSwitch @newSwitchParams;
-                
+
                 $labSwitch.AllowManagementOS | Should BeNullOrEmpty;
             }
 
         } #end context Validates "NewLabSwitch" method
 
         Context 'Validates "ResolveLabSwitch" method' {
-            
-            
+
+
             It 'Returns a "System.Collections.Hashtable" object type' {
                 $testSwitchName = 'Test Switch';
                 $testSwitchType = 'Private';
@@ -75,7 +75,7 @@ Describe 'LabSwitch' {
                 }
                 Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { }
                 Mock Get-VMSwitch { }
-                
+
                 $configurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
@@ -84,7 +84,7 @@ Describe 'LabSwitch' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
 
                 $labSwitch = ResolveLabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;
-                
+
                 $labSwitch -is [System.Collections.Hashtable] | Should Be $true;
             }
 
@@ -92,7 +92,7 @@ Describe 'LabSwitch' {
                 $testSwitchName = 'Test Switch';
                 $testSwitchType = 'Private';
                 $defaultSwitchName = 'DefaultInternalSwitch';
-                
+
                 $fakeExistingSwitch = [PSCustomObject] @{
                     Name = $testSwitchName;
                     SwitchType = 'External';
@@ -100,7 +100,7 @@ Describe 'LabSwitch' {
                     NetAdapterInterfaceDescription = 'Ethernet Adapter #1';
                     IsExisting = $true;
                 }
-                
+
                 $configurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
@@ -108,24 +108,24 @@ Describe 'LabSwitch' {
                                 @{ Name = $testSwitchName; Type = $testSwitchType; }
                             ) } } }
                 $fakeConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
-                
+
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
                 Mock Get-NetAdapter { return @{ Name = 'Ethernet Adapter #1';} }
                 Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
                 Mock Get-VMSwitch { }
 
                 $labSwitch = ResolveLabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;;
-                
+
                 $labSwitch.Name | Should Be $testSwitchName;
                 $labSwitch.Type | Should Be $testSwitchType;
                 $labSwitch.IsExisting | Should BeNullOrEmpty;
             }
-            
-            
+
+
             It 'Returns existing "External" switch if "Name" cannot be resolved' {
                 $testSwitchName = 'Test Switch';
                 $testSwitchType = 'External';
-                
+
                 $fakeExistingSwitch = [PSCustomObject] @{
                     Name = $testSwitchName;
                     SwitchType = $testSwitchType;
@@ -147,8 +147,8 @@ Describe 'LabSwitch' {
                 $labSwitch.IsExisting | Should Be $true;
             }
 
-            It 'Returns the default "Internal" switch if "Name" parameter cannot be resolved' {
-                $testSwitchName = 'Test Switch';
+            It 'Returns a default "Internal" switch if the switch cannot be resolved' {
+                $testSwitchName = 'TestSwitch';
                 $defaultSwitchName = 'DefaultInternalSwitch';
                 $configurationData = @{
                     NonNodeData = @{
@@ -160,8 +160,8 @@ Describe 'LabSwitch' {
                 Mock Get-VMSwitch { }
 
                 $labSwitch = ResolveLabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;;
-                
-                $labSwitch.Name | Should Be $defaultSwitchName;
+
+                $labSwitch.Name | Should Be $testSwitchName;
                 $labSwitch.Type | Should Be 'Internal';
                 $labSwitch.IsExisting | Should BeNullOrEmpty;
             }
@@ -176,10 +176,10 @@ Describe 'LabSwitch' {
                             Network = @( ) } } }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $true; }
-                
+
                 TestLabSwitch -ConfigurationData $configurationData -Name 'ExistingSwitch' | Should Be $true;
             }
-            
+
             It 'Passes when an existing switch is found' {
                 $testSwitchName = 'Existing Virtual Switch';
                 $fakeExistingSwitch = [PSCustomObject] @{
@@ -189,7 +189,7 @@ Describe 'LabSwitch' {
                 }
                 $configurationData = @{ }
                 Mock ResolveLabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
-                
+
                 TestLabSwitch -ConfigurationData $configurationData -Name $testSwitchName | Should Be $true;
             }
 
@@ -201,7 +201,7 @@ Describe 'LabSwitch' {
                 Mock Get-VMSwitch { }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $false; }
-                
+
                 TestLabSwitch -ConfigurationData $configurationData -Name 'NonExistentSwitch' | Should Be $false;
             }
 
@@ -222,7 +222,7 @@ Describe 'LabSwitch' {
 
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -Scope It;
             }
-            
+
             It 'Does not call "InvokeDscResource" for an existing switch' {
                 $testSwitchName = 'Existing Virtual Switch';
                 $fakeExistingSwitch = [PSCustomObject] @{
@@ -233,7 +233,7 @@ Describe 'LabSwitch' {
                 $configurationData = @{ }
                 Mock ResolveLabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
                 Mock InvokeDscResource { }
-                
+
                 SetLabSwitch -ConfigurationData $configurationData -Name $testSwitchName;
 
                 Assert-MockCalled InvokeDscResource -Exactly 0 -Scope It;
@@ -242,7 +242,7 @@ Describe 'LabSwitch' {
 
         Context 'Validates "RemoveLabSwitch" method' {
 
-            It 'Calls "InvokeDscResource" with "Ensure" = "Absent"' { 
+            It 'Calls "InvokeDscResource" with "Ensure" = "Absent"' {
                 $configurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
@@ -255,7 +255,7 @@ Describe 'LabSwitch' {
 
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
             }
-            
+
             It 'Does not call "InvokeDscResource" for an existing switch' {
                 $testSwitchName = 'Existing Virtual Switch';
                 $fakeExistingSwitch = [PSCustomObject] @{
@@ -266,12 +266,12 @@ Describe 'LabSwitch' {
                 $configurationData = @{ }
                 Mock ResolveLabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
                 Mock InvokeDscResource { }
-                
+
                 RemoveLabSwitch -ConfigurationData $configurationData -Name $testSwitchName;
 
                 Assert-MockCalled InvokeDscResource -Exactly 0 -Scope It;
             }
-        
+
         } #end context Validates "RemoveLabSwitch" method
 
     } #end InModuleScope

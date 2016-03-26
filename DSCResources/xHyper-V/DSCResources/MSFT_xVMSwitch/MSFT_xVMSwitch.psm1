@@ -228,48 +228,53 @@ function Test-TargetResource
             # If switch should be present, check the switch type
             if($Ensure -eq 'Present')
             {
-                # If the BandwidthReservsationMode is correct, or if $switch.BandwidthReservationMode is $null which means it isn't supported on the OS
-                Write-Verbose -Message "Checking if Switch $Name has correct BandwidthReservationMode ..."
-                if($switch.BandwidthReservationMode -eq $BandwidthReservationMode -or $switch.BandwidthReservationMode -eq $null)
-                {
-                    Write-Verbose -Message "Switch $Name has correct BandwidthReservationMode or it does not apply to this OS"
-
-                    # If switch is the external type, check additional propeties
-                    if($switch.SwitchType -eq 'External')
+                ## Only check the BandwidthReservationMode if specified
+                if ($PSBoundParameters.ContainsKey('BandwidthReservationMode')) {
+                    # If the BandwidthReservationMode is correct, or if $switch.BandwidthReservationMode is $null which means it isn't supported on the OS
+                    Write-Verbose -Message "Checking if Switch $Name has correct BandwidthReservationMode ..."
+                    if($switch.BandwidthReservationMode -eq $BandwidthReservationMode -or $switch.BandwidthReservationMode -eq $null)
                     {
-                        Write-Verbose -Message "Checking if Switch $Name has correct NetAdapterInterface ..."
-                        if((Get-NetAdapter -Name $NetAdapterName -ErrorAction SilentlyContinue).InterfaceDescription -ne $switch.NetAdapterInterfaceDescription)
+                        Write-Verbose -Message "Switch $Name has correct BandwidthReservationMode or it does not apply to this OS"
+                    }
+                    else
+                    {
+                        Write-Verbose -Message "Switch $Name does not have correct BandwidthReservationMode "
+                        return $false
+                    }
+                }
+
+                # If switch is the external type, check additional propeties
+                if($switch.SwitchType -eq 'External')
+                {
+                    Write-Verbose -Message "Checking if Switch $Name has correct NetAdapterInterface ..."
+                    if((Get-NetAdapter -Name $NetAdapterName -ErrorAction SilentlyContinue).InterfaceDescription -ne $switch.NetAdapterInterfaceDescription)
+                    {
+                        return $false
+                    }
+                    else
+                    {
+                        Write-Verbose -Message "Switch $Name has correct NetAdapterInterface"
+                    }
+                
+                    if($PSBoundParameters.ContainsKey("AllowManagementOS"))
+                    {
+                        Write-Verbose -Message "Checking if Switch $Name has AllowManagementOS set correctly..."
+                        if(($switch.AllowManagementOS -ne $AllowManagementOS))
                         {
                             return $false
                         }
                         else
                         {
-                            Write-Verbose -Message "Switch $Name has correct NetAdapterInterface"
+                            Write-Verbose -Message "Switch $Name has AllowManagementOS set correctly"
                         }
-                    
-                        if($PSBoundParameters.ContainsKey("AllowManagementOS"))
-                        {
-                            Write-Verbose -Message "Checking if Switch $Name has AllowManagementOS set correctly..."
-                            if(($switch.AllowManagementOS -ne $AllowManagementOS))
-                            {
-                                return $false
-                            }
-                            else
-                            {
-                                Write-Verbose -Message "Switch $Name has AllowManagementOS set correctly"
-                            }
-                        }
-                        return $true
                     }
-                    else
-                    {
-                        return $true
-                    }
+                    return $true
                 }
                 else
                 {
-                    return $false
+                    return $true
                 }
+                
             }
             # If switch should be absent, but is there, return $false
             else

@@ -11,11 +11,11 @@ function Test-LabResource {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Lab resource Id to test.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ResourceId,
-        
+
         ## Lab resource path
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ResourcePath
@@ -30,11 +30,11 @@ function Test-LabResource {
     process {
         if ($resourceId) { $resources = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId }
         else { $resources = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource }
-        
+
         foreach ($resource in $resources) {
             $fileName = $resource.Id;
             if ($resource.Filename) { $fileName = $resource.Filename; }
-            
+
             $testResourceDownloadParams = @{
                 DestinationPath = Join-Path -Path $ResourcePath -ChildPath $fileName;;
                 Uri = $resource.Uri;
@@ -61,18 +61,18 @@ function TestLabLocalResource {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Lab resource Id to test.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $ResourceId,
-        
+
         ## Node's target resource folder
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $LocalResourcePath
     )
     process {
         $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId;
-        
+
         if (($resource.Expand) -and ($resource.Expand -eq $true)) {
             ## Check the ResourceId folder is present
             $resourcePath = Join-Path -Path $LocalResourcePath -ChildPath $resourceId;
@@ -91,9 +91,9 @@ function TestLabLocalResource {
         }
         else {
             $resourcePath = Join-Path -Path $LocalResourcePath -ChildPath $resource.Filename;
-            $isPresent = Test-Path -Path $resourcePath -PathType Leaf; 
+            $isPresent = Test-Path -Path $resourcePath -PathType Leaf;
         }
-        
+
         if ($isPresent) {
             WriteVerbose -Message ($localized.ResourceFound -f $resourcePath);
             return $true;
@@ -111,7 +111,7 @@ function Invoke-LabResourceDownload {
         Starts a download of all required lab resources.
     .DESCRIPTION
         When a lab configuration is started, Lability will attempt to download all the required media and resources.
-        
+
         In some scenarios you many need to download lab resources in advance, e.g. where internet access is not
         readily available or permitted. The `Invoke-LabResourceDownload` cmdlet can be used to manually download
         all required resources or specific media/resources as needed.
@@ -152,7 +152,7 @@ function Invoke-LabResourceDownload {
     .EXAMPLE
         Invoke-LabResourceDownload -ConfigurationData ~\Documents\MyLab.psd1 -Resources -DSCResources
 
-        Downloads only the custom file resources and DSC resources defined in the 'MyLab.psd1' configuration.    
+        Downloads only the custom file resources and DSC resources defined in the 'MyLab.psd1' configuration.
 #>
     [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
@@ -160,30 +160,30 @@ function Invoke-LabResourceDownload {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
          $ConfigurationData = @{ },
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'All')]
         [System.Management.Automation.SwitchParameter] $All,
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'MediaId')]
         [System.String[]] $MediaId,
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ResourceId')]
-        [System.String[]] $ResourceId,     
-        
+        [System.String[]] $ResourceId,
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Media')]
         [System.Management.Automation.SwitchParameter] $Media,
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Resources')]
         [System.Management.Automation.SwitchParameter] $Resources,
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'DSCResources')]
         [System.Management.Automation.SwitchParameter] $DSCResources,
-        
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Resources')]
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ResourceId')]
         [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
@@ -209,7 +209,7 @@ function Invoke-LabResourceDownload {
                     $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
                     InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
 
-                    WriteVerbose $Localized.DownloadingAllRequiredHotfixes;            
+                    WriteVerbose $Localized.DownloadingAllRequiredHotfixes;
                     if ($labMedia.Hotfixes.Count -gt 0) {
                         foreach ($hotfix in $labMedia.Hotfixes) {
                             InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
@@ -222,7 +222,7 @@ function Invoke-LabResourceDownload {
             }
             else {
                 WriteVerbose ($localized.NoMediaDefined);
-            } 
+            }
         } #end if MediaId or MediaOnly
 
         if ($PSCmdlet.ParameterSetName -in 'ResourceId','Resources','All') {
@@ -245,7 +245,7 @@ function Invoke-LabResourceDownload {
                 WriteVerbose ($localized.NoResourcesDefined);
             }
         } #end if ResourceId or ResourceOnly
-        
+
         if ($PSCmdlet.ParameterSetName -in 'DSCResources','All') {
             if ($ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource) {
                 $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
@@ -258,7 +258,7 @@ function Invoke-LabResourceDownload {
                 }
             }
         }
-        
+
     } #end process
 } #end function Invoke-LabResourceDownload
 
@@ -273,15 +273,19 @@ function ResolveLabResource {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Lab resource ID
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $ResourceId
     )
     process {
         $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
-        if ($resource) { return $resource; }
-        else { throw ($localized.CannotResolveResourceIdError -f $resourceId); }
+        if ($resource) {
+            return $resource;
+        }
+        else {
+            throw ($localized.CannotResolveResourceIdError -f $resourceId);
+        }
     }
 } #end function ResolveLabResource
 
@@ -294,7 +298,7 @@ function ExpandIsoResource {
         ## Source ISO file path
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Path,
-        
+
         ## Destination folder path
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $DestinationPath
@@ -305,9 +309,10 @@ function ExpandIsoResource {
         ## Refresh drives
         [ref] $null = Get-PSDrive;
         $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+        $sourcePath = '{0}:\' -f $isoDriveLetter;
         WriteVerbose ($localized.ExpandingIsoResource -f $DestinationPath);
-        $sourcePath = '{0}:\*' -f $isoDriveLetter;
-        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force -Verbose:$false;
+        #[ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
+        CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         WriteVerbose ($localized.DismountingDiskImage -f $Path);
         Dismount-DiskImage -ImagePath $Path;
     } #end process
@@ -327,15 +332,15 @@ function ExpandLabResource {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Lab VM name
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         ## Destination mounted VHDX path to expand resources into
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         ## Source resource path
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $ResourcePath
@@ -354,10 +359,10 @@ function ExpandLabResource {
         }
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
-            
+
             WriteVerbose ($localized.InjectingVMResource -f $resourceId);
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
-            
+
             ## Default to resource.Id unless there is a filename property defined!
             $resourceItemPath = Join-Path -Path $ResourcePath -ChildPath $resource.Id;
             if ($resource.Filename) {

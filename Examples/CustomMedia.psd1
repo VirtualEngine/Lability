@@ -34,6 +34,10 @@
                     
                     ## You must specify 'VHD' type to ensure that WIM images are not attempted to be extracted.
                     MediaType = 'VHD';
+                    
+                    ## The operating system type. If 'Linux' is specified, Lability will not attempt to configure the VM's
+                    ## filesytem, i.e. inject DSC resources or generate an 'unattend.xml' file.
+                    OperatingSystem = 'Windows';
                 }
             );
             Network = @(

@@ -1,35 +1,35 @@
 TOPIC
         about_Lability
-        
+
 SHORT DESCRIPTION
 
         Lability is a local Hyper-V lab provisioning framework.
 
 LONG DESCRIPTION
-        
+
         The Lability module enables simple provisioning of local Windows Hyper-V development and testing lab
         environments. The intended purpose is to enable the sharing and collaboration of lab environment
         configurations in a standardised format.
-        
+
         It uses a declarative document for machine configuration. However, rather than defining configurations in an
         external custom domain-specific language (DSL) document, Lability extends existing PowerShell Desired State
         Configuration (DSC) configuration .psd1 documents with metadata that can be interpreted by the module.
-        
+
         By using this approach, it allows the use of a single confiugration document to describe all properties for
         provisioning Windows-centric development and/or test environments.
-        
+
         The Lability module will parse the DSC configuration document and provision Hyper-V virtual machines according
         to the metadata contained within. When invoked, Lability will parse a DSC configuration document and
         automagically provision the following resources:
-        
+
             *  Virtual machine disk images
                 - Download required evaluation Operating System installation media.
                 - Expand Windows Image (WIM) image files into Sysprep'd virtual machine parent disks.
                 - Apply required/recommended DSC Windows updates.
-        
+
             *  Virtual networks
                 - Create internal and external Hyper-V switches.
-        
+
             *  Virtual machines
                 - Connect to the correct virtual switches.
                 - Inject DSC resources from the host machine.
@@ -39,7 +39,7 @@ LONG DESCRIPTION
                 - Invoke the Local Configuration Manager (LCM) after Sysprep.
 
 DSC CONFIGURATIONS
-    
+
         An example DSC configuration document might look the following.
 
             @{
@@ -49,17 +49,17 @@ DSC CONFIGURATIONS
                     },
                     @{
                         NodeName = 'APP1';
-                    }   
+                    }
                 )
                 NonNodeData = @{
 
                 }
             }
-        
+
         This exact same document can be extended with specific properties which the Lability module can interpret.
         NOTE: this is still a valid PowerShell DSC configuration (.psd1) document that can be supplied to an
         existing PowerShell DSC configuration.
-        
+
             @{
                 AllNodes = @(
                     @{
@@ -74,7 +74,7 @@ DSC CONFIGURATIONS
                     @{
                         NodeName               = 'APP1';
                         Lability_ProcessorCount = 1;
-                    }   
+                    }
                 )
                 NonNodeData = @{
                     Lability = @{
@@ -90,7 +90,7 @@ DSC CONFIGURATIONS
 
         When Start-LabConfiguration is invoked with the above configuration document, it will:
 
-            *  Create an internal Hyper-V virtual switch named 'CORPNET'. 
+            *  Create an internal Hyper-V virtual switch named 'CORPNET'.
             *  Download required Server 2012 R2 Standard Edition evaluation media.
             *  Create a Sysprep'd Server 2012 R2 Standard Edition parent VHDX file.
             *  Install required/recommended DSC hotfixes.
@@ -101,29 +101,29 @@ DSC CONFIGURATIONS
             *  Attach each virtual machine to the 'CORPNET' virtual switch.
             *  Create differencing VHDX for each VM.
             *  Inject a dynamically created Unattend.xml file into the differencing VHDX.
-            
+
         For a full list of supported metadata, see about_ConfigurationData.
 
 SETTING UP LABILITY
-        
+
         Initiating a lab deployment requires a number of prerequisites:
-        
+
             *  The Lability module must be running with administrative credentials
                 - Creating virtual machines requires administrative permissions.
-            
+
             *  Installation of the Hyper-V role and PowerShell management cmdlets
                 - Lability will take care of the local host configuration.
                 - Manually installing the Hyper-V role will remove the need to reboot the host.
-                   
+
         To start the configuration of the Lability host, run the following command at an elevated PowerShell prompt:
-        
+
             PS C:\> Start-LabHostConfiguration
-            
+
         If a reboot is required, the module will produce an error. Reboot the host and run the command again.
-        
+
         For more detailed information about the progress or what the command is doing, you can supply the -Verbose
         switch:
-        
+
             PS C:\> Start-LabHostConfiguration -Verbose
 
         If you wish to check the status of the current host, use the `Test-LabHostConfiguration` cmdlet.
@@ -133,62 +133,62 @@ CONFIGURING HOST DEFAULT VALUES
         Lability uses numerous defaults for all virtual machines that are created. These default values include the
         location of the parent virtual disk files, the location of differencing virtual disk files and the default
         location searched for PowerShell DSC .mof files etc.
-        
+
         To view the current host configuration settings, run the following command:
-        
+
             PS C:\> Get-LabHostDefault
-            
+
         By default, Lability stores all media and virtual machine disk files on the host's system drive. If any of the
         default values need changing to reflect your particualar environment or configuration, it is recommended that
         you set these default before creating any virtual machines.
-        
+
         To change any of the default values, use the `Set-LabHostDefault` cmdlet. For example, to set the location of
         all .ISO files to `D:\Lability\ISOs` run the following command:
 
             PS C:\> Set-LabHostDefault -IsoPath D:\Lability\ISOs
-        
+
         For more information about setting the host's default values run the following command:
-        
+
             PS C:\> Get-Help -Name Set-LabHostDefault
-        
+
 CONFIGURING VIRTUAL MACHINE DEFAULT VALUES
 
         Lability applies numerous default values to a virtual machine if they are not explicitly specified, for example
         the number of processors to assign or the virtual switch to attach the VM to.
-        
+
         The default values can always be overridden within the PowerShell DSC configuration document (.psd1). There is
         a order of precedence that is applied when evaluating the effective setting. The value is applied to the
         virtual machine in the following order of precedence:
-        
+
             1. The node's configuration hashtable.
             2. The default/wildcard node's configuration hashtable.
             3. The LabVMDefaults value.
-        
+
         To view the current virtual machine default settings, run the following command:
-        
+
             PS C:\> Get-LabVMDefault
-            
+
         To change any of the default values, use the following command:
-        
+
             PS C:\> Set-LabVMDefault
-            
+
         For more information about setting the virtual machines' default values run the following command:
-        
+
             PS C:\> Get-Help -Name Set-LabVMDefault
-    
+
 RUNNING LABILITY
 
         Once the Lability host is configured, the host default values and the virtual machine defaults set, you can
         initiate a lab deployment. In order to successfully deploy a lab, you will need to following prerequisites in
         place:
-        
+
             *  A PowerShell DSC configuration (.ps1) file and an associated PowerShell DSC configuration (.psd1)
                document.
                 - The configuration document (.psd1) should be annotated with the Lability metadata to ensure that the
                   correct settings will be applied to each virtual machine.
                 - If an option is not defined on a node within the configuration (.psd1) document, the Lability VM
                   default value will be used.
-        
+
             *  Have already run the required PowerShell DSC configuration on the Lability host.
                 - The configuration (.ps1) file must have already been run successfully and generated the required
                   .mof files.
@@ -204,8 +204,8 @@ RUNNING LABILITY
 
         This will apply the configuration defined in the `MyLab.psd1` configuration file and a virtual machine created
         for each node defined. The `MyMofFiles` directory will be searched for the corresponding .mof files.
-        
-        NOTE: If any .mof files cannot be located, an error will be shown and the configuration aborted.
+
+        NOTE: IF ANY .MOF FILES CANNOT BE LOCATED, AN ERROR WILL BE SHOWN AND THE CONFIGURATION ABORTED.
 
         Once all prerequisite checks have passed, Lability will perform the following actions for each node within the
         configuration (.psd1) document:
@@ -213,11 +213,11 @@ RUNNING LABILITY
             *  Create a virtual machine
                 - Any values specified will be used, e.g. Media (Operating System).
                 - If a value is not specified, the Lability VM defult value will be used.
-        
+
             *  Create the VM's differencing VHD(X) file:
                 - If the master VHD(X) file has not been created, Lability will dynamically create it.
                 - If the required media (.ISO) file is not available, Lability will attempt to download it.
-        
+
             *  Inject required resources into the VM's VHD(X) file:
                 - Copy all local PowerShell DSC resources.
                 - Copy the VM's .mof and .meta.mof file(s).
@@ -226,25 +226,25 @@ RUNNING LABILITY
                   configuration after the Sysprep process has completed.
                     - The local Administrator password will be set to the value supplied
                       via the `Credential` parameter.
-            
+
         For more information on Operating System media and custom resources see the following help topics:
-        
+
             PS C:\> Get-Help -Name Start-LabConfiguration
             PS C:\> Get-Help -Name Media
             PS C:\> Get-Help -Name CustomResources
-  
+
 CONTRIBUTE
 
         Lability is open source on GitHub:
-        
+
         https://github.com/VirtualEngine/Lability
-        
+
         As you run Lability and find what you believe to be are bugs, please submit them to:
-        
+
         https://github.com/VirtualEngine/Lability/issues
-        
+
         Better yet, fix the bug and submit a pull request.
-        
+
 SEE ALSO
         Start-LabConfiguration
         about_ConfigurationData

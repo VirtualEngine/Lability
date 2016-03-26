@@ -2,11 +2,8 @@ Configuration NanoExample {
 <#
     Requires the following DSC resources:
         
-        xNetworking (v2.5.0.0 or later): https://github.com/PowerShell/xNetworking
-        
-        xPSDesiredStateConfiguration   : https://github.com/PowerShell/xPSDesiredStateConfiguration
-            Requires DEVELOPMENT branch as xWindowsOptionalFeature is not currently supported
-            See https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/42
+        xNetworking (v2.5.0.0 or later)                  : https://github.com/PowerShell/xNetworking
+        xPSDesiredStateConfiguration (v3.7.0.0 or later) : https://github.com/PowerShell/xPSDesiredStateConfiguration
 #>
     param ()
     

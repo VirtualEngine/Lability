@@ -6,11 +6,14 @@ function ResolveLabVMDiskPath {
     param (
         ## VM/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
-        [System.String] $Name
+        [System.String] $Name,
+        
+        [Parameter()] [ValidateSet('VHD','VHDX')]
+        [System.String] $Generation = 'VHDX'
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $vhdName = '{0}.vhdx' -f $Name;
+        $vhdName = '{0}.{1}' -f $Name, $Generation.ToLower();
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
         return $vhdPath;
     } #end process
@@ -40,7 +43,7 @@ function GetLabVMDisk {
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
-            Generation = 'VHDX';
+            Generation = $image.Generation;
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         GetDscResource -ResourceName VHD -Parameters $vhd;
@@ -69,7 +72,7 @@ function TestLabVMDisk {
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
-            Generation = 'VHDX';
+            Generation = $image.Generation;
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         TestDscResource -ResourceName VHD -Parameters $vhd;
@@ -100,7 +103,7 @@ function SetLabVMDisk {
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
-            Generation = 'VHDX';
+            Generation = $image.Generation;
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
@@ -136,7 +139,7 @@ function RemoveLabVMDisk {
                     Name = $Name;
                     Path = $hostDefaults.DifferencingVhdPath;
                     ParentPath = $image.ImagePath;
-                    Generation = 'VHDX';
+                    Generation = $image.Generation;
                     Ensure = 'Absent';
                 }
                 ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;

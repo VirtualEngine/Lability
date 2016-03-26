@@ -37,11 +37,11 @@ function InvokeExecutable {
         # Executable path
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         # Executable arguments
         [Parameter(Mandatory)] [ValidateNotNull()]
         [System.Array] $Arguments,
-        
+
         # Redirected StdOut and StdErr log name
         [Parameter()] [ValidateNotNullOrEmpty()]
         [System.String] $LogName = ('{0}.log' -f $Path)
@@ -78,7 +78,7 @@ function GetFormattedMessage {
     )
     process {
         if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
-            $parentCallStack = (Get-PSCallStack)[1]; # store the parent Call Stack        
+            $parentCallStack = (Get-PSCallStack)[1]; # store the parent Call Stack
             $functionName = $parentCallStack.FunctionName;
             $lineNumber = $parentCallStack.ScriptLineNumber;
             $scriptName = ($parentCallStack.Location -split ':')[0];
@@ -126,3 +126,100 @@ function WriteWarning {
         }
     }
 } #end function WriteWarning
+
+function ConvertPSObjectToHashtable {
+<#
+    .SYNOPSIS
+        Converts a PSCustomObject's properties to a hashtable.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param (
+        ## Object to convert to a hashtable
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.PSObject[]] $InputObject,
+
+        ## Do not add empty/null values to the generated hashtable
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $IgnoreNullValues
+    )
+    process {
+        foreach ($object in $InputObject) {
+            $hashtable = @{ }
+            foreach ($property in $object.PSObject.Properties) {
+
+                if ($IgnoreNullValues) {
+                    if ([System.String]::IsNullOrEmpty($property.Value)) {
+                        ## Ignore empty strings
+                        continue;
+                    }
+                }
+
+                if ($property.TypeNameOfValue -eq 'System.Management.Automation.PSCustomObject') {
+                    ## Convert nested custom objects to hashtables
+                    $hashtable[$property.Name] = ConvertPSObjectToHashtable -InputObject $property.Value -IgnoreNullValues:$IgnoreNullValues;
+                }
+                else {
+                    $hashtable[$property.Name] = $property.Value;
+                }
+
+            } #end foreach property
+            Write-Output $hashtable;
+        }
+    } #end proicess
+} #end function ConvertPSObjectToHashtable
+
+function CopyDirectory {
+<#
+    .SYNOPSIS
+        Copies a directory structure with progress.
+#>
+    [CmdletBinding()]
+    param (
+        ## Source directory path
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNull()]
+        [System.IO.DirectoryInfo] $SourcePath,
+
+        ## Destination directory path
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.IO.DirectoryInfo] $DestinationPath,
+
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [System.Management.Automation.SwitchParameter] $Force
+    )
+    begin {
+        if ((Get-Item $SourcePath) -isnot [System.IO.DirectoryInfo]) {
+            throw ($localized.CannotProcessArguentError -f 'CopyDirectory', 'SourcePath', $SourcePath, 'System.IO.DirectoryInfo');
+        }
+        elseif (Test-Path -Path $SourcePath -PathType Leaf) {
+            throw ($localized.InvalidDestinationPathError -f $DestinationPath);
+        }
+    }
+    process {
+        $activity = $localized.CopyingResource -f $SourcePath.FullName, $DestinationPath;
+        $status = $localized.EnumeratingPath -f $SourcePath;
+        Write-Progress -Activity $activity -Status $status -PercentComplete 0;
+        $fileList = Get-ChildItem -Path $SourcePath -File -Recurse;
+        $currentDestinationPath = $SourcePath;
+
+        for ($i = 0; $i -lt $fileList.Count; $i++) {
+            if ($currentDestinationPath -ne $fileList[$i].DirectoryName) {
+                ## We have a change of directory
+                $destinationDirectoryName = $fileList[$i].DirectoryName.Substring($SourcePath.FullName.Trim('\').Length);
+                $destinationDirectoryPath = Join-Path -Path $DestinationPath -ChildPath $destinationDirectoryName;
+                [ref] $null = New-Item -Path $destinationDirectoryPath -ItemType Directory -ErrorAction Ignore;
+                $currentDestinationPath = $fileList[$i].DirectoryName;
+            }
+           if (($i % 5) -eq 0) {
+                [System.Int16] $percentComplete = (($i + 1) / $fileList.Count) * 100;
+                $status = $localized.CopyingResourceStatus -f $i, $fileList.Count, $percentComplete;
+                Write-Progress -Activity $activity -Status $status -PercentComplete $percentComplete;
+            }
+
+            $targetPath = Join-Path -Path $DestinationPath -ChildPath $fileList[$i].FullName.Replace($SourcePath, '');
+            Copy-Item -Path $fileList[$i].FullName -Destination $targetPath -Force:$Force;
+        } #end for
+
+        Write-Progress -Activity $activity -Completed;
+    } #end process
+} #end function CopyDirectory
