@@ -80,6 +80,8 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+### v0.9.8
+
 * Fixes BandwidthReservationMode bug where duplicate 'Internal' virtual switches are created.
 * Moves examples into the \Examples directory.
 * Removes trailing space causing Resources.psd1 here string to not appear correctly in certain editors (like VS Code).
