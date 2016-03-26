@@ -42,7 +42,7 @@ function ResolveConfigurationDataPath {
     param (
         [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration,
-        
+
         [Parameter()]
         [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
@@ -81,14 +81,14 @@ function GetConfigurationData {
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
         if (Test-Path -Path $configurationPath) {
             $configurationData = Get-Content -Path $configurationPath -Raw | ConvertFrom-Json;
-            
+
             # Expand any environment variables in configuration data
             $configurationData.PSObject.Members | Where-Object {
                 ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String')
             } | ForEach-Object {
-                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value) 
+                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value);
             }
-            
+
             switch ($Configuration) {
                 'VM' {
                     ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
@@ -98,6 +98,10 @@ function GetConfigurationData {
                     ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
                     if ($configurationData.PSObject.Properties.Name -notcontains 'SecureBoot') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'SecureBoot' -Value $true;
+                    }
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'GuestIntegrationServices') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'GuestIntegrationServices' -Value $false;
                     }
                 }
                 'CustomMedia' {
@@ -137,7 +141,7 @@ function SetConfigurationData {
     param (
         [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration,
-        
+
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.Object] $InputObject
     )

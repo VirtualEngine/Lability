@@ -10,11 +10,11 @@ $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
 Describe 'ConfigurationData' {
-    
+
     InModuleScope $moduleName {
 
         Context 'Validates "ConvertToConfigurationData" method' {
-            
+
             It 'Returns a "System.Collections.Hashtable" type' {
                 $configurationData = ConvertToConfigurationData -ConfigurationData @{};
                 $configurationData -is [System.Collections.Hashtable] | Should Be $true;
@@ -46,7 +46,7 @@ Describe 'ConfigurationData' {
         Context 'Validates "ResolveConfigurationDataPath" method' {
 
             foreach ($config in @('Host','VM','Media','CustomMedia')) {
-                
+
                 It "Resolves '$config' to module path when custom configuration does not exist" {
                     Mock Test-Path -MockWith { return $false }
                     $configurationPath = ResolveConfigurationDataPath -Configuration $config -IncludeDefaultPath;
@@ -61,13 +61,13 @@ Describe 'ConfigurationData' {
                 }
 
             } #end foreach $config
-            
+
             It 'Resolves environment variables in resulting path' {
                 Mock Test-Path -MockWith { return $true }
                 Mock ResolvePathEx -MockWith { }
-                
+
                 ResolveConfigurationDataPath -Configuration Media;
-                
+
                 Assert-MockCalled ResolvePathEx -Scope It;
             }
 
@@ -82,12 +82,12 @@ Describe 'ConfigurationData' {
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-                
+
                 $vmConfiguration = GetConfigurationData -Configuration VM;
-                
+
                 $vmConfiguration.CustomBootstrapOrder | Should Be 'MediaFirst';
             }
-            
+
             It 'Adds missing "SecureBoot" property to VM configuration' {
                 $testConfigurationFilename = 'TestVMConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
@@ -95,12 +95,25 @@ Describe 'ConfigurationData' {
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-                
+
                 $vmConfiguration = GetConfigurationData -Configuration VM;
-                
-                $vmConfiguration.SecureBoot | Should Be $true;
+
+                $vmConfiguration.SecureBoot -eq $true | Should Be $true;
             }
-            
+
+            It 'Adds missing "GuestIntegrationServices" property to VM configuration' {
+                $testConfigurationFilename = 'TestVMConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+
+                $vmConfiguration = GetConfigurationData -Configuration VM;
+
+                $vmConfiguration.GuestIntegrationServices -eq $false | Should Be $true;
+            }
+
             It 'Adds missing "OperatingSystem" property to CustomMedia configuration' {
                 $testConfigurationFilename = 'TestMediaConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
@@ -108,12 +121,12 @@ Describe 'ConfigurationData' {
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-                
+
                 $customMediaConfiguration = GetConfigurationData -Configuration CustomMedia;
 
                 $customMediaConfiguration.OperatingSystem | Should Be 'Windows';
             }
-            
+
             It 'Adds missing "DisableLocalFileCaching" property to Host configuration' {
                 $testConfigurationFilename = 'TestMediaConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
@@ -121,12 +134,12 @@ Describe 'ConfigurationData' {
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-                
+
                 $customMediaConfiguration = GetConfigurationData -Configuration Host;
 
                 $customMediaConfiguration.DisableLocalFileCaching | Should Be $false;
             }
-            
+
             It 'Adds missing "EnableCallStackLogging" property to Host configuration' {
                 $testConfigurationFilename = 'TestMediaConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
@@ -134,7 +147,7 @@ Describe 'ConfigurationData' {
                 [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
                 Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
                 Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
-                
+
                 $customMediaConfiguration = GetConfigurationData -Configuration Host;
 
                 $customMediaConfiguration.EnableCallStackLogging | Should Be $false;
@@ -158,9 +171,9 @@ Describe 'ConfigurationData' {
         ##    }
         ##
         ##} #end context Validates "GetConfigurationData" method
-        
+
         Context 'Validates "RemoveConfigurationData" method' {
-            
+
             It 'Removes configuration file' {
                 $testConfigurationFilename = 'TestVMConfiguration.json';
                 $testConfigurationPath = "$env:SystemRoot\$testConfigurationFilename";
@@ -169,12 +182,12 @@ Describe 'ConfigurationData' {
                 Mock ResolveConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
                 Mock Test-Path -MockWith { return $true; }
                 Mock Remove-Item -ParameterFilter { $Path.EndsWith($testConfigurationFilename ) } -MockWith { }
-                
+
                 RemoveConfigurationData -Configuration VM;
-                
+
                 Assert-MockCalled Remove-Item -ParameterFilter { $Path.EndsWith($testConfigurationFilename) } -Scope It;
             }
-            
+
         } #end context Validates "RemoveConfigurationData" method
 
     } #end InModuleScope
