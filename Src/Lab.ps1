@@ -135,18 +135,6 @@ function Stop-Lab {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             WriteVerbose ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
             Stop-VM -Name $nodeDisplayNames;
-
-            $maxGroupBootDelay = $_.Group.BootDelay | Sort-Object -Descending | Select-Object -First 1;
-            if (($maxGroupBootDelay -gt 0) -and ($currentGroupCount -lt $bootGroups.Count)) {
-                WriteVerbose ($localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString);
-                for ($i = 1; $i -le $maxGroupBootDelay; $i++) {
-                    [System.Int32] $waitPercentComplete = ($i / $maxGroupBootDelay) * 100;
-                    $waitActivity = $localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString;
-                    Write-Progress -ParentId 42 -Activity $waitActivity -PercentComplete $waitPercentComplete;
-                    Start-Sleep -Seconds 1;
-                }
-                Write-Progress -Activity $waitActivity -Completed;
-            } #end if boot delay
         } #end foreach boot group
         Write-Progress -Id 42 -Activity $activity -Completed;
     } #end process
