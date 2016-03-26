@@ -3,7 +3,9 @@ ConvertFrom-StringData -StringData @'
     DownloadingActivity             = Downloading '{0}'.
     DownloadStatus                  = {0:N0} of {1:N0} bytes ({2} %).
     UsingProxyServer                = Using proxy server '{0}'.
+    EnumeratingPath                 = Enumerating path '{0}'.
     CopyingResource                 = Copying resource '{0}' to '{1}'.
+    CopyingResourceStatus           = {0} of {1} files ({2} %).
     MissingResourceFile             = Resource '{0}' does not exist.
     ResourceChecksumNotSpecified    = Resource '{0}' checksum was not specified.
     ResourceChecksumMatch           = Resource '{0}' checksum matches '{1}'.
@@ -15,7 +17,9 @@ ConvertFrom-StringData -StringData @'
     DirectoryExists                 = Directory '{0}' already exists.
     RenamingPath                    = Renaming '{0}' to '{1}'.
     TestingPathExists               = Testing directory '{0}' exists.
+    PathDoesNotExist                = Path '{0}' does not exist.
     ExpandingArchive                = Expanding archive '{0}' to '{1}'.
+    DecompressingArchive            = Decompressing archive to '{0}'.
     PendingRebootWarning            = A pending reboot is required. Please reboot the system and re-run the configuration.
     CheckingDscResource             = Checking DSC Resource '{0}\\{1}'.
     ImportingDscResource            = Importing DSC Resource '{0}\\{1}'.
@@ -128,7 +132,8 @@ ConvertFrom-StringData -StringData @'
     ImportingConfiguration          = Importing {0} configuration from '{1}'.
     ImportingConfigurationSettings  = Importing configuration settings generated '{0}' on host '{1}'.
     RestoringConfigurationSettings  = Restoring imported '{0}' configuration settings.
-    ConfigurationRestoreComplete    = Restoration of '{0}' settings complete. 
+    ConfigurationRestoreComplete    = Restoration of '{0}' settings complete.
+    ConfiguringNode                 = Configuring node '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -158,7 +163,7 @@ ConvertFrom-StringData -StringData @'
     MissingParameterError           = Missing required parameter '{0}'.
     ImageAlreadyExistsError         = Disk image '{0}' already exists.
     FileAlreadyExistsError          = File '{0}' already exists.
-    InvalidConfigurationError       = Configuration document '{0}' is invalid. 
+    InvalidConfigurationError       = Configuration document '{0}' is invalid.
     ResourceDownloadFailedError     = Resource download failed: {0}.
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
@@ -178,4 +183,5 @@ ConvertFrom-StringData -StringData @'
     StartMemGreaterThanMaxMemError  = Startup memory '{0}' cannot be greater than maximum memory '{1}'.
     SwitchDoesNotExistError         = Virtual switch '{0}' cannot be found.
     InvalidOSMediaTypeError         = Media type '{0}' is not supported by Operating system type '{1}'.
+    CannotProcessArguentError       = {0} : Cannot process argument transformation on parameter '{1}'. Cannot convert the '{2}' value to type '{3}'.
 '@

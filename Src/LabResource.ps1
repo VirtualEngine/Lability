@@ -309,9 +309,10 @@ function ExpandIsoResource {
         ## Refresh drives
         [ref] $null = Get-PSDrive;
         $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+        $sourcePath = '{0}:\' -f $isoDriveLetter;
         WriteVerbose ($localized.ExpandingIsoResource -f $DestinationPath);
-        $sourcePath = '{0}:\*' -f $isoDriveLetter;
-        Copy-Item -Path $sourcePath -Destination $DestinationPath -Recurse -Force -Verbose:$false;
+        #[ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
+        CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         WriteVerbose ($localized.DismountingDiskImage -f $Path);
         Dismount-DiskImage -ImagePath $Path;
     } #end process

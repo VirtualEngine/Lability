@@ -14,7 +14,7 @@ Describe 'LabResource' {
     InModuleScope $moduleName {
 
         Context 'Validates "Get-LabHostDefault" method' {
-            
+
             $configurationData = @{
                 NonNodeData = @{
                     $labDefaults.ModuleName = @{
@@ -32,7 +32,7 @@ Describe 'LabResource' {
 
                 Test-LabResource -ConfigurationData $configurationData | Should Be $true;
             }
-            
+
             It 'Passes when all defined resources are present and "Id" parameter is not specified' {
                 $testResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testResourcePath;}
@@ -175,7 +175,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeLabMediaImageDownload -Exactly 1 -Scope It;
             }
-            
+
             It 'Downloads all required hotfixes' {
                 $testMediaId = 'TestMedia';
                 $configurationData = @{
@@ -203,7 +203,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeLabMediaHotfixDownload -Exactly 2 -Scope It;
             }
-            
+
             It 'Downloads all resources when "ResourceId" parameter is not specified' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -222,7 +222,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeResourceDownload -Exactly 3 -Scope It;
             }
-            
+
             It 'Downloads single resource when "ResourceId" parameter is specified' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -235,12 +235,12 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaImageDownload -MockWith { }
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeResourceDownload -MockWith { }
-                
+
                 Invoke-LabResourceDownload -ConfigurationData $configurationData -ResourceId 'Resource1.exe';
 
                 Assert-MockCalled InvokeResourceDownload -Exactly 1 -Scope It;
             }
-            
+
             It 'Downloads a single DSC resource' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -252,12 +252,12 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeDscResourceDownload -MockWith { }
                 Mock InvokeResourceDownload -MockWith { }
-                
+
                 Invoke-LabResourceDownload -ConfigurationData $configurationData;
-                
+
                 Assert-MockCalled InvokeDscResourceDownload -Scope It;
             }
-            
+
             It 'Downloads multiple DSC resources' {
                 $configurationData = @{
                     NonNodeData = @{
@@ -271,16 +271,16 @@ Describe 'LabResource' {
                 Mock InvokeLabMediaHotfixDownload -MockWith { }
                 Mock InvokeDscResourceDownload -MockWith { }
                 Mock InvokeResourceDownload -MockWith { }
-                
+
                 Invoke-LabResourceDownload -ConfigurationData $configurationData;
-                
+
                 Assert-MockCalled InvokeDscResourceDownload -Exactly 1 -Scope It;
             }
 
             It 'Uses resource "Filename" property if specified' {
                 $testResourceId = 'Resource4.iso';
                 $testResourceFilename = 'Custom Resource Filename.test';
-                
+
                 $filenameConfigurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
@@ -301,7 +301,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -Scope It
             }
-            
+
         } #end context Validates "Invoke-LabResourceDownload" method
 
         Context 'Validates "ResolveLabResource" method' {
@@ -330,14 +330,14 @@ Describe 'LabResource' {
         } #end context Validates "ResolveLabResource" method
 
         Context 'Validates "ExpandIsoResource" method' {
-            
+
             It 'Mounts ISO image read-only' {
                 $testIsoPath = 'TestDrive:\TestIsoImage.iso';
                 $testDestinationPath = 'Y:\';
                 $testIsoMountDrive = 'Z';
                 $fakeDiskImage = [PSCustomObject] @{ DriveLetter = $testIsoMountDrive; ImagePath = $testIsoPath };
                 Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
-                Mock Copy-Item -MockWith { }
+                Mock CopyDirectory -MockWith { }
                 Mock Dismount-DiskImage -MockWith { }
                 Mock Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath -and $Access -eq 'ReadOnly' } -MockWith { return $fakeDiskImage; }
 
@@ -345,7 +345,7 @@ Describe 'LabResource' {
 
                 Assert-MockCalled Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath -and $Access -eq 'ReadOnly' } -Scope It;
             }
-            
+
             It 'Copies ISO image contents to destination path recursively' {
                 $testIsoPath = 'TestDrive:\TestIsoImage.iso';
                 $testDestinationPath = 'Y:\';
@@ -354,11 +354,11 @@ Describe 'LabResource' {
                 Mock Mount-DiskImage -MockWith { return $fakeDiskImage; }
                 Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
                 Mock Dismount-DiskImage -MockWith { }
-                Mock Copy-Item -ParameterFilter { $Destination -eq $testDestinationPath -and $Recurse -eq $true -and $Force -eq $true } -MockWith { }
+                Mock CopyDirectory -ParameterFilter { $DestinationPath.FullName -eq $testDestinationPath } -MockWith { }
 
                 ExpandIsoResource -Path $testIsoPath -DestinationPath $testDestinationPath;
 
-                Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testDestinationPath -and $Recurse -eq $true -and $Force -eq $true } -Scope It;
+                Assert-MockCalled CopyDirectory -ParameterFilter { $DestinationPath.FullName -eq $testDestinationPath } -Scope It;
             }
 
             It 'Disounts ISO image' {
@@ -368,7 +368,7 @@ Describe 'LabResource' {
                 $fakeDiskImage = [PSCustomObject] @{ DriveLetter = $testIsoMountDrive; ImagePath = $testIsoPath };
                 Mock Mount-DiskImage -MockWith { return $fakeDiskImage; }
                 Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
-                Mock Copy-Item -MockWith { }
+                Mock CopyDirectory -MockWith { }
                 Mock Dismount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -MockWith { }
 
                 ExpandIsoResource -Path $testIsoPath -DestinationPath $testDestinationPath;
@@ -379,7 +379,7 @@ Describe 'LabResource' {
         } #end context Validates "ExpandIsoResource" method
 
         Context 'Validates "ExpandLabResource" method' {
-            
+
             It 'Creates destination "Resources" directory if it does not exist on target file sytem' {
                 $testVM = 'VM1';
                 $configurationData= @{
@@ -397,7 +397,7 @@ Describe 'LabResource' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Remove-Item -Path $testHostResourcePath -Force -ErrorAction SilentlyContinue;
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
                 Test-Path -Path $testHostResourcePath | Should Be $true;
             }
@@ -482,12 +482,12 @@ Describe 'LabResource' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Copy-Item -ParameterFilter { $Destination -eq $testHostResourcePath -and $Force -eq $true } -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testHostResourcePath -and $Force -eq $true } -Scope It;
             }
-            
+
             It 'Copies resource to explicit target destination path' {
                 $testVM = 'VM1';
                 $testResourceId = 'Resource1.exe';
@@ -512,7 +512,7 @@ Describe 'LabResource' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $defaultHostResourcePath;
 
                 Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -Scope It;
@@ -539,12 +539,12 @@ Describe 'LabResource' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock ExpandZipArchive -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled ExpandZipArchive -Scope It;
             }
-            
+
             It 'Calls "ExpandZipArchive" to explicit target path when "Expand" is specified on a "ZIP" resource' {
                 $testVM = 'VM1';
                 $testResourceId = 'Resource1.zip';
@@ -567,7 +567,7 @@ Describe 'LabResource' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
@@ -594,12 +594,12 @@ Describe 'LabResource' {
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock ExpandIsoResource -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled ExpandIsoResource -Scope It;
             }
-            
+
             It 'Calls "ExpandIsoResource" to explicit target path when "Expand" is specified on a "ISO" resource' {
                 $testVM = 'VM1';
                 $testResourceId = 'Resource1.iso';
@@ -619,11 +619,11 @@ Describe 'LabResource' {
                 }
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
-                
+
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock ExpandIsoResource -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
-                
+
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
                 Assert-MockCalled ExpandIsoResource -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
@@ -649,16 +649,16 @@ Describe 'LabResource' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
-                               
+
                 { ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath } | Should Throw;
             }
 
         } #end context Validates "ExpandLabResource" method
-        
+
         Context 'Validates "TestLabLocalResource" method' {
 
             $testResourceId = 'TestResource';
-            
+
             It 'Returns "System.Boolean" object type' {
                 $configurationData= @{
                     NonNodeData = @{
@@ -669,12 +669,12 @@ Describe 'LabResource' {
                         }
                     }
                 }
-                
+
                 $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
-                
+
                 $result -is [System.Boolean] | Should Be $true;
             }
-            
+
             It 'Passes when local .EXE exists' {
                 $testResourceFilename = "$testResourceId.exe";
                 $configurationData= @{
@@ -687,12 +687,12 @@ Describe 'LabResource' {
                     }
                 }
                 New-Item -Path "TestDrive:\$testResourceFilename" -ItemType File -Force;
-                
+
                 $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
-                
+
                 $result | Should Be $true;
             }
-            
+
             It 'Fails when local .EXE does not exist' {
                 $testResourceFilename = "$testResourceId.exe";
                 $configurationData= @{
@@ -705,12 +705,12 @@ Describe 'LabResource' {
                     }
                 }
                 Remove-Item -Path "TestDrive:\$testResourceFilename" -Force -ErrorAction SilentlyContinue;
-                
+
                 $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
-                
+
                 $result | Should Be $false;
             }
-            
+
             foreach ($extension in @('iso','zip')) {
                 It "Passes when local $($extension.ToUpper()) folder exists" {
                     $testResourceFilename = "$testResourceId.$extension";
@@ -724,12 +724,12 @@ Describe 'LabResource' {
                         }
                     }
                     New-Item -Path "TestDrive:\$testResourceFilename" -ItemType File -Force;
-                    
+
                     $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
-                    
+
                     $result | Should Be $false;
                 }
-                
+
                 It "Fails when local $($extension.ToUpper()) folder does not exist" {
                     $testResourceFilename = "$testResourceId.$extension";
                     $configurationData= @{
@@ -742,13 +742,13 @@ Describe 'LabResource' {
                         }
                     }
                     Remove-Item -Path "TestDrive:\$testResourceFilename" -Force -ErrorAction SilentlyContinue;
-                    
+
                     $result = TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:';
-                    
+
                     $result | Should Be $false;
                 }
             } #end foreach
-             
+
             It 'Throws when local .EXE has "Expand" = "True"' {
                 $testResourceFilename = "$testResourceId.exe";
                 $configurationData= @{
@@ -760,10 +760,10 @@ Describe 'LabResource' {
                         }
                     }
                 }
-                
+
                 { TestLabLocalResource -ConfigurationData $configurationData -ResourceId $testResourceId -LocalResourcePath 'TestDrive:' } | Should Throw;
             }
-        
+
         } #end context Validates "TestLabLocalResource" method
 
     } #end InModuleScope
