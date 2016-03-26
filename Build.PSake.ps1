@@ -72,8 +72,8 @@ Task Sign -Depends Deploy {
     }
 } #end task Sign
 
-Task Publish -Depends Sign {
-    $psGalleryApiKey = Get-Content -Path ~\PSGallery.apitoken | ConvertTo-SecureString;
+Task Publish -Depends Build {
+    $psGalleryApiKey = Get-Content -Path "$env:UserProfile\PSGallery.apitoken" | ConvertTo-SecureString;
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($psGalleryApiKey);
     $nuGetApiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr);
     Publish-Module -Path $releasePath -NuGetApiKey $nuGetApiKey;
