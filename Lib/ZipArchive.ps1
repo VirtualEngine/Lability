@@ -16,7 +16,7 @@ function ExpandZipArchive {
         # Source path to the Zip Archive.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)] [ValidateNotNullOrEmpty()]
         [Alias('PSPath','FullName')] [System.String[]] $Path,
-        
+
         # Destination file path to extract the Zip Archive item to.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
@@ -24,13 +24,13 @@ function ExpandZipArchive {
         # Excludes NuGet .nuspec specific files
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $ExcludeNuSpecFiles,
-        
+
         # Overwrite existing files
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
-        ## Validate destination path      
+        ## Validate destination path
         if (-not (Test-Path -Path $DestinationPath -IsValid)) {
             throw ($localized.InvalidDestinationPathError -f $DestinationPath);
         }
@@ -99,7 +99,7 @@ function ExpandZipArchiveItem {
 
         # Overwrite existing physical filesystem files
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $Force  
+        [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
         Write-Debug -Message 'Loading ''System.IO.Compression'' .NET binaries.';
@@ -108,8 +108,12 @@ function ExpandZipArchiveItem {
     }
     process {
         try {
+            [System.Int32] $fileCount = 0;
+            $activity = $localized.DecompressingArchive -f $DestinationPath;
             foreach ($zipArchiveEntry in $InputObject) {
-
+                $fileCount++;
+                [System.Int32] $percentComplete = ($fileCount / $InputObject.Count) * 100
+                Write-Progress -Activity $activity -PercentComplete $percentComplete;
                 ## Exclude the .nuspec specific files
                 if ($ExcludeNuSpecFiles -and ($zipArchiveEntry.FullName -match '(_rels\/)|(\[Content_Types\]\.xml)|(\w+\.nuspec)')) {
                     WriteVerbose -Message ($localized.IgnoringNuspecZipArchiveEntry -f $zipArchiveEntry.FullName);
@@ -123,14 +127,14 @@ function ExpandZipArchiveItem {
 
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
-                        [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]); 
+                        [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]);
                     }
                     $relativePath = $relativeDirectoryPath.ToString();
-         
+
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
                     [ref] $null = NewDirectory -Path $directoryPath;
-                        
+
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 } # end if
                 else {
@@ -143,17 +147,17 @@ function ExpandZipArchiveItem {
                     ## ExtractToFile extension method won't do this and will throw an exception
                     $pathSplit = $zipArchiveEntry.FullName.Split('/');
                     $relativeDirectoryPath = New-Object -TypeName System.Text.StringBuilder;
-                
+
                     ## Generate the relative directory name
                     for ($pathSplitPart = 0; $pathSplitPart -lt ($pathSplit.Count -1); $pathSplitPart++) {
-                        [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]); 
+                        [ref] $null = $relativeDirectoryPath.AppendFormat('{0}\', $pathSplit[$pathSplitPart]);
                     }
                     $relativePath = $relativeDirectoryPath.ToString();
-         
+
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
                     [ref] $null = NewDirectory -Path $directoryPath;
-                        
+
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 }
                 elseif (-not $Force -and (Test-Path -Path $fullDestinationFilePath -PathType Leaf)) {
@@ -170,6 +174,7 @@ function ExpandZipArchiveItem {
                     }
                 } # end if
             } # end foreach zipArchiveEntry
+            Write-Progress -Activity $activity -Completed;
         } # end try
         catch {
             Write-Error -Message $_.Exception;

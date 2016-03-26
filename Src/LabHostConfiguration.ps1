@@ -57,7 +57,7 @@ function GetLabHostSetupConfiguration {
                 }
             };
         } #end Server configuration
-        
+
         $labHostSetupConfiguration += @{
             ## Check for a reboot before continuing
             UseDefault = $false;
@@ -70,7 +70,7 @@ function GetLabHostSetupConfiguration {
                 SkipCcmClientSDK = $true;
             }
         };
-        
+
         return $labHostSetupConfiguration;
     } #end process
 } #end function GetLabHostSetupConfiguration
@@ -108,7 +108,7 @@ function Test-LabHostConfiguration {
     .SYNOPSIS
         Tests the lab host's configuration.
     .DESCRIPTION
-        The Test-LabHostConfiguration test the current configuration of the lab host.
+        The Test-LabHostConfiguration tests the current configuration of the lab host.
     .PARAMETER IgnorePendingReboot
         Specifies a pending reboot does not fail the test.
     .LINK
@@ -127,12 +127,14 @@ function Test-LabHostConfiguration {
         foreach ($property in $hostDefaults.PSObject.Properties) {
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
                 WriteVerbose ($localized.TestingPathExists -f $property.Value);
-                if (-not (Test-Path -Path $(ResolvePathEx -Path $property.Value) -PathType Container)) {
+                $resolvedPath = ResolvePathEx -Path $property.Value;
+                if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
+                    WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
                     return $false;
                 }
             }
         }
-        
+
         $labHostSetupConfiguration = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguration) {
             $importDscResourceParams = @{
@@ -182,7 +184,7 @@ function Start-LabHostConfiguration {
                 [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
             }
         }
-        
+
         # Once all the path are created, check if the hostdefaults.Json file in the $env:ALLUSERSPROFILE is doesn't have entries with %SYSTEMDRIVE% in it
         # Many subsequent call are failing to Get-LabImage, Test-LabHostConfiguration which do not resolve the "%SYSTEMDRIVE%" in the path for Host defaults
         foreach ($property in $($hostDefaults.PSObject.Properties | Where-Object -Property TypeNameOfValue -eq 'System.String')) {
@@ -198,7 +200,7 @@ function Start-LabHostConfiguration {
             # Write the changes back to the json file in the $env:ALLUSERSPROFILE
             $hostDefaults | ConvertTo-Json | Out-File -FilePath $(ResolveConfigurationDataPath -Configuration host)
         }
-        
+
         $labHostSetupConfiguation = GetLabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
             ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
@@ -224,12 +226,12 @@ function Export-LabHostConfiguration {
         [Parameter(Mandatory, ParameterSetName = 'Path', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()] [Alias("PSPath")]
         [System.String] $Path,
-        
+
         # Specifies a literal export location path.
         [Parameter(Mandatory, ParameterSetName = 'LiteralPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.String] $LiteralPath,
-        
+
         ## Do not overwrite an existing file
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoClobber
@@ -245,7 +247,7 @@ function Export-LabHostConfiguration {
             VMDefaults = [PSCustomObject] (GetConfigurationData -Configuration VM);
             CustomMedia = @([PSCustomObject] (GetConfigurationData -Configuration CustomMedia));
         }
-        
+
         if ($PSCmdlet.ParameterSetName -eq 'Path') {
             # Resolve any relative paths
             $Path = $PSCmdlet.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path);
@@ -281,8 +283,8 @@ function Export-LabHostConfiguration {
                 }
             }
         }
-        
-    } #end process 
+
+    } #end process
 } #end function Export-LabHostConfiguration
 
 function Import-LabHostConfiguration {
@@ -299,20 +301,20 @@ function Import-LabHostConfiguration {
         [Parameter(Mandatory, ParameterSetName = 'Path', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()] [Alias("PSPath")]
         [System.String] $Path,
-        
+
         # Specifies a literal export location path.
         [Parameter(Mandatory, ParameterSetName = 'LiteralPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.String] $LiteralPath,
-        
+
         ## Restores only the lab host default settings
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Host,
-        
+
         ## Restores only the lab VM default settings
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $VM,
-        
+
         ## Restores only the lab custom media default settings
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Media
@@ -325,7 +327,7 @@ function Import-LabHostConfiguration {
         else {
             $Path = $PSCmdlet.SessionState.Path.GetUnresolvedProviderPathFromPSPath($LiteralPath);
         }
-        
+
         if (-not (Test-Path -Path $Path -PathType Leaf -ErrorAction SilentlyContinue)) {
             $errorMessage = $localized.InvalidPathError -f 'Import', $Path;
             $ex = New-Object -TypeName System.InvalidOperationException -ArgumentList $errorMessage;
@@ -334,7 +336,7 @@ function Import-LabHostConfiguration {
             $PSCmdlet.WriteError($errorRecord);
             return;
         }
-        
+
         WriteVerbose -Message ($localized.ImportingConfiguration -f $labDefaults.ModuleName, $Path);
         $configurationDocument = Get-Content -Path $Path -Raw -ErrorAction Stop;
         try {
@@ -344,12 +346,12 @@ function Import-LabHostConfiguration {
             $errorMessage = $localized.InvalidConfigurationError -f $Path;
             throw $errorMessage;
         }
-        
+
         if ((-not $PSBoundParameters.ContainsKey('Host')) -and
                 (-not $PSBoundParameters.ContainsKey('VM')) -and
                     (-not $PSBoundParameters.ContainsKey('Media'))) {
-            
-            ## Nothing specified to load 'em all!    
+
+            ## Nothing specified to load 'em all!
             $VM = $true;
             $Host = $true;
             $Media = $true;
@@ -368,7 +370,7 @@ function Import-LabHostConfiguration {
                 WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
             }
         } #end if restore host defaults
-        
+
         if ($VM) {
             $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'VM');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'VM';
@@ -382,7 +384,7 @@ function Import-LabHostConfiguration {
                 WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
             }
         } #end if restore VM defaults
-        
+
         if ($Media) {
             $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Media');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Media';
@@ -395,7 +397,7 @@ function Import-LabHostConfiguration {
                 WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
             }
         } #end if restore custom media
-        
+
     } #end process
-    
+
 } #end function
