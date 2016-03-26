@@ -80,6 +80,10 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+* Removes boot delay in Stop-Lab.
+* Adds GuestIntegrationServices support.
+* Adds Write-Progress support to Reset-LabVM, New-LabVM and Remove-LabVM.
+
 ### v0.9.8
 
 * Fixes BandwidthReservationMode bug where duplicate 'Internal' virtual switches are created.

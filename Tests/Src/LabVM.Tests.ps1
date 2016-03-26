@@ -24,9 +24,9 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; ProcessorCount = $testVMProcessorCount; }
                     )
                 }
-                
+
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
-                
+
                 $vmProperties -is [System.Collections.Hashtable] | Should Be $true;
             }
 
@@ -39,7 +39,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; ProcessorCount = $testVMProcessorCount; }
                     )
                 }
-                
+
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
@@ -54,7 +54,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; ProcessorCount = $testVMProcessorCount; }
                     )
                 }
-                
+
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
 
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
@@ -69,7 +69,7 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; }
                     )
                 }
-                
+
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $testAllNodesProcessorCount;
@@ -90,7 +90,7 @@ Describe 'LabVM' {
 
                 $vmProperties.ProcessorCount | Should Be $hostDefaultProperties.ProcessorCount;
             }
-            
+
             It 'Returns default if wildcard and node-specific data is not present' {
                 $testVMName = 'TestVM';
                 $configurationData = @{
@@ -113,16 +113,16 @@ Describe 'LabVM' {
                         @{ NodeName = $testVMName; ProcessorCount = 99; "$($labDefaults.ModuleName)_ProcessorCount" = $testVMProcessorCount; }
                     )
                 }
-                
+
                 $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
-                
+
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
             }
 
         } #end context Validates "ResolveLabVMProperties" method
 
         Context 'Validates "Get-LabVM" method' {
-            
+
             It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
                 $testVM = 'VM2';
                 $configurationData = @{
@@ -135,7 +135,7 @@ Describe 'LabVM' {
                 Mock GetDscResource -MockWith { return @{ Name = $Parameters.Name; } }
 
                 $vm = Get-LabVM -ConfigurationData $configurationData -Name $testVM;
-                
+
                 $vm -is [System.Management.Automation.PSCustomObject] | Should Be $true;
             }
 
@@ -166,7 +166,7 @@ Describe 'LabVM' {
                 }
                 Mock ImportDscResource -MockWith { }
                 Mock GetDscResource -MockWith { return @{ Name = $Parameters.Name; } }
-                
+
                 $vms = Get-LabVM -ConfigurationData $configurationData;
 
                 $vms.Count | Should Be $configurationData.AllNodes.Count;
@@ -182,14 +182,14 @@ Describe 'LabVM' {
                 }
                 Mock ImportDscResource -MockWith { }
                 Mock GetDscResource -MockWith { throw; }
-                
+
                 { Get-LabVM -ConfigurationData $configurationData -Name $testVM -ErrorAction Stop } | Should Throw;
             }
 
         } #end context Validates "Get-LabVM" method
 
         Context 'Validates "Test-LabVM" method' {
-            
+
             It 'Returns a "System.Boolean" object type' {
                 $testVM = 'TestVM';
                 $configurationData = @{
@@ -222,7 +222,7 @@ Describe 'LabVM' {
                 $vms = Test-LabVM -ConfigurationData $configurationData;
                 $vms.Count | Should Be $configurationData.AllNodes.Count;
             }
-            
+
             It 'Passes when VM is configured correctly' {
                 $testVM = 'TestVM';
                 $configurationData = @{
@@ -421,7 +421,7 @@ Describe 'LabVM' {
 
                 Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
-            
+
             It 'Calls "SetLabSwitch" once per network switch' {
                 $testVMName = 'TestVM';
                 $testMedia = 'Test-Media';
@@ -496,7 +496,32 @@ Describe 'LabVM' {
 
                 Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
-            
+
+            It 'Creates virtual machine with "GuestIntegrationServices" when specified' {
+                $testVMName = 'TestVM';
+                $testMedia = 'Test-Media';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; GuestIntegrationServices = $true; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return $Id; }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock New-LabImage -MockWith { }
+                Mock SetLabSwitch -MockWith { }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -Scope It;
+            }
+
             It 'Does not inject resources when "OperatingSystem" is "Linux"' {
                 $testVMName = 'TestVM';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVMName; } ) }
@@ -508,7 +533,7 @@ Describe 'LabVM' {
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
-                
+
                 Mock SetLabVMDiskFile -MockWith { }
                 Mock SetLabVMDiskResource -MockWith { }
 
@@ -691,12 +716,12 @@ Describe 'LabVM' {
                     NodeName = $testVMName;
                     #RootCertificatePath = $null;
                     #ClientCertificatePath = $null;
-                    Media = 'Test-Media';   
+                    Media = 'Test-Media';
                     SwitchName = 'Test Switch';
                     SecureBoot = $false;
                 }
                 Mock ResolveLabVMProperties -MockWith { return $fakeVMProperties; }
-                
+
                 { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -WarningAction Stop 3>&1 } | Should Throw;
             }
 
@@ -713,7 +738,7 @@ Describe 'LabVM' {
                 }
                 { RemoveLabVM -ConfigurationData $configurationData -Name $testVMName } | Should Throw;
             }
-            
+
             It 'Removes all snapshots' {
                 $testVMName = 'TestVM';
                 $configurationData = @{

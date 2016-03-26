@@ -6,30 +6,33 @@ function GetVirtualMachineProperties {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Media,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $StartupMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MinimumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MaximumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.Int32] $ProcessorCount,
-        
+
         [Parameter()] [AllowNull()]
         [System.String[]] $MACAddress,
-        
+
         [Parameter()]
-        [System.Boolean] $SecureBoot
+        [System.Boolean] $SecureBoot,
+
+        [Parameter()]
+        [System.Boolean] $GuestIntegrationServices
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
@@ -51,7 +54,7 @@ function GetVirtualMachineProperties {
                 $labMediaArchitecture = 'x64';
             }
         }
-        
+
         if ($labImage.Generation -eq 'VHD') {
             ## VHD files are only supported in G1 VMs
             $PSBoundParameters.Add('Generation', 1);
@@ -62,13 +65,19 @@ function GetVirtualMachineProperties {
         elseif ($labMediaArchitecture -eq 'x64') {
             $PSBoundParameters.Add('Generation', 2);
         }
-        [ref] $null = $PSBoundParameters.Remove('Media');
 
         if ($null -eq $MACAddress) {
             [ref] $null = $PSBoundParameters.Remove('MACAddress');
         }
 
+        if ($PSBoundParameters.ContainsKey('GuestIntegrationServices')) {
+            [ref] $null = $PSBoundParameters.Add('EnableGuestService', $GuestIntegrationServices);
+            [ref] $null = $PSBoundParameters.Remove('GuestIntegrationServices');
+        }
+
         $vhdPath = ResolveLabVMDiskPath -Name $Name -Generation $labImage.Generation;
+
+        [ref] $null = $PSBoundParameters.Remove('Media');
         [ref] $null = $PSBoundParameters.Add('VhdPath', $vhdPath);
         [ref] $null = $PSBoundParameters.Add('RestartIfNeeded', $true);
 
@@ -86,30 +95,33 @@ function TestLabVirtualMachine {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Media,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $StartupMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MinimumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MaximumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.Int32] $ProcessorCount,
-        
+
         [Parameter()] [AllowNull()]
         [System.String[]] $MACAddress,
-        
+
         [Parameter()]
-        [System.Boolean] $SecureBoot
+        [System.Boolean] $SecureBoot,
+
+        [Parameter()]
+        [System.Boolean] $GuestIntegrationServices
     )
     process {
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
@@ -131,30 +143,33 @@ function SetLabVirtualMachine {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Media,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $StartupMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MinimumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MaximumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.Int32] $ProcessorCount,
-        
+
         [Parameter()] [AllowNull()]
         [System.String[]] $MACAddress,
-        
+
         [Parameter()]
-        [System.Boolean] $SecureBoot
+        [System.Boolean] $SecureBoot,
+
+        [Parameter()]
+        [System.Boolean] $GuestIntegrationServices
     )
     process {
         ## Resolve the xVMHyperV resource parameters
@@ -174,30 +189,33 @@ function RemoveLabVirtualMachine {
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
-        
+
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Media,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $StartupMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MinimumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.UInt64] $MaximumMemory,
-        
+
         [Parameter(Mandatory)]
         [System.Int32] $ProcessorCount,
-        
+
         [Parameter()] [AllowNull()]
         [System.String[]] $MACAddress,
-        
+
         [Parameter()]
-        [System.Boolean] $SecureBoot
+        [System.Boolean] $SecureBoot,
+
+        [Parameter()]
+        [System.Boolean] $GuestIntegrationServices
     )
     process {
         ## Resolve the xVMHyperV resource parameters

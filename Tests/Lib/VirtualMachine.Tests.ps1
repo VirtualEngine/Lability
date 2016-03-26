@@ -42,39 +42,39 @@ Describe 'VirtualMachine' {
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
                 Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
-                
+
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
 
                 $vmProperties.Generation | Should Be 2;
             }
-            
+
             It 'Returns generation 1 VM when custom "MBR" partition style is defined' {
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
                     return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'MBR'; } } }
                 Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
-                
+
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
 
                 $vmProperties.Generation | Should Be 1;
             }
-            
+
             It 'Returns generation 2 VM when custom "GPT" partition style is defined' {
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
                     return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ PartitionStyle = 'GPT'; } } }
                 Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
-                
+
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
 
                 $vmProperties.Generation | Should Be 2;
             }
-            
+
             It 'Returns generation 1 VM when image generation is "VHD", but media "x64" and partition style is "GPT"' {
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
                     return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'GPT'; } } }
                 Mock Get-LabImage -MockWith { return @{ Generation = 'VHD';}; }
-                
+
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
 
                 $vmProperties.Generation | Should Be 1;
@@ -106,14 +106,35 @@ Describe 'VirtualMachine' {
                 Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
                 $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
-                
+
                 $vmProperties.ContainsKey('Media') | Should Be $false;
+            }
+
+            It 'Does not return "EnableGuestService" property by default' {
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
+
+                $vmProperties.ContainsKey('EnableGuestService') | Should Be $false;
+            }
+
+            It 'Returns "EnableGuestService" property when "GuestIntegrationServices" is specified' {
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams -GuestIntegrationServices $true;
+
+                $vmProperties.ContainsKey('EnableGuestService') | Should Be $true;
+                $vmProperties.EnableGuestService | Should Be $true;
             }
 
         } #end context Validates "GetVirtualMachineProperties" method
 
         Context 'Validates "TestLabVirtualMachine" method' {
-            
+
             $testVMName = 'TestVM';
             $testMediaId = 'TestMedia';
             $testVMSwitch = 'TestSwitch';
@@ -126,7 +147,7 @@ Describe 'VirtualMachine' {
                 MaximumMemory = 2GB;
                 ProcessorCount = 1;
             }
-            
+
             Mock ResolveLabMedia -MockWith { }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
 
@@ -135,7 +156,7 @@ Describe 'VirtualMachine' {
                 Mock TestDscResource -MockWith { return $true; }
 
                 TestLabVirtualMachine @testLabVirtualMachineParams;
-                
+
                 Assert-MockCalled ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
             }
 
@@ -176,16 +197,16 @@ Describe 'VirtualMachine' {
                 MaximumMemory = 2GB;
                 ProcessorCount = 1;
             }
-            
+
             Mock ResolveLabMedia -MockWith { }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            
+
             It 'Imports Hyper-V DSC resource' {
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
                 SetLabVirtualMachine @setLabVirtualMachineParams;
-                
+
                 Assert-MockCalled ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
             }
 
@@ -194,7 +215,7 @@ Describe 'VirtualMachine' {
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
 
                 SetLabVirtualMachine @setLabVirtualMachineParams;
-                
+
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
             }
 
@@ -214,25 +235,25 @@ Describe 'VirtualMachine' {
                 MaximumMemory = 2GB;
                 ProcessorCount = 1;
             }
-            
+
             Mock ResolveLabMedia -MockWith { }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            
+
             It 'Imports Hyper-V DSC resource' {
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
                 RemoveLabVirtualMachine @removeLabVirtualMachineParams;
-                
+
                 Assert-MockCalled ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
             }
 
             It 'Invokes Hyper-V DSC resource' {
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
-                
+
                 RemoveLabVirtualMachine @removeLabVirtualMachineParams;
-                
+
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
             }
 
