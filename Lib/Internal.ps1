@@ -223,7 +223,3 @@ function CopyDirectory {
         Write-Progress -Activity $activity -Completed;
     } #end process
 } #end function CopyDirectory
-
-# 42 Configuring lab
- # 43 Configuring node
-  # 44 Node action
