@@ -12,7 +12,7 @@ function GetLabHostSetupConfiguration {
     [OutputType([System.Collections.Hashtable])]
     param ( )
     process {
-        [System.Boolean] $isDesktop = (Get-CimInstance -ClassName Win32_OperatingSystem).ProductType -eq 1;
+        [System.Boolean] $isDesktop = (Get-CimInstance -ClassName Win32_OperatingSystem -Verbose:$false).ProductType -eq 1;
         ## Due to the differences in client/server deployment for Hyper-V, determine the correct method before creating the host configuration array.
         $labHostSetupConfiguration = @();
 
@@ -118,7 +118,9 @@ function Test-LabHostConfiguration {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter()] [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
+        ## Skips pending reboot check
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
     )
     process {
         WriteVerbose $localized.StartedHostConfigurationTest;

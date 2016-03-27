@@ -82,7 +82,10 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 * Removes boot delay in Stop-Lab.
 * Adds GuestIntegrationServices support.
-* Adds Write-Progress support to Reset-LabVM, New-LabVM and Remove-LabVM.
+* Adds Write-Progress support to Reset-LabVM, New-LabVM, Remove-LabVM and Test-LabConfiguration.
+* Adds -IgnorePendingReboot parameter to Start-LabConfiguration.
+* Removes extraneous verbose output from Get-CimInstance in Test-LabHostConfiguration.
+* Fixes bug in Test-LabVM where VM's prefixed name was not resolved causing calls to TestLabVMDisk and TestLabVirtualMachine to fail.
 
 ### v0.9.8
 
