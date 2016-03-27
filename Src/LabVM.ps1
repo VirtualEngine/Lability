@@ -160,9 +160,8 @@ function Test-LabVM {
         }
         foreach ($vmName in $Name) {
             $isNodeCompliant = $true;
-            WriteVerbose ($localized.TestingNodeConfiguration -f $vmName);
             $node = ResolveLabVMProperties -NodeName $vmName -ConfigurationData $ConfigurationData;
-            [ref] $null = $node.Remove('NodeName');
+            WriteVerbose ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
 
             WriteVerbose ($localized.TestingVMConfiguration -f 'Image', $node.Media);
             if (-not (Test-LabImage -Id $node.Media)) {
@@ -173,11 +172,12 @@ function Test-LabVM {
                 $isNodeCompliant = $false;
             }
             WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
-            if (-not (TestLabVMDisk -Name $vmName -Media $node.Media -ErrorAction SilentlyContinue)) {
+            if (-not (TestLabVMDisk -Name $node.NodeDisplayName -Media $node.Media -ErrorAction SilentlyContinue)) {
                 $isNodeCompliant = $false;
             }
             WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
             $testLabVirtualMachineParams = @{
+                Name = $node.NodeDisplayName;
                 SwitchName = $node.SwitchName;
                 Media = $node.Media;
                 StartupMemory = $node.StartupMemory;
@@ -188,7 +188,7 @@ function Test-LabVM {
                 SecureBoot = $node.SecureBoot;
                 GuestIntegrationServices = $node.GuestIntegrationServices;
             }
-            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams -Name $vmName)) {
+            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
                 $isNodeCompliant = $false;
             }
             Write-Output -InputObject $isNodeCompliant;
