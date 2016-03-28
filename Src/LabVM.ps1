@@ -669,7 +669,7 @@ function Remove-LabVM {
         $currentNodeCount = 0;
         foreach ($vmName in $Name) {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
-            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.RemovingQuickVM -f $vmName);
+            $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingQuickVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
                 $currentNodeCount++;
                 [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
