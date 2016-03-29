@@ -878,6 +878,31 @@ Describe 'LabVM' {
 
         } #end context Validates "Reset-LabVM" method
 
+        Context 'Validates "New-LabVM" method' {
+
+            $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
+            $MediaId = '2012R2_x64_Standard_Core_EN_Eval'
+
+            It 'Creates a new virtual machine' {
+                $testVMName = 'TestVM';
+                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
+
+                New-LabVM -Name $testVMName -MediaId $MediaId -Credential $testPassword;
+
+                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
+            }
+
+            It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
+                $testVMName = 'TestVM';
+                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
+
+                New-LabVM -Name $testVMName -MediaId $MediaId  -Credential $testPassword -NoSnapshot;
+
+                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
+            }
+        
+        } #end context Validates "New-LabVM" method
+
         Context 'Validates "Remove-LabVM" method' {
 
             It 'Removes existing virtual machine' {
