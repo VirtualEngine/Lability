@@ -878,6 +878,19 @@ Describe 'LabVM' {
 
         } #end context Validates "Reset-LabVM" method
 
+        Context 'Validates "Remove-LabVM" method' {
+
+            It 'Removes existing virtual machine' {
+                $testVMName = 'TestVM';
+                Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
+
+                Remove-LabVM -Name $testVMName;
+
+                Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            }
+        
+        } #end context Validates "Remove-LabVM" method
+
     } #end InModuleScope
 
 } # end describe LabVM
