@@ -878,6 +878,46 @@ Describe 'LabVM' {
 
         } #end context Validates "Reset-LabVM" method
 
+        Context 'Validates "New-LabVM" method' {
+
+            $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
+            $MediaId = 'DummyMediaId'
+
+            It 'Creates a new virtual machine' {
+                $testVMName = 'TestVM';
+                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
+                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
+
+                New-LabVM -Name $testVMName -MediaId $MediaId -Credential $testPassword;
+
+                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
+            }
+
+            It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
+                $testVMName = 'TestVM';
+                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
+                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
+
+                New-LabVM -Name $testVMName -MediaId $MediaId  -Credential $testPassword -NoSnapshot;
+
+                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
+            }
+        
+        } #end context Validates "New-LabVM" method
+
+        Context 'Validates "Remove-LabVM" method' {
+
+            It 'Removes existing virtual machine' {
+                $testVMName = 'TestVM';
+                Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
+
+                Remove-LabVM -Name $testVMName;
+
+                Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            }
+        
+        } #end context Validates "Remove-LabVM" method
+
     } #end InModuleScope
 
 } # end describe LabVM
