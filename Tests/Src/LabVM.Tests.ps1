@@ -881,11 +881,12 @@ Describe 'LabVM' {
         Context 'Validates "New-LabVM" method' {
 
             $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
-            $MediaId = '2012R2_x64_Standard_Core_EN_Eval'
+            $MediaId = 'DummyMediaId'
 
             It 'Creates a new virtual machine' {
                 $testVMName = 'TestVM';
                 Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
+                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
 
                 New-LabVM -Name $testVMName -MediaId $MediaId -Credential $testPassword;
 
@@ -895,6 +896,7 @@ Describe 'LabVM' {
             It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
                 $testVMName = 'TestVM';
                 Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
+                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
 
                 New-LabVM -Name $testVMName -MediaId $MediaId  -Credential $testPassword -NoSnapshot;
 
