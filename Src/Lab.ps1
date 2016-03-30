@@ -134,7 +134,7 @@ function Stop-Lab {
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             WriteVerbose ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
-            Stop-VM -Name $nodeDisplayNames;
+            Stop-VM -Name $nodeDisplayNames -Force;
         } #end foreach boot group
         Write-Progress -Id 42 -Activity $activity -Completed;
     } #end process

@@ -173,6 +173,20 @@ Describe 'Lab' {
                 $actualStopOrder[2] | Should Be 'VM3';
             }
 
+            It 'Calls "Stop-VM" with "Force"' {
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = 'VM1'; }
+                    )
+                }
+                Mock Stop-VM -ParameterFilter { $Force -eq $true } -MockWith { }
+                Mock Start-Sleep -MockWith { }
+
+                Stop-Lab -ConfigurationData $configurationData;
+
+                Assert-MockCalled Stop-VM -ParameterFilter { $Force -eq $true } -Scope It;
+            }
+
             It 'Does not call "Start-Sleep" if a zero boot delay is specified' {
                 $configurationData = @{
                     AllNodes = @(
