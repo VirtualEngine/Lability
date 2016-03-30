@@ -86,6 +86,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Adds -IgnorePendingReboot parameter to Start-LabConfiguration.
 * Removes extraneous verbose output from Get-CimInstance in Test-LabHostConfiguration.
 * Fixes bug in Test-LabVM where VM's prefixed name was not resolved causing calls to TestLabVMDisk and TestLabVirtualMachine to fail.
+* Adds -Force switch to Stop-Lab to ensure that locked VMs do not prevent shutdown.
 
 ### v0.9.8
 
