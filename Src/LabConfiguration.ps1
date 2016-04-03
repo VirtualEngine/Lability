@@ -295,7 +295,7 @@ function Remove-LabConfiguration {
         about_ConfigurationData
         Start-LabConfiguration
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]

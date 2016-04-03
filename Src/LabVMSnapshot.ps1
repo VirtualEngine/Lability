@@ -3,7 +3,7 @@ function RemoveLabVMSnapshot {
     .SYNOPSIS
         Removes a VM snapshot.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,

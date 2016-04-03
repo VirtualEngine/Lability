@@ -48,7 +48,7 @@ function GetLabVMDisk {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         GetDscResource -ResourceName VHD -Parameters $vhd;
     } #end process
-} #end GetLbVMDisk
+} #end function GetLbVMDisk
 
 function TestLabVMDisk {
 <#
@@ -108,7 +108,7 @@ function SetLabVMDisk {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
     } #end process
-} #end SetLabVMDisk
+} #end function SetLabVMDisk
 
 function RemoveLabVMDisk {
 <#
@@ -117,7 +117,7 @@ function RemoveLabVMDisk {
     .DESCRIPTION
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -135,19 +135,21 @@ function RemoveLabVMDisk {
             $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath "$Name.vhdx";
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
-                $vhd = @{
-                    Name = $Name;
-                    Path = $hostDefaults.DifferencingVhdPath;
-                    ParentPath = $image.ImagePath;
-                    Generation = $image.Generation;
-                    Ensure = 'Absent';
+                if ($PSCmdlet.ShouldProcess($vhdPath)) {
+                    $vhd = @{
+                        Name = $Name;
+                        Path = $hostDefaults.DifferencingVhdPath;
+                        ParentPath = $image.ImagePath;
+                        Generation = $image.Generation;
+                        Ensure = 'Absent';
+                    }
+                    ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+                    [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
                 }
-                ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-                [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
             }
         }
     } #end process
-} #end RemoveLabVMDisk
+} #end function RemoveLabVMDisk
 
 function ResetLabVMDisk {
 <#
