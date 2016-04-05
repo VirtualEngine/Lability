@@ -16,43 +16,43 @@ function NewUnattendXml {
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
          $Credential,
-        
+
         # Computer name
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ComputerName,
-        
+
         # Product Key
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
         [System.String] $ProductKey,
-        
+
         # Input Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $InputLocale = 'en-US',
-        
+
         # System Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $SystemLocale = 'en-US',
-        
+
         # User Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $UserLocale = 'en-US',
-        
+
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $UILanguage = 'en-US',
-        
+
         # Timezone
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Timezone, ##TODO: Validate timezones?
-        
+
         # Registered Owner
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.String] $RegisteredOwner = 'Virtual Engine',
-        
+
         # Registered Organization
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.String] $RegisteredOrganization = 'Virtual Engine',
-        
+
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -67,6 +67,18 @@ function NewUnattendXml {
         <component name="Microsoft-Windows-Deployment" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></component>
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
     </settings>
     <settings pass="oobeSystem">
         <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -161,7 +173,7 @@ function NewUnattendXml {
                     }
                 }
 
-                if (($setting.'Pass' -eq 'oobeSystem') -and ($component.'Name' -eq 'Microsoft-Windows-International-Core')) {
+                if ((($setting.'Pass' -eq 'specialize') -or ($setting.'Pass' -eq 'oobeSystem')) -and ($component.'Name' -eq 'Microsoft-Windows-International-Core')) {
                     $component.InputLocale = $InputLocale;
                     $component.SystemLocale = $SystemLocale;
                     $component.UILanguage = $UILanguage;
@@ -174,7 +186,7 @@ function NewUnattendXml {
                     $component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedPassword));
                     $component.RegisteredOrganization = $RegisteredOrganization;
                     $component.RegisteredOwner = $RegisteredOwner;
-                } 
+                }
             } #end foreach setting.Component
         } #end foreach unattendXml.Unattend.Settings
         Write-Output -InputObject $unattendXml;
@@ -192,49 +204,49 @@ function SetUnattendXml {
         # Filename/path to save the unattend file as
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         # Local Administrator Password
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential,
-        
+
         # Computer name
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ComputerName,
-        
+
         # Product Key
         [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
         [System.String] $ProductKey,
-        
+
         # Input Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $InputLocale = 'en-US',
-        
+
         # System Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $SystemLocale = 'en-US',
-        
+
         # User Locale
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $UserLocale = 'en-US',
-        
+
         # UI Language
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $UILanguage = 'en-US',
-        
+
         # Timezone
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Timezone, ##TODO: Validate timezones?
-        
+
         # Registered Owner
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.String] $RegisteredOwner = 'Virtual Engine',
-        
+
         # Registered Organization
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.String] $RegisteredOrganization = 'Virtual Engine',
-        
+
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
         ## Array of hashtables with Description, Order and Path keys
         [Parameter(ValueFromPipelineByPropertyName)]
