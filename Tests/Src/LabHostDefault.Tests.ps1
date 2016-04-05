@@ -17,7 +17,7 @@ Describe 'LabHostDefaults' {
 
             It 'Calls "GetConfigurationData"' {
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { }
-                
+
                 Get-LabHostDefault;
 
                 Assert-MockCalled GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' }
@@ -30,7 +30,7 @@ Describe 'LabHostDefaults' {
             It 'Returns host configuration path' {
                 $testConfigurationPath = 'TestDrive:\';
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ ConfigurationPath = $testConfigurationPath; } }
-                
+
                 GetLabHostDSCConfigurationPath | Should Be $testConfigurationPath;
             }
 
@@ -40,14 +40,13 @@ Describe 'LabHostDefaults' {
 
             $fakeConfigurationDataObject = ConvertFrom-Json -InputObject '{
                 "ConfigurationPath": "", "DifferencingVhdPath": "", "HotfixPath": "", "IsoPath": "",
-	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": "", "UpdatePath": ""
+	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": ""
             }'
 
             It 'Resolves path containing an environment variable' {
                 $testEnvironmentPath = '%SYSTEMROOT%';
                 $testResolvedPath = "$env:SystemRoot".Trim('\');
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeConfigurationDataObject; }
-                Mock SetConfigurationData -MockWith { Write-Host $InputObject.IsoPath -ForegroundColor Yellow; }
                 Mock SetConfigurationData -ParameterFilter { $InputObject.IsoPath -eq $testResolvedPath } -MockWith { }
 
                 Set-LabHostDefault -IsoPath $testEnvironmentPath;
@@ -89,7 +88,7 @@ Describe 'LabHostDefaults' {
 
                 { Set-LabHostDefault -IsoPath $testInvalidPath } | Should Throw;
             }
-            
+
         } #end context Validates "Set-LabHostDefault" method
 
     } #end InModuleScope
