@@ -6,6 +6,5 @@
 	"ParentVhdPath": "%SYSTEMDRIVE%\\Lability\\MasterVirtualHardDisks",
 	"ResourcePath": "%SYSTEMDRIVE%\\Lability\\Resources",
     "ResourceShareName": "Resources",
-    "UpdatePath": "",
 	"DisableLocalFileCaching": false
 }

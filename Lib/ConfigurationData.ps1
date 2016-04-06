@@ -121,6 +121,9 @@ function GetConfigurationData {
                     if ($configurationData.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $false;
                     }
+
+                    ## Remove deprecated UpdatePath, if present (Issue #77)
+                    $configurationData.PSObject.Properties.Remove('UpdatePath');
                 }
                 Default {
                     ## Do nothing

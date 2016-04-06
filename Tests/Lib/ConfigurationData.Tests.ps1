@@ -153,6 +153,19 @@ Describe 'ConfigurationData' {
                 $customMediaConfiguration.EnableCallStackLogging | Should Be $false;
             }
 
+            It 'Removes deprecated "UpdatePath" property from Host configuration (Issue #77)' {
+                $testConfigurationFilename = 'TestMediaConfiguration.json';
+                $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+                $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations", "UpdatePath": "%SYSTEMDRIVE%\\TestLab\\Updates" }';
+                [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+                Mock ResolveConfigurationDataPath -MockWith { return $testConfigurationPath }
+                Mock Get-Content -ParameterFilter { $Path -eq $testConfigurationPath } -MockWith { return $fakeConfiguration; }
+
+                $hostConfiguration = GetConfigurationData -Configuration Host;
+
+                $hostConfiguration.PSObject.Properties.Name.Contains('UpdatePath') | Should Be $false;
+            }
+
         } #end context Validates "GetConfigurationData" method
 
         ## Removed until I can work out why this one test is failing :(
