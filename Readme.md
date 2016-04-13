@@ -88,6 +88,8 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Fixes bug in Test-LabVM where VM's prefixed name was not resolved causing calls to TestLabVMDisk and TestLabVirtualMachine to fail.
 * Adds -Force switch to Stop-Lab to ensure that locked VMs do not prevent shutdown.
 * Removes unused -UpdatePath parameter from Get/Set-LabHostDefault cmdlets.
+* Fixes bug in Get-LabVM where VMs' prefixed name was not resolved correctly.
+* Adds optional -ConfigurationData switch to Remove-LabVM to support prefixed configurations.
 
 ### v0.9.8
 
