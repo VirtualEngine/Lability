@@ -13,36 +13,6 @@ Describe 'ConfigurationData' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "ConvertToConfigurationData" method' {
-
-            It 'Returns a "System.Collections.Hashtable" type' {
-                $configurationData = ConvertToConfigurationData -ConfigurationData @{};
-                $configurationData -is [System.Collections.Hashtable] | Should Be $true;
-            }
-
-            It 'Returns a "System.Collections.Hashtable" type from a file path' {
-                $configurationDataPath = "TestDrive:\ConvertToConfigurationData.psd1";
-                Set-Content -Path $configurationDataPath -Value '@{ Node = "Test"; }';
-                $configurationData = ConvertToConfigurationData -ConfigurationData $configurationDataPath;
-                $configurationData -is [System.Collections.Hashtable] | Should Be $true;
-            }
-
-            It 'Throws when passed a directory path' {
-                { ConvertToConfigurationData -ConfigurationData TestDrive:\ } | Should Throw;
-            }
-
-            It 'Throws when passed a file path with an extension other than ".psd1"' {
-                $testPath = "TestDrive:\ConfigurationData.ps1";
-                New-Item -Path $testPath -ItemType File -Force;
-                { ConvertToConfigurationData -ConfigurationData $testPath } | Should Throw;
-            }
-
-            It 'Throws when passed a non-string or non-hashtable' {
-                { ConvertToConfigurationData -ConfigurationData (Get-Date) } | Should Throw;
-            }
-
-        } #end context Validates "ConvertToConfigurationData" method
-
         Context 'Validates "ResolveConfigurationDataPath" method' {
 
             foreach ($config in @('Host','VM','Media','CustomMedia')) {

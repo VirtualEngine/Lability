@@ -67,9 +67,6 @@ function ResolveLabSwitch {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
         if ($networkSwitch) {
@@ -121,9 +118,6 @@ function TestLabSwitch {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         if (($null -ne $networkSwitch.IsExisting) -and ($networkSwitch.IsExisting -eq $true)) {
@@ -154,9 +148,6 @@ function SetLabSwitch {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    } #end begin
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
@@ -185,9 +176,6 @@ function RemoveLabSwitch {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    } #end begin
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
