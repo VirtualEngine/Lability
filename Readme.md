@@ -90,6 +90,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Removes unused -UpdatePath parameter from Get/Set-LabHostDefault cmdlets.
 * Fixes bug in Get-LabVM where VMs' prefixed name was not resolved correctly.
 * Adds optional -ConfigurationData switch to Remove-LabVM to support prefixed configurations.
+* Deprecates ConvertToConfigurationData function in favour of the native [ArgumentToConfigurationDataTransformationAttribute()].
 
 ### v0.9.8
 

@@ -9,37 +9,37 @@ function NewLabMedia {
     param (
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Id = $(throw ($localized.MissingParameterError -f 'Id')),
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Filename = $(throw ($localized.MissingParameterError -f 'Filename')),
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Description = '',
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('x86','x64')]
         [System.String] $Architecture = $(throw ($localized.MissingParameterError -f 'Architecture')),
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ImageName = '',
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('ISO','VHD')]
         [System.String] $MediaType = $(throw ($localized.MissingParameterError -f 'MediaType')),
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri = $(throw ($localized.MissingParameterError -f 'Uri')),
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $Checksum = '',
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ProductKey = '',
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Windows','Linux')]
         [System.String] $OperatingSystem = 'Windows',
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Collections.Hashtable] $CustomData = @{},
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.Array] $Hotfixes
     )
@@ -82,7 +82,7 @@ function ResolveLabMedia {
         Resolves the specified media using the registered media and configuration data.
     .DESCRIPTION
         Resolves the specified lab media from the registered media, but permitting the defaults to be overridden by configuration data.
-        
+
         This also permits specifying of media within Configuration Data and not having to be registered on the lab host.
 #>
     [CmdletBinding()]
@@ -90,7 +90,7 @@ function ResolveLabMedia {
         ## Media ID
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Id,
-        
+
         ## Lab DSC configuration data
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
@@ -100,10 +100,9 @@ function ResolveLabMedia {
     process {
         ## Avoid any $media variable scoping issues
         $media = $null;
-        
+
         ## If we have configuration data specific instance, return that
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
-            $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
             $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id });
             if ($customMedia) {
                 $mediaHash = @{};
@@ -113,23 +112,23 @@ function ResolveLabMedia {
                 $media = NewLabMedia @mediaHash;
             }
         }
-        
+
         ## If we have custom media, return that
         if (-not $media) {
             $media = GetConfigurationData -Configuration CustomMedia;
             $media = $media | Where-Object { $_.Id -eq $Id };
         }
-        
+
         ## If we still don't have a media image, return the built-in object
         if (-not $media) {
             $media = Get-LabMedia -Id $Id;
         }
-        
+
         ## We don't have any defined, custom or built-in media
         if (-not $media) {
             throw ($localized.CannotLocateMediaError -f $Id);
         }
-        
+
         return $media;
     } #end process
 } #end function ResolveLabMedia
@@ -151,7 +150,7 @@ function Get-LabMedia {
         ## Media ID
         [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Id,
-        
+
         ## Only return custom media
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CustomOnly
@@ -250,7 +249,7 @@ function InvokeLabMediaImageDownload {
         ## Lab media object
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNull()]
         [System.Object] $Media,
-        
+
         ## Force (re)download of the resource
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
@@ -266,13 +265,13 @@ function InvokeLabMediaImageDownload {
         if ($media.MediaType -eq 'VHD') {
             $invokeResourceDownloadParams['DestinationPath'] = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $media.Filename;
         }
-        
+
         $mediaUri = New-Object -TypeName System.Uri -ArgumentList $Media.Uri;
         if ($mediaUri.Scheme -eq 'File') {
             ## Use a bigger buffer for local file copies..
             $invokeResourceDownloadParams['BufferSize'] = 1MB;
         }
-        
+
         if ($media.MediaType -eq 'VHD') {
             ## Always download VHDXs regardless of Uri type
             [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
@@ -309,13 +308,13 @@ function InvokeLabMediaHotfixDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $Id,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Checksum,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
@@ -342,7 +341,7 @@ function Register-LabMedia {
         The Register-LabMedia cmdlet allows adding custom media to the host's configuration. This circumvents the requirement of having to define custom media entries in the DSC configuration document (.psd1).
 
         You can use the Register-LabMedia cmdlet to override the default media entries, e.g. you have the media hosted internally or you wish to replace the built-in media with your own implementation.
-        
+
         To override a built-in media entry, specify the same media Id with the -Force switch.
     .LINK
         Get-LabMedia
@@ -353,47 +352,47 @@ function Register-LabMedia {
         ## Specifies the media Id to register. You can override the built-in media if required.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.String] $Id,
-        
+
         ## Specifies the media's type.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('VHD','ISO','WIM')]
         [System.String] $MediaType,
-        
+
         ## Specifies the source Uri (http/https/file) of the media.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Uri] $Uri,
-        
+
         ## Specifies the architecture of the media.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('x64','x86')]
         [System.String] $Architecture,
-        
+
         ## Specifies a description of the media.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Description,
-        
+
         ## Specifies the image name containing the target WIM image. You can specify integer values.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $ImageName,
-        
+
         ## Specifies the local filename of the locally cached resource file.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Filename,
-        
+
         ## Specifies the MD5 checksum of the resource file.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Checksum,
-        
-        ## Specifies custom data for the media. 
+
+        ## Specifies custom data for the media.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Collections.Hashtable] $CustomData,
-        
+
         ## Specifies additional Windows hotfixes to install post deployment.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
         [System.Collections.Hashtable[]] $Hotfixes,
-        
+
         ## Specifies the media type. Linux VHD(X)s do not inject resources.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateSet('Windows','Linux')]
         [System.String] $OperatingSystem = 'Windows',
-        
+
         ## Specifies that an exiting media entry should be overwritten.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
@@ -403,7 +402,7 @@ function Register-LabMedia {
         if (($OperatingSystem -eq 'Linux') -and ($MediaType -ne 'VHD')) {
             throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
         }
-        
+
         ## Validate ImageName when media type is ISO/WIM
         if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
             if (-not $PSBoundParameters.ContainsKey('ImageName')) {
@@ -416,13 +415,13 @@ function Register-LabMedia {
         if ($media -and (-not $Force)) {
             throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');
         }
-    
+
         ## Get the custom media list (not the built in media)
         $existingCustomMedia = @(GetConfigurationData -Configuration CustomMedia);
         if (-not $existingCustomMedia) {
             $existingCustomMedia = @();
         }
-    
+
         $customMedia = [PSCustomObject] @{
             Id = $Id;
             Filename = $Filename;
@@ -451,11 +450,11 @@ function Register-LabMedia {
             WriteVerbose ($localized.AddingCustomMediaEntry -f $Id);
             $existingCustomMedia += $customMedia;
         }
-    
+
         WriteVerbose ($localized.SavingConfiguration -f $Id);
         SetConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
         return $customMedia;
-    
+
     } #end process
 } #end function Register-LabMedia
 
@@ -494,7 +493,7 @@ function Unregister-LabMedia {
                 return;
             }
         }
-        
+
         $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Unregister-LabMedia', $Id;
         $verboseProcessMessage = $localized.RemovingCustomMediaEntry -f $Id;
         if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
@@ -503,7 +502,7 @@ function Unregister-LabMedia {
             SetConfigurationData -Configuration CustomMedia -InputObject @($customMedia);
             return $media;
         }
-        
+
     } #end process
 } #end function Unregister-LabMedia
 

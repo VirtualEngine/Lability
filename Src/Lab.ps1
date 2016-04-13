@@ -36,9 +36,6 @@ function Start-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |
@@ -113,9 +110,6 @@ function Stop-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |
@@ -171,9 +165,6 @@ function Reset-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         ## Revert to Base/Lab snapshots...
         $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
@@ -221,9 +212,6 @@ function Checkpoint-Lab {
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' } | ForEach-Object {
              ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
@@ -285,9 +273,6 @@ function Restore-Lab {
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |
