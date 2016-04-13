@@ -36,9 +36,6 @@ function Start-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |
@@ -113,9 +110,6 @@ function Stop-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |
@@ -134,19 +128,7 @@ function Stop-Lab {
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             WriteVerbose ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
-            Stop-VM -Name $nodeDisplayNames;
-
-            $maxGroupBootDelay = $_.Group.BootDelay | Sort-Object -Descending | Select-Object -First 1;
-            if (($maxGroupBootDelay -gt 0) -and ($currentGroupCount -lt $bootGroups.Count)) {
-                WriteVerbose ($localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString);
-                for ($i = 1; $i -le $maxGroupBootDelay; $i++) {
-                    [System.Int32] $waitPercentComplete = ($i / $maxGroupBootDelay) * 100;
-                    $waitActivity = $localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString;
-                    Write-Progress -ParentId 42 -Activity $waitActivity -PercentComplete $waitPercentComplete;
-                    Start-Sleep -Seconds 1;
-                }
-                Write-Progress -Activity $waitActivity -Completed;
-            } #end if boot delay
+            Stop-VM -Name $nodeDisplayNames -Force;
         } #end foreach boot group
         Write-Progress -Id 42 -Activity $activity -Completed;
     } #end process
@@ -183,9 +165,6 @@ function Reset-Lab {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         ## Revert to Base/Lab snapshots...
         $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
@@ -233,9 +212,6 @@ function Checkpoint-Lab {
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' } | ForEach-Object {
              ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
@@ -297,9 +273,6 @@ function Restore-Lab {
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $nodes = @();
         $ConfigurationData.AllNodes |

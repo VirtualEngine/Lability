@@ -14,22 +14,22 @@ Describe 'LabVMDefaults' {
     InModuleScope $moduleName {
 
         Context 'Validates "Reset-LabVMDefault" method' {
-            
+
             It 'Calls "RemoveConfigurationData" method' {
                 Mock RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
-            
+
                 $defaults = Reset-LabVMDefault;
-            
+
                 Assert-MockCalled RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -Scope It;
             }
-        
+
         } #end context Validates "Reset-LabMDefault" method
 
         Context 'Validates "Get-LabVMDefault" method' {
 
             It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
                 $defaults = Get-LabVMDefault;
-                
+
                 $defaults -is [System.Management.Automation.PSCustomObject] | Should Be $true;
             }
 
@@ -40,7 +40,7 @@ Describe 'LabVMDefaults' {
             }
 
         } #end context Validates "Get-LabVMDefault" method
-        
+
         Context 'Validates "Set-LabVMDefault" method' {
 
             It 'Does not return "BootOrder" property' {
@@ -49,7 +49,7 @@ Describe 'LabVMDefaults' {
 
                 $defaults.BootOrder | Should BeNullOrEmpty;
             }
-            
+
             $testProperties = @(
                 @{ StartupMemory = 2GB; }
                 @{ MinimumMemory = 1GB; }
@@ -67,6 +67,7 @@ Describe 'LabVMDefaults' {
                 @{ RegisteredOrganization = 'Virtual Engine Ltd'; }
                 @{ BootDelay = 42; }
                 @{ CustomBootstrapOrder = 'Disabled'; }
+                @{ GuestIntegrationServices = $true; }
             )
             foreach ($property in $testProperties) {
                 It "Sets ""$($property.Keys[0])"" value" {
@@ -86,7 +87,7 @@ Describe 'LabVMDefaults' {
                     Mock SetConfigurationData -MockWith { }
                     New-Item -Path $file.Values[0] -Force -ErrorAction SilentlyContinue -ItemType File;
                     $defaults = Set-LabVMDefault @file;
-                    
+
                     $defaults.($file.Keys[0]) | Should Be $file.Values[0];
                 }
             }
@@ -110,7 +111,7 @@ Describe 'LabVMDefaults' {
             It 'Throws if "StartupMemory" is greater than "MaximumMemory"' {
                 { Set-LabVMDefault -StartupMemory 2GB -MaximumMemory 1GB } | Should Throw;
             }
-            
+
             It 'Throws if "Media" cannot be resolved' {
                 { Set-LabVMDefault -Media 'LabilityTestMedia' } | Should Throw;
             }

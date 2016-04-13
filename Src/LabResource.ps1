@@ -21,7 +21,6 @@ function Test-LabResource {
         [System.String] $ResourcePath
     )
     begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         if (-not $ResourcePath) {
             $hostDefaults = GetConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
@@ -188,7 +187,6 @@ function Invoke-LabResourceDownload {
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         $hostDefaults = GetConfigurationData -Configuration Host;
         if (-not $DestinationPath) { $DestinationPath = $hostDefaults.ResourcePath; }
     }
@@ -346,7 +344,6 @@ function ExpandLabResource {
         [System.String] $ResourcePath
     )
     begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         if (-not $ResourcePath) {
             $hostDefaults = GetConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;

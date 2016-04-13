@@ -25,17 +25,22 @@ function Test-LabConfiguration {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         WriteVerbose $localized.StartedLabConfigurationTest;
+        $currentNodeCount = 0;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         foreach ($node in $nodes) {
-            [PSCustomObject] @{
-                Name = $node.NodeName;
+            $currentNodeCount++;
+            $nodeProperties = ResolveLabVMProperties -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
+            [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
+            $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
+            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+            $nodeResult = [PSCustomObject] @{
+                Name = $nodeProperties.NodeName;
                 IsConfigured = Test-LabVM -Name $node.NodeName -ConfigurationData $ConfigurationData;
+                DisplayName = $nodeProperties.NodeDisplayName;
             }
+            Write-Output -InputObject $nodeResult;
         }
         WriteVerbose $localized.FinishedLabConfigurationTest;
     } #end process
@@ -66,9 +71,6 @@ function TestLabConfigurationMof {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $Path = Resolve-Path -Path $Path -ErrorAction Stop;
         $node = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -eq $Name };
@@ -157,6 +159,10 @@ function Start-LabConfiguration {
 
         NOTE: If no .mof file is found and the -SkipMofCheck parameter is specified, no configuration will be
         applied to the virtual machine's Operating System configuration.
+    .PARAMETER IgnorePendingReboot
+        The host's configuration is checked before invoking a lab configuration, including checking for pending
+        reboots. The -IgnorePendingReboot specifies that a pending reboot should be ignored and the lab
+        configuration applied.
     .PARAMETER Force
         Specifies that any existing virtual machine with a matching name, will be removed and recreated. By
         default, if a virtual machine already exists with the same name, the cmdlet will generate an error.
@@ -204,7 +210,11 @@ function Start-LabConfiguration {
 
         ## Ignores missing MOF file
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $SkipMofCheck
+        [System.Management.Automation.SwitchParameter] $SkipMofCheck,
+
+        ## Skips pending reboot check
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
     )
     begin {
         ## If we have only a secure string, create a PSCredential
@@ -214,8 +224,7 @@ function Start-LabConfiguration {
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
 
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-        if (-not (Test-LabHostConfiguration) -and (-not $Force)) {
+        if (-not (Test-LabHostConfiguration -IgnorePendingReboot:$IgnorePendingReboot) -and (-not $Force)) {
             throw $localized.HostConfigurationTestError;
         }
     }
@@ -236,7 +245,7 @@ function Start-LabConfiguration {
         $currentNodeCount = 0;
         foreach ($node in (Test-LabConfiguration -ConfigurationData $ConfigurationData)) {
             $currentNodeCount++;
-            [System.Int32] $percentComplete = ($currentNodeCount / $nodes.Count) * 100;
+            [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
             $activity = $localized.ConfiguringNode -f $node.Name;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             if ($node.IsConfigured -and $Force) {
@@ -291,17 +300,15 @@ function Remove-LabConfiguration {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         WriteVerbose $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         $currentNodeCount = 0;
         foreach ($node in $nodes) {
             $currentNodeCount++;
-            [System.Int32] $percentComplete = ($currentNodeCount / $nodes.Count) * 100;
-            $activity = $localized.ConfiguringNode -f $node.Name;
+            $nodeProperties = ResolveLabVMProperties -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
+            [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
+            $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             ##TODO: Should this not ensure that VMs are powered off?
             RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch;

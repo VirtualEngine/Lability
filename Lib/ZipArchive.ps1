@@ -110,10 +110,15 @@ function ExpandZipArchiveItem {
         try {
             [System.Int32] $fileCount = 0;
             $activity = $localized.DecompressingArchive -f $DestinationPath;
+            Write-Progress -Activity $activity -PercentComplete 0;
             foreach ($zipArchiveEntry in $InputObject) {
                 $fileCount++;
-                [System.Int32] $percentComplete = ($fileCount / $InputObject.Count) * 100
-                Write-Progress -Activity $activity -PercentComplete $percentComplete;
+                if (($fileCount % 5) -eq 0) {
+                    [System.Int16] $percentComplete = ($fileCount / $InputObject.Count) * 100
+                    $status = $localized.CopyingResourceStatus -f $fileCount, $InputObject.Count, $percentComplete;
+                    Write-Progress -Activity $activity -Status $status -PercentComplete $percentComplete;
+                }
+
                 ## Exclude the .nuspec specific files
                 if ($ExcludeNuSpecFiles -and ($zipArchiveEntry.FullName -match '(_rels\/)|(\[Content_Types\]\.xml)|(\w+\.nuspec)')) {
                     WriteVerbose -Message ($localized.IgnoringNuspecZipArchiveEntry -f $zipArchiveEntry.FullName);

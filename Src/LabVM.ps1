@@ -90,7 +90,7 @@ function Get-LabVM {
     .SYNOPSIS
         Retrieves the current configuration of a VM.
     .DESCRIPTION
-        Gets a virtual machine configuration using the xVMHyperV DSC resource.
+        Gets a virtual machine's configuration using the xVMHyperV DSC resource.
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -105,9 +105,6 @@ function Get-LabVM {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         if (-not $Name) {
             # Return all nodes defined in the configuration
@@ -115,9 +112,10 @@ function Get-LabVM {
         }
 
         foreach ($nodeName in $Name) {
+            $node = ResolveLabVMProperties -NodeName $nodeName -ConfigurationData $ConfigurationData;
             $xVMParams = @{
-                Name = $nodeName;
-                VhdPath = ResolveLabVMDiskPath -Name $nodeName;
+                Name = $node.NodeDisplayName;
+                VhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;;
             }
 
             try {
@@ -151,18 +149,14 @@ function Test-LabVM {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         if (-not $Name) {
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
         foreach ($vmName in $Name) {
             $isNodeCompliant = $true;
-            WriteVerbose ($localized.TestingNodeConfiguration -f $vmName);
             $node = ResolveLabVMProperties -NodeName $vmName -ConfigurationData $ConfigurationData;
-            [ref] $null = $node.Remove('NodeName');
+            WriteVerbose ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
 
             WriteVerbose ($localized.TestingVMConfiguration -f 'Image', $node.Media);
             if (-not (Test-LabImage -Id $node.Media)) {
@@ -173,11 +167,12 @@ function Test-LabVM {
                 $isNodeCompliant = $false;
             }
             WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
-            if (-not (TestLabVMDisk -Name $vmName -Media $node.Media -ErrorAction SilentlyContinue)) {
+            if (-not (TestLabVMDisk -Name $node.NodeDisplayName -Media $node.Media -ErrorAction SilentlyContinue)) {
                 $isNodeCompliant = $false;
             }
             WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
             $testLabVirtualMachineParams = @{
+                Name = $node.NodeDisplayName;
                 SwitchName = $node.SwitchName;
                 Media = $node.Media;
                 StartupMemory = $node.StartupMemory;
@@ -186,8 +181,9 @@ function Test-LabVM {
                 ProcessorCount = $node.ProcessorCount;
                 MACAddress = $node.MACAddress;
                 SecureBoot = $node.SecureBoot;
+                GuestIntegrationServices = $node.GuestIntegrationServices;
             }
-            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams -Name $vmName)) {
+            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
                 $isNodeCompliant = $false;
             }
             Write-Output -InputObject $isNodeCompliant;
@@ -294,6 +290,7 @@ function NewLabVM {
             ProcessorCount = $node.ProcessorCount;
             MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
+            GuestIntegrationServices = $node.GuestIntegrationServices;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
 
@@ -459,18 +456,25 @@ function Reset-LabVM {
         }
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
-
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
     }
     process {
+        $currentNodeCount = 0;
         foreach ($vmName in $Name) {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.ResettingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                $currentNodeCount++;
+                [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
+                $activity = $localized.ConfiguringNode -f $vmName;
+                Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+
                 RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
                 NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
             } #end if should process
         } #end foreach VMd
+        if (-not [System.String]::IsNullOrEmpty($activity)) {
+            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+        }
     } #end process
 } #end function Reset-LabVM
 
@@ -561,9 +565,13 @@ function New-LabVM {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String[]] $MACAddress,
 
-        ## Secure boot status
+        ## Enable Secure boot status
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Boolean] $SecureBoot,
+
+        ## Enable Guest Integration Services
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Boolean] $GuestIntegrationServices,
 
         ## Custom data
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
@@ -619,16 +627,25 @@ function New-LabVM {
         ## Ensure the specified MediaId is applied after any CustomData media entry!
         $configurationNode['Media'] = $PSBoundParameters.MediaId;
 
+        $currentNodeCount = 0;
         foreach ($vmName in $Name) {
             ## Update the node name before creating the VM
             $configurationNode['NodeName'] = $vmName;
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                $currentNodeCount++;
+                [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
+                $activity = $localized.ConfiguringNode -f $vmName;
+                Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+
                 $configurationData = @{ AllNodes = @( $configurationNode ) };
                 NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
             }
         } #end foreach name
+        if (-not [System.String]::IsNullOrEmpty($activity)) {
+            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+        }
     } #end process
 } #end function New-LabVM
 
@@ -643,21 +660,38 @@ function Remove-LabVM {
     param (
         ## Virtual machine name
         [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String[]] $Name
+        [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
+        $currentNodeCount = 0;
         foreach ($vmName in $Name) {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
-            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.RemovingQuickVM -f $vmName);
+            $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
-                ## Create a skeleton config data
-                $skeletonConfigurationData = @{
-                    AllNodes = @(
-                        @{  NodeName = $vmName; }
-                    )
-                };
-                RemoveLabVM -Name $vmName -ConfigurationData $skeletonConfigurationData;
+                $currentNodeCount++;
+                [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
+                $activity = $localized.ConfiguringNode -f $vmName;
+                Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+
+                ## Create a skeleton config data if one wasn't supplied
+                if (-not $PSBoundParameters.ContainsKey('ConfigurationData')) {
+                    $configurationData = @{
+                        AllNodes = @(
+                            @{  NodeName = $vmName; }
+                        )
+                    };
+                }
+                RemoveLabVM -Name $vmName -ConfigurationData $configurationData;
             } #end if should process
         } #end foreach VM
+        if (-not [System.String]::IsNullOrEmpty($activity)) {
+            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+        }
     } #end process
 } #end function Remove-LabVM

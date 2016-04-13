@@ -14,14 +14,13 @@ Describe 'LabConfiguration' {
     InModuleScope $moduleName {
 
         Context 'Validates "Test-LabConfiguration" method' {
-            
+
             It 'Calls "Test-LabVM" for each node' {
                 $configurationData = @{
                     AllNodes = @(
                         @{ NodeName = 'VM1'; }, @{ NodeName = 'VM2'; }, @{ NodeName = 'VM3'; }
                     )
                 }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabVM -MockWith { }
 
                 Test-LabConfiguration -ConfigurationData $configurationData;
@@ -36,7 +35,6 @@ Describe 'LabConfiguration' {
             It 'Throws if path is invalid' {
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
 
                 { TestLabConfigurationMof -ConfigurationData $configurationData -Name $testVM -Path 'TestDrive:\InvalidPath' } | Should Throw;
             }
@@ -45,7 +43,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testPath\$testVM.mof" -ItemType File -Force;
                 New-Item -Path "$testPath\$testVM.meta.mof" -ItemType File -Force;
 
@@ -56,7 +53,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Remove-Item -Path "$testPath\$testVM.mof" -Force -ErrorAction SilentlyContinue;
                 Remove-Item -Path "$testPath\$testVM.meta.mof" -Force -ErrorAction SilentlyContinue;
 
@@ -67,7 +63,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testPath\$testVM.mof" -ItemType File -Force;
                 Remove-Item -Path "$testPath\$testVM.meta.mof" -Force -ErrorAction SilentlyContinue;
 
@@ -78,7 +73,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Remove-Item -Path "$testPath\$testVM.mof" -Force -ErrorAction SilentlyContinue;
                 Remove-Item -Path "$testPath\$testVM.meta.mof" -Force -ErrorAction SilentlyContinue;
 
@@ -94,7 +88,6 @@ Describe 'LabConfiguration' {
             It 'Throws is "Test-LabHostConfiguration" fails' {
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $false; }
 
                 { Start-LabConfiguration -ConfigurationData $configurationData -Credential $testPassword } | Should Throw;
@@ -103,17 +96,15 @@ Describe 'LabConfiguration' {
             It 'Throws if path is invalid' {
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $true; }
 
                 { Start-LabConfiguration -ConfigurationData $configurationData -Path 'TestDrive:\InvalidPath'  -Credential $testPassword } | Should Throw;
             }
-            
+
             It 'Calls "NewLabVM" if node is not configured' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $true; }
                 Mock TestLabConfigurationMof -MockWith { }
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
@@ -128,7 +119,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $true; }
                 Mock TestLabConfigurationMof -MockWith { }
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
@@ -143,7 +133,6 @@ Describe 'LabConfiguration' {
                 $testPath = 'TestDrive:';
                 $testVM = 'VM1';
                 $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Test-LabHostConfiguration -MockWith { return $true; }
                 Mock TestLabConfigurationMof -MockWith { }
                 Mock NewLabVM -ParameterFilter { $Name -eq $testVM } -MockWith { }
@@ -160,7 +149,6 @@ Describe 'LabConfiguration' {
 
             It 'Calls "RemoveLabVM" for each node' {
                 $configurationData = @{ AllNodes = @( @{ NodeName = 'VM1'; }, @{ NodeName = 'VM2'; } ) }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock RemoveLabVM -MockWith { }
 
                 Remove-LabConfiguration -ConfigurationData $configurationData;

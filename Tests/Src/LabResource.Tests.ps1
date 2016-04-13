@@ -13,7 +13,7 @@ Describe 'LabResource' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "Get-LabHostDefault" method' {
+        Context 'Validates "Test-LabResource" method' {
 
             $configurationData = @{
                 NonNodeData = @{
@@ -28,16 +28,14 @@ Describe 'LabResource' {
                 $emptyConfigurationData = @{ NonNodeData = @{ $labDefaults.ModuleName = @{ Resource = @( ) } } }
                 $fakeConfigurationData = @{ ResourcePath = $testResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $emptyConfigurationData; }
 
-                Test-LabResource -ConfigurationData $configurationData | Should Be $true;
+                Test-LabResource -ConfigurationData $emptyConfigurationData | Should Be $true;
             }
 
             It 'Passes when all defined resources are present and "Id" parameter is not specified' {
                 $testResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 foreach ($resource in $configurationData.NonNodeData.$($labDefaults.ModuleName).Resource) {
                     New-Item -Path "$testResourcePath\$($resource.Id)" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
@@ -50,7 +48,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
 
                 Test-LabResource -ConfigurationData $configurationData -ResourceId $testResourceId | Should Be $true;
@@ -61,7 +58,6 @@ Describe 'LabResource' {
                 $testResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 foreach ($resource in $configurationData.NonNodeData.$($labDefaults.ModuleName).Resource) {
                     New-Item -Path "$testResourcePath\$($resource.Id)" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
@@ -75,7 +71,6 @@ Describe 'LabResource' {
                 $testResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 foreach ($resource in $configurationData.NonNodeData.$($labDefaults.ModuleName).Resource) {
                     New-Item -Path "$testResourcePath\$($resource.Id)" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
@@ -97,7 +92,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceFilename" -ItemType File -Force -ErrorAction SilentlyContinue;
 
                 Test-LabResource -ConfigurationData $filenameConfigurationData -ResourceId $testResourceId | Should Be $true;
@@ -116,7 +110,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock TestResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -MockWith { return $true; }
 
                 Test-LabResource -ConfigurationData $checksumConfigurationData;
@@ -395,7 +388,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Remove-Item -Path $testHostResourcePath -Force -ErrorAction SilentlyContinue;
 
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
@@ -420,7 +412,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Copy-Item -MockWith { }
                 Mock Invoke-LabResourceDownload -ParameterFilter { $ResourceId -eq $testResourceId } -MockWith {
                    New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
@@ -450,7 +441,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock Copy-Item -MockWith { }
                 Mock Invoke-LabResourceDownload -ParameterFilter { $ResourceId -eq $testResourceId } -MockWith {
                    New-Item -Path "$testHostResourcePath\$testResourceFilename" -ItemType File -Force -ErrorAction SilentlyContinue;
@@ -479,7 +469,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Copy-Item -ParameterFilter { $Destination -eq $testHostResourcePath -and $Force -eq $true } -MockWith { }
 
@@ -509,7 +498,6 @@ Describe 'LabResource' {
                 }
                 $fakeConfigurationData = @{ ResourcePath = "TestDrive:\$defaultDestinationPath";}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -MockWith { }
 
@@ -536,7 +524,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock ExpandZipArchive -MockWith { }
 
@@ -565,7 +552,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
 
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
@@ -591,7 +577,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock ExpandIsoResource -MockWith { }
 
@@ -621,7 +606,6 @@ Describe 'LabResource' {
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
 
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 Mock ExpandIsoResource -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
 
                 ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
@@ -647,7 +631,6 @@ Describe 'LabResource' {
                 $testHostResourcePath = 'TestDrive:\Resources';
                 $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
                 Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-                Mock ConvertToConfigurationData -MockWith { return $configurationData; }
                 New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
 
                 { ExpandLabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath } | Should Throw;

@@ -78,7 +78,19 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ## Versions
 
-### Unreleased
+### v0.9.9
+
+* Removes boot delay in Stop-Lab.
+* Adds GuestIntegrationServices support.
+* Adds Write-Progress support to Reset-LabVM, New-LabVM, Remove-LabVM and Test-LabConfiguration.
+* Adds -IgnorePendingReboot parameter to Start-LabConfiguration.
+* Removes extraneous verbose output from Get-CimInstance in Test-LabHostConfiguration.
+* Fixes bug in Test-LabVM where VM's prefixed name was not resolved causing calls to TestLabVMDisk and TestLabVirtualMachine to fail.
+* Adds -Force switch to Stop-Lab to ensure that locked VMs do not prevent shutdown.
+* Removes unused -UpdatePath parameter from Get/Set-LabHostDefault cmdlets (#77).
+* Fixes bug in Get-LabVM where VMs' prefixed name was not resolved correctly (#89).
+* Adds optional -ConfigurationData switch to Remove-LabVM to support prefixed configurations.
+* Deprecates ConvertToConfigurationData function in favour of the native [ArgumentToConfigurationDataTransformationAttribute()].
 
 ### v0.9.8
 
