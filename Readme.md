@@ -78,6 +78,10 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ## Versions
 
+### v0.9.10
+
+* Fixes bug where xHyperVM\Test-TargetResource throws if a VM's VHD has not been created.
+
 ### v0.9.9
 
 * Removes boot delay in Stop-Lab.
