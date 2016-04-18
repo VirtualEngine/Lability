@@ -17,7 +17,7 @@ function ResolveLabVMDiskPath {
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
         return $vhdPath;
     } #end process
-} #end function ResolaveLabVMVhdPath
+} #end function ResolveLabVMDiskPath
 
 function GetLabVMDisk {
 <#
@@ -48,7 +48,7 @@ function GetLabVMDisk {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         GetDscResource -ResourceName VHD -Parameters $vhd;
     } #end process
-} #end function GetLbVMDisk
+} #end function GetLabVMDisk
 
 function TestLabVMDisk {
 <#

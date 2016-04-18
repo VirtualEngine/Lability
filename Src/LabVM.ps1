@@ -83,7 +83,7 @@ function ResolveLabVMProperties {
 
         return $node;
     } #end process
-} #end function Resolve-LabProperty
+} #end function ResolveLabVMProperties
 
 function Get-LabVM {
 <#
