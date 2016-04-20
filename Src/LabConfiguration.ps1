@@ -25,9 +25,6 @@ function Test-LabConfiguration {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         WriteVerbose $localized.StartedLabConfigurationTest;
         $currentNodeCount = 0;
@@ -74,9 +71,6 @@ function TestLabConfigurationMof {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         $Path = Resolve-Path -Path $Path -ErrorAction Stop;
         $node = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -eq $Name };
@@ -230,7 +224,6 @@ function Start-LabConfiguration {
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
 
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
         if (-not (Test-LabHostConfiguration -IgnorePendingReboot:$IgnorePendingReboot) -and (-not $Force)) {
             throw $localized.HostConfigurationTestError;
         }
@@ -307,9 +300,6 @@ function Remove-LabConfiguration {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
-    begin {
-        $ConfigurationData = ConvertToConfigurationData -ConfigurationData $ConfigurationData;
-    }
     process {
         WriteVerbose $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };

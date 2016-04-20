@@ -118,7 +118,7 @@ ConvertFrom-StringData -StringData @'
     ModuleNotFound                  = Module '{0}' was not found.
     ModuleFoundInPath               = Found module in '{0}'.
     CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
-    RemovingQuickVM                 = Removing quick VM '{0}'.
+    RemovingVM                      = Removing VM '{0}'.
     ResettingVM                     = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.
     TestingNodeDscModule            = Testing node DSC '{0}' module.

@@ -1,34 +1,3 @@
-function ConvertToConfigurationData {
-<#
-    .SYNOPSIS
-        Converts a file path string to a hashtable. This mimics the -ConfigurationData parameter of the
-        Start-DscConfiguration cmdlet.
-#>
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Object] $ConfigurationData
-    )
-    process {
-        if ($ConfigurationData -is [System.String]) {
-            $configurationDataPath = Resolve-Path -Path $ConfigurationData -ErrorAction Stop;
-            if (-not (Test-Path -Path $configurationDataPath -PathType Leaf)) {
-                throw "Invalid configuration data file";
-            }
-            elseif ([System.IO.Path]::GetExtension($configurationDataPath) -ne '.psd1') {
-                throw "Invalid configuration data file";
-            }
-            $configurationDataContent = Get-Content -Path $configurationDataPath -Raw;
-            $ConfigurationData = Invoke-Command -ScriptBlock ([System.Management.Automation.ScriptBlock]::Create($configurationDataContent));
-        }
-        if ($ConfigurationData -isnot [System.Collections.Hashtable]) {
-            throw "Invalid configuration data type";
-        }
-        return $ConfigurationData;
-    }
-} #end function ConvertToConfigurationData
-
 function ResolveConfigurationDataPath {
 <#
     .SYNOPSIS
@@ -121,6 +90,9 @@ function GetConfigurationData {
                     if ($configurationData.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $false;
                     }
+
+                    ## Remove deprecated UpdatePath, if present (Issue #77)
+                    $configurationData.PSObject.Properties.Remove('UpdatePath');
                 }
                 Default {
                     ## Do nothing

@@ -176,7 +176,7 @@ Describe 'VirtualMachine' {
 
             It 'Returns false when error is thrown' {
                 Mock ImportDscResource -MockWith { }
-                Mock TestDscResource -MockWith { Write-Error 'Something went wrong' }
+                Mock TestDscResource -MockWith { throw 'Vhd not found' }
 
                 TestLabVirtualMachine @testLabVirtualMachineParams | Should Be $false;
             }
