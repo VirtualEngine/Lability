@@ -81,6 +81,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 ### v0.9.10
 
 * Fixes bug where xHyperVM\Test-TargetResource throws if a VM's VHD has not been created.
+* Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
 
 ### v0.9.9
 

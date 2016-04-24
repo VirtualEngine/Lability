@@ -298,6 +298,24 @@ Describe 'LabVM' {
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
             }
 
+            It 'Calls "Test-LabImage" and "TestLabVMDisk" with "ConfigurationData" (#97)' {
+                $testVM = 'TestVM';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVM; }
+                    )
+                }
+                Mock TestLabSwitch -MockWith { return $true; }
+                Mock TestLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+
+                $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
+
+                Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+                Assert-MockCalled TestLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
         } #end context Validates "Test-LabVM" method
 
         Context 'Validates "NewLabVM" method' {
@@ -704,6 +722,81 @@ Describe 'LabVM' {
                 { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -NoSnapshot -WarningAction Stop 3>&1 } | Should Throw;
             }
 
+            It 'Calls "Test-LabImage" with "ConfigurationData" (#97)' {
+                $testVMName = 'TestVM';
+                $testMedia = 'Test-Media';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Media = $testMedia; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return $Id; }
+                Mock SetLabSwitch -MockWith { }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock New-LabImage -MockWith { }
+                Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $false; }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
+            It 'Calls "ResetLabVMDisk" with "ConfigurationData" (#97)' {
+                $testVMName = 'TestVM';
+                $testMedia = 'Test-Media';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Media = $testMedia; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return $Id; }
+                Mock SetLabSwitch -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock New-LabImage -MockWith { }
+                Mock Test-LabImage -MockWith { return $false; }
+                Mock ResetLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled ResetLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
+            It 'Calls "SetLabVirtualMachine" with "ConfigurationData" (#97)' {
+                $testVMName = 'TestVM';
+                $testMedia = 'Test-Media';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Media = $testMedia; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return $Id; }
+                Mock SetLabSwitch -MockWith { }
+                Mock SetLabVMDiskResource -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock New-LabImage -MockWith { }
+                Mock Test-LabImage -MockWith { return $false; }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
             It 'Warns when no client or root certificate is used' {
                 <# NOTE: Must come last in the test suite as once we mock ResolveLabVMProperties, we're in trouble! #>
                 $testVMName = 'TestVM';
@@ -825,6 +918,42 @@ Describe 'LabVM' {
                 Assert-MockCalled RemoveLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
             }
 
+            It 'Calls "RemoveLabVirtualMachine" with "ConfigurationData" (#97)' {
+                $testVMName = 'TestVM';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
+                    )
+                }
+                Mock RemoveLabVMSnapshot -MockWith { }
+                Mock RemoveLabVMDisk -MockWith { }
+                Mock RemoveLabSwitch -MockWith { }
+                Mock RemoveLabVirtualMachine -ParameterFilter { $null -ne $configurationData } -MockWith { }
+
+                RemoveLabVM -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
+
+                Assert-MockCalled RemoveLabVirtualMachine -ParameterFilter { $null -ne $configurationData } -Scope It;
+            }
+
+            It 'Calls "RemoveLabVMDisk" with "ConfigurationData" (#97)' {
+                $testVMName = 'TestVM';
+                $testVMSwitch = 'Test Switch';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
+                    )
+                }
+                Mock RemoveLabVMSnapshot -MockWith { }
+                Mock RemoveLabSwitch -MockWith { }
+                Mock RemoveLabVirtualMachine -MockWith { }
+                Mock RemoveLabVMDisk -ParameterFilter { $null -ne $configurationData } -MockWith { }
+
+                RemoveLabVM -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
+
+                Assert-MockCalled RemoveLabVMDisk -ParameterFilter { $null -ne $configurationData } -Scope It;
+            }
+
         } #end context Validates "RemoveLabVM" method
 
         Context 'Validates "Reset-LabVM" method' {
@@ -902,7 +1031,7 @@ Describe 'LabVM' {
 
                 Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
             }
-        
+
         } #end context Validates "New-LabVM" method
 
         Context 'Validates "Remove-LabVM" method' {
@@ -915,7 +1044,7 @@ Describe 'LabVM' {
 
                 Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
-        
+
         } #end context Validates "Remove-LabVM" method
 
     } #end InModuleScope

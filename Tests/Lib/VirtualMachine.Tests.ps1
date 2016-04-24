@@ -131,6 +131,35 @@ Describe 'VirtualMachine' {
                 $vmProperties.EnableGuestService | Should Be $true;
             }
 
+            It 'Calls "ResolveLabMedia" with "ConfigurationData" when specified (#97)' {
+                Mock ResolveLabMedia -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams -ConfigurationData @{};;
+
+                Assert-MockCalled ResolveLabMedia -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
+            It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
+                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ Generation = 'VHDX';}; }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams -ConfigurationData @{};;
+
+                Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
+            It 'Does not return "ConfigurationData" property by default (#97)' {
+                Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
+                $vmProperties = GetVirtualMachineProperties @getVirtualMachinePropertiesParams;
+
+                $vmProperties.ContainsKey('ConfigurationData') | Should Be $false;
+            }
+
+
         } #end context Validates "GetVirtualMachineProperties" method
 
         Context 'Validates "TestLabVirtualMachine" method' {
@@ -148,10 +177,11 @@ Describe 'VirtualMachine' {
                 ProcessorCount = 1;
             }
 
-            Mock ResolveLabMedia -MockWith { }
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+
 
             It 'Imports Hyper-V DSC resource' {
+                Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
 
@@ -161,6 +191,8 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns true when VM matches specified configuration' {
+                Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
 
@@ -168,6 +200,8 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns false when VM does not match specified configuration' {
+                Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $false; }
 
@@ -175,10 +209,22 @@ Describe 'VirtualMachine' {
             }
 
             It 'Returns false when error is thrown' {
+                Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
+                Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { throw 'Vhd not found' }
 
                 TestLabVirtualMachine @testLabVirtualMachineParams | Should Be $false;
+            }
+
+            It 'Calls "GetVirtualMachineProperties" with "ConfigurationData" when specified (#97)' {
+                Mock ImportDscResource -MockWith { }
+                Mock TestDscResource -MockWith { return $false; }
+                Mock GetVirtualMachineProperties -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+
+                TestLabVirtualMachine @testLabVirtualMachineParams -ConfigurationData @{};
+
+                Assert-MockCalled GetVirtualMachineProperties -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             }
 
         } #end context Validates "TestLabVirtualMachine" method
@@ -198,10 +244,8 @@ Describe 'VirtualMachine' {
                 ProcessorCount = 1;
             }
 
-            Mock ResolveLabMedia -MockWith { }
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-
             It 'Imports Hyper-V DSC resource' {
+                Mock GetVirtualMachineProperties -MockWith { return @{}; }
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
@@ -211,12 +255,23 @@ Describe 'VirtualMachine' {
             }
 
             It 'Invokes Hyper-V DSC resource' {
+                Mock GetVirtualMachineProperties -MockWith { return @{}; }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
 
                 SetLabVirtualMachine @setLabVirtualMachineParams;
 
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
+            }
+
+            It 'Calls "GetVirtualMachineProperties" with "ConfigurationData" when specified (#97)' {
+                Mock ImportDscResource -MockWith { }
+                Mock InvokeDscResource -MockWith { }
+                Mock GetVirtualMachineProperties -ParameterFilter { $ConfigurationData -ne $null } -MockWith { return @{}; }
+
+                SetLabVirtualMachine @setLabVirtualMachineParams -ConfigurationData @{};
+
+                Assert-MockCalled GetVirtualMachineProperties -ParameterFilter { $ConfigurationData -ne $null } -Scope It;
             }
 
         } #end context Validates "SetLabVirtualMachine" method
@@ -236,10 +291,8 @@ Describe 'VirtualMachine' {
                 ProcessorCount = 1;
             }
 
-            Mock ResolveLabMedia -MockWith { }
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-
             It 'Imports Hyper-V DSC resource' {
+                Mock GetVirtualMachineProperties -MockWith { return @{}; }
                 Mock InvokeDscResource -MockWith { }
                 Mock ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -MockWith { }
 
@@ -249,12 +302,23 @@ Describe 'VirtualMachine' {
             }
 
             It 'Invokes Hyper-V DSC resource' {
+                Mock GetVirtualMachineProperties -MockWith { return @{}; }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -MockWith { }
 
                 RemoveLabVirtualMachine @removeLabVirtualMachineParams;
 
                 Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
+            }
+
+            It 'Calls "GetVirtualMachineProperties" with "ConfigurationData" when specified (#97)' {
+                Mock ImportDscResource -MockWith { }
+                Mock InvokeDscResource -MockWith { }
+                Mock GetVirtualMachineProperties -ParameterFilter { $ConfigurationData -ne $null } -MockWith { return @{}; }
+
+                RemoveLabVirtualMachine @removeLabVirtualMachineParams -ConfigurationData @{ Test = $true};
+
+                Assert-MockCalled GetVirtualMachineProperties -ParameterFilter { $ConfigurationData -ne $null } -Scope It;
             }
 
         } #end context Validates "SetLabVirtualMachine" method
