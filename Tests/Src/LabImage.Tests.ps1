@@ -14,7 +14,7 @@ Describe 'LabImage' {
     InModuleScope $moduleName {
 
         Context 'Validates "Get-LabImage" method' {
-            
+
             It 'Returns null when there is no parent image when Id specified' {
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
                 $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
@@ -30,9 +30,9 @@ Describe 'LabImage' {
                 Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
 
-                $image = Get-LabImage -Id 'NonExistentId';
+                $images = Get-LabImage -Id 'NonExistentId';
 
-                $image | Should BeNullOrEmpty;
+                $images | Should BeNullOrEmpty;
             }
 
             It 'Returns null when there is are no parent images' {
@@ -44,7 +44,7 @@ Describe 'LabImage' {
 
                 $images = Get-LabImage;
 
-                $image | Should BeNullOrEmpty;
+                $images | Should BeNullOrEmpty;
             }
 
             It 'Returns all available parent images when no Id is specified' {
@@ -89,7 +89,7 @@ Describe 'LabImage' {
                 $image | Should Not BeNullOrEmpty;
                 $image.Count | Should BeNullOrEmpty;
             }
-            
+
             foreach ($generation in 'VHD','VHDX') {
                 It "Returns image generation '$generation' for $generation file" {
                     $testLabMediaId = 'IMG1';
@@ -105,9 +105,9 @@ Describe 'LabImage' {
                     Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
                     Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
                     Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                    
+
                     $image = Get-LabImage -Id $testLabMediaId;
-                    
+
                     $image.Generation | Should Be $testImageGeneration;
                 }
             }
@@ -130,13 +130,22 @@ Describe 'LabImage' {
                 Test-LabImage -Id $testImageId | Should Be $false;
             }
 
+            It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
+                $testImageId = '42';
+                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+
+                Test-LabImage -Id $testImageId -ConfigurationData @{};
+
+                Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
         } #end context 'Validates "Test-LabImage" method
 
         Context 'Validates "New-LabImage" method' {
 
             It 'Throws if image already exists' {
                 $testImageId = '42';
-                
+
                 Mock Test-LabImage -MockWith { return $true; }
 
                 { New-LabImage -Id $testImageId } | Should Throw;
@@ -164,9 +173,9 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-            
+
                 New-LabImage -Id $testImageId -ErrorAction SilentlyContinue -WarningAction SilentlyContinue;
-            
+
                 Test-Path -Path $testImagePath | Should Be $false;
             }
 
@@ -193,12 +202,12 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-            
+
                 New-LabImage -Id $testImageId -Force;
-            
+
                 Test-Path -Path $testImagePath | Should Be $false;
             }
-           
+
             It 'Calls "InvokeLabMediaImageDownload" to download ISO media (if not present)' {
                 $testImageId = 'NewLabImage';
                 $testParentImagePath = 'TestDrive:'
@@ -590,7 +599,38 @@ Describe 'LabImage' {
 
                 Assert-MockCalled Dismount-VHD -ParameterFilter { $Path -eq $testImagePath } -Scope It;
             }
-            
+
+            It 'Calls "Test-LabImage" and "Get-LabImage" with "ConfigurationData" when specified (#97)' {
+                $testImageId = 'NewLabImage';
+                $testParentImagePath = 'TestDrive:'
+                $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+                $testArchitecture = 'x64';
+                $testWimImageName = 'Fake windows image';
+                $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+                $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
+                $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+                New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+                Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
+                Mock ExpandWindowsImage -MockWith { }
+                Mock AddDiskImageHotfix -MockWith { }
+                Mock SetDiskImageBootVolume -MockWith { }
+                Mock Dismount-VHD -MockWith { }
+                Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $fakeLabImage; }
+
+                New-LabImage -Id $testImageId -ConfigurationData @{} -Force;
+
+                Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+                Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            }
+
         } #end context Validates "New-LabImage" method
 
     } #end InModuleScope

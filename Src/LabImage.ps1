@@ -6,32 +6,55 @@ function Get-LabImage {
         The Get-LabImage cmdlet returns current master/parent disk image properties.
     .PARAMETER Id
         Specifies the media Id of the image to return. If this parameter is not specified, all images are returned.
+    .PARAMETER ConfigurationData
+        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
+        configuration document that contains the required media definition.
     .EXAMPLE
         Get-LabImage
-        
+
         Returns all current lab images on the host.
     .EXAMPLE
         Get-LabImage -Id 2012R2_x64_Standard_EN_Eval
-        
+
         Returns the '2012R2_x64_Standard_EN_Eval' lab image properties, if available.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Id
+        [System.String] $Id,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
         $parentVhdPath = ResolvePathEx -Path $hostDefaults.ParentVhdPath;
-        
-        foreach ($media in (Get-LabMedia @PSBoundParameters)) {
+
+        if ($PSBoundParameters.ContainsKey('Id')) {
+            ## We have an Id. so resolve that
+            try {
+                $labMedia = ResolveLabMedia @PSBoundParameters;
+            }
+            catch {
+                $labMedia = $null;
+            }
+        }
+        else {
+            ## Otherwise return all media
+            $labMedia = Get-LabMedia;
+        }
+
+        foreach ($media in $labMedia) {
             $differencingVhdPath = '{0}.vhdx' -f $media.Id;
             if ($media.MediaType -eq 'VHD') {
                 $differencingVhdPath = $media.Filename;
             }
-            
-            $imagePath = Join-Path -Path $parentVhdPath -ChildPath $differencingVhdPath; 
+
+            $imagePath = Join-Path -Path $parentVhdPath -ChildPath $differencingVhdPath;
             if (Test-Path -Path $imagePath -PathType Leaf) {
                 $imageFileInfo = Get-Item -Path $imagePath;
                 $diskImage = Get-DiskImage -ImagePath $imageFileInfo.FullName;
@@ -47,7 +70,7 @@ function Get-LabImage {
                 }
                 Write-Output -InputObject $labImage;
             }
-        } #end foreach media Id
+        } #end foreach media
     } #end process
 } #end function Get-LabImage
 
@@ -59,9 +82,12 @@ function Test-LabImage {
         The Test-LabImage cmdlet returns whether a specified disk image is present.
     .PARAMETER Id
         Specifies the media Id of the image to test.
+    .PARAMETER ConfigurationData
+        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
+        configuration document that contains the required media definition.
     .EXAMPLE
         Test-LabImage -Id 2012R2_x64_Standard_EN_Eval
-        
+
         Tests whether the '-Id 2012R2_x64_Standard_EN_Eval' lab image is present.
     .LINK
         Get-LabImage
@@ -70,10 +96,16 @@ function Test-LabImage {
     [OutputType([System.Boolean])]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Id
+        [System.String] $Id,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
-        if (Get-LabImage -Id $Id) {
+        if (Get-LabImage @PSBoundParameters) {
             return $true;
         }
         else {
@@ -88,7 +120,7 @@ function New-LabImage {
         Creates a new master/parent lab image.
     .DESCRIPTION
         The New-LabImage cmdlet starts the creation of a lab VHD(X) master image from the specified media Id.
-        
+
         Lability will automatically create lab images as required. If there is a need to manally recreate an image,
         then the New-LabImage cmdlet can be used.
     .PARAMETER Id
@@ -100,11 +132,11 @@ function New-LabImage {
         Specifies that any existing image should be overwritten.
     .EXAMPLE
         New-LabImage -Id 2012R2_x64_Standard_EN_Eval
-        
+
         Creates the VHD(X) image from the '2012R2_x64_Standard_EN_Eval' media Id.
     .EXAMPLE
         New-LabImage -Id 2012R2_x64_Standard_EN_Eval -Force
-        
+
         Creates the VHD(X) image from the '2012R2_x64_Standard_EN_Eval' media Id, overwriting an existing image with the same name.
     .LINK
         Get-LabMedia
@@ -116,32 +148,32 @@ function New-LabImage {
         ## Lab media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Id,
-        
+
         ## Lab DSC configuration data
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Force the re(creation) of the master/parent image
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
-    begin {
-        if ((Test-LabImage -Id $Id) -and $Force) {
-            $image = Get-LabImage -Id $Id;
-            WriteVerbose ($localized.RemovingDiskImage -f $image.ImagePath);
-            [ref] $null = Remove-Item -Path $image.ImagePath -Force -ErrorAction Stop;
-        }
-        elseif (Test-LabImage -Id $Id) {
-            throw ($localized.ImageAlreadyExistsError -f $Id);
-        }
-    }
     process {
         ## Download media if required..
         [ref] $null = $PSBoundParameters.Remove('Force');
         [ref] $null = $PSBoundParameters.Remove('WhatIf');
         [ref] $null = $PSBoundParameters.Remove('Confirm');
+
+        if ((Test-LabImage @PSBoundParameters) -and $Force) {
+            $image = Get-LabImage @PSBoundParameters;
+            WriteVerbose ($localized.RemovingDiskImage -f $image.ImagePath);
+            [ref] $null = Remove-Item -Path $image.ImagePath -Force -ErrorAction Stop;
+        }
+        elseif (Test-LabImage @PSBoundParameters) {
+            throw ($localized.ImageAlreadyExistsError -f $Id);
+        }
+
         $media = ResolveLabMedia @PSBoundParameters;
         $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -156,7 +188,7 @@ function New-LabImage {
             $imageName = '{0}.vhdx' -f $Id;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
             $imageCreationFailed = $false;
-            
+
             try {
                 ## Create VHDX
                 if ($media.CustomData.PartitionStyle) {
@@ -170,18 +202,18 @@ function New-LabImage {
                 else {
                     $partitionStyle = 'GPT';
                 }
-                
+
                 ## Create disk image and refresh PSDrives
                 $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
                 [ref] $null = Get-PSDrive;
-                
+
                 ## Apply WIM (ExpandWindowsImage) and add specified features
                 $expandWindowsImageParams = @{
                     Vhd = $image;
                     MediaPath = $mediaFileInfo.FullName;
                     PartitionStyle = $partitionStyle;
                 }
-                
+
                 ## Determine whether we're using the WIM image index or image name. This permits
                 ## specifying an integer image index in a media's 'ImageName' property.
                 [System.Int32] $wimImageIndex = $null;
