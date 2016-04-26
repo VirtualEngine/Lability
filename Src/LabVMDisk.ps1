@@ -96,6 +96,11 @@ function TestLabVMDisk {
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
         }
+        if (-not $image) {
+            ## This only occurs when a parent image is not available (#104).
+            $vhd['MaximumSize'] = 136365211648; #127GB
+            $vhd['Generation'] = 'VHDX';
+        }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         TestDscResource -ResourceName VHD -Parameters $vhd;
     } #end process

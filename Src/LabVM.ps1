@@ -162,35 +162,42 @@ function Test-LabVM {
             if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
                 $isNodeCompliant = $false;
             }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-            if (-not (TestLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData)) {
-                $isNodeCompliant = $false;
-            }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
-            $testLabVMDiskParams = @{
-                Name = $node.NodeDisplayName;
-                Media = $node.Media;
-                ConfigurationData = $ConfigurationData;
-            }
-            if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
-                $isNodeCompliant = $false;
-            }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
-            $testLabVirtualMachineParams = @{
-                Name = $node.NodeDisplayName;
-                SwitchName = $node.SwitchName;
-                Media = $node.Media;
-                StartupMemory = $node.StartupMemory;
-                MinimumMemory = $node.MinimumMemory;
-                MaximumMemory = $node.MaximumMemory;
-                ProcessorCount = $node.ProcessorCount;
-                MACAddress = $node.MACAddress;
-                SecureBoot = $node.SecureBoot;
-                GuestIntegrationServices = $node.GuestIntegrationServices;
-                ConfigurationData = $ConfigurationData;
-            }
-            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
-                $isNodeCompliant = $false;
+            else {
+                ## No point testing switch, vhdx and VM if the image isn't available
+                WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
+                if (-not (TestLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData)) {
+                    $isNodeCompliant = $false;
+                }
+
+                WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
+                $testLabVMDiskParams = @{
+                    Name = $node.NodeDisplayName;
+                    Media = $node.Media;
+                    ConfigurationData = $ConfigurationData;
+                }
+                if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
+                    $isNodeCompliant = $false;
+                }
+                else {
+                    ## No point testing VM if the VHDX isn't available
+                    WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
+                    $testLabVirtualMachineParams = @{
+                        Name = $node.NodeDisplayName;
+                        SwitchName = $node.SwitchName;
+                        Media = $node.Media;
+                        StartupMemory = $node.StartupMemory;
+                        MinimumMemory = $node.MinimumMemory;
+                        MaximumMemory = $node.MaximumMemory;
+                        ProcessorCount = $node.ProcessorCount;
+                        MACAddress = $node.MACAddress;
+                        SecureBoot = $node.SecureBoot;
+                        GuestIntegrationServices = $node.GuestIntegrationServices;
+                        ConfigurationData = $ConfigurationData;
+                    }
+                    if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
+                        $isNodeCompliant = $false;
+                    }
+                }
             }
             Write-Output -InputObject $isNodeCompliant;
         }
