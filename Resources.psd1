@@ -184,4 +184,5 @@ ConvertFrom-StringData -StringData @'
     SwitchDoesNotExistError         = Virtual switch '{0}' cannot be found.
     InvalidOSMediaTypeError         = Media type '{0}' is not supported by Operating system type '{1}'.
     CannotProcessArguentError       = {0} : Cannot process argument transformation on parameter '{1}'. Cannot convert the '{2}' value to type '{3}'.
+    DscResourceFailedError          = DSC resource '{0}' failed with errror '{1}'.
 '@

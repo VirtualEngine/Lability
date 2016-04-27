@@ -78,6 +78,12 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ## Versions
 
+### Unreleased
+
+* Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
+* Removes importing module warnings when enumerating local module availability.
+* Fixes bug when invoking lab deployments with PSake (#104).
+
 ### v0.9.10
 
 * Fixes bug where xHyperVM\Test-TargetResource throws if a VM's VHD has not been created.
