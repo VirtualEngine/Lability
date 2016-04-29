@@ -84,6 +84,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Removes importing module warnings when enumerating local module availability.
 * Fixes bug when invoking lab deployments with PSake (#104).
 * Adds Server 2016 Technical Preview 5 media.
+* Fixes bug in Import-LabHostConfiguration where VM defaults contains reference to custom media.
 
 ### v0.9.10
 
