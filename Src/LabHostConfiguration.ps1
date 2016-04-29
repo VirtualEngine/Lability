@@ -373,6 +373,20 @@ function Import-LabHostConfiguration {
             }
         } #end if restore host defaults
 
+        if ($Media) {
+            ## Restore media before VM defaults as VM defaults may reference custom media!
+            $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Media');
+            $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Media';
+            if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
+                [ref] $null = Reset-LabMedia -Confirm:$false;
+                foreach ($mediaObject in $configuration.CustomMedia) {
+                    $customMedia = ConvertPSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
+                    Write-Output (Register-LabMedia @customMedia -Force);
+                }
+                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
+            }
+        } #end if restore custom media
+
         if ($VM) {
             $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'VM');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'VM';
@@ -386,19 +400,6 @@ function Import-LabHostConfiguration {
                 WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
             }
         } #end if restore VM defaults
-
-        if ($Media) {
-            $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Media');
-            $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Media';
-            if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
-                [ref] $null = Reset-LabMedia -Confirm:$false;
-                foreach ($mediaObject in $configuration.CustomMedia) {
-                    $customMedia = ConvertPSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
-                    Write-Output (Register-LabMedia @customMedia -Force);
-                }
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
-            }
-        } #end if restore custom media
 
     } #end process
 
