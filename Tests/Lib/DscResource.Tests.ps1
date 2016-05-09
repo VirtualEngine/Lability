@@ -87,7 +87,7 @@ Describe 'DscResource' {
                 $testResourceName = 'TestLabResource';
                 Mock $testPrefixedCommandName -MockWith { throw 'HideMe'; }
 
-                $testResult = TestDscResource -ResourceName $testResourceName -Parameters @{ TestParam = 1 };
+                $testResult = TestDscResource -ResourceName $testResourceName -Parameters @{ TestParam = 1 } -WarningAction SilentlyContinue;
 
                 $testResult | Should Be $false;
             }

@@ -7,7 +7,7 @@ $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
 Describe 'DscModule' {
-    
+
     InModuleScope $moduleName {
 
         Context 'Validates "TestDscResourceModule" method' {
@@ -16,15 +16,15 @@ Describe 'DscModule' {
                 $testModuleName = 'Module';
                 $testModulePath = "TestDrive:\$testModuleName";
                 [ref] $null = New-Item -Path "$testModulePath\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
-            
+
                 TestDscResourceModule -Path $testModulePath -ModuleName $testModuleName | Should Be $true;
             }
-            
+
             It 'Returns "False" when the module does not contain a "DSCResources" folder' {
                 $testModuleName = 'Module';
                 $testModulePath = "TestDrive:\$testModuleName";
                 [ref] $null = Remove-Item -Path "$testModulePath\DSCResources" -Force -ErrorAction SilentlyContinue;
-            
+
                 TestDscResourceModule -Path $testModulePath -ModuleName $testModuleName | Should Be $false;
             }
 
@@ -56,10 +56,10 @@ Describe 'DscModule' {
                 $testModulesName = 'Modules';
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
-                Mock Test-ModuleManifest -MockWith { return [PSCustomObject] @{ Version = $testModuleVersion; } }
+                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module.ModuleVersion | Should Be $testModuleVersion;
             }
 
@@ -70,10 +70,10 @@ Describe 'DscModule' {
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\DSCResources" -Force -ErrorAction SilentlyContinue;
                 Set-Content -Path "$testModulesPath\$testModuleName\$testModuleName.psm1" -Value "enum Ensure {`r`n Absent `r`n Present `r`n } `r`n [DSCResource()] `r`n" -Force;
-                Mock Test-ModuleManifest -MockWith { return [PSCustomObject] @{ Version = $testModuleVersion; } }
+                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module.ModuleVersion | Should Be $testModuleVersion;
             }
 
@@ -85,7 +85,7 @@ Describe 'DscModule' {
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\$testModuleName.psm1" -Force -ErrorAction SilentlyContinue;
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module | Should BeNullOrEmpty;
             }
 
@@ -95,10 +95,10 @@ Describe 'DscModule' {
                 $testModulesName = 'Modules';
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\$testModuleVersion\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
-                Mock Test-ModuleManifest -MockWith { return [PSCustomObject] @{ Version = $testModuleVersion; } }
+                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module.ModuleVersion | Should Be $testModuleVersion;
             }
 
@@ -109,10 +109,10 @@ Describe 'DscModule' {
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\$testModuleVersion\DSCResources" -Force -ErrorAction SilentlyContinue;
                 Set-Content -Path "$testModulesPath\$testModuleName\$testModuleVersion\$testModuleName.psm1" -Value "enum Ensure {`r`n Absent `r`n Present `r`n } `r`n [DSCResource()] `r`n" -Force;
-                Mock Test-ModuleManifest -MockWith { return [PSCustomObject] @{ Version = $testModuleVersion; } }
+                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module.ModuleVersion | Should Be $testModuleVersion;
             }
 
@@ -125,7 +125,7 @@ Describe 'DscModule' {
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\$testModuleVersion\$testModuleName.psm1" -Force -ErrorAction SilentlyContinue;
 
                 $module = GetDscResourceModule -Path $testModulesPath;
-                
+
                 $module | Should BeNullOrEmpty;
             }
 
