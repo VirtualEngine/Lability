@@ -11,8 +11,10 @@ function GetModule {
     )
     process {
         WriteVerbose -Message ($localized.LocatingModule -f $Name);
-        ## Only return modules in the C:\Program Files\WindowsPowerShell\Modules location, ignore other $env:PSModulePaths
-        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false | Where-Object Path -match '\\Program Files\\WindowsPowerShell\\Modules';
+        ## Only return modules in the %ProgramFiles%\WindowsPowerShell\Modules location, ignore other $env:PSModulePaths
+        $programFiles = [System.Environment]::GetFolderPath('ProgramFiles');
+        $modulesPath = ('{0}\WindowsPowerShell\Modules' -f $programFiles).Replace('\','\\');
+        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false | Where-Object Path -match $modulesPath;
         if (-not $module) {
             WriteVerbose -Message ($localized.ModuleNotFound -f $Name);
         }
