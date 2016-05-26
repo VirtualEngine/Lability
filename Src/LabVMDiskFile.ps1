@@ -36,11 +36,11 @@ function SetLabVMDiskResource {
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
-        
+
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $NodeName,
-        
+
         ## Prefixed/suffixed lab VM/Node name
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $DisplayName
@@ -78,21 +78,21 @@ function SetLabVMDiskFile {
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Name,
-        
+
         ## Lab VM/Node configuration data
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable] $NodeData,
-        
+
         ## Local administrator password of the VM
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential,
-        
+
         ## Lab VM/Node DSC .mof and .meta.mof configuration files
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $Path,
-        
+
         ## Custom bootstrap script
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $CustomBootstrap,
@@ -110,7 +110,9 @@ function SetLabVMDiskFile {
         WriteVerbose ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber | Where-Object DriveLetter | Select-Object -Last 1 -ExpandProperty DriveLetter;
+        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
+                            Where-Object DriveLetter |
+                                Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-Service -Name 'ShellHWDetection';
 
         ## Create Unattend.xml
@@ -129,6 +131,7 @@ function SetLabVMDiskFile {
         if ($NodeData.CustomData.ProductKey) {
             $newUnattendXmlParams['ProductKey'] = $NodeData.CustomData.ProductKey;
         }
+        ## TODO: We probably need to be localise the \Windows\ and \Program Files\ directories?
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
         [ref] $null = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
@@ -145,7 +148,7 @@ function SetLabVMDiskFile {
         else {
             SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
         }
-        
+
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
         SetSetupCompleteCmd -Path $setupCompleteCmdPath -CoreCLR:$CoreCLR;
