@@ -83,7 +83,7 @@ function ResolveLabVMProperties {
 
         return $node;
     } #end process
-} #end function Resolve-LabVMProperties
+} #end function ResolveLabVMProperties
 
 function Get-LabVM {
 <#
@@ -369,7 +369,7 @@ function RemoveLabVM {
     .SYNOPSIS
         Deletes a lab virtual machine.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]

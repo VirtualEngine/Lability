@@ -3,7 +3,7 @@ function RemoveLabVMSnapshot {
     .SYNOPSIS
         Removes a VM snapshot.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
@@ -27,7 +27,7 @@ function RemoveLabVMSnapshot {
 
         } #end foreach VM
     } #end process
-} #end function RemoveVMSnapshot
+} #end function RemoveLabVMSnapshot
 
 function NewLabVMSnapshot {
 <#
@@ -48,7 +48,7 @@ function NewLabVMSnapshot {
             Checkpoint-VM -VMName $vmName -SnapshotName $SnapshotName;
         } #end foreach VM
     } #end process
-} #end function RemoveVMSnapshot
+} #end function NewLabVMSnapshot
 
 function GetLabVMSnapshot {
 <#
