@@ -256,6 +256,9 @@ function NewLabVM {
         $NodeName = $node.NodeName;
         ## Display name includes any environment prefix/suffix
         $DisplayName = $node.NodeDisplayName;
+        if (-not (TestComputerName -ComputerName $DisplayName)) {
+            throw (localized.InvalidComputerNameError -f $DisplayName);
+        }
 
         ## Don't attempt to check certificates for 'Quick VMs'
         if (-not $IsQuickVM) {

@@ -185,4 +185,5 @@ ConvertFrom-StringData -StringData @'
     InvalidOSMediaTypeError         = Media type '{0}' is not supported by Operating system type '{1}'.
     CannotProcessArguentError       = {0} : Cannot process argument transformation on parameter '{1}'. Cannot convert the '{2}' value to type '{3}'.
     DscResourceFailedError          = DSC resource '{0}' failed with errror '{1}'.
+    InvalidComputerNameError        = Computer name '{0}' in invalid. Standard names may contain letters (a-z, A-Z), numbers (0-9), and hyphens (-), but no spaces or periods (.).
 '@
