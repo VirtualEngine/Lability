@@ -87,6 +87,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Fixes bug in Import-LabHostConfiguration where VM defaults contains reference to custom media.
 * Fixes long local module enumeration times on build 14295 and later.
 * Fixes hard-coded '\Program Files\' directory when enumerating modules to resolve localisation issues.
+* Tests computer name for validity before creating a virtual machine (#109).
 
 ### v0.9.10
 
