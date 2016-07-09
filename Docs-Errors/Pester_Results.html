@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Pester_Results</title>
+<style type="text/css">
+html { height: 100%; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; background: #f8f8f8; }
+page { background: white; width: 210mm; display: block; margin-top: 1em; margin-left: auto; margin-right: auto; margin-bottom: 1em; border-style: solid; border-width: 1px; border-color: #c6c6c6; }
+@media print { body, page { margin: 0; box-shadow: 0; } }
+hr { margin-top: 1.0em; }
+ .TOC { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 1.33em; font-size: 1.33em; text-align: left; font-weight: normal; color: #0072af; }
+ .TableDefaultHeading { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: bold; color: #fff; background-color: #4472c4; }
+ .Heading2 { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 1.17em; font-size: 1.17em; text-align: left; font-weight: normal; color: #0072af; }
+ .Normal { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; }
+ .Heading1 { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 1.33em; font-size: 1.33em; text-align: left; font-weight: normal; color: #0072af; }
+ .Title { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 2.33em; font-size: 2.33em; text-align: left; font-weight: normal; color: #0072af; }
+ .TableDefaultRow { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; }
+ .Footer { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.67em; font-size: 0.67em; text-align: left; font-weight: normal; color: #0072af; }
+ .Other { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #808080; }
+ .TableDefaultAltRow { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; background-color: #d0ddee; }
+ .Passed { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #008000; }
+ .Failed { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #ff0000; }
+ .Total { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #0000ff; }
+ .Heading3 { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 1.00em; font-size: 1.00em; text-align: left; font-weight: normal; color: #0072af; }
+ table.tabledefault { padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault th { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: bold; color: #fff; background-color: #4472c4; padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault tr:nth-child(odd) td { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault tr:nth-child(even) td { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; background-color: #d0ddee; padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault-list { padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault-list td:nth-child(1) { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: bold; color: #fff; background-color: #4472c4; padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+ table.tabledefault-list td:nth-child(2) { font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #000000; padding: 0.08em 0.33em 0em 0.33em; border-style: solid; border-width: 0.08em; border-color: #2a70be; border-collapse: collapse; }
+</style></head><body><page>
+<div class="Normal" style="padding-top: 6em; padding-left: 6em; padding-bottom: 6em; padding-right: 6em;">
+<h1 class="TOC">Table of Contents</h1><table style="width: 100%;">
+<tr><td><a href="#RESULTSSUMMARY" style="text-decoration: none;">Results summary</a></td></tr>
+<tr><td><a href="#1.ERRORSDETAILS:MODULELABILITYFUNCTIONSHELPS" style="text-decoration: none;">1. Errors details:  Module Lability functions helps</a></td></tr>
+<tr><td><a href="#SUCCESSDETAILS" style="text-decoration: none;">Success details</a></td></tr>
+</table>
+<a name="RESULTSSUMMARY"><h1 class="Heading2">Results summary</h1></a><div><table class="tabledefault" style="width:100%;"><thead><tr><th>Total Tests</th><th>Passed Tests</th><th>Failed Tests</th><th>Skipped Tests</th><th>Pending Tests</th></tr></thead><tbody>
+<tr><td style="font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #0000ff;">332</td><td style="font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #008000;">256</td><td style="font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #ff0000;">76</td><td style="font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #808080;">0</td><td style="font-family: 'Calibri','Candara','Segoe','Segoe UI','Optima','Arial','Sans-Serif'; font-size: 0.92em; font-size: 0.92em; text-align: left; font-weight: normal; color: #ffffff; background-color: #808080;">0</td></tr>
+</tbody></table></div>
+<a name="1.ERRORSDETAILS:MODULELABILITYFUNCTIONSHELPS"><h1 class="Heading2">1. Errors details:  Module Lability functions helps</h1></a><div>76 test(s) failed:</div><div><table class="tabledefault"><thead><tr><th>Context</th><th>Name</th><th>Failure Message</th></tr></thead><tbody>
+<tr><td>Checkpoint-Lab - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Export-LabHostConfiguration - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Export-LabHostConfiguration - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Export-LabHostConfiguration - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Export-LabHostConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabHostConfiguration - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabHostConfiguration - Help</td><td>Parameter  - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabHostConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabHostDefault - Help</td><td>Parameter  - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabHostDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabMedia - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabNodeResourceList - Help</td><td>Parameter ConfigurationData - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabNodeResourceList - Help</td><td>Parameter Name - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabNodeResourceList - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabVM - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Get-LabVMDefault - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabVMDefault - Help</td><td>Parameter  - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Get-LabVMDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Import-LabHostConfiguration - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Import-LabHostConfiguration - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Import-LabHostConfiguration - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Import-LabHostConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Invoke-LabNodeConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>New-LabImage - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>New-LabImage - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>New-LabVM - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>New-LabVM - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>New-LabVM - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Register-LabMedia - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Remove-LabConfiguration - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Remove-LabConfiguration - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Remove-LabConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Remove-LabVM - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Remove-LabVM - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Remove-LabVM - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Reset-Lab - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Reset-LabHostDefault - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabHostDefault - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabHostDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Reset-LabMedia - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabMedia - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabMedia - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Reset-LabVM - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabVM - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabVM - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Reset-LabVMDefault - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabVMDefault - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabVMDefault - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Reset-LabVMDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Restore-Lab - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Set-LabHostDefault - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Set-LabHostDefault - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Set-LabHostDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Set-LabVMDefault - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Set-LabVMDefault - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Set-LabVMDefault - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Set-LabVMDefault - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Show-LabNodeResourceList - Help</td><td>Parameter ConfigurationData - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Show-LabNodeResourceList - Help</td><td>Parameter Name - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Show-LabNodeResourceList - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Start-Lab - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Start-LabConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Start-LabHostConfiguration - Help</td><td>Parameter  - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Start-LabHostConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Stop-Lab - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabHostConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabMedia - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabNodeConfiguration - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabResource - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Test-LabResource - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Test-LabVM - Help</td><td>Description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Test-LabVM - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+<tr><td>Unregister-LabMedia - Help</td><td>Parameter WhatIf - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Unregister-LabMedia - Help</td><td>Parameter Confirm - Should contains description</td><td>Expected: value to not be empty</td></tr>
+<tr><td>Unregister-LabMedia - Help</td><td>Example - Count should be greater than 0</td><td>Expected {0} to be greater than {0}</td></tr>
+</tbody></table></div>
+<a name="SUCCESSDETAILS"><h1 class="Heading2">Success details</h1></a><div>256 test(s) passed:</div><div><table class="tabledefault"><thead><tr><th>Describe</th><th>Context</th><th>Name</th></tr></thead><tbody>
+<tr><td>Module Lability Manifest Tests</td><td></td><td>Passes Test-ModuleManifest</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Parameter SnapshotName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Checkpoint-Lab - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Export-LabHostConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Export-LabHostConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Export-LabHostConfiguration - Help</td><td>Parameter Path - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Export-LabHostConfiguration - Help</td><td>Parameter LiteralPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Export-LabHostConfiguration - Help</td><td>Parameter NoClobber - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabHostConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabHostConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabHostDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabHostDefault - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabHostDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Example - Count should be greater than 0</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 1 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabImage - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 2 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabMedia - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabMedia - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabMedia - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabMedia - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabMedia - Help</td><td>Parameter CustomOnly - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabNodeResourceList - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabNodeResourceList - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabNodeResourceList - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVM - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVM - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVM - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVM - Help</td><td>Parameter Name - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVM - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVMDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Get-LabVMDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter Path - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter LiteralPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter Host - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter VM - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Import-LabHostConfiguration - Help</td><td>Parameter Media - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Parameter NodeName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Parameter DestinationPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabNodeConfiguration - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter All - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter MediaId - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter ResourceId - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter Media - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter Resources - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter DSCResources - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter DestinationPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Count should be greater than 0</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 1 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 2 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 3 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 4 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Invoke-LabResourceDownload - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 5 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Example - Count should be greater than 0</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 1 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabImage - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 2 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter Name - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter StartupMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter MinimumMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter MaximumMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter ProcessorCount - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter InputLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter SystemLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter UserLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter UILanguage - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter Timezone - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter RegisteredOwner - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter RegisteredOrganization - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter Credential - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter Password - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter SwitchName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter MACAddress - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter SecureBoot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter GuestIntegrationServices - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter CustomData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>New-LabVM - Help</td><td>Parameter NoSnapshot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter MediaType - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Uri - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Architecture - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Description - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter ImageName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Filename - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Checksum - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter CustomData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Hotfixes - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter OperatingSystem - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Register-LabMedia - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabConfiguration - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabConfiguration - Help</td><td>Parameter RemoveSwitch - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabVM - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabVM - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabVM - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabVM - Help</td><td>Parameter Name - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Remove-LabVM - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-Lab - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-Lab - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-Lab - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-Lab - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabHostDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabHostDefault - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabHostDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabMedia - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabMedia - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabMedia - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter Name - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter Credential - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter Password - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter Path - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVM - Help</td><td>Parameter NoSnapshot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVMDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Reset-LabVMDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Parameter SnapshotName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Restore-Lab - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter ConfigurationPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter IsoPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter ParentVhdPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter DifferencingVhdPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter ResourcePath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter ResourceShareName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter HotfixPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter DisableLocalFileCaching - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabHostDefault - Help</td><td>Parameter EnableCallStackLogging - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter StartupMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter MinimumMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter MaximumMemory - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter ProcessorCount - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter Media - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter SwitchName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter InputLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter SystemLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter UserLocale - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter UILanguage - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter Timezone - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter RegisteredOwner - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter RegisteredOrganization - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter ClientCertificatePath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter RootCertificatePath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter BootDelay - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter SecureBoot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter CustomBootstrapOrder - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Set-LabVMDefault - Help</td><td>Parameter GuestIntegrationServices - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Show-LabNodeResourceList - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Show-LabNodeResourceList - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Show-LabNodeResourceList - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-Lab - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-Lab - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-Lab - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-Lab - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter Credential - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter Password - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter Path - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter NoSnapshot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter Force - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter SkipMofCheck - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabConfiguration - Help</td><td>Parameter IgnorePendingReboot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabHostConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabHostConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Start-LabHostConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Stop-Lab - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Stop-Lab - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Stop-Lab - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Stop-Lab - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabConfiguration - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabHostConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabHostConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabHostConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabHostConfiguration - Help</td><td>Parameter IgnorePendingReboot - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Example - Count should be greater than 0</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabImage - Help</td><td>Example - Remarks on -------------------------- EXAMPLE 1 --------------------------</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabMedia - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabMedia - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabMedia - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabMedia - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter NodeName - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter DestinationPath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter SkipDscCheck - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter SkipResourceCheck - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabNodeConfiguration - Help</td><td>Parameter SkipCertificateCheck - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabResource - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabResource - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabResource - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabResource - Help</td><td>Parameter ResourceId - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabResource - Help</td><td>Parameter ResourcePath - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabVM - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabVM - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabVM - Help</td><td>Parameter Name - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Test-LabVM - Help</td><td>Parameter ConfigurationData - Should contains description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Unregister-LabMedia - Help</td><td>Synopsis</td></tr>
+<tr><td>Module Lability functions helps</td><td>Unregister-LabMedia - Help</td><td>Description</td></tr>
+<tr><td>Module Lability functions helps</td><td>Unregister-LabMedia - Help</td><td>Parameter - Compare amount of parameters Help vs AST</td></tr>
+<tr><td>Module Lability functions helps</td><td>Unregister-LabMedia - Help</td><td>Parameter Id - Should contains description</td></tr>
+<tr><td>Invoke-OffCATcmd</td><td>&nbsp</td><td>Using OutlookScanType with other than Outlook OfficeProgram</td></tr>
+</tbody></table></div>
