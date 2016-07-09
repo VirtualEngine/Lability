@@ -1,0 +1,151 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20160709194151
+Username: LENIWIEC-VIRT\Wojtek
+RunAs User: LENIWIEC-VIRT\Wojtek
+Machine: LENIWIEC-VIRT (Microsoft Windows NT 6.3.9600.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 1240
+PSVersion: 5.0.10586.117
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0.10586.117
+BuildVersion: 10.0.10586.117
+CLRVersion: 4.0.30319.34209
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is .\Docs\Lability-New-MarkdownHelp.txt
+[PS] >New-MarkdownHelp -Module Lability -OutputFolder .\Docs\ -WithModulePage -Verbose
+VERBOSE: Processing: Lability
+VERBOSE: 	Processing: Checkpoint-Lab
+VERBOSE: Writing to .\Docs\Checkpoint-Lab.md with encoding = Unicode (UTF-8)
+
+
+    Directory: C:\Users\Wojtek\Documents\Scripts\2-ExternalOnGitHub\Lability\Docs
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----         7/9/2016   7:42 PM           2145 Checkpoint-Lab.md
+VERBOSE: 	Processing: Export-LabHostConfiguration
+VERBOSE: Writing to .\Docs\Export-LabHostConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1991 Export-LabHostConfiguration.md
+VERBOSE: 	Processing: Get-LabHostConfiguration
+VERBOSE: Writing to .\Docs\Get-LabHostConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            588 Get-LabHostConfiguration.md
+VERBOSE: 	Processing: Get-LabHostDefault
+VERBOSE: Writing to .\Docs\Get-LabHostDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            587 Get-LabHostDefault.md
+VERBOSE: 	Processing: Get-LabImage
+VERBOSE: Writing to .\Docs\Get-LabImage.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1545 Get-LabImage.md
+VERBOSE: 	Processing: Get-LabMedia
+VERBOSE: Writing to .\Docs\Get-LabMedia.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1084 Get-LabMedia.md
+VERBOSE: 	Processing: Get-LabNodeResourceList
+VERBOSE: Writing to .\Docs\Get-LabNodeResourceList.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1263 Get-LabNodeResourceList.md
+VERBOSE: 	Processing: Get-LabVM
+VERBOSE: Writing to .\Docs\Get-LabVM.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1118 Get-LabVM.md
+VERBOSE: 	Processing: Get-LabVMDefault
+VERBOSE: Writing to .\Docs\Get-LabVMDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            509 Get-LabVMDefault.md
+VERBOSE: 	Processing: Import-LabHostConfiguration
+VERBOSE: Writing to .\Docs\Import-LabHostConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2592 Import-LabHostConfiguration.md
+VERBOSE: 	Processing: Invoke-LabNodeConfiguration
+VERBOSE: Writing to .\Docs\Invoke-LabNodeConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2657 Invoke-LabNodeConfiguration.md
+VERBOSE: 	Processing: Invoke-LabResourceDownload
+VERBOSE: Writing to .\Docs\Invoke-LabResourceDownload.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           5398 Invoke-LabResourceDownload.md
+VERBOSE: 	Processing: New-LabImage
+VERBOSE: Writing to .\Docs\New-LabImage.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2573 New-LabImage.md
+VERBOSE: 	Processing: New-LabVM
+[PS] >TerminatingError(Resolve-Path): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'C:\Users\Wojtek\Documents\Scripts\2-ExternalOnGitHub\Lability\Config\CustomMedia.json' because it does not exist."
+[PS] >TerminatingError(Resolve-Path): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Cannot find path 'C:\Users\Wojtek\Documents\Scripts\2-ExternalOnGitHub\Lability\Config\CustomMedia.json' because it does not exist."
+VERBOSE: Writing to .\Docs\New-LabVM.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           8047 New-LabVM.md
+VERBOSE: 	Processing: Register-LabMedia
+VERBOSE: Writing to .\Docs\Register-LabMedia.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           4481 Register-LabMedia.md
+VERBOSE: 	Processing: Remove-LabConfiguration
+VERBOSE: Writing to .\Docs\Remove-LabConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2425 Remove-LabConfiguration.md
+VERBOSE: 	Processing: Remove-LabVM
+VERBOSE: Writing to .\Docs\Remove-LabVM.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1591 Remove-LabVM.md
+VERBOSE: 	Processing: Reset-Lab
+VERBOSE: Writing to .\Docs\Reset-Lab.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1631 Reset-Lab.md
+VERBOSE: 	Processing: Reset-LabHostDefault
+VERBOSE: Writing to .\Docs\Reset-LabHostDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1104 Reset-LabHostDefault.md
+VERBOSE: 	Processing: Reset-LabMedia
+VERBOSE: Writing to .\Docs\Reset-LabMedia.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1055 Reset-LabMedia.md
+VERBOSE: 	Processing: Reset-LabVM
+VERBOSE: Writing to .\Docs\Reset-LabVM.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           3209 Reset-LabVM.md
+VERBOSE: 	Processing: Reset-LabVMDefault
+VERBOSE: Writing to .\Docs\Reset-LabVMDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1028 Reset-LabVMDefault.md
+VERBOSE: 	Processing: Restore-Lab
+VERBOSE: Writing to .\Docs\Restore-Lab.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2134 Restore-Lab.md
+VERBOSE: 	Processing: Set-LabHostDefault
+VERBOSE: Writing to .\Docs\Set-LabHostDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           3812 Set-LabHostDefault.md
+VERBOSE: 	Processing: Set-LabVMDefault
+VERBOSE: Writing to .\Docs\Set-LabVMDefault.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           6439 Set-LabVMDefault.md
+VERBOSE: 	Processing: Show-LabNodeResourceList
+VERBOSE: Writing to .\Docs\Show-LabNodeResourceList.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1269 Show-LabNodeResourceList.md
+VERBOSE: 	Processing: Start-Lab
+VERBOSE: Writing to .\Docs\Start-Lab.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2024 Start-Lab.md
+VERBOSE: 	Processing: Start-LabConfiguration
+VERBOSE: Writing to .\Docs\Start-LabConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           7397 Start-LabConfiguration.md
+VERBOSE: 	Processing: Start-LabHostConfiguration
+VERBOSE: Writing to .\Docs\Start-LabHostConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            611 Start-LabHostConfiguration.md
+VERBOSE: 	Processing: Stop-Lab
+VERBOSE: Writing to .\Docs\Stop-Lab.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           2019 Stop-Lab.md
+VERBOSE: 	Processing: Test-LabConfiguration
+VERBOSE: Writing to .\Docs\Test-LabConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1386 Test-LabConfiguration.md
+VERBOSE: 	Processing: Test-LabHostConfiguration
+VERBOSE: Writing to .\Docs\Test-LabHostConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            888 Test-LabHostConfiguration.md
+VERBOSE: 	Processing: Test-LabImage
+VERBOSE: Writing to .\Docs\Test-LabImage.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1346 Test-LabImage.md
+VERBOSE: 	Processing: Test-LabMedia
+VERBOSE: Writing to .\Docs\Test-LabMedia.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM            818 Test-LabMedia.md
+VERBOSE: 	Processing: Test-LabNodeConfiguration
+VERBOSE: Writing to .\Docs\Test-LabNodeConfiguration.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           3445 Test-LabNodeConfiguration.md
+VERBOSE: 	Processing: Test-LabResource
+VERBOSE: Writing to .\Docs\Test-LabResource.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1315 Test-LabResource.md
+VERBOSE: 	Processing: Test-LabVM
+VERBOSE: Writing to .\Docs\Test-LabVM.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1107 Test-LabVM.md
+VERBOSE: 	Processing: Unregister-LabMedia
+VERBOSE: Writing to .\Docs\Unregister-LabMedia.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           1358 Unregister-LabMedia.md
+VERBOSE: Writing to .\Docs\Lability.md with encoding = Unicode (UTF-8)
+-a----         7/9/2016   7:42 PM           4306 Lability.md
+
+
+[PS] >stop-transcript
+**********************
+Windows PowerShell transcript end
+End time: 20160709194240
+**********************
