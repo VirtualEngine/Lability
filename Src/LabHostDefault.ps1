@@ -12,11 +12,15 @@ function Reset-LabHostDefault {
     [OutputType([System.Management.Automation.PSCustomObject])]
     param ( )
     process {
+
         RemoveConfigurationData -Configuration Host;
         Get-LabHostDefault;
-    }
+
+    } #end process
 } #end function Reset-LabHostDefault
+
 New-Alias -Name Reset-LabHostDefaults -Value Reset-LabHostDefault
+
 
 function Get-LabHostDefault {
 <#
@@ -32,10 +36,14 @@ function Get-LabHostDefault {
     [OutputType([System.Management.Automation.PSCustomObject])]
     param ( )
     process {
+
         GetConfigurationData -Configuration Host;
-    }
+
+    } #end process
 } #end function Get-LabHostDefault
+
 New-Alias -Name Get-LabHostDefaults -Value Get-LabHostDefault
+
 
 function GetLabHostDSCConfigurationPath {
 <#
@@ -46,10 +54,13 @@ function GetLabHostDSCConfigurationPath {
     [OutputType([System.String])]
     param ( )
     process {
+
         $labHostDefaults = GetConfigurationData -Configuration Host;
         return $labHostDefaults.ConfigurationPath;
-    }
+
+    } #end process
 } #end function GetLabHostDSCConfigurationPath
+
 
 function Set-LabHostDefault {
 <#
@@ -80,6 +91,10 @@ function Set-LabHostDefault {
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $DifferencingVhdPath,
 
+        ## Lab module storage location/path.
+        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [System.String] $ModulePath,
+
         ## Lab custom resource storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $ResourcePath,
@@ -101,9 +116,10 @@ function Set-LabHostDefault {
         [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
     )
     process {
+
         $hostDefaults = GetConfigurationData -Configuration Host;
 
-        foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath')) {
+        foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath','ModulePath')) {
             if ($PSBoundParameters.ContainsKey($path)) {
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
                 if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
@@ -129,6 +145,8 @@ function Set-LabHostDefault {
 
         SetConfigurationData -Configuration Host -InputObject $hostDefaults;
         return $hostDefaults;
-    }
+
+    } #end process
 } #end function Set-LabHostDefault
+
 New-Alias -Name Set-LabHostDefaults -Value Set-LabHostDefault
