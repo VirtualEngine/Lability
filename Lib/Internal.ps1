@@ -35,7 +35,7 @@ function NewDirectory {
                             New-Item -Path $directory -ItemType Directory;
                         }
                     } else {
-                        WriteVerbose ($localized.DirectoryExists -f $directory);
+                        Write-Debug -Message ($localized.DirectoryExists -f $directory);
                         Get-Item -Path $directory;
                     }
                 } #end foreach directory
@@ -52,7 +52,7 @@ function NewDirectory {
                             New-Item -Path $directoryInfo.FullName -ItemType Directory;
                         }
                     } else {
-                        WriteVerbose ($localized.DirectoryExists -f $directoryInfo.FullName);
+                        Write-Debug -Message ($localized.DirectoryExists -f $directoryInfo.FullName);
                         $directoryInfo;
                     }
                 } #end foreach directoryInfo
