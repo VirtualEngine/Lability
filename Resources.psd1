@@ -134,6 +134,9 @@ ConvertFrom-StringData -StringData @'
     RestoringConfigurationSettings  = Restoring imported '{0}' configuration settings.
     ConfigurationRestoreComplete    = Restoration of '{0}' settings complete.
     ConfiguringNode                 = Configuring node '{0}'.
+    OpeningModuleArchive            = Opening module archive '{0}'.
+    ClosingModuleArchive            = Closing module archive '{0}'.
+    CleaningModuleDirectory         = Cleaning module directory '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -149,6 +152,7 @@ ConvertFrom-StringData -StringData @'
     MissingRequiredResourceWarning  = Resource '{0}' is missing.
     MissingRequiredCertWarning      = Certificate '{0}' is missing.
     UsingExistingSwitchWarning      = Using existing '{0}' virtual switch.
+    DeprecatedCommandWarning        = Command '{0}' has been deprecated and will be removed in a future release. Please use the alternative '{1}' command.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -186,4 +190,5 @@ ConvertFrom-StringData -StringData @'
     CannotProcessArguentError       = {0} : Cannot process argument transformation on parameter '{1}'. Cannot convert the '{2}' value to type '{3}'.
     DscResourceFailedError          = DSC resource '{0}' failed with errror '{1}'.
     InvalidComputerNameError        = Computer name '{0}' in invalid. Standard names may contain letters (a-z, A-Z), numbers (0-9), and hyphens (-), but no spaces or periods (.).
+    ReadingArchiveItemError         = Error reading archive item '{0}'.
 '@
