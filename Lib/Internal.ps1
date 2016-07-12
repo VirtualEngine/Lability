@@ -1,3 +1,70 @@
+function NewDirectory {
+<#
+    .SYNOPSIS
+       Creates a filesystem directory.
+    .DESCRIPTION
+       The New-Directory cmdlet will create the target directory if it doesn't already exist. If the target path
+       already exists, the cmdlet does nothing.
+#>
+    [CmdletBinding(DefaultParameterSetName = 'ByString', SupportsShouldProcess)]
+    [OutputType([System.IO.DirectoryInfo])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
+    param (
+        # Target filesystem directory to create
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByDirectoryInfo')]
+        [ValidateNotNullOrEmpty()]
+        [System.IO.DirectoryInfo[]] $InputObject,
+
+        # Target filesystem directory to create
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByString')]
+        [ValidateNotNullOrEmpty()] [Alias('PSPath')]
+        [System.String[]] $Path
+    )
+    process {
+
+        Write-Debug -Message ("Using parameter set '{0}'." -f $PSCmdlet.ParameterSetName);
+        switch ($PSCmdlet.ParameterSetName) {
+
+            'ByString' {
+
+                foreach ($directory in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)) {
+                    Write-Debug -Message ("Testing target directory '{0}'." -f $directory);
+                    if (!(Test-Path -Path $directory -PathType Container)) {
+                        if ($PSCmdlet.ShouldProcess($directory, "Create directory")) {
+                            WriteVerbose ($localized.CreatingDirectory -f $directory);
+                            New-Item -Path $directory -ItemType Directory;
+                        }
+                    } else {
+                        WriteVerbose ($localized.DirectoryExists -f $directory);
+                        Get-Item -Path $directory;
+                    }
+                } #end foreach directory
+
+            } #end byString
+
+            'ByDirectoryInfo' {
+
+                 foreach ($directoryInfo in $InputObject) {
+                    Write-Debug -Message ("Testing target directory '{0}'." -f $directoryInfo.FullName);
+                    if (!($directoryInfo.Exists)) {
+                        if ($PSCmdlet.ShouldProcess($directoryInfo.FullName, "Create directory")) {
+                            WriteVerbose ($localized.CreatingDirectory -f $directoryInfo.FullName);
+                            New-Item -Path $directoryInfo.FullName -ItemType Directory;
+                        }
+                    } else {
+                        WriteVerbose ($localized.DirectoryExists -f $directoryInfo.FullName);
+                        $directoryInfo;
+                    }
+                } #end foreach directoryInfo
+
+            } #end byDirectoryInfo
+
+        } #end switch
+
+    } #end process
+} #end function NewDirectory
+
+
 function ResolvePathEx {
 <#
     .SYNOPSIS
@@ -13,6 +80,7 @@ function ResolvePathEx {
         [System.String] $Path
     )
     process {
+
         try {
             $expandedPath = [System.Environment]::ExpandEnvironmentVariables($Path);
             $resolvedPath = Resolve-Path -Path $expandedPath -ErrorAction Stop;
@@ -23,8 +91,10 @@ function ResolvePathEx {
             $Error.Remove($Error[-1]);
         }
         return $Path;
+
     } #end process
 } #end function ResolvePathEx
+
 
 function InvokeExecutable {
 <#
@@ -47,6 +117,7 @@ function InvokeExecutable {
         [System.String] $LogName = ('{0}.log' -f $Path)
     )
     process {
+
         $processArgs = @{
             FilePath = $Path;
             ArgumentList = $Arguments;
@@ -67,6 +138,7 @@ function InvokeExecutable {
             WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode);
         }
         ##TODO: Should this actually return the exit code?!
+
     } #end process
 } #end function InvokeExecutable
 
@@ -81,6 +153,7 @@ function GetFormattedMessage {
         [System.String] $Message
     )
     process {
+
         if (($labDefaults.CallStackLogging) -and ($labDefaults.CallStackLogging -eq $true)) {
             $parentCallStack = (Get-PSCallStack)[1]; # store the parent Call Stack
             $functionName = $parentCallStack.FunctionName;
@@ -92,8 +165,10 @@ function GetFormattedMessage {
             $formattedMessage = '[{0}] {1}' -f (Get-Date).ToLongTimeString(), $Message;
         }
         return $formattedMessage;
+
     } #end process
 } #end function GetFormattedMessage
+
 
 function WriteVerbose {
 <#
@@ -106,12 +181,15 @@ function WriteVerbose {
         [System.String] $Message
     )
     process {
+
         if (-not [System.String]::IsNullOrEmpty($Message)) {
             $verboseMessage = GetFormattedMessage -Message $Message;
             Write-Verbose -Message $verboseMessage;
         }
+
     }
 } #end function WriteVerbose
+
 
 function WriteWarning {
 <#
@@ -124,12 +202,15 @@ function WriteWarning {
         [System.String] $Message
     )
     process {
+
         if (-not [System.String]::IsNullOrEmpty($Message)) {
             $warningMessage = GetFormattedMessage -Message $Message;
             Write-Warning -Message $warningMessage;
         }
+
     }
 } #end function WriteWarning
+
 
 function ConvertPSObjectToHashtable {
 <#
@@ -148,7 +229,9 @@ function ConvertPSObjectToHashtable {
         [System.Management.Automation.SwitchParameter] $IgnoreNullValues
     )
     process {
+
         foreach ($object in $InputObject) {
+
             $hashtable = @{ }
             foreach ($property in $object.PSObject.Properties) {
 
@@ -169,9 +252,11 @@ function ConvertPSObjectToHashtable {
 
             } #end foreach property
             Write-Output $hashtable;
+
         }
     } #end proicess
 } #end function ConvertPSObjectToHashtable
+
 
 function CopyDirectory {
 <#
@@ -192,14 +277,17 @@ function CopyDirectory {
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
+
         if ((Get-Item $SourcePath) -isnot [System.IO.DirectoryInfo]) {
             throw ($localized.CannotProcessArguentError -f 'CopyDirectory', 'SourcePath', $SourcePath, 'System.IO.DirectoryInfo');
         }
         elseif (Test-Path -Path $SourcePath -PathType Leaf) {
             throw ($localized.InvalidDestinationPathError -f $DestinationPath);
         }
+
     }
     process {
+
         $activity = $localized.CopyingResource -f $SourcePath.FullName, $DestinationPath;
         $status = $localized.EnumeratingPath -f $SourcePath;
         Write-Progress -Activity $activity -Status $status -PercentComplete 0;
@@ -225,8 +313,10 @@ function CopyDirectory {
         } #end for
 
         Write-Progress -Activity $activity -Completed;
+
     } #end process
 } #end function CopyDirectory
+
 
 function TestComputerName {
 <#
@@ -241,7 +331,32 @@ function TestComputerName {
         [System.String] $ComputerName
     )
     process {
+
         $invalidMatch = '[~!@#\$%\^&\*\(\)=\+_\[\]{}\\\|;:.''",<>\/\?\s]';
         return ($ComputerName -inotmatch $invalidMatch);
+
     }
 } #end function TestComputerName
+
+
+function ValidateTimeZone {
+<#
+    .SYNOPSIS
+        Validates a timezone string.
+#>
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $TimeZone
+    )
+    process {
+        try {
+            $TZ = [TimeZoneInfo]::FindSystemTimeZoneById($TimeZone)
+            return $TZ.StandardName;
+        }
+        catch [System.TimeZoneNotFoundException] {
+            throw $_;
+        }
+    } #end process
+} #end function ValidateTimeZone

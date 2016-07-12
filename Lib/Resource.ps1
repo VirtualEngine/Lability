@@ -1,59 +1,3 @@
-function NewDirectory {
-<#
-    .SYNOPSIS
-       Creates a filesystem directory.
-    .DESCRIPTION
-       The New-Directory cmdlet will create the target directory if it doesn't already exist. If the target path
-       already exists, the cmdlet does nothing.
-#>
-    [CmdletBinding(DefaultParameterSetName = 'ByString', SupportsShouldProcess)]
-    [OutputType([System.IO.DirectoryInfo])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
-    param (
-        # Target filesystem directory to create
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByDirectoryInfo')]
-        [ValidateNotNullOrEmpty()] [System.IO.DirectoryInfo[]] $InputObject,
-        
-        # Target filesystem directory to create
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByString')] [Alias('PSPath')]
-        [ValidateNotNullOrEmpty()] [System.String[]] $Path
-    )
-    process {
-        Write-Debug -Message ("Using parameter set '{0}'." -f $PSCmdlet.ParameterSetName);
-        switch ($PSCmdlet.ParameterSetName) {
-            'ByString' {
-                foreach ($directory in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)) {
-                    Write-Debug -Message ("Testing target directory '{0}'." -f $directory);
-                    if (!(Test-Path -Path $directory -PathType Container)) {
-                        if ($PSCmdlet.ShouldProcess($directory, "Create directory")) {
-                            WriteVerbose ($localized.CreatingDirectory -f $directory);
-                            New-Item -Path $directory -ItemType Directory;
-                        }
-                    } else {
-                        WriteVerbose ($localized.DirectoryExists -f $directory);
-                        Get-Item -Path $directory;
-                    }
-                } #end foreach directory
-            } #end byString
-
-            'ByDirectoryInfo' {
-                 foreach ($directoryInfo in $InputObject) {
-                    Write-Debug -Message ("Testing target directory '{0}'." -f $directoryInfo.FullName);
-                    if (!($directoryInfo.Exists)) {
-                        if ($PSCmdlet.ShouldProcess($directoryInfo.FullName, "Create directory")) {
-                            WriteVerbose ($localized.CreatingDirectory -f $directoryInfo.FullName);
-                            New-Item -Path $directoryInfo.FullName -ItemType Directory;
-                        }
-                    } else {
-                        WriteVerbose ($localized.DirectoryExists -f $directoryInfo.FullName);
-                        $directoryInfo;
-                    }
-                } #end foreach directoryInfo
-            } #end byDirectoryInfo
-        } #end switch
-    } #end process
-} #end function NewDirectory
-
 function SetResourceChecksum {
 <#
     .SYNOPSIS
@@ -86,13 +30,13 @@ function GetResourceDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.String] $Checksum,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
@@ -134,13 +78,13 @@ function TestResourceDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.String] $Checksum,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
@@ -171,13 +115,13 @@ function SetResourceDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.String] $Checksum,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
@@ -213,13 +157,13 @@ function InvokeWebClientDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $DestinationPath,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt32] $BufferSize = 64KB,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
@@ -291,16 +235,16 @@ function InvokeResourceDownload {
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.String] $Checksum,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
-        
+
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.UInt32] $BufferSize = 64KB
         ##TODO: Support Headers and UserAgent
