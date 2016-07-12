@@ -59,22 +59,13 @@ function ExpandGitHubZipArchive {
         [ValidateNotNullOrEmpty()]
         [System.String] $Repository,
 
-        # GitHub repository branch name
-        [Parameter(ValueFromPipelineByPropertyName, Position = 2)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Branch = 'master',
-
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.String] $OverrideRepository,
 
         # Overwrite existing files
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $Force,
-
-        ## Remove root folders/files in archive from destination path.
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $Clean
+        [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
 
@@ -103,18 +94,6 @@ function ExpandGitHubZipArchive {
     } # end begin
     process {
 
-        if ($Clean) {
-            ## Remove repository directory before expanding any items..
-            $repositoryPath = Join-Path -Path $DestinationPath -ChildPath $Repository;
-            if ($OverrideRepository) {
-                $repositoryPath = Join-Path -Path $DestinationPath -ChildPath $OverrideRepository;
-            }
-            WriteVerbose ($localized.CleaningModuleDirectory -f $repositoryPath);
-            if (Test-Path -Path $repositoryPath -PathType Container) {
-                Remove-Item -Path $repositoryPath -Force -Recurse -ErrorAction Stop;
-            }
-        }
-
         foreach ($pathEntry in $LiteralPath) {
 
             try {
@@ -124,7 +103,6 @@ function ExpandGitHubZipArchive {
                     InputObject = [ref] $zipArchive.Entries;
                     DestinationPath = $DestinationPath;
                     Repository = $Repository;
-                    Branch = $Branch;
                     Force = $Force;
                 }
 
@@ -160,7 +138,7 @@ function ExpandGitHubZipArchiveItem {
     .OUTPUTS
         A System.IO.FileInfo object for each extracted file.
 #>
-    [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess, ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName = 'Path', SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
     param (
         # Reference to Zip archive item.
@@ -177,11 +155,6 @@ function ExpandGitHubZipArchiveItem {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.String] $Repository,
-
-        # GitHub repository branch name
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Branch = 'master',
 
         ## Override repository name
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -204,13 +177,25 @@ function ExpandGitHubZipArchiveItem {
         try {
 
             ## Regex for locating the <RepositoryName>-<Branch>\ root directory
-            $searchString = '^{0}-{1}\\' -f $Repository, $Branch;
+            $searchString = '^{0}-\S+?\\' -f $Repository;
             $replacementString = '{0}\' -f $Repository;
             if ($OverrideRepository) {
                 $replacementString = '{0}\' -f $OverrideRepository;
             }
 
+            [System.Int32] $fileCount = 0;
+            $moduleDestinationPath = Join-Path -Path $DestinationPath -ChildPath $Repository;
+            $activity = $localized.DecompressingArchive -f $moduleDestinationPath;
+            Write-Progress -Activity $activity -PercentComplete 0;
+
             foreach ($zipArchiveEntry in $InputObject) {
+
+                $fileCount++;
+                if (($fileCount % 5) -eq 0) {
+                    [System.Int16] $percentComplete = ($fileCount / $InputObject.Count) * 100
+                    $status = $localized.CopyingResourceStatus -f $fileCount, $InputObject.Count, $percentComplete;
+                    Write-Progress -Activity $activity -Status $status -PercentComplete $percentComplete;
+                }
 
                 if ($zipArchiveEntry.FullName.Contains('/')) {
 
@@ -274,6 +259,9 @@ function ExpandGitHubZipArchiveItem {
                     }
                 } # end if
             } # end foreach zipArchiveEntry
+
+            Write-Progress -Activity $activity -Completed;
+
         } # end try
         catch {
             Write-Error $_.Exception;
