@@ -123,7 +123,10 @@ function SetResourceDownload {
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.UInt32] $BufferSize = 64KB
+        [System.UInt32] $BufferSize = 64KB,
+
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $NoChecksum
         ##TODO: Support Headers and UserAgent
     )
     begin {
@@ -140,8 +143,11 @@ function SetResourceDownload {
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
         InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -BufferSize $BufferSize;
 
-        ## Create the checksum file for future reference
-        [ref] $null = SetResourceChecksum -Path $DestinationPath;
+        if ($NoChecksum -eq $false) {
+            ## Create the checksum file for future reference
+            [ref] $null = SetResourceChecksum -Path $DestinationPath;
+        }
+
     } #end process
 } #end function SetResourceDownload
 
