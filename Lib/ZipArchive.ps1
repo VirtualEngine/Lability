@@ -9,7 +9,7 @@ function ExpandZipArchive {
     .OUTPUTS
         A System.IO.FileInfo object for each extracted file.
 #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
@@ -95,15 +95,15 @@ function ExpandZipArchiveItem {
     .OUTPUTS
         A System.IO.FileInfo object for each extracted file.
 #>
-    [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
     param (
         # Reference to Zip archive item.
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, ParameterSetName = 'InputObject')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'InputObject')]
         [ValidateNotNullOrEmpty()] [System.IO.Compression.ZipArchiveEntry[]] [ref] $InputObject,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 1)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
@@ -196,6 +196,7 @@ function ExpandZipArchiveItem {
                         Write-Output -InputObject (Get-Item -Path $fullDestinationFilePath);
                     }
                 } # end if
+
             } # end foreach zipArchiveEntry
 
             Write-Progress -Activity $activity -Completed;

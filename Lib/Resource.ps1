@@ -5,10 +5,12 @@ function SetResourceChecksum {
 #>
     param (
         ## Path of file to create the checksum of
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path
     )
     process {
+
         $checksumPath = '{0}.checksum' -f $Path;
         ## As it can take a long time to calculate the checksum, write it out to disk for future reference
         WriteVerbose ($localized.CalculatingResourceChecksum -f $checksumPath);
@@ -16,7 +18,9 @@ function SetResourceChecksum {
         WriteVerbose ($localized.WritingResourceChecksum -f $fileHash, $checksumPath);
         $fileHash | Set-Content -Path $checksumPath -Force;
     }
+
 } #end function SetResourceChecksum
+
 
 function GetResourceDownload {
 <#
@@ -28,13 +32,16 @@ function GetResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -42,6 +49,7 @@ function GetResourceDownload {
         ##TODO: Support Headers and UserAgent
     )
     process {
+
         $checksumPath = '{0}.checksum' -f $DestinationPath;
         if (-not (Test-Path -Path $DestinationPath)) {
             WriteVerbose ($localized.MissingResourceFile -f $DestinationPath);
@@ -63,8 +71,10 @@ function GetResourceDownload {
             Checksum = $md5Checksum;
         }
         return $resource;
+
     } #end process
 } #end function GetResourceDownload
+
 
 function TestResourceDownload {
 <#
@@ -76,13 +86,16 @@ function TestResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -90,6 +103,7 @@ function TestResourceDownload {
         ##TODO: Support Headers and UserAgent
     )
     process {
+
         $resource = GetResourceDownload @PSBoundParameters;
         if ([System.String]::IsNullOrEmpty($Checksum) -and (Test-Path -Path $DestinationPath -PathType Leaf)) {
             WriteVerbose ($localized.ResourceChecksumNotSpecified -f $DestinationPath);
@@ -103,8 +117,10 @@ function TestResourceDownload {
             WriteVerbose ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
             return $false;
         }
+
     } #end process
 } #end function TestResourceDownload
+
 
 function SetResourceDownload {
 <#
@@ -113,13 +129,16 @@ function SetResourceDownload {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -130,16 +149,20 @@ function SetResourceDownload {
         ##TODO: Support Headers and UserAgent
     )
     begin {
+
         $parentDestinationPath = Split-Path -Path $DestinationPath -Parent;
         [ref] $null = NewDirectory -Path $parentDestinationPath;
+
     }
     process {
+
         if (-not $PSBoundParameters.ContainsKey('BufferSize')) {
             $systemUri = New-Object -TypeName System.Uri -ArgumentList @($uri);
             if ($systemUri.IsFile) {
                 $BufferSize = 1MB;
             }
         }
+
         WriteVerbose ($localized.DownloadingResource -f $Uri, $DestinationPath);
         InvokeWebClientDownload -DestinationPath $DestinationPath -Uri $Uri -BufferSize $BufferSize;
 
@@ -150,6 +173,7 @@ function SetResourceDownload {
 
     } #end process
 } #end function SetResourceDownload
+
 
 function InvokeWebClientDownload {
 <#
@@ -176,14 +200,18 @@ function InvokeWebClientDownload {
         $Credential
     )
     process {
+
         try {
+
             [System.Net.WebClient] $webClient = New-Object -TypeName 'System.Net.WebClient';
             $webClient.Headers.Add('user-agent', $labDefaults.ModuleName);
             $webClient.Proxy = [System.Net.WebRequest]::GetSystemWebProxy();
+
             if (-not $webClient.Proxy.IsBypassed($Uri)) {
                 $proxyInfo = $webClient.Proxy.GetProxy($Uri);
                 WriteVerbose ($localized.UsingProxyServer -f $proxyInfo.AbsoluteUri);
             }
+
             if ($Credential) {
                 $webClient.Credentials = $Credential;
                 $webClient.Proxy.Credentials = $Credential;
@@ -192,6 +220,7 @@ function InvokeWebClientDownload {
                 $webClient.UseDefaultCredentials = $true;
                 $webClient.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials;
             }
+
             [System.IO.Stream] $inputStream = $webClient.OpenRead($Uri);
             [System.UInt64] $contentLength = $webClient.ResponseHeaders['Content-Length'];
             $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
@@ -200,7 +229,9 @@ function InvokeWebClientDownload {
             [System.UInt64] $bytesRead = 0;
             [System.UInt64] $totalBytes = 0;
             $writeProgessActivity = $localized.DownloadingActivity -f $Uri;
+
             do {
+
                 $bytesRead = $inputStream.Read($buffer, 0, $buffer.Length);
                 $totalBytes += $bytesRead;
                 $outputStream.Write($buffer, 0, $bytesRead);
@@ -216,20 +247,33 @@ function InvokeWebClientDownload {
                 }
             }
             while ($bytesRead -ne 0)
+
             $outputStream.Close();
             return (Get-Item -Path $path);
         }
         catch {
-            throw ($localized.ResourceDownloadFailedError -f $Uri);
+
+            throw ($localized.WebResourceDownloadFailedError -f $Uri);
         }
         finally {
-            Write-Progress -Activity $writeProgessActivity -Completed;
-            if ($null -ne $outputStream) { $outputStream.Close(); }
-            if ($null -ne $inputStream) { $inputStream.Close(); }
-            if ($null -ne $webClient) { $webClient.Dispose(); }
+
+            if ($null -ne $writeProgressActivity) {
+                Write-Progress -Activity $writeProgessActivity -Completed;
+            }
+            if ($null -ne $outputStream) {
+                $outputStream.Close();
+            }
+            if ($null -ne $inputStream) {
+                $inputStream.Close();
+            }
+            if ($null -ne $webClient) {
+                $webClient.Dispose();
+            }
         }
+
     } #end process
 } #end function InvokeWebClientDownload
+
 
 function InvokeResourceDownload {
 <#
@@ -239,13 +283,16 @@ function InvokeResourceDownload {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Uri,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
