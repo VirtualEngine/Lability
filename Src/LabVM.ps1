@@ -59,6 +59,7 @@ function ResolveLabVMProperties {
         $labDefaultProperties = GetConfigurationData -Configuration VM;
         $properties = Get-Member -InputObject $labDefaultProperties -MemberType NoteProperty;
         foreach ($propertyName in $properties.Name) {
+
             ## Int32 values of 0 get coerced into $false!
             if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.ContainsKey($propertyName))) {
                 $node[$propertyName] = $labDefaultProperties.$propertyName;
@@ -79,6 +80,7 @@ function ResolveLabVMProperties {
 
         ## Rename/overwrite existing parameter values where $moduleName-specific parameters exist
         foreach ($key in @($node.Keys)) {
+
             if ($key.StartsWith("$($moduleName)_")) {
                 $node[($key.Replace("$($moduleName)_",''))] = $node.$key;
                 $node.Remove($key);
@@ -102,7 +104,8 @@ function Get-LabVM {
     [OutputType([System.Boolean])]
     param (
         ## Specifies the lab virtual machine/node name.
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
@@ -119,6 +122,7 @@ function Get-LabVM {
         }
 
         foreach ($nodeName in $Name) {
+
             $node = ResolveLabVMProperties -NodeName $nodeName -ConfigurationData $ConfigurationData;
             $xVMParams = @{
                 Name = $node.NodeDisplayName;
@@ -133,6 +137,7 @@ function Get-LabVM {
             catch {
                 Write-Error -Message ($localized.CannotLocateNodeError -f $nodeName);
             }
+
         } #end foreach node
 
     } #end process
@@ -148,7 +153,8 @@ function Test-LabVM {
     [OutputType([System.Boolean])]
     param (
         ## Specifies the lab virtual machine/node name.
-        [Parameter(ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
@@ -158,9 +164,11 @@ function Test-LabVM {
         $ConfigurationData
     )
     process {
+
         if (-not $Name) {
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
+
         foreach ($vmName in $Name) {
 
             $isNodeCompliant = $true;
@@ -210,8 +218,10 @@ function Test-LabVM {
                     }
                 }
             }
+
             Write-Output -InputObject $isNodeCompliant;
-        }
+
+        } #end foreach vm
 
     } #end process
 } #end function Test-LabVM
@@ -220,12 +230,16 @@ function Test-LabVM {
 function NewLabVM {
 <#
     .SYNOPSIS
-        Creates a new lab virtual machine is configured as required.
+        Creates and configures a lab virtual machine.
+    .DESCRIPTION
+        Creates an new VM, creating the switch if required, injecting all
+        resources and snapshotting as required.
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
     param (
         ## Specifies the lab virtual machine/node name.
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
@@ -235,7 +249,8 @@ function NewLabVM {
         $ConfigurationData,
 
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential = (& $credentialCheckScriptBlock),
@@ -272,9 +287,9 @@ function NewLabVM {
         $NodeName = $node.NodeName;
 
         ## Display name includes any environment prefix/suffix
-        $DisplayName = $node.NodeDisplayName;
-        if (-not (TestComputerName -ComputerName $DisplayName)) {
-            throw (localized.InvalidComputerNameError -f $DisplayName);
+        $displayName = $node.NodeDisplayName;
+        if (-not (TestComputerName -ComputerName $displayName)) {
+            throw (localized.InvalidComputerNameError -f $displayName);
         }
 
         ## Don't attempt to check certificates for 'Quick VMs'
@@ -309,10 +324,10 @@ function NewLabVM {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
 
-        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$DisplayName.vhdx");
+        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$displayName.vhdx");
         ResetLabVMDisk -Name $DisplayName -Media $node.Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
 
-        WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $DisplayName);
+        WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $displayName);
         $setLabVirtualMachineParams = @{
             Name = $DisplayName;
             SwitchName = $node.SwitchName;
@@ -359,7 +374,7 @@ function NewLabVM {
         if (-not $NoSnapshot) {
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
-            Checkpoint-VM -Name $DisplayName -SnapshotName $snapshotName;
+            Checkpoint-VM -Name $displayName -SnapshotName $snapshotName;
         }
 
         if ($node.WarningMessage) {
@@ -371,7 +386,7 @@ function NewLabVM {
             }
         }
 
-        Write-Output -InputObject (Get-VM -Name $DisplayName);
+        Write-Output -InputObject (Get-VM -Name $displayName);
 
     } #end process
 } #end function NewLabVM
@@ -385,7 +400,8 @@ function RemoveLabVM {
     [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Specifies the lab virtual machine/node name.
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
@@ -457,7 +473,8 @@ function Reset-LabVM {
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     param (
         ## Specifies the lab virtual machine/node name.
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
@@ -467,7 +484,8 @@ function Reset-LabVM {
         $ConfigurationData,
 
         ## Local administrator password of the virtual machine. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential = (& $credentialCheckScriptBlock),
@@ -477,7 +495,8 @@ function Reset-LabVM {
         [System.Security.SecureString] $Password,
 
         ## Directory path containing the virtual machines' .mof file(s).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path = (GetLabHostDSCConfigurationPath),
 
         ## Skip creation of the initial baseline snapshot.
@@ -502,6 +521,7 @@ function Reset-LabVM {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.ResettingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+
                 $currentNodeCount++;
                 [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
                 $activity = $localized.ConfiguringNode -f $vmName;
@@ -509,6 +529,7 @@ function Reset-LabVM {
 
                 RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
                 NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+
             } #end if should process
         } #end foreach VMd
 
@@ -542,69 +563,85 @@ function New-LabVM {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUserNameAndPassWordParams','')]
     param (
         ## Specifies the virtual machine name.
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
 
         ## Default virtual machine startup memory (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $StartupMemory,
 
         ## Default virtual machine miniumum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MinimumMemory,
 
         ## Default virtual machine maximum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MaximumMemory,
 
         ## Default virtual machine processor count.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(1, 4)]
         [System.Int32] $ProcessorCount,
 
         # Input Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
         [System.String] $InputLocale,
 
         # System Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $SystemLocale,
 
         # User Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UserLocale,
 
         # UI Language
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UILanguage,
 
         # Timezone
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $Timezone,
+        [ValidateNotNullOrEmpty()]
+        [System.String] $Timezone,
 
         # Registered Owner
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOwner,
+        [ValidateNotNullOrEmpty()]
+        [System.String] $RegisteredOwner,
 
         # Registered Organization
         [Parameter(ValueFromPipelineByPropertyName)] [Alias('RegisteredOrganisation')]
-        [ValidateNotNullOrEmpty()] [System.String] $RegisteredOrganization,
+        [ValidateNotNullOrEmpty()]
+        [System.String] $RegisteredOrganization,
 
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'PSCredential')] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'PSCredential')]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential = (& $credentialCheckScriptBlock),
 
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Password')]
+        [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
 
         ## Virtual machine switch name(s).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
 
         ## Virtual machine MAC address(es).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $MACAddress,
 
         ## Enable Secure boot status
@@ -616,7 +653,8 @@ function New-LabVM {
         [System.Boolean] $GuestIntegrationServices,
 
         ## Custom data
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.Collections.Hashtable] $CustomData,
 
         ## Skip creating baseline snapshots
@@ -675,6 +713,7 @@ function New-LabVM {
 
         $currentNodeCount = 0;
         foreach ($vmName in $Name) {
+
             ## Update the node name before creating the VM
             $configurationNode['NodeName'] = $vmName;
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
@@ -688,7 +727,9 @@ function New-LabVM {
                 $configurationData = @{ AllNodes = @( $configurationNode ) };
                 NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
             }
+
         } #end foreach name
+
         if (-not [System.String]::IsNullOrEmpty($activity)) {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
@@ -708,7 +749,8 @@ function Remove-LabVM {
     param (
         ## Virtual machine name
         [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()] [System.String[]] $Name,
+        [ValidateNotNullOrEmpty()]
+        [System.String[]] $Name,
 
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(ValueFromPipelineByPropertyName)]

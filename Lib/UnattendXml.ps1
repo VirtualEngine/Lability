@@ -15,7 +15,7 @@ function NewUnattendXml {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
-         $Credential,
+        $Credential,
 
         # Computer name
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -46,11 +46,13 @@ function NewUnattendXml {
         [System.String] $Timezone, ##TODO: Validate timezones?
 
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RegisteredOwner = 'Virtual Engine',
 
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RegisteredOrganization = 'Virtual Engine',
 
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
@@ -59,7 +61,7 @@ function NewUnattendXml {
         [System.Collections.Hashtable[]] $ExecuteCommand
     )
     begin {
-        $templateUnattendXml = [xml] @'
+        $templateUnattendXml = [System.Xml.XmlDocument] @'
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="specialize">
@@ -143,8 +145,11 @@ function NewUnattendXml {
         [xml] $unattendXml = $templateUnattendXml;
     }
     process {
+
         foreach ($setting in $unattendXml.Unattend.Settings) {
+
             foreach($component in $setting.Component) {
+
                 if ($setting.'Pass' -eq 'specialize' -and $component.'Name' -eq 'Microsoft-Windows-Deployment') {
                     if (($null -ne $ExecuteCommand) -or ($ExecuteCommand.Length -gt 0)) {
                         $commandOrder = 1;
@@ -162,6 +167,7 @@ function NewUnattendXml {
                         }
                     }
                 }
+
                 if (($setting.'Pass' -eq 'specialize') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
                     if ($ComputerName) {
                         $computerNameElement = $component.AppendChild($unattendXml.CreateElement('ComputerName','urn:schemas-microsoft-com:unattend'));
@@ -187,11 +193,16 @@ function NewUnattendXml {
                     $component.RegisteredOrganization = $RegisteredOrganization;
                     $component.RegisteredOwner = $RegisteredOwner;
                 }
+
             } #end foreach setting.Component
+
         } #end foreach unattendXml.Unattend.Settings
+
         Write-Output -InputObject $unattendXml;
+
     } #end process
 } #end function NewUnattendXml
+
 
 function SetUnattendXml {
 <#
@@ -202,7 +213,8 @@ function SetUnattendXml {
     [OutputType([System.Xml.XmlDocument])]
     param (
         # Filename/path to save the unattend file as
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         # Local Administrator Password
@@ -216,7 +228,8 @@ function SetUnattendXml {
         [System.String] $ComputerName,
 
         # Product Key
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}-[A-Z0-9]{5,5}$')]
         [System.String] $ProductKey,
 
         # Input Locale
@@ -240,11 +253,13 @@ function SetUnattendXml {
         [System.String] $Timezone, ##TODO: Validate timezones?
 
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RegisteredOwner = 'Virtual Engine',
 
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RegisteredOrganization = 'Virtual Engine',
 
         # TODO: Execute synchronous commands during OOBE pass as they only currently run during the Specialize pass
@@ -253,9 +268,11 @@ function SetUnattendXml {
         [System.Collections.Hashtable[]] $ExecuteCommand
     )
     process {
+
         [ref] $null = $PSBoundParameters.Remove('Path');
         $unattendXml = NewUnattendXml @PSBoundParameters;
         $resolvedPath = ResolvePathEx -Path $Path;
         return $unattendXml.Save($resolvedPath);
-    }
+
+    } #end process
 } #end function SetUnattendXml
