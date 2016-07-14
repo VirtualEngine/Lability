@@ -136,7 +136,7 @@ function Set-LabHostDefault {
 
         ## Lab module storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $ModulePath,
+        [System.String] $ModuleCachePath,
 
         ## Lab custom resource storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
@@ -162,7 +162,17 @@ function Set-LabHostDefault {
 
         $hostDefaults = GetConfigurationData -Configuration Host;
 
-        foreach ($path in @('IsoPath','ParentVhdPath','DifferencingVhdPath','ResourcePath','HotfixPath','UpdatePath','ConfigurationPath','ModulePath')) {
+        $resolvablePaths = @(
+            'IsoPath',
+            'ParentVhdPath',
+            'DifferencingVhdPath',
+            'ResourcePath',
+            'HotfixPath',
+            'UpdatePath',
+            'ConfigurationPath',
+            'ModulePath'
+        )
+        foreach ($path in $resolvablePaths) {
             if ($PSBoundParameters.ContainsKey($path)) {
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
                 if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
@@ -225,7 +235,7 @@ function Set-LabHostDefaults {
 
         ## Lab module storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $ModulePath,
+        [System.String] $ModuleCachePath,
 
         ## Lab custom resource storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]

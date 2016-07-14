@@ -120,8 +120,8 @@ function GetConfigurationData {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $false;
                     }
                     ## This property may not be present in the original machine configuration file
-                    if ($configurationData.PSObject.Properties.Name -notcontains 'ModulePath') {
-                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'ModulePath' -Value '%SYSTEMDRIVE%\Lability\Modules';
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'ModuleCachePath') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'ModuleCachePath' -Value '%ALLUSERSPROFILE%\Lability\Modules';
                     }
 
                     ## Remove deprecated UpdatePath, if present (Issue #77)
