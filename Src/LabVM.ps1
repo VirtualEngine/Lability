@@ -1,10 +1,13 @@
 function ResolveLabVMProperties {
 <#
     .SYNOPSIS
-        Resolve lab VM properties.
+        Resolves a node's properites.
     .DESCRIPTION
-        Resolves a lab virtual machine properties, using VM-specific properties over-and-above
-        the AllNodes.NodeName '*' and lab defaults.
+        Resolves a lab virtual machine properties from the lab defaults, Node\* node
+        and Node\NodeName node.
+
+        Properties defined on the wildcard node override the lab defaults.
+        Properties defined at the node override the wildcard node settings.
 #>
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -24,6 +27,7 @@ function ResolveLabVMProperties {
         [System.Management.Automation.SwitchParameter] $NoEnumerateWildcardNode
     )
     process {
+
         $node = @{ };
         $moduleName = $labDefaults.ModuleName;
 
@@ -82,8 +86,10 @@ function ResolveLabVMProperties {
         }
 
         return $node;
+
     } #end process
 } #end function ResolveLabVMProperties
+
 
 function Get-LabVM {
 <#
@@ -106,6 +112,7 @@ function Get-LabVM {
         $ConfigurationData
     )
     process {
+
         if (-not $Name) {
             # Return all nodes defined in the configuration
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName; }
@@ -131,6 +138,7 @@ function Get-LabVM {
     } #end process
 } #end function Get-LabVM
 
+
 function Test-LabVM {
 <#
     .SYNOPSIS
@@ -154,6 +162,7 @@ function Test-LabVM {
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
         foreach ($vmName in $Name) {
+
             $isNodeCompliant = $true;
             $node = ResolveLabVMProperties -NodeName $vmName -ConfigurationData $ConfigurationData;
             WriteVerbose ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
@@ -163,6 +172,7 @@ function Test-LabVM {
                 $isNodeCompliant = $false;
             }
             else {
+
                 ## No point testing switch, vhdx and VM if the image isn't available
                 WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
                 if (-not (TestLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData)) {
@@ -179,6 +189,7 @@ function Test-LabVM {
                     $isNodeCompliant = $false;
                 }
                 else {
+
                     ## No point testing VM if the VHDX isn't available
                     WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
                     $testLabVirtualMachineParams = @{
@@ -201,8 +212,10 @@ function Test-LabVM {
             }
             Write-Output -InputObject $isNodeCompliant;
         }
+
     } #end process
 } #end function Test-LabVM
+
 
 function NewLabVM {
 <#
@@ -239,21 +252,25 @@ function NewLabVM {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoSnapshot,
 
-        ## Is a quick VM
+        ## Is a quick VM, e.g. created via the New-LabVM cmdlet
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $IsQuickVM
     )
     begin {
+
         ## If we have only a secure string, create a PSCredential
         if ($PSCmdlet.ParameterSetName -eq 'Password') {
             $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
         }
         if (-not $Credential) {throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+
     }
     process {
+
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $NodeName = $node.NodeName;
+
         ## Display name includes any environment prefix/suffix
         $DisplayName = $node.NodeDisplayName;
         if (-not (TestComputerName -ComputerName $DisplayName)) {
@@ -316,21 +333,11 @@ function NewLabVM {
             ## Skip injecting files for Linux VMs..
         }
         else {
-            ## Only mount the VHDX to copy resources if needed!
-            if ($node.Resource) {
-                WriteVerbose ($localized.AddingVMResource -f 'VM');
-                $setLabVMDiskResourceParams = @{
-                    ConfigurationData = $ConfigurationData;
-                    NodeName = $NodeName;
-                    DisplayName = $DisplayName;
-                }
-                SetLabVMDiskResource @setLabVMDiskResourceParams;
-            }
 
-            WriteVerbose ($localized.AddingVMCustomization -f 'VM'); ## DSC resources and unattend.xml
+            WriteVerbose ($localized.AddingVMCustomization -f 'VM');
             $setLabVMDiskFileParams = @{
-                Name = $NodeName;
-                NodeData = $node;
+                NodeName = $NodeName;
+                ConfigurationData = $ConfigurationData;
                 Path = $Path;
                 Credential = $Credential;
                 CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
@@ -346,6 +353,7 @@ function NewLabVM {
                 $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
             }
             SetLabVMDiskFile @setLabVMDiskFileParams;
+
         } #end Windows VMs
 
         if (-not $NoSnapshot) {
@@ -364,8 +372,10 @@ function NewLabVM {
         }
 
         Write-Output -InputObject (Get-VM -Name $DisplayName);
+
     } #end process
 } #end function NewLabVM
+
 
 function RemoveLabVM {
 <#
@@ -389,6 +399,7 @@ function RemoveLabVM {
         [System.Management.Automation.SwitchParameter] $RemoveSwitch
     )
     process {
+
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
         if (-not $node.NodeName) {
             throw ($localized.CannotLocateNodeError -f $Name);
@@ -429,8 +440,10 @@ function RemoveLabVM {
             WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);
             RemoveLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         }
+
     } #end process
 } #end function RemoveLabVM
+
 
 function Reset-LabVM {
 <#
@@ -440,7 +453,6 @@ function Reset-LabVM {
         The Reset-LabVM cmdlet deletes and recreates a lab virtual machine, reapplying the MOF.
 
         To revert a single VM to a previous state, use the Restore-VMSnapshot cmdlet. To revert an entire lab environment, use the Restore-Lab cmdlet.
-
 #>
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     param (
@@ -473,16 +485,20 @@ function Reset-LabVM {
         [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     begin {
+
         ## If we have only a secure string, create a PSCredential
         if ($PSCmdlet.ParameterSetName -eq 'Password') {
             $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
         }
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+
     }
     process {
+
         $currentNodeCount = 0;
         foreach ($vmName in $Name) {
+
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.ResettingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
@@ -495,11 +511,14 @@ function Reset-LabVM {
                 NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
             } #end if should process
         } #end foreach VMd
+
         if (-not [System.String]::IsNullOrEmpty($activity)) {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
+
     } #end process
 } #end function Reset-LabVM
+
 
 function New-LabVM {
 <#
@@ -605,6 +624,7 @@ function New-LabVM {
         [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
     DynamicParam {
+
         ## Adds a dynamic -MediaId parameter that returns the available media Ids
         $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
         $parameterAttribute.ParameterSetName = '__AllParameterSets';
@@ -620,14 +640,17 @@ function New-LabVM {
         return $runtimeParameterDictionary;
     }
     begin {
+
         ## If we have only a secure string, create a PSCredential
         if ($PSCmdlet.ParameterSetName -eq 'Password') {
             $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
         }
         if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+
     } #end begin
     process {
+
         ## Skeleton configuration node
         $configurationNode = @{ }
 
@@ -669,8 +692,10 @@ function New-LabVM {
         if (-not [System.String]::IsNullOrEmpty($activity)) {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
+
     } #end process
 } #end function New-LabVM
+
 
 function Remove-LabVM {
 <#
@@ -692,8 +717,10 @@ function Remove-LabVM {
         $ConfigurationData
     )
     process {
+
         $currentNodeCount = 0;
         foreach ($vmName in $Name) {
+
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
@@ -713,8 +740,10 @@ function Remove-LabVM {
                 RemoveLabVM -Name $vmName -ConfigurationData $configurationData;
             } #end if should process
         } #end foreach VM
+
         if (-not [System.String]::IsNullOrEmpty($activity)) {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
+
     } #end process
 } #end function Remove-LabVM
