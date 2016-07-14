@@ -170,7 +170,7 @@ function Set-LabHostDefault {
             'HotfixPath',
             'UpdatePath',
             'ConfigurationPath',
-            'ModulePath'
+            'ModuleCachePath'
         )
         foreach ($path in $resolvablePaths) {
             if ($PSBoundParameters.ContainsKey($path)) {

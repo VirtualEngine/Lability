@@ -40,7 +40,7 @@ Describe 'LabHostDefaults' {
 
             $fakeConfigurationDataObject = ConvertFrom-Json -InputObject '{
                 "ConfigurationPath": "", "DifferencingVhdPath": "", "HotfixPath": "", "IsoPath": "",
-	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": ""
+	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": "", "ModuleCachePath": ""
             }'
 
             It 'Resolves path containing an environment variable' {
@@ -55,6 +55,7 @@ Describe 'LabHostDefaults' {
             }
 
             foreach($parameter in ($fakeConfigurationDataObject.PSObject.Properties | Where Name -like '*Path').Name) {
+
                 It "Calls 'Set-LabDefaults' with passed '$parameter' parameter" {
                     $testPath = '{0}\{1}\' -f (Get-PSDrive -Name TestDrive).Root, $parameter; #- "TestDrive:\$parameter\";
                     $testValidPath = $testPath.Trim('\');
