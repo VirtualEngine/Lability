@@ -1,0 +1,78 @@
+function ResolveLabModule {
+<#
+    .SYNOPSIS
+        Returns the Node\DSCResource or Node\Module definitions from the
+        NonNodeData\Lability\DSCResource or NonNodeData\Lability\Module node.
+    .DESCRIPTION
+        Resolves lab modules/DSC resources names defined at the Node\DSCResource or
+        Node\Module node, and returns a collection of hashtables where the names
+        match the definition in the NonNodeData\Lability\DSCResource or
+        \NonNodeData\Lability\Module nodes.
+
+        If resources are defined at the \NonNodeData\Lability\DSCResource or
+        NonNodeData\Lability\Module nodes, but there are no VM references, then all
+        the associated resources are returned.
+    .NOTES
+        If no NonNodeData\Lability\DscResource collection is defined, all locally
+        installed DSC resource modules are returned.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param (
+        ## Lab VM/Node name
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $NodeName,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData,
+
+        ## Module type to enumerate
+        [Parameter(Mandatory)]
+        [ValidateSet('Module','DscResource')]
+        [System.String] $ModuleType
+    )
+    process {
+
+        $resolveLabVMPropertiesParams = @{
+            NodeName = $NodeName;
+            ConfigurationData = $ConfigurationData;
+        }
+        $nodeProperties = ResolveLabVMProperties @resolveLabVMPropertiesParams;
+
+        $resolveModuleParams = @{
+            ConfigurationData = $ConfigurationData;
+            ModuleType = $ModuleType;
+        }
+        if ($nodeProperties.ContainsKey($ModuleType)) {
+            $resolveModuleParams['Name'] = $nodeProperties[$ModuleType];
+        }
+
+        $modules = ResolveModule @resolveModuleParams;
+
+        ## This is a temporary measure as this is a change in behaviour
+        if (($ModuleType -eq 'DscResource') -and ($null -eq $modules)) {
+            <#
+                There is no DSCResource = @() node defined. Therefore, we need
+                to copy all the existing DSC resources on from the host by
+                returning a load of FileSystem provider resources..
+            #>
+            WriteWarning -Message ($localized.DscResourcesNotDefinedWarning);
+
+            $modules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules" |
+                ForEach-Object {
+                    ## Create a new hashtable
+                    Write-Output -InputObject @{
+                        Name = $_.ModuleName;
+                        Version = $_.ModuleVersion;
+                        Provider = 'FileSystem';
+                        Path = $_.Path;
+                    }
+                };
+        }
+
+        return $modules;
+    }
+} #end function ResolveLabModule
