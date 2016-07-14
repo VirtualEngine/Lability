@@ -70,7 +70,7 @@ function GetDscResource {
     )
     process {
         $getTargetResourceCommand = 'Get-{0}TargetResource' -f $ResourceName;
-        WriteVerbose ($localized.InvokingCommand -f $getTargetResourceCommand);
+        Write-Debug ($localized.InvokingCommand -f $getTargetResourceCommand);
         # Code to factor in the parameters which can be passed to the Get-<Prefix>TargetResource function.
         $CommandInfo = Get-Command -Name $getTargetResourceCommand;
         $RemoveParameters = $Parameters.Keys | where -filter {$($CommandInfo.Parameters.Keys) -notcontains $PSItem};
@@ -106,7 +106,7 @@ function TestDscResource {
     )
     process {
         $testTargetResourceCommand = 'Test-{0}TargetResource' -f $ResourceName;
-        WriteVerbose ($localized.InvokingCommand -f $testTargetResourceCommand);
+        Write-Debug ($localized.InvokingCommand -f $testTargetResourceCommand);
         $Parameters.Keys | ForEach-Object {
             Write-Debug -Message ($localized.CommandParameter -f $_, $Parameters.$_);
         }
@@ -146,7 +146,7 @@ function SetDscResource {
     )
     process {
         $setTargetResourceCommand = 'Set-{0}TargetResource' -f $ResourceName;
-        WriteVerbose ($localized.InvokingCommand -f $setTargetResourceCommand);
+        Write-Debug ($localized.InvokingCommand -f $setTargetResourceCommand);
         $Parameters.Keys | ForEach-Object {
             Write-Debug -Message ($localized.CommandParameter -f $_, $Parameters.$_);
         }
