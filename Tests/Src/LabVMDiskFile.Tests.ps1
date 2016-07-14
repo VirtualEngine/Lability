@@ -38,81 +38,6 @@ Describe 'Src\LabVMDiskFile' {
 
         } #end context Validates "SetLabVMDiskModule" method
 
-        <# DEPRECATED
-            Context 'Validates "SetLabVMDiskResource" method' {
-
-            It 'Mounts virtual machine VHDX file' {
-                $testVMName = 'TestVM';
-                $testVhdPath = "TestDrive:\$testVMName.vhdx";
-                $testDiskNumber = 42;
-                $testDriveLetter = 'Z';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return $testVhdPath; }
-                Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
-                Mock Get-Partition -ParameterFilter { $DiskNumber -eq $testDiskNumber } -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
-                Mock Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ExpandLabResource -MockWith { }
-                Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
-
-                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
-
-                Assert-MockCalled Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
-            }
-
-            It 'Calls "ExpandLabResource" to inject disk resource' {
-                $testVMName = 'TestVM';
-                $testVhdPath = "TestDrive:\$testVMName.vhdx";
-                $testDiskNumber = 42;
-                $testDriveLetter = 'Z';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return $testVhdPath; }
-                Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
-                Mock Get-Partition -ParameterFilter { $DiskNumber -eq $testDiskNumber } -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
-                Mock Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ExpandLabResource -ParameterFilter { $Name -eq $testVMName }  -MockWith { }
-                Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
-
-                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
-
-                Assert-MockCalled ExpandLabResource -ParameterFilter { $Name -eq $testVMName } -Scope It;
-            }
-
-            It 'Dismounts virtual machine VHDX file' {
-                $testVMName = 'TestVM';
-                $testVhdPath = "TestDrive:\$testVMName.vhdx";
-                $testDiskNumber = 42;
-                $testDriveLetter = 'Z';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return $testVhdPath; }
-                Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
-                Mock Get-Partition -ParameterFilter { $DiskNumber -eq $testDiskNumber } -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
-                Mock Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                Mock ExpandLabResource -MockWith { }
-                Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
-
-                SetLabVMDiskResource -ConfigurationData $configurationData -NodeName $testVMName -DisplayName $testVMName;
-
-                Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
-            }
-
-        }  #end context Validates "SetLabVMDiskResource" method
-        #>
-
         Context 'Validates "SetLabVMDiskFileResource" method' {
 
             It 'Calls "ExpandLabResource" using "ResourceShare" path' {
@@ -423,18 +348,6 @@ Describe 'Src\LabVMDiskFile' {
                 SetLabVMDiskFile @testParams;
 
                 Assert-MockCalled Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
-
-                #Mock Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
-                #Mock Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-                #Mock Mount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }v
-                #Mock Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -MockWith { }
-
-                ##Mock SetBootStrap -ParameterFilter { $Path.EndsWith('\BootStrap') -eq $true } -MockWith { }
-                ##Mock SetSetupCompleteCmd -ParameterFilter { $Path.EndsWith('\Windows\Setup\Scripts') -eq $true } -MockWith { }
-                ##Mock SetUnattendXml -ParameterFilter { $Path.EndsWith('\Windows\System32\Sysprep\Unattend.xml') -eq $true } -MockWith { }
-                ##Mock ResolveProgramFilesFolder -MockWith { }
-                ##Mock ResolveLabModule -MockWith { }
-                ##Mock SetLabVMDiskModule -MockWith { }
             }
 
             It 'Starts "ShellHWDetection" service' {
@@ -491,4 +404,4 @@ Describe 'Src\LabVMDiskFile' {
 
     } #end InModuleScope
 
-} #end describe LabVMDiskFile
+} #end describe Src\LabVMDiskFile

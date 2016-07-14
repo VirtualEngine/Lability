@@ -2,22 +2,18 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'LabHostConfiguration' {
+Describe 'Src\LabHostConfiguration' {
 
     InModuleScope $moduleName {
-    
+
         Context 'Validates "GetLabHostSetupConfiguration" method' {
 
             It 'Installs "Microsoft-Hyper-V-All" feature with "WindowsOptionalFeature" on a desktop OS' {
                 Mock Get-CimInstance -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 1; } }
-                
+
                 $windowsOptionalFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'Microsoft-Hyper-V-All' }
 
                 $windowsOptionalFeature | Should Not BeNullOrEmpty;
@@ -25,7 +21,7 @@ Describe 'LabHostConfiguration' {
 
             It 'Installs "Hyper-V" feature using "WindowsFeature" on a server OS' {
                 Mock Get-CimInstance -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
-                
+
                 $windowsFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'Hyper-V' }
 
                 $windowsFeature | Should Not BeNullOrEmpty;
@@ -33,7 +29,7 @@ Describe 'LabHostConfiguration' {
 
             It 'Installs "RSAT-Hyper-V-Tools" feature using "WindowsFeature" on a server OS' {
                 Mock Get-CimInstance  -ParameterFilter { $ClassName -eq 'Win32_OperatingSystem' } -MockWith { return [PSCustomObject] @{ ProductType = 2; } }
-                
+
                 $windowsFeature = GetLabHostSetupConfiguration | Where { $_.Parameters['Name'] -eq 'RSAT-Hyper-V-Tools' }
 
                 $windowsFeature | Should Not BeNullOrEmpty;
@@ -219,4 +215,4 @@ Describe 'LabHostConfiguration' {
 
     } #end InModuleScope
 
-} #end describe LabHostConfiguration
+} #end describe Src\LabHostConfiguration

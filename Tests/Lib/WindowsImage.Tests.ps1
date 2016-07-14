@@ -2,14 +2,10 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'WindowsImage' {
+Describe 'Lib\WindowsImage' {
 
     InModuleScope $moduleName {
 
@@ -27,9 +23,9 @@ Describe 'WindowsImage' {
                 Mock Expand-WindowsImage -MockWith { }
                 Mock Dismount-DiskImage -MockWith { }
                 Mock Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
-                
+
                 ExpandWindowsImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
-                
+
                 Assert-MockCalled Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
             }
 
@@ -42,9 +38,9 @@ Describe 'WindowsImage' {
                 Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
                 Mock Expand-WindowsImage -MockWith { }
                 Mock Mount-DiskImage -MockWith { }
-                
+
                 ExpandWindowsImage -MediaPath $testWimPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
-                
+
                 Assert-MockCalled Mount-DiskImage -Scope It -Exactly 0;
             }
 
@@ -187,7 +183,7 @@ Describe 'WindowsImage' {
                 ExpandWindowsImage @expandWindowsImageParams -WarningAction SilentlyContinue;
 
                 Assert-MockCalled AddWindowsOptionalFeature -ParameterFilter { $ImagePath.EndsWith($testSourcePath) }-Scope It;
-            
+
             }
 
         } #end context Validates "ExpandWindowsImage" method
@@ -206,7 +202,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageIndex = GetWindowsImageIndex -ImagePath $testWimPath -ImageName $testImageName;
-                
+
                 $imageIndex -is [System.Int32] | Should Be $true;
             }
 
@@ -222,7 +218,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageIndex = GetWindowsImageIndex -ImagePath $testWimPath -ImageName $testImageName;
-                
+
                 $imageIndex | Should Be $testImageIndex;
             }
 
@@ -238,7 +234,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageIndex = GetWindowsImageIndex -ImagePath $testWimPath -ImageName 'This should not exist';
-                
+
                 $imageIndex | Should BeNullOrEmpty;
             }
 
@@ -258,7 +254,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageName = GetWindowsImageName -ImagePath $testWimPath -ImageIndex $testImageIndex;
-                
+
                 $imageName -is [System.String] | Should Be $true;
             }
 
@@ -274,7 +270,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageName = GetWindowsImageName -ImagePath $testWimPath -ImageIndex $testImageIndex;
-                
+
                 $imageName | Should Be $testImageName;
             }
 
@@ -290,7 +286,7 @@ Describe 'WindowsImage' {
                 Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
                 $imageName = GetWindowsImageName -ImagePath $testWimPath -ImageIndex 99;
-                
+
                 $imageName | Should BeNullOrEmpty;
             }
 
@@ -298,4 +294,4 @@ Describe 'WindowsImage' {
 
     } #end InModuleScope
 
-} #end describe WindowsImage
+} #end describe Lib\WindowsImage

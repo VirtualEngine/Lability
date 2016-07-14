@@ -2,15 +2,11 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'DiskImage' {
-    
+Describe 'Lib\DiskImage' {
+
     InModuleScope $moduleName {
 
         Context 'Validates "GetDiskImageDriveLetter" method' {
@@ -18,14 +14,14 @@ Describe 'DiskImage' {
             It 'Throws when no disk letter is found' {
                 Mock Get-Partition -MockWith { return [PSCustomObject] @{ DriveLetter = $null; Type = 'Basic'; DiskNumber = 1; } }
                 $diskImage = [PSCustomObject] @{ DiskNumber = 1 };
-                
+
                 { GetDiskImageDriveLetter -DiskImage $diskImage -PartitionType Basic } | Should Throw;
             }
 
             It 'Throws when no disk letter is found for specified partition type' {
                 Mock Get-Partition -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z'; Type = 'IFS'; DiskNumber = 1; } }
                 $diskImage = [PSCustomObject] @{ DiskNumber = 1 };
-                
+
                 { GetDiskImageDriveLetter -DiskImage $diskImage -PartitionType Basic } | Should Throw;
             }
 
@@ -39,12 +35,12 @@ Describe 'DiskImage' {
         } #end context Validates "GetDiskImageDriveLetter" method
 
         Context 'Validates "NewDiskImage" method' {
-            
+
             It 'Throws if VHD image already exists' {
                 $testVhdPath = "TestDrive:\TestImage.vhdx";
                 $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'MBR'; }
-                
-                { NewDiskImage @newDiskImageParams } | Should Throw;    
+
+                { NewDiskImage @newDiskImageParams } | Should Throw;
             }
 
             It 'Removes existing VHD image if it already exists and -Force is specified' {
@@ -56,9 +52,9 @@ Describe 'DiskImage' {
                 Mock Initialize-Disk -MockWith { }
                 Mock NewDiskImageMbr -MockWith { }
                 Mock Remove-Item -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { };
-                
+
                 NewDiskImage @newDiskImageParams;
-                
+
                 Assert-MockCalled Remove-Item -ParameterFilter { $Path -eq $newDiskImageParams.Path } -Scope It;
             }
 
@@ -72,9 +68,9 @@ Describe 'DiskImage' {
                 Mock Remove-Item -MockWith { };
                 Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
                 Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
-                
+
                 NewDiskImage @newDiskImageParams;
-                
+
                 Assert-MockCalled New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -Scope It;
                 Assert-MockCalled Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -Scope It;
             }
@@ -90,7 +86,7 @@ Describe 'DiskImage' {
                 Mock Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
                 NewDiskImage @newDiskImageParams;
-                
+
                 Assert-MockCalled Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
             }
 
@@ -105,7 +101,7 @@ Describe 'DiskImage' {
                 Mock Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
 
                 NewDiskImage @newDiskImageParams;
-                
+
                 Assert-MockCalled Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -Scope It -Exactly 0;
             }
 
@@ -159,7 +155,7 @@ Describe 'DiskImage' {
 
             ## We're going to Mock Get-Partition so best grab a copy now!
             $stubPartition = Get-Partition | Select -Last 1;
-        
+
             It 'Stops Shell Hardware Detection service' {
                 $parameterFilter = { $Name -eq 'ShellHWDetection' }
                 $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
@@ -169,9 +165,9 @@ Describe 'DiskImage' {
                 Mock Format-Volume -MockWith { }
                 Mock Start-Service -ParameterFilter $parameterFilter -MockWith { }
                 Mock Stop-Service -ParameterFilter $parameterFilter -MockWith { }
-        
+
                 NewDiskImageMbr -Vhd $vhdImage;
-                
+
                 Assert-MockCalled Stop-Service -ParameterFilter $parameterFilter -Scope It;
                 Assert-MockCalled Start-Service -ParameterFilter $parameterFilter -Scope It;
             }
@@ -202,12 +198,12 @@ Describe 'DiskImage' {
                 Mock Stop-Service -MockWith { }
                 Mock Format-Volume -MockWith { }
                 Mock Format-Volume -ParameterFilter $parameterFilter -MockWith { }
-                
+
                 NewDiskImageMbr -Vhd $vhdImage;
 
                 Assert-MockCalled Format-Volume -ParameterFilter $parameterFilter -Scope It;
             }
-        
+
         } #end context Validates "NewDiskImageMbr" method
 
         Context 'Validates "NewDiskImageGpt" method' {
@@ -222,7 +218,7 @@ Describe 'DiskImage' {
                 Mock Format-Volume -MockWith { }
                 Mock Start-Service -ParameterFilter $parameterFilter -MockWith { }
                 Mock Stop-Service -ParameterFilter $parameterFilter -MockWith { }
-                
+
                 NewDiskImageGpt -Vhd $vhdImage;
 
                 Assert-MockCalled Stop-Service -ParameterFilter $parameterFilter -Scope It;
@@ -270,7 +266,7 @@ Describe 'DiskImage' {
                 Mock Stop-Service -MockWith { }
                 Mock Format-Volume -MockWith { }
                 Mock Format-Volume -ParameterFilter $parameterFilter -MockWith { }
-                
+
                 NewDiskImageGpt -Vhd $vhdImage;
 
                 Assert-MockCalled Format-Volume -ParameterFilter $parameterFilter -Scope It;
@@ -288,7 +284,7 @@ Describe 'DiskImage' {
 
                 Assert-MockCalled SetDiskImageBootVolumeGpt -Scope It;
             }
-        
+
             It 'Calls "SetDiskImageBootVolumeMbr" when partition style is MBR' {
                 $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
                 Mock SetDiskImageBootVolumeMbr -MockWith { };
@@ -297,7 +293,7 @@ Describe 'DiskImage' {
 
                 Assert-MockCalled SetDiskImageBootVolumeMbr -Scope It;
             }
-        
+
         } #end context Validates "SetDiskImageBootVolume" method
 
         Context 'Validates "AddDiskImageHotfix" method' {
@@ -322,10 +318,10 @@ Describe 'DiskImage' {
                     );
                 }
             )
-                  
+
             foreach ($fakeMedia in $fakeMediaSuite) {
                 foreach ($partitionStyle in @('MBR','GPT')) {
-                
+
                     It $fakeMedia.TestName {
                         $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
                         Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
@@ -346,4 +342,4 @@ Describe 'DiskImage' {
 
     } #end InModuleScope
 
-} #end describe DiskImage
+} #end describe Lib\DiskImage

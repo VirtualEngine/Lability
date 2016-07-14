@@ -132,4 +132,4 @@ Describe 'Lib\DscResourceModule' {
 
     } #end InModuleScope
 
-} #end describe DscModule
+} #end describe Lib\DscResourceModule

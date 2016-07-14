@@ -2,14 +2,10 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'VirtualMachine' {
+Describe 'Lib\VirtualMachine' {
 
     InModuleScope $moduleName {
 
@@ -159,7 +155,6 @@ Describe 'VirtualMachine' {
                 $vmProperties.ContainsKey('ConfigurationData') | Should Be $false;
             }
 
-
         } #end context Validates "GetVirtualMachineProperties" method
 
         Context 'Validates "TestLabVirtualMachine" method' {
@@ -176,8 +171,6 @@ Describe 'VirtualMachine' {
                 MaximumMemory = 2GB;
                 ProcessorCount = 1;
             }
-
-
 
             It 'Imports Hyper-V DSC resource' {
                 Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
@@ -325,4 +318,4 @@ Describe 'VirtualMachine' {
 
     } #end InModuleScope
 
-} #end describe VirtualMachine
+} #end describe Lib\VirtualMachine
