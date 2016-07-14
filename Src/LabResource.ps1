@@ -21,16 +21,24 @@ function Test-LabResource {
         [System.String] $ResourcePath
     )
     begin {
+
         if (-not $ResourcePath) {
             $hostDefaults = GetConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
+
     }
     process {
-        if ($resourceId) { $resources = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId }
-        else { $resources = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource }
+
+        if ($resourceId) {
+            $resources = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId;
+        }
+        else {
+            $resources = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource;
+        }
 
         foreach ($resource in $resources) {
+
             $fileName = $resource.Id;
             if ($resource.Filename) { $fileName = $resource.Filename; }
 
@@ -42,12 +50,15 @@ function Test-LabResource {
             if (-not (TestResourceDownload @testResourceDownloadParams)) {
                 return $false;
             }
-        }
+        } #end foreach resource
+
         return $true;
+
     } #end process
 } #end Test-LabResource
 
-function TestLabLocalResource {
+
+function TestLabResourceIsLocal {
 <#
     .SYNOPSIS
         Test whether a lab resource is available locally
@@ -70,6 +81,7 @@ function TestLabLocalResource {
         [System.String] $LocalResourcePath
     )
     process {
+
         $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId;
 
         if (($resource.Expand) -and ($resource.Expand -eq $true)) {
@@ -102,7 +114,8 @@ function TestLabLocalResource {
             return $false;
         }
     } #end process
-} #end function TestLabResourceLocal
+} #end function TestLabResourceIsLocal
+
 
 function Invoke-LabResourceDownload {
 <#
@@ -245,7 +258,9 @@ function Invoke-LabResourceDownload {
         } #end if ResourceId or ResourceOnly
 
         if ($PSCmdlet.ParameterSetName -in 'DSCResources','All') {
+
             if ($ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource) {
+
                 $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
                 if ($dscResources.Count -gt 0) {
                     WriteVerbose ($Localized.DownloadingAllDSCResources);
@@ -277,6 +292,7 @@ function ResolveLabResource {
         [System.String] $ResourceId
     )
     process {
+
         $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
         if ($resource) {
             return $resource;
@@ -284,37 +300,10 @@ function ResolveLabResource {
         else {
             throw ($localized.CannotResolveResourceIdError -f $resourceId);
         }
-    }
+
+    } #end process
 } #end function ResolveLabResource
 
-function ExpandIsoResource {
-<#
-    .SYNOPSIS
-        Expands an ISO disk image resource
-#>
-    param (
-        ## Source ISO file path
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [System.String] $Path,
-
-        ## Destination folder path
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $DestinationPath
-    )
-    process {
-        WriteVerbose ($localized.MountingDiskImage -f $Path);
-        $iso = Mount-DiskImage -ImagePath $Path -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
-        ## Refresh drives
-        [ref] $null = Get-PSDrive;
-        $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
-        $sourcePath = '{0}:\' -f $isoDriveLetter;
-        WriteVerbose ($localized.ExpandingIsoResource -f $DestinationPath);
-        #[ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
-        CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
-        WriteVerbose ($localized.DismountingDiskImage -f $Path);
-        Dismount-DiskImage -ImagePath $Path;
-    } #end process
-} #end function ExpandIsoResource
 
 function ExpandLabResource {
 <#
@@ -357,7 +346,7 @@ function ExpandLabResource {
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
 
-            WriteVerbose ($localized.InjectingVMResource -f $resourceId);
+            WriteVerbose ($localized.AddingResource -f $resourceId);
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
 
             ## Default to resource.Id unless there is a filename property defined!
@@ -385,18 +374,21 @@ function ExpandLabResource {
             }
 
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
+
                 switch ($resourceItem.Extension) {
                     '.iso' {
+
                         if ($isCustomDestinationPath) {
                             ## Use the custom DestinationPath
-                            ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationRootPath;
+                            ExpandIso -Path $resourceItem.FullName -DestinationPath $destinationRootPath;
                         }
                         else {
                             [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
-                            ExpandIsoResource -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
+                            ExpandIso -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
                         }
                     }
                     '.zip' {
+
                         if ($isCustomDestinationPath) {
                             ## Use the custom DestinationPath
                             WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
@@ -409,14 +401,19 @@ function ExpandLabResource {
                         }
                     }
                     Default {
+
                         throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension);
                     }
                 } #end switch
+
             }
             else {
+
                 WriteVerbose ($localized.CopyingFileResource -f $destinationResourcePath);
                 Copy-Item -Path $resourceItem.FullName -Destination $destinationRootPath -Force -Verbose:$false;
             }
+
         } #end foreach ResourceId
+
     } #end process
 } #end function ExpandLabResource
