@@ -214,6 +214,7 @@ function RemoveLabVirtualMachine {
     .DESCRIPTION
         Invokes/sets a virtual machine configuration using the xVMHyperV DSC resource.
 #>
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
@@ -252,10 +253,12 @@ function RemoveLabVirtualMachine {
         $ConfigurationData
     )
     process {
-        ## Resolve the xVMHyperV resource parameters
-        $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
-        $vmHyperVParams['Ensure'] = 'Absent';
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
-        InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue;
+        if ($PSCmdlet.ShouldProcess($Name)) {
+            ## Resolve the xVMHyperV resource parameters
+            $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
+            $vmHyperVParams['Ensure'] = 'Absent';
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
+            InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue;
+        }
     } #end process
 } #end function RemoveLabVirtualMachine

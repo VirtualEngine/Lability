@@ -325,7 +325,7 @@ function InvokeDscResourceDownloadFromPSGallery {
         [ref] $null = ExpandZipArchive -Path $tempFileInfo -DestinationPath $modulePath -ExcludeNuSpecFiles -Force:$Force;
         return (Get-Item -Path $modulePath);
     } #end process
-} #end function
+} #end function InvokeDscResourceDownloadFromPSGallery
 
 function InvokeDscResourceDownloadFromGitHub {
     <#
@@ -382,4 +382,4 @@ function InvokeDscResourceDownloadFromGitHub {
         }
         return (Install-GitHubRepository @installGitHubRepositoryParams -Verbose:$false -Force:$Force);
     } #end process
-} #end function Invoke-DscResourceDownloadFromGitHub
+} #end function InvokeDscResourceDownloadFromGitHub

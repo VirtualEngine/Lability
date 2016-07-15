@@ -83,7 +83,7 @@ function ResolveLabVMProperties {
 
         return $node;
     } #end process
-} #end function Resolve-LabProperty
+} #end function ResolveLabVMProperties
 
 function Get-LabVM {
 <#
@@ -256,6 +256,9 @@ function NewLabVM {
         $NodeName = $node.NodeName;
         ## Display name includes any environment prefix/suffix
         $DisplayName = $node.NodeDisplayName;
+        if (-not (TestComputerName -ComputerName $DisplayName)) {
+            throw (localized.InvalidComputerNameError -f $DisplayName);
+        }
 
         ## Don't attempt to check certificates for 'Quick VMs'
         if (-not $IsQuickVM) {
@@ -369,7 +372,7 @@ function RemoveLabVM {
     .SYNOPSIS
         Deletes a lab virtual machine.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
