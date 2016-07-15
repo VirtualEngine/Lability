@@ -230,24 +230,24 @@ Describe 'Src\LabResource' {
                 Assert-MockCalled InvokeResourceDownload -Exactly 1 -Scope It;
             }
 
-            It 'Downloads a single DSC resource' {
+            It 'Downloads a single DSC resource module' {
                 $configurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
                             DSCResource = @(
                                 @{ Name = 'TestResource'; }
                             ) } } }
-                Mock InvokeLabMediaImageDownload -MockWith { }
-                Mock InvokeLabMediaHotfixDownload -MockWith { }
-                Mock InvokeDscResourceDownload -MockWith { }
-                Mock InvokeResourceDownload -MockWith { }
+                Mock InvokeLabMediaImageDownload;
+                Mock InvokeLabMediaHotfixDownload;
+                Mock InvokeModuleCacheDownload;
+                Mock InvokeResourceDownload;
 
                 Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-                Assert-MockCalled InvokeDscResourceDownload -Scope It;
+                Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 1 } -Scope It;
             }
 
-            It 'Downloads multiple DSC resources' {
+            It 'Downloads multiple DSC resource modules' {
                 $configurationData = @{
                     NonNodeData = @{
                         $labDefaults.ModuleName = @{
@@ -256,14 +256,49 @@ Describe 'Src\LabResource' {
                                 @{ Name = 'TestResource2'; }
                                 @{ Name = 'TestResource3'; }
                             ) } } }
-                Mock InvokeLabMediaImageDownload -MockWith { }
-                Mock InvokeLabMediaHotfixDownload -MockWith { }
-                Mock InvokeDscResourceDownload -MockWith { }
-                Mock InvokeResourceDownload -MockWith { }
+                Mock InvokeLabMediaImageDownload;
+                Mock InvokeLabMediaHotfixDownload;
+                Mock InvokeModuleCacheDownload;
+                Mock InvokeResourceDownload;
 
                 Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-                Assert-MockCalled InvokeDscResourceDownload -Exactly 1 -Scope It;
+                Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 3 } -Scope It;
+            }
+
+            It 'Downloads a single PowerShell module' {
+                $configurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Module = @(
+                                @{ Name = 'TestModule'; }
+                            ) } } }
+                Mock InvokeLabMediaImageDownload;
+                Mock InvokeLabMediaHotfixDownload;
+                Mock InvokeModuleCacheDownload;
+                Mock InvokeResourceDownload;
+
+                Invoke-LabResourceDownload -ConfigurationData $configurationData;
+
+                Assert-MockCalled InvokeModuleCacheDownload -Scope It;
+            }
+
+            It 'Downloads multiple PowerShell modules' {
+                $configurationData = @{
+                    NonNodeData = @{
+                        $labDefaults.ModuleName = @{
+                            Module = @(
+                                @{ Name = 'TestModule1'; }
+                                @{ Name = 'TestModule3'; }
+                            ) } } }
+                Mock InvokeLabMediaImageDownload;
+                Mock InvokeLabMediaHotfixDownload;
+                Mock InvokeModuleCacheDownload;
+                Mock InvokeResourceDownload;
+
+                Invoke-LabResourceDownload -ConfigurationData $configurationData;
+
+                Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 2 } -Scope It;
             }
 
             It 'Uses resource "Filename" property if specified' {

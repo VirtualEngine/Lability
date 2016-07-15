@@ -14,10 +14,12 @@ function Test-LabResource {
 
         ## Lab resource Id to test.
         [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ResourceId,
 
         ## Lab resource path
         [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.String] $ResourcePath
     )
     begin {
@@ -74,10 +76,12 @@ function TestLabResourceIsLocal {
 
         ## Lab resource Id to test.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ResourceId,
 
         ## Node's target resource folder
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $LocalResourcePath
     )
     process {
@@ -113,6 +117,7 @@ function TestLabResourceIsLocal {
             WriteVerbose -Message ($localized.ResourceNotFound -f $resourcePath);
             return $false;
         }
+
     } #end process
 } #end function TestLabResourceIsLocal
 
@@ -140,7 +145,9 @@ function Invoke-LabResourceDownload {
     .PARAMETER Resources
         Specifies all custom resource IDs should be downloaded.
     .PARAMETER DSCResources
-        Specifies all DSC resources should be downloaded.
+        Specifies all defined DSC resources should be downloaded.
+    .PARAMETER Moduless
+        Specifies all defined PowerShell modules should be downloaded.
     .PARAMETER Force
         Forces a download of all resources, overwriting any existing resources.
     .PARAMETER DestinationPath
@@ -191,6 +198,9 @@ function Invoke-LabResourceDownload {
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'DSCResources')]
         [System.Management.Automation.SwitchParameter] $DSCResources,
 
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Modules')]
+        [System.Management.Automation.SwitchParameter] $Modules,
+
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Resources')]
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ResourceId')]
         [ValidateNotNullOrEmpty()]
@@ -200,11 +210,17 @@ function Invoke-LabResourceDownload {
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
+
         $hostDefaults = GetConfigurationData -Configuration Host;
-        if (-not $DestinationPath) { $DestinationPath = $hostDefaults.ResourcePath; }
+        if (-not $DestinationPath) {
+            $DestinationPath = $hostDefaults.ResourcePath;
+        }
+
     }
     process {
+
         if ($PSCmdlet.ParameterSetName -in 'MediaId','Media','All') {
+
             if (-not $MediaId) {
                 WriteVerbose ($Localized.DownloadingAllRequiredMedia);
                 $uniqueMediaIds = @();
@@ -234,9 +250,11 @@ function Invoke-LabResourceDownload {
             else {
                 WriteVerbose ($localized.NoMediaDefined);
             }
+
         } #end if MediaId or MediaOnly
 
         if ($PSCmdlet.ParameterSetName -in 'ResourceId','Resources','All') {
+
             if (-not $ResourceId) {
                 WriteVerbose ($Localized.DownloadingAllDefinedResources);
                 $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
@@ -255,25 +273,39 @@ function Invoke-LabResourceDownload {
             else {
                 WriteVerbose ($localized.NoResourcesDefined);
             }
+
         } #end if ResourceId or ResourceOnly
 
         if ($PSCmdlet.ParameterSetName -in 'DSCResources','All') {
 
-            if ($ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource) {
-
-                $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
-                if ($dscResources.Count -gt 0) {
-                    WriteVerbose ($Localized.DownloadingAllDSCResources);
-                    InvokeDscResourceDownload -DSCResource $dscResourceDefinitions -Force:$Force;
-                }
-                else {
-                    WriteVerbose ($localized.NoDSCResourcesDefined);
-                }
+            $dscResourceDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
+            if (($null -ne $dscResourceDefinitions) -and ($dscResourceDefinitions.Count -gt 0)) {
+                ## Invokes download of DSC resource modules into the module cache
+                WriteVerbose ($Localized.DownloadingAllDSCResources);
+                InvokeModuleCacheDownload -Module $dscResourceDefinitions -Force:$Force;
             }
-        }
+            else {
+                WriteVerbose ($localized.NoDSCResourcesDefined);
+            }
+        } #end if DSC resource
+
+        if ($PSCmdlet.ParameterSetName -in 'Modules','All') {
+
+            $moduleDefinitions = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Module;
+            if (($null -ne $moduleDefinitions) -and ($moduleDefinitions.Count -gt 0)) {
+                ## Invokes download of PowerShell modules into the module cache
+                WriteVerbose ($Localized.DownloadingAllPowerShellModules);
+                InvokeModuleCacheDownload -Module $moduleDefinitions -Force:$Force;
+            }
+            else {
+                WriteVerbose ($localized.NoPowerShellModulesDefined);
+            }
+
+        } #end PowerShell module
 
     } #end process
 } #end function Invoke-LabResourceDownload
+
 
 function ResolveLabResource {
 <#
@@ -289,6 +321,7 @@ function ResolveLabResource {
 
         ## Lab resource ID
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ResourceId
     )
     process {
@@ -321,28 +354,35 @@ function ExpandLabResource {
         $ConfigurationData,
 
         ## Lab VM name
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## Destination mounted VHDX path to expand resources into
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         ## Source resource path
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ResourcePath
     )
     begin {
+
         if (-not $ResourcePath) {
             $hostDefaults = GetConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
+
     }
     process {
+
         ## Create the root container
         if (-not (Test-Path -Path $DestinationPath -PathType Container)) {
             [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
         }
+
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
 
