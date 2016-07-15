@@ -8,14 +8,12 @@
     Description = 'The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.';
     PowerShellVersion = '4.0';
     FunctionsToExport = @('Start-Lab', 'Stop-Lab', 'Reset-Lab', 'Checkpoint-Lab', 'Restore-Lab','Test-LabConfiguration',
-        'Start-LabConfiguration', 'Remove-LabConfiguration', 'Get-LabHostConfiguration', 'Test-LabHostConfiguration',
-        'Start-LabHostConfiguration', 'Reset-LabHostDefault', 'Get-LabHostDefault', 'Set-LabHostDefault', 'Get-LabImage',
-        'Test-LabImage', 'New-LabImage', 'Get-LabMedia', 'Test-LabMedia', 'Register-LabMedia', 'Unregister-LabMedia',
-        'Reset-LabMedia', 'Test-LabNodeConfiguration', 'Invoke-LabNodeConfiguration', 'Test-LabResource',
-        'Invoke-LabResourceDownload', 'Get-LabVM', 'Test-LabVM', 'Reset-LabVM', 'New-LabVM', 'Remove-LabVM',
-        'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault','Export-LabHostConfiguration','Import-LabHostConfiguration'
-        'Get-LabNodeResourceList','Show-LabNodeResourceList',
-        'Reset-LabHostDefaults', 'Get-LabHostDefaults', 'Set-LabHostDefaults','Reset-LabVMDefaults', 'Set-LabVMDefaults', 'Get-LabVMDefaults');
+        'Start-LabConfiguration', 'Remove-LabConfiguration', 'Get-LabHostConfiguration', 'Test-LabHostConfiguration', 'Start-LabHostConfiguration',
+        'Reset-LabHostDefault', 'Get-LabHostDefault', 'Set-LabHostDefault', 'Get-LabImage', 'Test-LabImage', 'New-LabImage', 'Get-LabMedia',
+        'Test-LabMedia', 'Register-LabMedia', 'Unregister-LabMedia', 'Reset-LabMedia', 'Test-LabResource', 'Invoke-LabResourceDownload',
+        'Get-LabVM', 'Test-LabVM', 'Reset-LabVM', 'New-LabVM', 'Remove-LabVM', 'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault',
+        'Export-LabHostConfiguration','Import-LabHostConfiguration', 'Reset-LabHostDefaults', 'Get-LabHostDefaults', 'Set-LabHostDefaults',
+        'Reset-LabVMDefaults', 'Set-LabVMDefaults', 'Get-LabVMDefaults');
     PrivateData = @{
         PSData = @{  # Private data to pass to the module specified in RootModule/ModuleToProcess
             Tags = @('VirtualEngine','Lability','Powershell','Development','HyperV','Hyper-V','Test','Lab','TestLab');

@@ -1,3 +1,4 @@
+<# DEPRECATED
 #requires -RunAsAdministrator
 #requires -Version 4
 
@@ -428,3 +429,4 @@ Describe 'Src\LabNode' {
     } #end inmodulescope
 
 } #end describe Src\LabNode
+#>

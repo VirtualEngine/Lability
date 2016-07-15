@@ -1,8 +1,9 @@
+<# DEPRECATED
 function TestLabNodeCertificate {
-<#
+#
     .SYNOPSIS
         Tests whether the certificate is installed.
-#>
+#
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $CertificatePath,
@@ -27,15 +28,16 @@ function TestLabNodeCertificate {
 
     } #end process
 } #end function TestLabNodeCertificate
+#>
 
-
+<# DEPRECATED
 function InstallLabNodeCertificates {
-<#
+#
     .SYNOPSIS
         Installs lab node certificates
     .NOTES
         Enables easier unit testing!
-#>
+#
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $RootCertificatePath,
@@ -64,10 +66,11 @@ function InstallLabNodeCertificates {
 
     } #end process
 } #end function InstallLabNodeCertificates
+#>
 
-
+<# DEPRECATED
 function Test-LabNodeConfiguration {
-<#
+#
     .SYNOPSIS
         Test a node's configuration for manual deployment.
     .DESCRIPTION
@@ -93,7 +96,7 @@ function Test-LabNodeConfiguration {
         Specifies that checking of the local certificates is skipped.
     .LINK
         Invoke-LabNodeConfiguration
-#>
+#
     [CmdletBinding(DefaultParameterSetName = 'All')]
     [OutputType([System.Boolean])]
     param (
@@ -185,10 +188,11 @@ function Test-LabNodeConfiguration {
 
     } #end process
 } #end function Test-LabNodeConfiguration
+#>
 
-
+<# DEPRECATED
 function Invoke-LabNodeConfiguration {
-<#
+#
     .SYNOPSIS
         Configures a node for manual lab deployment.
     .DESCRIPTION
@@ -212,9 +216,11 @@ function Invoke-LabNodeConfiguration {
         defaults to the default ResourceShareName in the root of the system drive, i.e. C:\Resources.
     .PARAMETER Force
         Specifies that DSC resources should be re-downloaded, overwriting existing versions.
+    .NOTES
+        Deprecated functionality. This will move into the LabilityBootstrap module.
     .LINK
         Test-LabNodeConfiguration
-#>
+#
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
@@ -260,7 +266,9 @@ function Invoke-LabNodeConfiguration {
                     $module['MinimumVersion'] = '0.0';
                 }
                 if (-not (TestModule @module) -or $Force) {
-                    InvokeDscResourceDownload -DSCResource $module -Force;
+                    #InvokeModuleCacheDownload
+                    #ExpandModuleCache
+                    # InvokeDscResourceDownload -DSCResource $module -Force;
                 }
             } #end foreach module
         }
@@ -270,17 +278,18 @@ function Invoke-LabNodeConfiguration {
 
     } #end process
 } #end function Invoke-LabNodeConfiguration
+#>
 
-
+<# DEPRECATED
 function Get-LabNodeResourceList {
-<#
+#
     .SYNOPSIS
         Generates a list of required resources for each node.
     .DESCRIPTION
         Outputs a hashtable of each selected node containing all required custom resources. This is handy to create
         a list of resources when manually configuring nodes is required, e.g. locally on VMware Workstation or in
         Microsoft Azure etc.
-#>
+#
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
@@ -350,17 +359,19 @@ function Get-LabNodeResourceList {
 
     } #end process
 } #end function Get-LabNodeResource
+#>
 
 
+<# DEPRECATED
 function Show-LabNodeResourceList {
-<#
+#
     .SYNOPSIS
         Generates a display-friendly list of required custom resources for each node.
     .DESCRIPTION
         Outputs string of each selected node containing all required custom resources. This is handy to create a
         list of resources when manually configuring nodes is required, e.g. locally on VMware Workstation or in
         Microsoft Azure etc.
-#>
+#
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
@@ -409,3 +420,4 @@ function Show-LabNodeResourceList {
 
     } #end process
 } #end function Show-LabNodeResourceList
+#>
