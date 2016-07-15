@@ -95,6 +95,7 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
  * Adds `-ModuleCachePath` to `Set-LabHostDefault`
  * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support
  * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions
+* Deprecates LabNode functionality (will move to the LabilityBootstrap module)
 
 ### v0.9.10
 
