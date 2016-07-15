@@ -288,7 +288,7 @@ function Remove-LabConfiguration {
         about_ConfigurationData
         Start-LabConfiguration
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -310,8 +310,10 @@ function Remove-LabConfiguration {
             [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
             $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-            ##TODO: Should this not ensure that VMs are powered off?
-            RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch;
+            ##TODO: Should this not ensure that VMs are powered off
+            if ($PSCmdlet.ShouldProcess($nodeProperties.NodeDisplayName, 'RemoveLabVM')) {
+                RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch -Confirm:$false;
+            }
         }
         Write-Progress -Id 42 -Activity $activity -Completed;
         WriteVerbose $localized.FinishedLabConfiguration;

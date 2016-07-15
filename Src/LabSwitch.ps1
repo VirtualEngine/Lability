@@ -164,7 +164,7 @@ function RemoveLabSwitch {
     .DESCRIPTION
         Deletes a virtual network switch configuration using the xVMSwitch DSC resource.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Switch Id/Name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -179,9 +179,11 @@ function RemoveLabSwitch {
     process {
         $networkSwitch = ResolveLabSwitch @PSBoundParameters;
         if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
-            $networkSwitch['Ensure'] = 'Absent';
-            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-            [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+            if ($PSCmdlet.ShouldProcess($Name)) {
+                $networkSwitch['Ensure'] = 'Absent';
+                ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+                [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+            }
         }
     } #end process
 } #end function RemoveLabSwitch

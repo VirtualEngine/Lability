@@ -60,8 +60,12 @@ function InvokeExecutable {
         Write-Debug -Message ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
         WriteVerbose ($localized.StartingProcess -f $Path, [System.String]::Join(' ', $Arguments));
         $process = Start-Process @processArgs;
-        if ($process.ExitCode -ne 0) { WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode);}
-        else { WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode); }
+        if ($process.ExitCode -ne 0) {
+            WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode)
+        }
+        else {
+            WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode);
+        }
         ##TODO: Should this actually return the exit code?!
     } #end process
 } #end function InvokeExecutable
@@ -223,3 +227,21 @@ function CopyDirectory {
         Write-Progress -Activity $activity -Completed;
     } #end process
 } #end function CopyDirectory
+
+function TestComputerName {
+<#
+    .SYNOPSIS
+        Validates a computer name is valid.
+#>
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param (
+        ## Source directory path
+        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [System.String] $ComputerName
+    )
+    process {
+        $invalidMatch = '[~!@#\$%\^&\*\(\)=\+_\[\]{}\\\|;:.''",<>\/\?\s]';
+        return ($ComputerName -inotmatch $invalidMatch);
+    }
+} #end function TestComputerName

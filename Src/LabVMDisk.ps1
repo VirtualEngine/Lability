@@ -17,7 +17,7 @@ function ResolveLabVMDiskPath {
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
         return $vhdPath;
     } #end process
-} #end function ResolaveLabVMVhdPath
+} #end function ResolveLabVMDiskPath
 
 function GetLabVMDisk {
 <#
@@ -34,11 +34,22 @@ function GetLabVMDisk {
 
         ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $Media
+        [System.String] $Media,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $image = Get-LabImage -Id $Media;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
+        }
+        else {
+            $image = Get-LabImage -Id $Media;
+        }
         $vhd = @{
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
@@ -48,7 +59,7 @@ function GetLabVMDisk {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         GetDscResource -ResourceName VHD -Parameters $vhd;
     } #end process
-} #end GetLbVMDisk
+} #end function GetLabVMDisk
 
 function TestLabVMDisk {
 <#
@@ -63,16 +74,32 @@ function TestLabVMDisk {
 
         ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $Media
+        [System.String] $Media,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $image = Get-LabImage -Id $Media;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
+        }
+        else {
+            $image = Get-LabImage -Id $Media;
+        }
         $vhd = @{
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
+        }
+        if (-not $image) {
+            ## This only occurs when a parent image is not available (#104).
+            $vhd['MaximumSize'] = 136365211648; #127GB
+            $vhd['Generation'] = 'VHDX';
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         TestDscResource -ResourceName VHD -Parameters $vhd;
@@ -94,11 +121,22 @@ function SetLabVMDisk {
 
         ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $Media
+        [System.String] $Media,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $image = Get-LabImage -Id $Media -ErrorAction Stop;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        }
+        else {
+            $image = Get-LabImage -Id $Media -ErrorAction Stop;
+        }
         $vhd = @{
             Name = $Name;
             Path = $hostDefaults.DifferencingVhdPath;
@@ -108,7 +146,7 @@ function SetLabVMDisk {
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
         [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
     } #end process
-} #end SetLabVMDisk
+} #end function SetLabVMDisk
 
 function RemoveLabVMDisk {
 <#
@@ -117,7 +155,7 @@ function RemoveLabVMDisk {
     .DESCRIPTION
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -125,29 +163,42 @@ function RemoveLabVMDisk {
 
         ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $Media
+        [System.String] $Media,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
-        $image = Get-LabImage -Id $Media -ErrorAction Stop;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        }
+        else {
+            $image = Get-LabImage -Id $Media -ErrorAction Stop;
+        }
         if ($image) {
             ## If the parent image isn't there, the differencing VHD won't be either
             $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath "$Name.vhdx";
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
-                $vhd = @{
-                    Name = $Name;
-                    Path = $hostDefaults.DifferencingVhdPath;
-                    ParentPath = $image.ImagePath;
-                    Generation = $image.Generation;
-                    Ensure = 'Absent';
+                if ($PSCmdlet.ShouldProcess($vhdPath)) {
+                    $vhd = @{
+                        Name = $Name;
+                        Path = $hostDefaults.DifferencingVhdPath;
+                        ParentPath = $image.ImagePath;
+                        Generation = $image.Generation;
+                        Ensure = 'Absent';
+                    }
+                    ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+                    [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
                 }
-                ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-                [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
             }
         }
     } #end process
-} #end RemoveLabVMDisk
+} #end function RemoveLabVMDisk
 
 function ResetLabVMDisk {
 <#
@@ -162,7 +213,13 @@ function ResetLabVMDisk {
 
         ## Media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.String] $Media
+        [System.String] $Media,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         RemoveLabVMSnapshot -Name $Name;

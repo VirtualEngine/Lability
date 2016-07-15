@@ -83,7 +83,7 @@ function ResolveLabVMProperties {
 
         return $node;
     } #end process
-} #end function Resolve-LabProperty
+} #end function ResolveLabVMProperties
 
 function Get-LabVM {
 <#
@@ -159,32 +159,45 @@ function Test-LabVM {
             WriteVerbose ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
 
             WriteVerbose ($localized.TestingVMConfiguration -f 'Image', $node.Media);
-            if (-not (Test-LabImage -Id $node.Media)) {
+            if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
                 $isNodeCompliant = $false;
             }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
-            if (-not (TestLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData)) {
-                $isNodeCompliant = $false;
-            }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
-            if (-not (TestLabVMDisk -Name $node.NodeDisplayName -Media $node.Media -ErrorAction SilentlyContinue)) {
-                $isNodeCompliant = $false;
-            }
-            WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
-            $testLabVirtualMachineParams = @{
-                Name = $node.NodeDisplayName;
-                SwitchName = $node.SwitchName;
-                Media = $node.Media;
-                StartupMemory = $node.StartupMemory;
-                MinimumMemory = $node.MinimumMemory;
-                MaximumMemory = $node.MaximumMemory;
-                ProcessorCount = $node.ProcessorCount;
-                MACAddress = $node.MACAddress;
-                SecureBoot = $node.SecureBoot;
-                GuestIntegrationServices = $node.GuestIntegrationServices;
-            }
-            if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
-                $isNodeCompliant = $false;
+            else {
+                ## No point testing switch, vhdx and VM if the image isn't available
+                WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
+                if (-not (TestLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData)) {
+                    $isNodeCompliant = $false;
+                }
+
+                WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
+                $testLabVMDiskParams = @{
+                    Name = $node.NodeDisplayName;
+                    Media = $node.Media;
+                    ConfigurationData = $ConfigurationData;
+                }
+                if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
+                    $isNodeCompliant = $false;
+                }
+                else {
+                    ## No point testing VM if the VHDX isn't available
+                    WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
+                    $testLabVirtualMachineParams = @{
+                        Name = $node.NodeDisplayName;
+                        SwitchName = $node.SwitchName;
+                        Media = $node.Media;
+                        StartupMemory = $node.StartupMemory;
+                        MinimumMemory = $node.MinimumMemory;
+                        MaximumMemory = $node.MaximumMemory;
+                        ProcessorCount = $node.ProcessorCount;
+                        MACAddress = $node.MACAddress;
+                        SecureBoot = $node.SecureBoot;
+                        GuestIntegrationServices = $node.GuestIntegrationServices;
+                        ConfigurationData = $ConfigurationData;
+                    }
+                    if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
+                        $isNodeCompliant = $false;
+                    }
+                }
             }
             Write-Output -InputObject $isNodeCompliant;
         }
@@ -243,6 +256,9 @@ function NewLabVM {
         $NodeName = $node.NodeName;
         ## Display name includes any environment prefix/suffix
         $DisplayName = $node.NodeDisplayName;
+        if (-not (TestComputerName -ComputerName $DisplayName)) {
+            throw (localized.InvalidComputerNameError -f $DisplayName);
+        }
 
         ## Don't attempt to check certificates for 'Quick VMs'
         if (-not $IsQuickVM) {
@@ -272,12 +288,12 @@ function NewLabVM {
             SetLabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
-        if (-not (Test-LabImage -Id $node.Media)) {
+        if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$DisplayName.vhdx");
-        ResetLabVMDisk -Name $DisplayName -Media $node.Media -ErrorAction Stop;
+        ResetLabVMDisk -Name $DisplayName -Media $node.Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
 
         WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $DisplayName);
         $setLabVirtualMachineParams = @{
@@ -291,6 +307,7 @@ function NewLabVM {
             MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
             GuestIntegrationServices = $node.GuestIntegrationServices;
+            ConfigurationData = $ConfigurationData;
         }
         SetLabVirtualMachine @setLabVirtualMachineParams;
 
@@ -355,7 +372,7 @@ function RemoveLabVM {
     .SYNOPSIS
         Deletes a lab virtual machine.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
@@ -396,11 +413,17 @@ function RemoveLabVM {
             MaximumMemory = $node.MaximumMemory;
             MACAddress = $node.MACAddress;
             ProcessorCount = $node.ProcessorCount;
+            ConfigurationData = $ConfigurationData;
         }
         RemoveLabVirtualMachine @removeLabVirtualMachineParams;
 
         WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHDX', "$Name.vhdx");
-        RemoveLabVMDisk -Name $Name -Media $node.Media -ErrorAction Stop;
+        $removeLabVMDiskParams = @{
+            Name = $node.NodeDisplayName;
+            Media = $node.Media;
+            ConfigurationData = $ConfigurationData;
+        }
+        RemoveLabVMDisk @removeLabVMDiskParams -ErrorAction Stop;
 
         if ($RemoveSwitch) {
             WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);

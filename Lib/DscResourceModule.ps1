@@ -11,7 +11,7 @@ function TestDscResourceModule {
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Path,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $ModuleName
     )
@@ -24,7 +24,7 @@ function TestDscResourceModule {
                 Write-Debug -Message ('Found MOF-based DSC resource ''{0}''.' -f $Path);
                 return $true;
             }
-            
+
             Write-Debug -Message ('Testing for Class-based DSC resource definition ''{0}''.' -f "$Path\$ModuleName.psm1");
             if (Test-Path -Path "$Path\$ModuleName.psm1") {
                 $psm1Content = Get-Content -Path "$Path\$ModuleName.psm1";
@@ -67,10 +67,11 @@ function GetDscResourceModule {
                 if (TestDscResourceModule -Path $moduleInfo.FullName -ModuleName $moduleInfo.Name) {
                     Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f $moduleInfo.FullName);
                     $testModuleManifestPath = '{0}\{1}.psd1' -f $moduleInfo.FullName, $moduleInfo.Name;
-                    $module = Test-ModuleManifest -Path $testModuleManifestPath -Verbose:$false;
+                    ## Convert the .psd1 file into a hashtable (Test-ModuleManifest can actually load the module)
+                    $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
                     Write-Output -InputObject ([PSCustomObject] @{
                         ModuleName = $moduleInfo.Name;
-                        ModuleVersion = [System.Version] $module.Version;
+                        ModuleVersion = $module.ModuleVersion -as [System.Version];
                         Path = $moduleInfo.FullName;
                     });
                 }
@@ -81,18 +82,21 @@ function GetDscResourceModule {
                         ## Test to see if it's a DSC resource module
                         if (TestDscResourceModule -Path $PSItem.FullName -ModuleName $moduleInfo.Name) {
                             try {
-                                Write-Debug -Message ('Discovered versioned DSC resource ''{0}''.' -f $PSItem.FullName);
+                                Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f  $PSItem.FullName);
+                                $testModuleManifestPath = '{0}\{1}.psd1' -f  $PSItem.FullName, $moduleInfo.Name;
+                                ## Convert the .psd1 file into a hashtable (Test-ModuleManifest can actually load the module)
+                                $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
                                 Write-Output -InputObject ([PSCustomObject] @{
-                                    ModuleName = $moduleInfo.Name;
-                                    ModuleVersion = [System.Version] $PSItem.Name;
-                                    Path = "$($moduleInfo.FullName)\$($PSItem.Name)";
+                                    ModuleName =  $moduleInfo.Name;
+                                    ModuleVersion = [System.Version] $module.ModuleVersion;
+                                    Path = $PSItem.FullName;
                                 });
                             }
                             catch { }
                         }
                     } | #end foreach module\<number>.<number> sub directory
                         Sort-Object -Property ModuleVersion -Descending | Select-Object -First 1;
-                } 
+                }
             } #end foreach module directory
         } #end foreach path
     } #end process

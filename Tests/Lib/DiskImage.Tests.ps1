@@ -289,7 +289,7 @@ Describe 'DiskImage' {
                 Assert-MockCalled SetDiskImageBootVolumeGpt -Scope It;
             }
         
-            It 'Calls "SetDiskImageBootVolumeMbr" when partition style is GPT' {
+            It 'Calls "SetDiskImageBootVolumeMbr" when partition style is MBR' {
                 $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
                 Mock SetDiskImageBootVolumeMbr -MockWith { };
 

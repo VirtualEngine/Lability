@@ -11,8 +11,10 @@ function GetModule {
     )
     process {
         WriteVerbose -Message ($localized.LocatingModule -f $Name);
-        ## Only return modules in the C:\Program Files\WindowsPowerShell\Modules location, ignore other $env:PSModulePaths
-        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false | Where-Object Path -match '\\Program Files\\WindowsPowerShell\\Modules';
+        ## Only return modules in the %ProgramFiles%\WindowsPowerShell\Modules location, ignore other $env:PSModulePaths
+        $programFiles = [System.Environment]::GetFolderPath('ProgramFiles');
+        $modulesPath = ('{0}\WindowsPowerShell\Modules' -f $programFiles).Replace('\','\\');
+        $module = Get-Module -Name $Name -ListAvailable -Verbose:$false | Where-Object Path -match $modulesPath;
         if (-not $module) {
             WriteVerbose -Message ($localized.ModuleNotFound -f $Name);
         }
@@ -34,32 +36,33 @@ function TestModuleVersion {
         ## Path to the module's manifest file
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $ModulePath,
-        
+
         ## The minimum version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')] [ValidateNotNullOrEmpty()]
         [System.Version] $MinimumVersion,
-        
+
         ## The exact version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
         [System.Version] $RequiredVersion,
-        
+
         ## Catch all to be able to pass parameter via $PSBoundParameters
         [Parameter(ValueFromRemainingArguments)] $RemainingArguments
     )
     process {
         try {
             WriteVerbose -Message ($localized.QueryingModuleVersion -f [System.IO.Path]::GetFileNameWithoutExtension($ModulePath));
-            $moduleManifest = Test-ModuleManifest -Path $ModulePath -Verbose:$false;
-            WriteVerbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.Version);
+            #$moduleManifest = Test-ModuleManifest -Path $ModulePath -Verbose:$false;
+            $moduleManifest = ConvertToConfigurationData -ConfigurationData $ModulePath;
+            WriteVerbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.ModuleVersion);
         }
         catch {
             Write-Error "Oops $ModulePath"
         }
         if ($PSCmdlet.ParameterSetName -eq 'MinimumVersion') {
-            return $moduleManifest.Version -ge $MinimumVersion;
+            return (($moduleManifest.ModuleVersion -as [System.Version]) -ge $MinimumVersion);
         }
         elseif ($PSCmdlet.ParameterSetName -eq 'RequiredVersion') {
-            return $moduleManifest.Version -eq $RequiredVersion;
+            return (($moduleManifest.ModuleVersion -as [System.Version]) -eq $RequiredVersion);
         }
     } #end process
 } #end function TestModuleVersion
@@ -74,15 +77,15 @@ function TestModule {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
-        
+
         ## The minimum version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')] [ValidateNotNullOrEmpty()]
         [System.Version] $MinimumVersion,
-        
+
         ## The exact version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
         [System.Version] $RequiredVersion,
-        
+
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
     )

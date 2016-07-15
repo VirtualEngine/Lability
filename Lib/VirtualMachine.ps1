@@ -32,12 +32,24 @@ function GetVirtualMachineProperties {
         [System.Boolean] $SecureBoot,
 
         [Parameter()]
-        [System.Boolean] $GuestIntegrationServices
+        [System.Boolean] $GuestIntegrationServices,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
-        $labMedia = ResolveLabMedia -Id $Media;
-        $labImage = Get-LabImage -Id $Media;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $labMedia = ResolveLabMedia -Id $Media -ConfigurationData $ConfigurationData;
+            $labImage = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
+        }
+        else {
+            $labMedia = ResolveLabMedia -Id $Media;
+            $labImage = Get-LabImage -Id $Media;
+        }
         if (-not $labImage) {
             ## Should only trigger during a Reset-VM where parent image is not available?!
             ## It will be downloaded during any NewLabVM calls..
@@ -78,6 +90,7 @@ function GetVirtualMachineProperties {
         $vhdPath = ResolveLabVMDiskPath -Name $Name -Generation $labImage.Generation;
 
         [ref] $null = $PSBoundParameters.Remove('Media');
+        [ref] $null = $PSBoundParameters.Remove('ConfigurationData');
         [ref] $null = $PSBoundParameters.Add('VhdPath', $vhdPath);
         [ref] $null = $PSBoundParameters.Add('RestartIfNeeded', $true);
 
@@ -121,7 +134,13 @@ function TestLabVirtualMachine {
         [System.Boolean] $SecureBoot,
 
         [Parameter()]
-        [System.Boolean] $GuestIntegrationServices
+        [System.Boolean] $GuestIntegrationServices,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
@@ -172,7 +191,13 @@ function SetLabVirtualMachine {
         [System.Boolean] $SecureBoot,
 
         [Parameter()]
-        [System.Boolean] $GuestIntegrationServices
+        [System.Boolean] $GuestIntegrationServices,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
         ## Resolve the xVMHyperV resource parameters
@@ -189,6 +214,7 @@ function RemoveLabVirtualMachine {
     .DESCRIPTION
         Invokes/sets a virtual machine configuration using the xVMHyperV DSC resource.
 #>
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,
@@ -218,13 +244,21 @@ function RemoveLabVirtualMachine {
         [System.Boolean] $SecureBoot,
 
         [Parameter()]
-        [System.Boolean] $GuestIntegrationServices
+        [System.Boolean] $GuestIntegrationServices,
+
+        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
-        ## Resolve the xVMHyperV resource parameters
-        $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
-        $vmHyperVParams['Ensure'] = 'Absent';
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
-        InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue;
+        if ($PSCmdlet.ShouldProcess($Name)) {
+            ## Resolve the xVMHyperV resource parameters
+            $vmHyperVParams = GetVirtualMachineProperties @PSBoundParameters;
+            $vmHyperVParams['Ensure'] = 'Absent';
+            ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
+            InvokeDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue;
+        }
     } #end process
 } #end function RemoveLabVirtualMachine
