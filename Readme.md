@@ -80,6 +80,8 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+### v0.9.11
+
 * Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
 * Removes importing module warnings when enumerating local module availability.
 * Fixes bug when invoking lab deployments with PSake (#104).
