@@ -80,6 +80,15 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+* Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
+* Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
+* Adds support for injecting modules in VMs (#106)
+ * Caches multiple module and DSC resource versions
+ * Adds `-ModuleCachePath` to `Set-LabHostDefault`
+ * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support
+ * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions
+* Deprecates LabNode functionality (will move to the LabilityBootstrap module)
+
 ### v0.9.11
 
 * Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
@@ -90,14 +99,6 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 * Fixes long local module enumeration times on build 14295 and later.
 * Fixes hard-coded '\Program Files\' directory when enumerating modules to resolve localisation issues.
 * Tests computer name for validity before creating a virtual machine (#109).
-* Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
-* Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
-* Adds support for injecting modules in VMs (#106)
- * Caches multiple module and DSC resource versions
- * Adds `-ModuleCachePath` to `Set-LabHostDefault`
- * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support
- * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions
-* Deprecates LabNode functionality (will move to the LabilityBootstrap module)
 
 ### v0.9.10
 
