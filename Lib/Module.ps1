@@ -342,7 +342,7 @@ function GetModuleCache {
                 Where-Object Name -match $moduleRegex |
                     ForEach-Object {
 
-                        Write-Debug -Message ("Discovered file '$($_.FullName)'.");
+                         Write-Debug -Message ("Discovered file '$($_.FullName)'.");
                         $trimStart = '{0}-v' -f $Name;
                         $moduleVersionString = $PSItem.Name.TrimStart($trimStart);
                         $moduleVersionString = $moduleVersionString -replace '(_\S+_\S+)?\.zip', '';
@@ -351,6 +351,7 @@ function GetModuleCache {
                         if ([System.String]::IsNullOrEmpty($moduleVersionString)) {
                             $moduleVersionString = '0.0';
                         }
+
                         $discoveredModule = [PSCustomObject] @{
                             Name = $Name;
                             Version = $moduleVersionString -as [System.Version];
@@ -717,9 +718,6 @@ function InvokeModuleDownloadFromGitHub {
         $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
         return (RenameModuleCacheVersion -Name $Name -Path $moduleDestinationPath -Owner $Owner -Branch $Branch);
 
-        ## GitHub modules are not suffixed with a version number so no need to rename
-        #return (SetResourceDownload @setResourceDownloadParams);
-
     } #end process
 } #end function InvokeModuleDownloadFromGitHub
 
@@ -867,7 +865,7 @@ function InvokeModuleCacheDownload {
                 }
             }
             else {
-                #GetModuleCache @moduleInfo;
+                GetModuleCache @moduleInfo;
             }
 
         } #end foreach module
