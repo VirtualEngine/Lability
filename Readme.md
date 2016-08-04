@@ -80,6 +80,9 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ### Unreleased
 
+* Updates Windows 10 media to build 14393 (1607)
+* Adds `WIN10_x64_Enterprise_LTSB_EN_Eval` and `WIN10_x86_Enterprise_LTSB_EN_Eval` media
+
 ### v0.9.11
 
 * Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
