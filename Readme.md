@@ -82,12 +82,14 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 * Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
 * Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
-* Adds support for injecting modules in VMs (#106)
- * Caches multiple module and DSC resource versions
- * Adds `-ModuleCachePath` to `Set-LabHostDefault`
- * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support
- * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions
-* Deprecates LabNode functionality (will move to the LabilityBootstrap module)
+* Adds support for injecting modules in VMs (#106).
+ * Caches multiple module and DSC resource versions.
+ * Adds `-ModuleCachePath` to `Set-LabHostDefault`.
+ * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support.
+ * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions.
+* Deprecates LabNode functionality (will move to the LabilityBootstrap module).
+* Updates Windows 10 media to build 14393 (1607).
+* Adds `WIN10_x64_Enterprise_LTSB_EN_Eval` and `WIN10_x86_Enterprise_LTSB_EN_Eval` media.
 
 ### v0.9.11
 
