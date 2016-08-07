@@ -2,15 +2,11 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'UnattendXml' {
-    
+Describe 'Lib\UnattendXml' {
+
     InModuleScope $moduleName {
 
         Context 'Validates "NewUnattendXml" method' {
@@ -19,7 +15,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $unattendXml = NewUnattendXml -Credential $testPassword -Timezone $testTimezone;
-                
+
                 $unattendXml -is [System.Xml.XmlDocument] | Should Be $true;
             }
 
@@ -30,7 +26,7 @@ Describe 'UnattendXml' {
 
                 $x64Count = ($unattendXml.unattend.settings.component | Where processorArchitecture -eq 'amd64').Count;
                 $x86Count = ($unattendXml.unattend.settings.component | Where processorArchitecture -eq 'x86').Count;
-                
+
                 $x64Count | Should Be $x86Count;
             }
 
@@ -166,7 +162,7 @@ Describe 'UnattendXml' {
                 $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
                 $testTimezone = 'GMT Standard Time';
                 $testPath = "$((Get-PSDrive -Name TestDrive).Root)\test.xml";
-                
+
                 SetUnattendXml -Path $testPath -Credential $testPassword -Timezone $testTimezone;
 
                 Test-Path -Path $testPath | Should Be $true;
@@ -176,4 +172,4 @@ Describe 'UnattendXml' {
 
     } #end InModuleScope
 
-} #end describe UnattendXml
+} #end describe Lib\UnattendXml

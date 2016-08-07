@@ -45,6 +45,7 @@ ConvertFrom-StringData -StringData @'
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
     AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
+    AddingPowerShellModules         = Adding PowerShell modules to '{0}'.
     RemovingDSCResourceModule       = Removing existing DSC resource module '{0}'.'
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
@@ -82,7 +83,7 @@ ConvertFrom-StringData -StringData @'
     FinishedLabConfigurationTest    = Finished Lab configuration test.
     StartedLabConfiguration         = Started Lab configuration.
     FinishedLabConfiguration        = Finished Lab configuration.
-    InjectingVMResource             = Injecting VM resource '{0}'.
+    AddingResource                  = Adding resource '{0}'.
     ExpandingIsoResource            = Expanding ISO resource '{0}'.
     CopyingFileResource             = Copying file resource '{0}'.
     ExpandingZipResource            = Expanding Zip archive '{0}'.
@@ -97,10 +98,12 @@ ConvertFrom-StringData -StringData @'
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
     DownloadingAllDSCResources      = Downloading all required DSC resources.
+    DownloadingAllPowerShellModules = Downloading all required PowerShell modules.
     NoHotfixesSpecified             = No hotfixes were specified.
     NoMediaDefined                  = No media resources were defined.
     NoResourcesDefined              = No custom resources were defined.
     NoDSCResourcesDefined           = No DSC resources were defined.
+    NoPowerShellModulesDefined      = No PowerShell modules were defined.
     ProvideAdministratorPassword    = Please provide the local Administrator password.
     AddingCustomMediaEntry          = Adding '{0}' media entry.
     OverwritingCustomMediaEntry     = Overwriting existing '{0}' media entry.
@@ -134,6 +137,15 @@ ConvertFrom-StringData -StringData @'
     RestoringConfigurationSettings  = Restoring imported '{0}' configuration settings.
     ConfigurationRestoreComplete    = Restoration of '{0}' settings complete.
     ConfiguringNode                 = Configuring node '{0}'.
+    OpeningModuleArchive            = Opening module archive '{0}'.
+    ClosingModuleArchive            = Closing module archive '{0}'.
+    CleaningModuleDirectory         = Cleaning module directory '{0}'.
+    ExpandingModule                 = Expanding module '{0}'.
+    CopyingModuleDirectory          = Copying module directory '{0}' to '{1}'.
+    ModuleNotCached                 = Module '{0}' was not found in the module cache or -Force was specified.
+    ModuleVersionNotCached          = Module '{0}' v{1} was not found in the module cache or -Force was specified.
+    ModuleMinmumVersionNotCached    = Module '{0}' v{1} or later was not found in the module cache or -Force was specified.
+    NoModuleBranchSpecified         = GitHub module '{0}' has no branch specified; defaulting to 'master' branch.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -149,6 +161,8 @@ ConvertFrom-StringData -StringData @'
     MissingRequiredResourceWarning  = Resource '{0}' is missing.
     MissingRequiredCertWarning      = Certificate '{0}' is missing.
     UsingExistingSwitchWarning      = Using existing '{0}' virtual switch.
+    DeprecatedCommandWarning        = Command '{0}' has been deprecated and will be removed in a future release. Please use the alternative '{1}' command.
+    DscResourcesNotDefinedWarning   = No DSC resources have been defined. Locally registered DSC resources will be copied, but this is deprecated functionality. Please update the Lability configuration document with required DSC resource definitions.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -164,7 +178,8 @@ ConvertFrom-StringData -StringData @'
     ImageAlreadyExistsError         = Disk image '{0}' already exists.
     FileAlreadyExistsError          = File '{0}' already exists.
     InvalidConfigurationError       = Configuration document '{0}' is invalid.
-    ResourceDownloadFailedError     = Resource download failed: {0}.
+    WebResourceDownloadFailedError  = Web resource '{0}' download failed.
+    CannotResolveModuleNameError    = Cannot resolve {0} name '{1}'.
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
     CannotFindCertificateError      = Cannot locate {0} certificate '{1}'.
@@ -186,4 +201,7 @@ ConvertFrom-StringData -StringData @'
     CannotProcessArguentError       = {0} : Cannot process argument transformation on parameter '{1}'. Cannot convert the '{2}' value to type '{3}'.
     DscResourceFailedError          = DSC resource '{0}' failed with errror '{1}'.
     InvalidComputerNameError        = Computer name '{0}' in invalid. Standard names may contain letters (a-z, A-Z), numbers (0-9), and hyphens (-), but no spaces or periods (.).
+    ReadingArchiveItemError         = Error reading archive item '{0}'.
+    RequiredModuleParameterError    = Required module parameter '{0}' is invalid or missing.
+    InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
 '@

@@ -2,14 +2,10 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'LabHostDefaults' {
+Describe 'Src\LabHostDefaults' {
 
     InModuleScope $moduleName {
 
@@ -40,7 +36,7 @@ Describe 'LabHostDefaults' {
 
             $fakeConfigurationDataObject = ConvertFrom-Json -InputObject '{
                 "ConfigurationPath": "", "DifferencingVhdPath": "", "HotfixPath": "", "IsoPath": "",
-	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": ""
+	            "ParentVhdPath": "", "ResourcePath": "", "ResourceShareName": "", "ModuleCachePath": ""
             }'
 
             It 'Resolves path containing an environment variable' {
@@ -55,6 +51,7 @@ Describe 'LabHostDefaults' {
             }
 
             foreach($parameter in ($fakeConfigurationDataObject.PSObject.Properties | Where Name -like '*Path').Name) {
+
                 It "Calls 'Set-LabDefaults' with passed '$parameter' parameter" {
                     $testPath = '{0}\{1}\' -f (Get-PSDrive -Name TestDrive).Root, $parameter; #- "TestDrive:\$parameter\";
                     $testValidPath = $testPath.Trim('\');
@@ -93,4 +90,4 @@ Describe 'LabHostDefaults' {
 
     } #end InModuleScope
 
-} #end describe LabHostDefaults
+} #end describe Src\LabHostDefaults

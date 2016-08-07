@@ -2,15 +2,10 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-
-Describe 'LabVMSnapshot' {
+Describe 'Src\LabVMSnapshot' {
 
     InModuleScope $moduleName {
 
@@ -21,7 +16,7 @@ Describe 'LabVMSnapshot' {
                 Mock Get-VMSnapshot -MockWith { }
 
                 RemoveLabVMSnapshot -Name $testVMNames;
-                
+
                 Assert-MockCalled Get-VMSnapshot -Exactly $testVMNames.Count -Scope It;
             }
 
@@ -36,12 +31,12 @@ Describe 'LabVMSnapshot' {
                 Mock Remove-VMSnapshot -ParameterFilter { $VMName -eq $testVMName } -MockWith { }
 
                 RemoveLabVMSnapshot -Name $testVMName
-                
+
                 Assert-MockCalled Remove-VMSnapshot -ParameterFilter { $VMName -eq $testVMName } -Exactly $fakeSnapshots.Count -Scope It;
             }
-        
+
         } #end context Validates "RemoveLabVMSnapshot" method
-        
+
         Context 'Validates "NewLabVMSnapshot" method' {
 
             It 'Calls "Checkpoint-VM" for each virtual machine specified' {
@@ -50,10 +45,10 @@ Describe 'LabVMSnapshot' {
                 Mock Checkpoint-VM -ParameterFilter { $SnapshotName -eq $testSnapshotName } -MockWith { }
 
                 NewLabVMSnapshot -Name $testVMNames -SnapshotName $testSnapshotName;
-                
+
                 Assert-MockCalled Checkpoint-VM -Exactly $testVMNames.Count -Scope It;
             }
-        
+
         }  #end context Validates "NewLabVMSnapshot" method
 
         Context 'Validates "GetLabVMSnapshot" method' {
@@ -64,7 +59,7 @@ Describe 'LabVMSnapshot' {
                 Mock Get-VMSnapshot -ParameterFilter { $Name -eq $testSnapshotName } -MockWith { return @{ Name = $Name; } }
 
                 GetLabVMSnapshot -Name $testVMNames -SnapshotName $testSnapshotName 3>&1;
-                
+
                 Assert-MockCalled Get-VMSnapshot -ParameterFilter { $Name -eq $testSnapshotName } -Exactly $testVMNames.Count -Scope It;
             }
 
@@ -75,9 +70,9 @@ Describe 'LabVMSnapshot' {
 
                 { GetLabVMSnapshot -Name $testVMName -SnapshotName $testSnapshotName  -WarningAction Stop 3>&1 } | Should Throw;
             }
-        
+
         }  #end context Validates "GetLabVMSnapshot" method
 
     } #end InModuleScope
 
-} #end describe LabVMSnapshot
+} #end describe Src\LabVMSnapshot

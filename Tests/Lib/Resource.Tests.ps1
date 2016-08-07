@@ -2,15 +2,11 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Resource' {
-    
+Describe 'Lib\Resource' {
+
     InModuleScope $moduleName {
 
         Context 'Validates "NewDirectory" method' {
@@ -21,7 +17,7 @@ Describe 'Resource' {
             BeforeEach {
                 Remove-Item -Path 'TestDrive:\NewDirectory' -Force -ErrorAction SilentlyContinue;
             }
-        
+
 	        It 'Returns a "System.IO.DirectoryInfo" object if target "Path" already exists' {
                 $testDirectoryPath = "$env:SystemRoot";
                 Test-Path -Path $testDirectoryPath | Should Be $true;
@@ -103,14 +99,14 @@ Describe 'Resource' {
                 $resource = GetResourceDownload -DestinationPath $testResourcePath -Uri 'about:blank' -Checksum $testResourceChecksum;
                 $resource.Checksum | Should Be $fileHash;
             }
-            
+
             It 'Returns incorrect checksum if incorrect resource exists but checksum does not exist' {
                 Set-Content -Path $testResourcePath -Value "$testResourceContent-?" -Force;
                 Remove-Item -Path $testResourceChecksumPath -Force -ErrorAction SilentlyContinue;
                 $resource = GetResourceDownload -DestinationPath $testResourcePath -Uri 'about:blank' -Checksum $testResourceChecksum;
                 $resource.Checksum | Should Not Be $testResourceChecksum;
             }
-            
+
         } #end context Validates "GetResourceDownload" method
 
         Context 'Validates "TestResourceDownload" method' {
@@ -147,7 +143,7 @@ Describe 'Resource' {
         } #end context Validates "TestResourceDownload" method
 
         Context 'Validates "SetResourceDownload" method' {
-            
+
             $testResourcePath = 'TestDrive:\TestResource.txt';
             $testResourceContent = 'MyResourceFileContent';
 
@@ -160,7 +156,7 @@ Describe 'Resource' {
 
                 Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $Uri -eq $testResourceUri } -Scope It;
             }
-            
+
             It 'Calls "InvokeWebClientDownload" with specified destination Path' {
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
                 Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
@@ -170,7 +166,7 @@ Describe 'Resource' {
 
                 Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $DestinationPath -eq $testResourcePath }  -Scope It;
             }
-            
+
             It 'Calls "InvokeWebClientDownload" with default 64KB buffer size' {
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt'
                 Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
@@ -180,7 +176,7 @@ Describe 'Resource' {
 
                 Assert-MockCalled InvokeWebClientDownload -ParameterFilter { $BufferSize -eq 64KB } -Scope It;
             }
-            
+
             It 'Calls "InvokeWebClientDownload" with 1MB buffer size for file resource' {
                 $testResourceUri = ("file:///$testResourcePath").Replace('\','/');
                 Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
@@ -200,7 +196,7 @@ Describe 'Resource' {
                 Mock Start-BitsTransfer -ParameterFilter { $Source -eq $testResourceUri } -MockWith { }
 
                 SetResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri;
-                
+
                 (Get-Content -Path $testResourceChecksumPath) | Should Be $testResourceChecksum;
                 Test-Path -Path $testResourceChecksumPath | Should Be $true;
             }
@@ -228,7 +224,7 @@ Describe 'Resource' {
                 Mock TestResourceDownload -MockWith { return $true; }
 
                 $resource = InvokeResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri -Checksum $testResourceChecksum;
-                
+
                 $resource -is [System.Management.Automation.PSCustomObject] | Should Be $true;
             }
 
@@ -255,7 +251,7 @@ Describe 'Resource' {
 
                 Assert-MockCalled SetResourceDownload -ParameterFilter { $DestinationPath -eq $testResourcePath -and $Uri -eq $testResourceUri } -Scope It;
             }
-            
+
             It 'Does not call "SetResourceDownload" if "TestResourceDownload" passes' {
                 $testResourcePath = 'TestDrive:\TestResource.txt';
                 $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
@@ -272,4 +268,4 @@ Describe 'Resource' {
 
     } #end InModuleScope
 
-} #end describe Resource
+} #end describe Lib\Resource

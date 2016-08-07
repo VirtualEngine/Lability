@@ -3,10 +3,9 @@
 
 $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'DscModule' {
+Describe 'Lib\DscResourceModule' {
 
     InModuleScope $moduleName {
 
@@ -133,4 +132,4 @@ Describe 'DscModule' {
 
     } #end InModuleScope
 
-} #end describe DscModule
+} #end describe Lib\DscResourceModule
