@@ -8,7 +8,7 @@ language (DSL) document, __Lability__ extends existing PowerShell Desired
 State Configuration (DSC) configuration .psd1 documents with metadata that can
 be interpreted by the module.
 
-By using this approach, it allows the use of a single confiugration document to
+By using this approach, it allows the use of a single configuration document to
 describe all properties for provisioning Windows-centric development and/or test
 environments.
 
