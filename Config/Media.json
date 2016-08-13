@@ -649,8 +649,8 @@
 	},
     "Hotfixes": [
  		{
- 			"Id": "windows10.0-kb3163912-x64_736c76adf658c3fc84785402af9d78cfe722312d.msu",
- 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/07/windows10.0-kb3163912-x64_736c76adf658c3fc84785402af9d78cfe722312d.msu"
+ 			"Id": "windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu",
+ 			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu"
  		}
  	]
 },
@@ -676,8 +676,8 @@
 	},
     "Hotfixes": [
  		{
- 			"Id": "windows10.0-kb3163912-x86_83a47b7e11975f1e52574793c8ebf25ff836a8e1.msu",
- 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/06/windows10.0-kb3163912-x86_83a47b7e11975f1e52574793c8ebf25ff836a8e1.msu"
+ 			"Id": "windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu",
+ 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu"
  		}
  	]
 }]
