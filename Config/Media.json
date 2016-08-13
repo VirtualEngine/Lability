@@ -593,7 +593,12 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [ ]
+    "Hotfixes": [
+		{
+			"Id": "windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu",
+			"Url": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu"
+		}
+	]
 },
 {
 	"Id": "WIN10_x86_Enterprise_EN_Eval",
@@ -615,7 +620,12 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [ ]
+    "Hotfixes": [
+		{
+			"Id": "windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu",
+			"Url": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu"
+		}
+	]
 },
 {
 	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
