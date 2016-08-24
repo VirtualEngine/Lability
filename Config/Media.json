@@ -11,7 +11,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Standard_Core_EN",
@@ -26,7 +31,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Datacenter_EN",
@@ -41,7 +51,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Datacenter_Core_EN",
@@ -56,7 +71,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id":  "2016TP5_x64_NANO_EN",
@@ -79,7 +99,12 @@
 							"Microsoft-NanoServer-Containers-Package"
 						]
 				   },
-	"Hotfixes":  []
+	"Hotfixes":  [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP4_x64_Standard_EN",
