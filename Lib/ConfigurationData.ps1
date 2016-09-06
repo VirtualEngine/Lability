@@ -11,6 +11,7 @@ function ConvertToConfigurationData {
          [System.String] $ConfigurationData
      )
      process {
+
         $configurationDataPath = Resolve-Path -Path $ConfigurationData -ErrorAction Stop;
         if (-not (Test-Path -Path $configurationDataPath -PathType Leaf)) {
             throw ($localized.InvalidConfigurationDataFileError -f $ConfigurationData);
@@ -24,8 +25,10 @@ function ConvertToConfigurationData {
             throw ($localized.InvalidConfigurationDataType -f $configData.GetType());
         }
         return $configData;
-    }
+
+    } #end process
 } #end function ConvertToConfigurationData
+
 
 function ResolveConfigurationDataPath {
 <#
@@ -45,6 +48,7 @@ function ResolveConfigurationDataPath {
         [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
     )
     process {
+
         switch ($Configuration) {
             'Host' { $configPath = $labDefaults.HostConfigFilename; }
             'VM' { $configPath = $labDefaults.VMConfigFilename; }
@@ -61,8 +65,10 @@ function ResolveConfigurationDataPath {
         $resolvedPath = ResolvePathEx -Path $resolvedPath;
         Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
+
     } #end process
 } #end function ReolveConfigurationPath
+
 
 function GetConfigurationData {
 <#
@@ -76,16 +82,10 @@ function GetConfigurationData {
         [System.String] $Configuration
     )
     process {
+
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration -IncludeDefaultPath;
         if (Test-Path -Path $configurationPath) {
             $configurationData = Get-Content -Path $configurationPath -Raw | ConvertFrom-Json;
-
-            # Expand any environment variables in configuration data
-            $configurationData.PSObject.Members | Where-Object {
-                ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String')
-            } | ForEach-Object {
-                $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value);
-            }
 
             switch ($Configuration) {
                 'VM' {
@@ -119,18 +119,29 @@ function GetConfigurationData {
                     if ($configurationData.PSObject.Properties.Name -notcontains 'EnableCallStackLogging') {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'EnableCallStackLogging' -Value $false;
                     }
+                    ## This property may not be present in the original machine configuration file
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'ModuleCachePath') {
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'ModuleCachePath' -Value '%ALLUSERSPROFILE%\Lability\Modules';
+                    }
 
                     ## Remove deprecated UpdatePath, if present (Issue #77)
                     $configurationData.PSObject.Properties.Remove('UpdatePath');
                 }
-                Default {
-                    ## Do nothing
-                }
             } #end switch
+
+            # Expand any environment variables in configuration data
+            $configurationData.PSObject.Members |
+                Where-Object { ($_.MemberType -eq 'NoteProperty') -and ($_.IsSettable) -and ($_.TypeNameOfValue -eq 'System.String') } |
+                    ForEach-Object {
+                        $_.Value = [System.Environment]::ExpandEnvironmentVariables($_.Value);
+                    }
+
             return $configurationData;
         }
+
     } #end process
 } #end function GetConfigurationData
+
 
 function SetConfigurationData {
 <#
@@ -147,11 +158,14 @@ function SetConfigurationData {
         [System.Object] $InputObject
     )
     process {
+
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         [ref] $null = NewDirectory -Path (Split-Path -Path $configurationPath -Parent) -Verbose:$false;
         Set-Content -Path $configurationPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
-    }
+
+    } #end process
 } #end function SetConfigurationData
+
 
 function RemoveConfigurationData {
 <#
@@ -164,10 +178,12 @@ function RemoveConfigurationData {
         [System.String] $Configuration
     )
     process {
+
         $configurationPath = ResolveConfigurationDataPath -Configuration $Configuration;
         if (Test-Path -Path $configurationPath) {
             WriteVerbose ($localized.ResettingConfigurationDefaults -f $Configuration);
             Remove-Item -Path $configurationPath -Force;
         }
-    }
+
+    } #end process
 } # end function RemoveConfigurationData

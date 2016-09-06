@@ -2,15 +2,11 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'DscModule' {
-    
+Describe 'Lib\DscModule' {
+
     InModuleScope $moduleName {
 
         ## Cannot (easily) mock New-Object calls :(
@@ -50,7 +46,7 @@ Describe 'DscModule' {
                 $testModulePath = (New-Item -Path (Join-Path -Path 'TestDrive:\' -ChildPath "$testModuleName\$testModuleName.psm1") -ItemType Directory -Force).FullName;
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
-                
+
                 GetDscModule -ModuleName $testModuleName | Should Be (Split-Path -Path $testModulePath -Parent);
             }
 
@@ -61,7 +57,7 @@ Describe 'DscModule' {
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
                 Mock Test-Path -MockWith { return $true }
-                
+
                 GetDscModule -ModuleName $testModuleName -ResourceName $testResourceName | Should Match ([Regex]::Escape("$testModuleName\DSCResources\$ResourceName"));
             }
 
@@ -72,7 +68,7 @@ Describe 'DscModule' {
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
                 Mock Test-Path -MockWith { return $false }
-                
+
                 { GetDscModule -ModuleName $testModuleName -ResourceName $testResourceName -ErrorAction Stop } | Should Throw;
             }
 
@@ -83,7 +79,7 @@ Describe 'DscModule' {
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
                 Mock Test-Path -MockWith { return $false }
-                
+
                 GetDscModule -ModuleName $testModuleName -ResourceName $testResourceName -ErrorAction SilentlyContinue | Should BeNullOrEmpty;
             }
 
@@ -94,7 +90,7 @@ Describe 'DscModule' {
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = [System.Version] $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
                 Mock Test-Path -MockWith { return $true; }
-                
+
                 { GetDscModule -ModuleName $testModuleName -MinimumVersion $testModuleVersion -ErrorAction Stop } | Should Not Throw;
             }
 
@@ -105,7 +101,7 @@ Describe 'DscModule' {
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = [System.Version] $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
                 Mock Test-Path -MockWith { return $true; }
-                
+
                 { GetDscModule -ModuleName $testModuleName -MinimumVersion '1.2.3.4' -ErrorAction Stop } | Should Not Throw;
             }
 
@@ -115,7 +111,7 @@ Describe 'DscModule' {
                 $testModulePath = (New-Item -Path (Join-Path -Path 'TestDrive:\' -ChildPath "$testModuleName\$testModuleName.psm1") -ItemType Directory -Force).FullName;
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = [System.Version] $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
-                
+
                 { GetDscModule -ModuleName $testModuleName -MinimumVersion '1.2.3.5' -ErrorAction Stop } | Should Throw;
             }
 
@@ -125,12 +121,12 @@ Describe 'DscModule' {
                 $testModulePath = (New-Item -Path (Join-Path -Path 'TestDrive:\' -ChildPath "$testModuleName\$testModuleName.psm1") -ItemType Directory -Force).FullName;
                 $fakeModule = [PSCustomObject] @{ Name = $testModuleName; Path = $testModulePath; Version = [System.Version] $testModuleVersion; }
                 Mock Get-Module -MockWith { return $fakeModule }
-                
+
                 GetDscModule -ModuleName $testModuleName -MinimumVersion '1.2.3.5' -ErrorAction SilentlyContinue | Should BeNullOrEmpty;
             }
 
         } #end context Validates "GetDscModule" method
- 
+
     } #end InModuleScope
 
-} #end describe DscModule
+} #end describe Lib\DscModule

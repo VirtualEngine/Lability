@@ -83,7 +83,7 @@ RESOURCE DOWNLOAD
 
 COMPRESSED RESOURCES
 
-        Custom resources/media may be downloaded in a compressed foramt, i.e. ZIP files. Lability supports
+        Custom resources/media may be downloaded in a compressed format, i.e. ZIP files. Lability supports
         decompressing or expanding .ISO and .ZIP resources into a node's VHD(X) file when the VM is created. To expand
         a resource you need to set the 'Expand' property on the resource to '$true'. By default no resources are
         automatically expanded.
@@ -93,6 +93,36 @@ COMPRESSED RESOURCES
         C:\Resources\MyCustomIso folder of the target node.
 
         NOTE: THE COMPRESSED RESOURCE IS STILL DOWNLOADED AND STORED ON THE HOST MACHINE.
+
+LOCAL RESOURCES
+
+        Resources that you don't want to be downloaded or are retrieved by other means, e.g. via version control,
+        can be flagged with the 'IsLocal' property.
+
+        NOTE: THE URI AND CHECKSUM PROPERTIES ARE NOT USED FOR LOCAL RESOURCES.
+
+        @{
+            NonNodeData = @{
+                Lability = @{
+
+                    Resource = @(
+
+                        @{
+                            Id = 'MyCustomResource';
+
+                            ## The IsLocal property is used to flag "internal" resources. These resources are typically
+                            ## stored in version control along with the Lability configuration.
+                            IsLocal = $true;
+
+                            ## Relative paths are supported. The file system provider location will need to be set
+                            ## accordingly.
+                            Filename = '.\MyCustomResource.xml';
+                        }
+
+                    )
+                }
+            }
+        }
 
 MANUAL RESOURCE DOWNLOAD
 

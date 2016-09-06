@@ -11,7 +11,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Standard_Core_EN",
@@ -26,7 +31,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Datacenter_EN",
@@ -41,7 +51,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP5_x64_Datacenter_Core_EN",
@@ -56,7 +71,12 @@
 	"CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"]
 	},
-    "Hotfixes": []
+    "Hotfixes": [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id":  "2016TP5_x64_NANO_EN",
@@ -79,7 +99,12 @@
 							"Microsoft-NanoServer-Containers-Package"
 						]
 				   },
-	"Hotfixes":  []
+	"Hotfixes":  [
+		{
+        	"Id": "windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu",
+        	"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/crup/2016/06/windows10.0-kb3172982-x64_392d69cb239394013060c80739077e368dff513f.msu"
+    	}
+	]
 },
 {
 	"Id": "2016TP4_x64_Standard_EN",
@@ -575,8 +600,62 @@
 },
 {
 	"Id": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise English Evaluation",
+    "Filename": "WIN10_x64_ENT_EN_RS1_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 1607 English Evaluation",
+	"Architecture": "x64",
+	"ImageName": "Windows 10 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
+	"Checksum": "482B970A9892CDC1D0E69372A9E430D7",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		]
+	},
+    "Hotfixes": [
+		{
+			"Id": "windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu",
+			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu"
+		}
+	]
+},
+{
+	"Id": "WIN10_x86_Enterprise_EN_Eval",
+    "Filename": "WIN10_x86_ENT_RS1_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 1607 English Evaluation",
+	"Architecture": "x86",
+	"ImageName": "Windows 10 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
+	"Checksum": "50978CE784D0BC5921D0E89AF00C9361",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		]
+	},
+    "Hotfixes": [
+		{
+			"Id": "windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu",
+			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu"
+		}
+	]
+},
+{
+	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
+    "Filename": "WIN10_x64_ENT_LTSB_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise LTSB English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
@@ -593,12 +672,17 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [ ]
+    "Hotfixes": [
+ 		{
+ 			"Id": "windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu",
+ 			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu"
+ 		}
+ 	]
 },
 {
-	"Id": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise English Evaluation",
+	"Id": "WIN10_x86_Enterprise_LTSB_EN_Eval",
+    "Filename": "WIN10_x86_ENT_LTSB_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSB English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
@@ -615,5 +699,10 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [ ]
+    "Hotfixes": [
+ 		{
+ 			"Id": "windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu",
+ 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu"
+ 		}
+ 	]
 }]
