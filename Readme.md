@@ -78,11 +78,12 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 
 ## Versions
 
-### Unreleased
+### v0.10.0
 
 * Updates Windows 10 media to build 14393 (1607).
 * Adds `WIN10_x64_Enterprise_LTSB_EN_Eval` and `WIN10_x86_Enterprise_LTSB_EN_Eval` media.
  * Adds July 2016 CU hotfix (KB3163912) to Windows 10 x86 and x64 LTSB media.
+* Adds June 2016 CU hotfix (KB3172982) to WS2016 TP5 default lab media registrations.
 * Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
 * Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
 * Adds support for injecting modules in VMs (#106).
@@ -91,6 +92,8 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
  * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support.
  * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions.
 * Deprecates LabNode functionality (will move to the LabilityBootstrap module).
+* As 'IsLocal' resource flag to support local-only resources, i.e. stored in version control.
+* Fixes bug in VM test when multiple switches are specified on a node.
 
 ### v0.9.11
 
