@@ -280,8 +280,8 @@ function SetLabVMDiskFileMof {
             WriteWarning ($localized.CannotLocateMofFileError -f $mofPath);
         }
         else {
-            WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
+            WriteVerbose ($localized.AddingDscConfiguration -f $destinationMofPath);
             Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
         }
 
