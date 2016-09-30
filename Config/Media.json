@@ -1,7 +1,7 @@
 [
 {
-    "Id":  "2016_x64_Standard_EN",
-    "Filename":  "2016_x64_EN.iso",
+    "Id":  "2016_x64_Standard_EN_Eval",
+    "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard 64bit English",
     "Architecture":  "x64",
     "ImageName":  "Windows Server 2016 SERVERSTANDARD",
@@ -15,8 +15,8 @@
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_Standard_Core_EN",
-    "Filename":  "2016_x64_EN.iso",
+    "Id":  "2016_x64_Standard_Core_EN_Eval",
+    "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard Core 64bit English",
     "Architecture":  "x64",
     "ImageName":  "Windows Server 2016 SERVERSTANDARDCORE",
@@ -30,8 +30,8 @@
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_Datacenter_EN",
-    "Filename":  "2016_x64_EN.iso",
+    "Id":  "2016_x64_Datacenter_EN_Eval",
+    "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter 64bit English",
     "Architecture":  "x64",
     "ImageName":  "Windows Server 2016 SERVERDATACENTER",
@@ -45,8 +45,8 @@
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_Datacenter_Core_EN",
-    "Filename":  "2016_x64_EN.iso",
+    "Id":  "2016_x64_Datacenter_Core_EN_Eval",
+    "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter Core 64bit English",
     "Architecture":  "x64",
     "ImageName":  "Windows Server 2016 SERVERDATACENTERCORE",
@@ -60,8 +60,8 @@
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_NANO_EN",
-    "Filename":  "2016_x64_EN.iso",
+    "Id":  "2016_x64_NANO_EN_Eval",
+    "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Nano 64bit English",
     "Architecture":  "x64",
     "ImageName":  "1",
