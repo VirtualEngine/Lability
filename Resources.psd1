@@ -93,7 +93,7 @@ ConvertFrom-StringData -StringData @'
     ResolvedDestinationPath         = Resolved Zip destination path '{0}'.
     ResolvedSourcePath              = Resolved Zip source path '{0}'.
     EnterLocalAdministratorPassword = Enter the virtual machines' local administrator password.
-    SettingAdministratorPassword    = Setting local administrator password to '{0}'.
+    SettingAdministratorPassword    = Setting local administrator password.
     DownloadingAllRequiredMedia     = No media Id specified; downloading all required media.
     DownloadingAllRequiredHotfixes  = Downloading all required hotfixes.
     DownloadingAllDefinedResources  = No resource Id specified; downloading all defined resources.
