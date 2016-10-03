@@ -33,9 +33,11 @@ function Test-LabResource {
     process {
 
         if ($resourceId) {
+
             $resources = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $ResourceId;
         }
         else {
+
             $resources = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource;
         }
 
@@ -48,8 +50,14 @@ function Test-LabResource {
                 DestinationPath = Join-Path -Path $ResourcePath -ChildPath $fileName;;
                 Uri = $resource.Uri;
             }
-            if ($resource.Checksum) { $testResourceDownloadParams['Checksum'] = $resource.Checksum }
+
+            if ($resource.Checksum) {
+
+                $testResourceDownloadParams['Checksum'] = $resource.Checksum;
+            }
+
             if (-not (TestResourceDownload @testResourceDownloadParams)) {
+
                 return $false;
             }
         } #end foreach resource
@@ -238,6 +246,7 @@ function Invoke-LabResourceDownload {
             }
 
             if ($MediaId) {
+
                 foreach ($id in $MediaId) {
 
                     $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
@@ -279,7 +288,13 @@ function Invoke-LabResourceDownload {
                         $fileName = $resource.Id;
                         if ($resource.Filename) { $fileName = $resource.Filename; }
                         $resourceDestinationPath = Join-Path -Path $DestinationPath -ChildPath $fileName;
-                        [ref] $null = InvokeResourceDownload -DestinationPath $resourceDestinationPath -Uri $resource.Uri -Checksum $resource.Checksum -Force:$Force;
+                        $invokeResourceDownloadParams = @{
+                            DestinationPath = $resourceDestinationPath;
+                            Uri = $resource.Uri;
+                            Checksum = $resource.Checksum;
+                            Force = $Force;
+                        }
+                        [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams;
                         Write-Output (Get-Item -Path $resourceDestinationPath);
                     }
                 }
@@ -345,9 +360,11 @@ function ResolveLabResource {
 
         $resource = $ConfigurationData.NonNodeData.($labDefaults.ModuleName).Resource | Where-Object Id -eq $ResourceId;
         if ($resource) {
+
             return $resource;
         }
         else {
+
             throw ($localized.CannotResolveResourceIdError -f $resourceId);
         }
 
@@ -388,6 +405,7 @@ function ExpandLabResource {
     begin {
 
         if (-not $ResourcePath) {
+
             $hostDefaults = GetConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
@@ -395,8 +413,9 @@ function ExpandLabResource {
     }
     process {
 
-        ## Create the root container
+        ## Create the root destination (\Resources) container
         if (-not (Test-Path -Path $DestinationPath -PathType Container)) {
+
             [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
         }
 
@@ -407,81 +426,100 @@ function ExpandLabResource {
             $resource = ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
 
             ## Default to resource.Id unless there is a filename property defined!
-            $resourceItemPath = Join-Path -Path $ResourcePath -ChildPath $resource.Id;
+            $resourceSourcePath = Join-Path $resourcePath -ChildPath $resource.Id;
 
-            if (($null -ne $resource.IsLocal) -and ($resource.IsLocal -eq $true)) {
-                ## Local resources do not have a URI and cannot be downloaded
-                $resourceItemPath = ResolvePathEx -Path $resource.Filename;
-            }
-            else {
+            if ($resource.Filename) {
 
-                if ($resource.Filename) {
-                    $resourceItemPath = Join-Path -Path $ResourcePath -ChildPath $resource.Filename;
-                }
-                if (-not (Test-Path -Path $resourceItemPath)) {
-                    [ref] $null = Invoke-LabResourceDownload -ConfigurationData $ConfigurationData -ResourceId $resourceId;
+                $resourceSourcePath = Join-Path $resourcePath -ChildPath $resource.Filename;
+                if ($resource.IsLocal) {
+
+                    $resourceSourcePath = Resolve-Path -Path $resource.Filename;
                 }
             }
 
-            if (-not (Test-Path -Path $resourceItemPath)) {
+            if (-not (Test-Path -Path $resourceSourcePath) -and (-not $resource.IsLocal)) {
+
+                $invokeLabResourceDownloadParams = @{
+                    ConfigurationData = $ConfigurationData;
+                    ResourceId = $resourceId;
+                }
+                [ref] $null = Invoke-LabResourceDownload @invokeLabResourceDownloadParams;
+            }
+
+            if (-not (Test-Path -Path $resourceSourcePath)) {
+
                 throw ($localized.CannotResolveResourceIdError -f $resourceId);
             }
-            $resourceItem = Get-Item -Path $resourceItemPath;
 
-            $isCustomDestinationPath = $false;
+            $resourceItem = Get-Item -Path $resourceSourcePath;
+            $resourceDestinationPath = $DestinationPath;
+
             if ($resource.DestinationPath -and (-not [System.String]::IsNullOrEmpty($resource.DestinationPath))) {
 
-                ## Use the explicit $Resource.DestinationPath\ResourceId path
                 $destinationDrive = Split-Path -Path $DestinationPath -Qualifier;
-                $destinationRootPath = Join-Path -Path $destinationDrive -ChildPath $resource.DestinationPath;
-                $destinationResourcePath = Join-Path -Path $destinationRootPath -ChildPath $resourceId;
-                $isCustomDestinationPath = $true;
-            }
-            else {
+                $resourceDestinationPath = Join-Path -Path $destinationDrive -ChildPath $resource.DestinationPath;
 
-                ## Otherwise default to (Resources)\ResourceId
-                $destinationRootPath = $DestinationPath;
-                $destinationResourcePath = Join-Path -Path $DestinationPath -ChildPath $resourceId;
+                ## We can't create a drive-rooted folder!
+                if (($resource.DestinationPath -ne '\') -and (-not (Test-Path -Path $resourceDestinationPath))) {
+
+                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force;
+                }
+            }
+            elseif ($resource.IsLocal -and ($resource.IsLocal -eq $true)) {
+
+                $relativeLocalPath = ($resource.Filename).TrimStart('.');
+                $resourceDestinationPath = Join-Path -Path $DestinationPath -ChildPath $relativeLocalPath;
             }
 
             if (($resource.Expand) -and ($resource.Expand -eq $true)) {
 
-                switch ($resourceItem.Extension) {
+                if ([System.String]::IsNullOrEmpty($resource.DestinationPath)) {
+
+                    ## No explicit destination path, so expand into the <DestinationPath>\<ResourceId> folder
+                    $resourceDestinationPath = Join-Path -Path $DestinationPath -ChildPath $resource.Id;
+                }
+
+                if (-not (Test-Path -Path $resourceDestinationPath)) {
+
+                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force;
+                }
+
+                switch ([System.IO.Path]::GetExtension($resourceSourcePath)) {
+
                     '.iso' {
 
-                        if ($isCustomDestinationPath) {
-                            ## Use the custom DestinationPath
-                            ExpandIso -Path $resourceItem.FullName -DestinationPath $destinationRootPath;
-                        }
-                        else {
-                            [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
-                            ExpandIso -Path $resourceItem.FullName -DestinationPath $destinationResourcePath;
-                        }
+                        ExpandIso -Path $resourceItem.FullName -DestinationPath $resourceDestinationPath;
                     }
+
                     '.zip' {
 
-                        if ($isCustomDestinationPath) {
-                            ## Use the custom DestinationPath
-                            WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
-                            [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationRootPath -Verbose:$false;
+                        WriteVerbose ($localized.ExpandingZipResource -f $resourceItem.FullName);
+                        $expandZipArchiveParams = @{
+                            Path = $resourceItem.FullName;
+                            DestinationPath = $resourceDestinationPath;
+                            Verbose = $false;
                         }
-                        else {
-                            [ref] $null = New-Item -Path $destinationResourcePath -ItemType Directory -Force;
-                            WriteVerbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
-                            [ref] $null = ExpandZipArchive -Path $resourceItem.FullName -DestinationPath $destinationResourcePath -Verbose:$false;
-                        }
+                        [ref] $null = ExpandZipArchive @expandZipArchiveParams;
                     }
+
                     Default {
 
                         throw ($localized.ExpandNotSupportedError -f $resourceItem.Extension);
                     }
-                } #end switch
 
+                } #end switch
             }
             else {
 
-                WriteVerbose ($localized.CopyingFileResource -f $destinationResourcePath);
-                Copy-Item -Path $resourceItem.FullName -Destination $destinationRootPath -Force -Verbose:$false -Recurse;
+                WriteVerbose ($localized.CopyingFileResource -f $resourceDestinationPath);
+                $copyItemParams = @{
+                    Path = "$($resourceItem.FullName)";
+                    Destination = "$resourceDestinationPath";
+                    Force = $true;
+                    Recurse = $true;
+                    Verbose = $false;
+                }
+                Copy-Item @copyItemParams;
             }
 
         } #end foreach ResourceId
