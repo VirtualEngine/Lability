@@ -89,6 +89,7 @@ Other generous members of the community have written some comprehensive guides t
 * Removes local Administrator password from verbose output (#140)
 * Reinstates the xDhcpServerOption 'Router' parameter in example TestLabGuide.ps1
 * Fixes bug in 'IsLocal' resource when combined with a custom 'DestinationPath' location
+* Adds output formatting to lab images and media
 
 ### v0.10.0
 
