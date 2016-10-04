@@ -209,11 +209,6 @@ function New-LabImage {
         } #end if VHD
         else {
 
-            WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
-            $imageName = '{0}.vhdx' -f $Id;
-            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
-            $imageCreationFailed = $false;
-
             ## Create VHDX
             if ($media.CustomData.PartitionStyle) {
 
@@ -230,28 +225,12 @@ function New-LabImage {
                 $partitionStyle = 'GPT';
             }
 
-            try {
-
-                ## Create disk image and refresh PSDrives
-                $newDiskImageParams = @{
-                    Path = $imagePath;
-                    PartitionStyle = $partitionStyle;
-                    Passthru = $true;
-                    Force = $true;
-                    ErrorAction = 'Stop';
-                }
-                $image = NewDiskImage @newDiskImageParams;
-                [ref] $null = Get-PSDrive;
-            }
-            catch {
-
-                $imageCreationFailed = $true;
-                Write-Error -Message $_;
-            }
+            WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
+            $imageName = '{0}.vhdx' -f $Id;
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
 
             ## Apply WIM (ExpandWindowsImage) and add specified features
             $expandWindowsImageParams = @{
-                Vhd = $image;
                 MediaPath = $mediaFileInfo.FullName;
                 PartitionStyle = $partitionStyle;
             }
@@ -272,37 +251,49 @@ function New-LabImage {
                 $expandWindowsImageParams['WimImageName'] = $media.ImageName;
             }
 
-            if ($media.CustomData.SourcePath) {
-
-                $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
-            }
-            if ($media.CustomData.WimPath) {
-
-                $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
-            }
-            if ($media.CustomData.WindowsOptionalFeature) {
-
-                $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
-            }
-            if ($media.CustomData.PackagePath) {
-
-                $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
-            }
-            if ($media.CustomData.Package) {
-
-                $expandWindowsImageParams['Package'] = $media.CustomData.Package;
-            }
+            $imageCreationFailed = $false;
 
             try {
 
-                if (-not $imageCreationFailed) {
-
-                    ExpandWindowsImage @expandWindowsImageParams;
-                    ## Apply hotfixes (AddDiskImageHotfix)
-                    AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
-                    ## Configure boot volume (SetDiskImageBootVolume)
-                    SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
+                ## Create disk image and refresh PSDrives
+                $newDiskImageParams = @{
+                    Path = $imagePath;
+                    PartitionStyle = $partitionStyle;
+                    Passthru = $true;
+                    Force = $true;
+                    ErrorAction = 'Stop';
                 }
+                $image = NewDiskImage @newDiskImageParams;
+                [ref] $null = Get-PSDrive;
+
+                $expandWindowsImageParams['Vhd'] = $image;
+
+                if ($media.CustomData.SourcePath) {
+
+                    $expandWindowsImageParams['SourcePath'] = $media.CustomData.SourcePath;
+                }
+                if ($media.CustomData.WimPath) {
+
+                    $expandWindowsImageParams['WimPath'] = $media.CustomData.WimPath;
+                }
+                if ($media.CustomData.WindowsOptionalFeature) {
+
+                    $expandWindowsImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
+                }
+                if ($media.CustomData.PackagePath) {
+
+                    $expandWindowsImageParams['PackagePath'] = $media.CustomData.PackagePath;
+                }
+                if ($media.CustomData.Package) {
+
+                    $expandWindowsImageParams['Package'] = $media.CustomData.Package;
+                }
+
+                ExpandWindowsImage @expandWindowsImageParams;
+                ## Apply hotfixes (AddDiskImageHotfix)
+                AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+                ## Configure boot volume (SetDiskImageBootVolume)
+                SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
             }
             catch {
 
