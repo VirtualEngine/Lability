@@ -91,6 +91,7 @@ Other generous members of the community have written some comprehensive guides t
 * Fixes bug in 'IsLocal' resource when combined with a custom 'DestinationPath' location
 * Adds Server 2016 RTM (and deprecates Server 2016 technical preview) media
 * Adds output formatting to lab images and media
+* Adds descriptive error message for a missing WIM Image Name parameter (#148)
 
 ### v0.10.0
 

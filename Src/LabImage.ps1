@@ -209,51 +209,64 @@ function New-LabImage {
         } #end if VHD
         else {
 
+            ## Create VHDX
+            if ($media.CustomData.PartitionStyle) {
+
+                ## Custom partition style has been defined so use that
+                $partitionStyle = $media.CustomData.PartitionStyle;
+            }
+            elseif ($media.Architecture -eq 'x86') {
+
+                ## Otherwise default to MBR for x86 media
+                $partitionStyle = 'MBR';
+            }
+            else {
+
+                $partitionStyle = 'GPT';
+            }
+
             WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
             $imageName = '{0}.vhdx' -f $Id;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+
+            ## Apply WIM (ExpandWindowsImage) and add specified features
+            $expandWindowsImageParams = @{
+                MediaPath = $mediaFileInfo.FullName;
+                PartitionStyle = $partitionStyle;
+            }
+
+            ## Determine whether we're using the WIM image index or image name. This permits
+            ## specifying an integer image index in a media's 'ImageName' property.
+            [System.Int32] $wimImageIndex = $null;
+            if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
+
+                $expandWindowsImageParams['WimImageIndex'] = $wimImageIndex;
+            }
+            else {
+
+                if ([System.String]::IsNullOrEmpty($media.ImageName)) {
+                    throw ($localized.ImageNameRequiredError -f 'ImageName');
+                }
+
+                $expandWindowsImageParams['WimImageName'] = $media.ImageName;
+            }
+
             $imageCreationFailed = $false;
 
             try {
 
-                ## Create VHDX
-                if ($media.CustomData.PartitionStyle) {
-
-                    ## Custom partition style has been defined so use that
-                    $partitionStyle = $media.CustomData.PartitionStyle;
-                }
-                elseif ($media.Architecture -eq 'x86') {
-
-                    ## Otherwise default to MBR for x86 media
-                    $partitionStyle = 'MBR';
-                }
-                else {
-
-                    $partitionStyle = 'GPT';
-                }
-
                 ## Create disk image and refresh PSDrives
-                $image = NewDiskImage -Path $imagePath -PartitionStyle $partitionStyle -Passthru -Force -ErrorAction Stop;
+                $newDiskImageParams = @{
+                    Path = $imagePath;
+                    PartitionStyle = $partitionStyle;
+                    Passthru = $true;
+                    Force = $true;
+                    ErrorAction = 'Stop';
+                }
+                $image = NewDiskImage @newDiskImageParams;
                 [ref] $null = Get-PSDrive;
 
-                ## Apply WIM (ExpandWindowsImage) and add specified features
-                $expandWindowsImageParams = @{
-                    Vhd = $image;
-                    MediaPath = $mediaFileInfo.FullName;
-                    PartitionStyle = $partitionStyle;
-                }
-
-                ## Determine whether we're using the WIM image index or image name. This permits
-                ## specifying an integer image index in a media's 'ImageName' property.
-                [System.Int32] $wimImageIndex = $null;
-                if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
-
-                    $expandWindowsImageParams['WimImageIndex'] = $wimImageIndex;
-                }
-                else {
-
-                    $expandWindowsImageParams['WimImageName'] = $media.ImageName;
-                }
+                $expandWindowsImageParams['Vhd'] = $image;
 
                 if ($media.CustomData.SourcePath) {
 
