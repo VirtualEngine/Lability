@@ -288,6 +288,10 @@ function New-LabImage {
 
                     $expandWindowsImageParams['Package'] = $media.CustomData.Package;
                 }
+                if ($media.CustomData.PackageLocale) {
+
+                    $expandWindowsImageParams['PackageLocale'] = $media.CustomData.PackageLocale;
+                }
 
                 ExpandWindowsImage @expandWindowsImageParams;
 

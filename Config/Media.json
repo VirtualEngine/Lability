@@ -59,7 +59,7 @@
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_Standard_NANO_EN_Eval",
+    "Id":  "2016_x64_Standard_Nano_EN_Eval",
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard Nano 64bit English Evaluation",
     "Architecture":  "x64",
@@ -71,18 +71,17 @@
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
+		"PackageLocale": "en-US",
         "WimPath":  "\\NanoServer\\NanoServer.wim",
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
-            "Microsoft-NanoServer-DSC-Package",
-            "Microsoft-NanoServer-Compute-Package",
-            "Microsoft-NanoServer-Containers-Package"
+            "Microsoft-NanoServer-DSC-Package"
         ]
     },
     "Hotfixes":  []
 },
 {
-    "Id":  "2016_x64_Datacenter_NANO_EN_Eval",
+    "Id":  "2016_x64_Datacenter_Nano_EN_Eval",
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter Nano 64bit English Evaluation",
     "Architecture":  "x64",
@@ -94,12 +93,11 @@
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
+		"PackageLocale": "en-US",
         "WimPath":  "\\NanoServer\\NanoServer.wim",
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
-            "Microsoft-NanoServer-DSC-Package",
-            "Microsoft-NanoServer-Compute-Package",
-            "Microsoft-NanoServer-Containers-Package"
+            "Microsoft-NanoServer-DSC-Package"
         ]
     },
     "Hotfixes":  []
