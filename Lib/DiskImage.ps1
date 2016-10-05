@@ -107,7 +107,7 @@ function NewDiskImageGpt {
         NewDiskPartFat32Partition -DiskNumber $Vhd.DiskNumber -PartitionNumber $efiPartition.PartitionNumber;
 
         WriteVerbose ($localized.CreatingDiskPartition -f 'MSR');
-        $msrPartition = New-Partition -DiskNumber $Vhd.DiskNumber -Size 128MB -GptType '{e3c9e316-0b5c-4db8-817d-f92df00215ae}';
+        [ref] $null = New-Partition -DiskNumber $Vhd.DiskNumber -Size 128MB -GptType '{e3c9e316-0b5c-4db8-817d-f92df00215ae}';
 
         WriteVerbose ($localized.CreatingDiskPartition -f 'Windows');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -GptType '{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}' -AssignDriveLetter;

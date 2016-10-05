@@ -11,14 +11,16 @@ function ExpandZipArchive {
 #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Source path to the Zip Archive.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
+        [ValidateNotNullOrEmpty()]
         [Alias('PSPath','FullName')] [System.String[]] $Path,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
@@ -103,7 +105,8 @@ function ExpandZipArchiveItem {
         [ValidateNotNullOrEmpty()] [System.IO.Compression.ZipArchiveEntry[]] [ref] $InputObject,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
@@ -220,7 +223,7 @@ function CloseZipArchive {
     process {
 
         WriteVerbose -Message ($localized.ClosingZipArchive -f $Path);
-        if ($zipArchive -ne $null) {
+        if ($null -ne $zipArchive) {
             $zipArchive.Dispose();
         }
         if ($null -ne $fileStream) {

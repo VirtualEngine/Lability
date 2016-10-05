@@ -5,6 +5,7 @@ function Reset-LabVMDefault {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param ( )
     process {
 
@@ -23,6 +24,8 @@ function Reset-LabVMDefaults {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param ( )
     process {
 
@@ -42,11 +45,13 @@ function Get-LabVMDefault {
     [OutputType([System.Management.Automation.PSCustomObject])]
     param ( )
     process {
+
         $vmDefaults = GetConfigurationData -Configuration VM;
 
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');
         return $vmDefaults;
+
     }
 } #end function Get-LabVMDefault
 
@@ -59,6 +64,7 @@ function Get-LabVMDefaults {
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param ( )
     process {
 
@@ -77,63 +83,78 @@ function Set-LabVMDefault {
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         ## Default virtual machine startup memory (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $StartupMemory,
 
         ## Default virtual machine miniumum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MinimumMemory,
 
         ## Default virtual machine maximum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MaximumMemory,
 
         ## Default virtual machine processor count.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(1, 4)]
         [System.Int32] $ProcessorCount,
 
         ## Default virtual machine media Id.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Media,
 
         ## Lab host internal switch name.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $SwitchName,
 
         # Input Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
         [System.String] $InputLocale,
 
         # System Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $SystemLocale,
 
         # User Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UserLocale,
 
         # UI Language
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UILanguage,
 
         # Timezone
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Timezone,
 
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $RegisteredOwner,
 
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] [Alias('RegisteredOrganisation')] $RegisteredOrganization,
 
         ## Client PFX certificate bundle used to encrypt DSC credentials
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $ClientCertificatePath,
 
         ## Client certificate's issuing Root Certificate Authority (CA) certificate
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RootCertificatePath,
 
         ## Boot delay/pause between VM operations
@@ -154,6 +175,7 @@ function Set-LabVMDefault {
         [System.Boolean] $GuestIntegrationServices
     )
     process {
+
         $vmDefaults = GetConfigurationData -Configuration VM;
 
         if ($PSBoundParameters.ContainsKey('StartupMemory')) {
@@ -244,6 +266,7 @@ function Set-LabVMDefault {
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');
         return $vmDefaults;
+
     }
 } #end function Set-LabVMDefault
 
@@ -256,65 +279,82 @@ function Set-LabVMDefaults {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         ## Default virtual machine startup memory (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $StartupMemory,
 
         ## Default virtual machine miniumum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MinimumMemory,
 
         ## Default virtual machine maximum dynamic memory allocation (bytes).
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(536870912, 1099511627776)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(536870912, 1099511627776)]
         [System.Int64] $MaximumMemory,
 
         ## Default virtual machine processor count.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateRange(1, 4)]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateRange(1, 4)]
         [System.Int32] $ProcessorCount,
 
         ## Default virtual machine media Id.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Media,
 
         ## Lab host internal switch name.
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $SwitchName,
 
         # Input Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^([a-z]{2,2}-[a-z]{2,2})|(\d{4,4}:\d{8,8})$')]
         [System.String] $InputLocale,
 
         # System Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $SystemLocale,
 
         # User Locale
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UserLocale,
 
         # UI Language
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidatePattern('^[a-z]{2,2}-[a-z]{2,2}$')]
         [System.String] $UILanguage,
 
         # Timezone
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Timezone,
 
         # Registered Owner
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $RegisteredOwner,
 
         # Registered Organization
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] [Alias('RegisteredOrganisation')] $RegisteredOrganization,
 
         ## Client PFX certificate bundle used to encrypt DSC credentials
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $ClientCertificatePath,
 
         ## Client certificate's issuing Root Certificate Authority (CA) certificate
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.String] $RootCertificatePath,
 
         ## Boot delay/pause between VM operations
