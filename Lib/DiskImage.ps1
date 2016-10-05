@@ -332,7 +332,13 @@ function AddDiskImageHotfix {
         ## Disk image partition scheme
         [Parameter(Mandatory)]
         [ValidateSet('MBR','GPT')]
-        [System.String] $PartitionStyle
+        [System.String] $PartitionStyle,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
 
@@ -345,7 +351,14 @@ function AddDiskImageHotfix {
             $partitionType = 'Basic';
         }
         $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
-        $media = Get-LabMedia -Id $Id;
+
+        $resolveLabMediaParams = @{
+            Id = $Id;
+        }
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $resolveLabMediaParams['ConfigurationData'] = $ConfigurationData;
+        }
+        $media = ResolveLabMedia @resolveLabMediaParams;
 
         foreach ($hotfix in $media.Hotfixes) {
 

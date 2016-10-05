@@ -290,10 +290,21 @@ function New-LabImage {
                 }
 
                 ExpandWindowsImage @expandWindowsImageParams;
+
                 ## Apply hotfixes (AddDiskImageHotfix)
-                AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+                $addDiskImageHotfixParams = @{
+                    Id = $Id;
+                    Vhd = $image;
+                    PartitionStyle = $partitionStyle;
+                }
+                if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+                    $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData;
+                }
+                AddDiskImageHotfix @addDiskImageHotfixParams;
+
                 ## Configure boot volume (SetDiskImageBootVolume)
                 SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
+
             }
             catch {
 

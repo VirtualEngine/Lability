@@ -124,12 +124,12 @@ function ResolveLabMedia {
             $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id });
             if ($customMedia) {
 
-                $mediaHash = @{};
+                $newLabMediaParams = @{};
                 foreach ($key in $customMedia.Keys) {
 
-                    [ref] $null = $mediaHash.Add($key, $customMedia.$Key);
+                    $newLabMediaParams[$key] = $customMedia.$key;
                 }
-                $media = NewLabMedia @mediaHash;
+                $media = NewLabMedia @newLabMediaParams;
             }
         }
 
