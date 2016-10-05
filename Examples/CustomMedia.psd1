@@ -58,6 +58,26 @@
                     ImageName = 'Windows Server 2012 R2 SERVERDATACENTER';
                     OperatingSystem = 'Windows';
                 }
+                @{
+                    ## This example defines volume license edition of Server 2012 R2 Datacenter edition from an ISO,
+                    ## with Windows Management Framework 5 installed. NOTE: you will need to update the Uri to point to
+                    ## a valid/accessible Uri location!
+                    Id = '2012R2_x64_Datacenter_EN_VL_WMF5';
+                    Filename = '2012R2_x64_EN_VL.iso';
+                    Architecture = 'x64';
+                    Uri = 'file://C:\Users\Public\Documents\Downloads\en_windows_server_2012_R2_refresh_x64.ISO';
+                    Checksum = '';
+                    Description = 'Windows Server 2012 R2 Datacenter 64bit English Volume License with WMF 5';
+                    MediaType = 'ISO';
+                    ImageName = 'Windows Server 2012 R2 SERVERDATACENTER';
+                    OperatingSystem = 'Windows';
+                    Hotfixes = @(
+                        @{
+                            Id = 'Win8.1AndW2K12R2-KB3134758-x64.msu';
+                            Uri = 'https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu';
+                        }
+                    )
+                }
             );
             Network = @(
                 ## If no network is specified, the virtual machine will be attached to a default internal virtual

@@ -44,6 +44,7 @@ ConvertFrom-StringData -StringData @'
     AddingImagePackage              = Adding package '{0}' to image '{1}'.
     AddingWindowsFeature            = Adding Windows feature(s) '{0}' to image '{1}'.
     AddingWindowsPackage            = Adding Windows package(s) '{0}' to image '{1}'.
+    AddingLocalizedWindowsPackage   = Adding localized Windows package(s) '{0}' to image '{1}'.
     AddingDSCResourceModules        = Adding DSC resource modules to '{0}'.
     AddingPowerShellModules         = Adding PowerShell modules to '{0}'.
     RemovingDSCResourceModule       = Removing existing DSC resource module '{0}'.'

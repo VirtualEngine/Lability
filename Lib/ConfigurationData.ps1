@@ -41,7 +41,8 @@ function ResolveConfigurationDataPath {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [Parameter(Mandatory)]
+        [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration,
 
         [Parameter()]
@@ -78,7 +79,8 @@ function GetConfigurationData {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [Parameter(Mandatory)]
+        [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration
     )
     process {
@@ -150,8 +152,10 @@ function SetConfigurationData {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [Parameter(Mandatory)]
+        [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration,
 
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -173,8 +177,10 @@ function RemoveConfigurationData {
         Removes custom lab configuration data file.
 #>
     [CmdletBinding(SupportsShouldProcess)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
-        [Parameter(Mandatory)] [ValidateSet('Host','VM','Media','CustomMedia')]
+        [Parameter(Mandatory)]
+        [ValidateSet('Host','VM','Media','CustomMedia')]
         [System.String] $Configuration
     )
     process {

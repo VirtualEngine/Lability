@@ -92,6 +92,8 @@ Other generous members of the community have written some comprehensive guides t
 * Adds Server 2016 RTM (and deprecates Server 2016 technical preview) media
 * Adds output formatting to lab images and media
 * Adds descriptive error message for a missing WIM Image Name parameter (#148)
+* Fixes bug where 'Hotfixes' in defined in configuration data (.psd1) media where not injected (#148)
+* Adds Server 2016 RTM Nano Server support
 
 ### v0.10.0
 

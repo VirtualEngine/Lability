@@ -1,4 +1,4 @@
-function NewDirectory {
+﻿function NewDirectory {
 <#
     .SYNOPSIS
        Creates a filesystem directory.
@@ -8,7 +8,7 @@ function NewDirectory {
 #>
     [CmdletBinding(DefaultParameterSetName = 'ByString', SupportsShouldProcess)]
     [OutputType([System.IO.DirectoryInfo])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Target filesystem directory to create
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByDirectoryInfo')]
@@ -17,7 +17,8 @@ function NewDirectory {
 
         # Target filesystem directory to create
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'ByString')]
-        [ValidateNotNullOrEmpty()] [Alias('PSPath')]
+        [ValidateNotNullOrEmpty()]
+        [Alias('PSPath')]
         [System.String[]] $Path
     )
     process {
@@ -105,15 +106,18 @@ function InvokeExecutable {
     [OutputType([System.Int32])]
     param (
         # Executable path
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         # Executable arguments
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Array] $Arguments,
 
         # Redirected StdOut and StdErr log name
-        [Parameter()] [ValidateNotNullOrEmpty()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String] $LogName = ('{0}.log' -f $Path)
     )
     process {
@@ -177,7 +181,8 @@ function WriteVerbose {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(ValueFromPipeline)] [AllowNull()]
+        [Parameter(ValueFromPipeline)]
+        [AllowNull()]
         [System.String] $Message
     )
     process {
@@ -198,7 +203,8 @@ function WriteWarning {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(ValueFromPipeline)] [AllowNull()]
+        [Parameter(ValueFromPipeline)]
+        [AllowNull()]
         [System.String] $Message
     )
     process {
@@ -266,14 +272,17 @@ function CopyDirectory {
     [CmdletBinding()]
     param (
         ## Source directory path
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNull()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNull()]
         [System.IO.DirectoryInfo] $SourcePath,
 
         ## Destination directory path
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.IO.DirectoryInfo] $DestinationPath,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
@@ -327,7 +336,8 @@ function TestComputerName {
     [OutputType([System.Boolean])]
     param (
         ## Source directory path
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ComputerName
     )
     process {

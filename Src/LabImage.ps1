@@ -288,12 +288,27 @@ function New-LabImage {
 
                     $expandWindowsImageParams['Package'] = $media.CustomData.Package;
                 }
+                if ($media.CustomData.PackageLocale) {
+
+                    $expandWindowsImageParams['PackageLocale'] = $media.CustomData.PackageLocale;
+                }
 
                 ExpandWindowsImage @expandWindowsImageParams;
+
                 ## Apply hotfixes (AddDiskImageHotfix)
-                AddDiskImageHotfix -Id $Id -Vhd $image -PartitionStyle $partitionStyle;
+                $addDiskImageHotfixParams = @{
+                    Id = $Id;
+                    Vhd = $image;
+                    PartitionStyle = $partitionStyle;
+                }
+                if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+                    $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData;
+                }
+                AddDiskImageHotfix @addDiskImageHotfixParams;
+
                 ## Configure boot volume (SetDiskImageBootVolume)
                 SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
+
             }
             catch {
 

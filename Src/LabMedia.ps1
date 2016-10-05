@@ -124,12 +124,12 @@ function ResolveLabMedia {
             $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id });
             if ($customMedia) {
 
-                $mediaHash = @{};
+                $newLabMediaParams = @{};
                 foreach ($key in $customMedia.Keys) {
 
-                    [ref] $null = $mediaHash.Add($key, $customMedia.$Key);
+                    $newLabMediaParams[$key] = $customMedia.$key;
                 }
-                $media = NewLabMedia @mediaHash;
+                $media = NewLabMedia @newLabMediaParams;
             }
         }
 
@@ -171,6 +171,7 @@ function Get-LabMedia {
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         ## Media ID
         [Parameter(ValueFromPipeline)]
@@ -247,6 +248,7 @@ function Test-LabMedia {
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
@@ -413,6 +415,7 @@ function Register-LabMedia {
         Unregister-LabMedia
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         ## Specifies the media Id to register. You can override the built-in media if required.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -555,6 +558,7 @@ function Unregister-LabMedia {
     [CmdletBinding(SupportsShouldProcess)]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSProvideDefaultParameterValue', '')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         ## Specifies the custom media Id to unregister. You cannot unregister the built-in media.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
@@ -604,6 +608,8 @@ function Reset-LabMedia {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param ( )
     process {
 
