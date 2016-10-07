@@ -164,6 +164,7 @@ ConvertFrom-StringData -StringData @'
     UsingExistingSwitchWarning      = Using existing '{0}' virtual switch.
     DeprecatedCommandWarning        = Command '{0}' has been deprecated and will be removed in a future release. Please use the alternative '{1}' command.
     DscResourcesNotDefinedWarning   = No DSC resources have been defined. Locally registered DSC resources will be copied, but this is deprecated functionality. Please update the Lability configuration document with required DSC resource definitions.
+    DismSessionRestartWarning       = Updating the Dism version requires a session reload. Please restart the PowerShell session to ensure the required Dism version is loaded.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -205,4 +206,5 @@ ConvertFrom-StringData -StringData @'
     ReadingArchiveItemError         = Error reading archive item '{0}'.
     RequiredModuleParameterError    = Required module parameter '{0}' is invalid or missing.
     InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
+    CannotLocateDismDllError        = Cannot locate 'Microsoft.Dism.Powershell.dll' in path '{0}'.
 '@
