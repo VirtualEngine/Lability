@@ -33,16 +33,20 @@ function ResolveLabVMProperties {
 
         ## Set the node's display name, if defined.
         if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix) {
+
             $node["$($moduleName)_EnvironmentPrefix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix;
         }
         if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix) {
+
             $node["$($moduleName)_EnvironmentSuffix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix;
         }
 
         if (-not $NoEnumerateWildcardNode) {
+
             ## Retrieve the AllNodes.* properties
             $ConfigurationData.AllNodes.Where({ $_.NodeName -eq '*' }) | ForEach-Object {
                 foreach ($key in $_.Keys) {
+
                     $node[$key] = $_.$key;
                 }
             }
@@ -50,7 +54,9 @@ function ResolveLabVMProperties {
 
         ## Retrieve the AllNodes.$NodeName properties
         $ConfigurationData.AllNodes.Where({ $_.NodeName -eq $NodeName }) | ForEach-Object {
+
             foreach ($key in $_.Keys) {
+
                 $node[$key] = $_.$key;
             }
         }
@@ -62,6 +68,7 @@ function ResolveLabVMProperties {
 
             ## Int32 values of 0 get coerced into $false!
             if (($node.$propertyName -isnot [System.Int32]) -and (-not $node.ContainsKey($propertyName))) {
+
                 $node[$propertyName] = $labDefaultProperties.$propertyName;
             }
         }
@@ -71,9 +78,11 @@ function ResolveLabVMProperties {
         $environmentPrefix = '{0}_EnvironmentPrefix' -f $moduleName;
         $environmentSuffix = '{0}_EnvironmentSuffix' -f $moduleName;
         if (-not [System.String]::IsNullOrEmpty($node[$environmentPrefix])) {
+
             $nodeDisplayName = '{0}{1}' -f $node[$environmentPrefix], $nodeDisplayName;
         }
         if (-not [System.String]::IsNullOrEmpty($node[$environmentSuffix])) {
+
             $nodeDisplayName = '{0}{1}' -f $nodeDisplayName, $node[$environmentSuffix];
         }
         $node["$($moduleName)_NodeDisplayName"] = $nodeDisplayName;
@@ -82,6 +91,7 @@ function ResolveLabVMProperties {
         foreach ($key in @($node.Keys)) {
 
             if ($key.StartsWith("$($moduleName)_")) {
+
                 $node[($key.Replace("$($moduleName)_",''))] = $node.$key;
                 $node.Remove($key);
             }
@@ -117,6 +127,7 @@ function Get-LabVM {
     process {
 
         if (-not $Name) {
+
             # Return all nodes defined in the configuration
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName; }
         }
@@ -130,11 +141,13 @@ function Get-LabVM {
             }
 
             try {
+
                 ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
                 $vm = GetDscResource -ResourceName VM -Parameters $xVMParams;
                 Write-Output -InputObject ([PSCustomObject] $vm);
             }
             catch {
+
                 Write-Error -Message ($localized.CannotLocateNodeError -f $nodeName);
             }
 
@@ -166,6 +179,7 @@ function Test-LabVM {
     process {
 
         if (-not $Name) {
+
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName }
         }
 
@@ -177,6 +191,7 @@ function Test-LabVM {
 
             WriteVerbose ($localized.TestingVMConfiguration -f 'Image', $node.Media);
             if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
+
                 $isNodeCompliant = $false;
             }
             else {
@@ -184,7 +199,9 @@ function Test-LabVM {
                 ## No point testing switch, vhdx and VM if the image isn't available
                 WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
                 foreach ($switchName in $node.SwitchName) {
+
                     if (-not (TestLabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
+
                         $isNodeCompliant = $false;
                     }
                 }
@@ -196,6 +213,7 @@ function Test-LabVM {
                     ConfigurationData = $ConfigurationData;
                 }
                 if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
+
                     $isNodeCompliant = $false;
                 }
                 else {
@@ -216,6 +234,7 @@ function Test-LabVM {
                         ConfigurationData = $ConfigurationData;
                     }
                     if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
+
                         $isNodeCompliant = $false;
                     }
                 }
@@ -384,12 +403,10 @@ function NewLabVM {
                 $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
             }
 
-            $mediaProductKey = $media.CustomData.ProductKey;
-            if ($mediaProductKey) {
+            if (-not [System.String]::IsNullOrEmpty($media.CustomData.ProductKey)) {
 
-                $setLabVMDiskFileParams['ProductKey'] = $mediaProductKey;
+                $setLabVMDiskFileParams['ProductKey'] = $media.CustomData.ProductKey;
             }
-
             SetLabVMDiskFile @setLabVMDiskFileParams;
 
         } #end Windows VMs
@@ -480,6 +497,7 @@ function RemoveLabVM {
         RemoveLabVMDisk @removeLabVMDiskParams -ErrorAction Stop;
 
         if ($RemoveSwitch) {
+
             WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);
             RemoveLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         }
@@ -561,6 +579,7 @@ function Reset-LabVM {
         } #end foreach VMd
 
         if (-not [System.String]::IsNullOrEmpty($activity)) {
+
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
 
@@ -720,8 +739,10 @@ function New-LabVM {
         $configurationNode = @{ }
 
         if ($CustomData) {
+
             ## Add all -CustomData keys/values to the skeleton configuration
             foreach ($key in $CustomData.Keys) {
+
                 $configurationNode[$key] = $CustomData.$key;
             }
         }
@@ -730,7 +751,9 @@ function New-LabVM {
         $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage','MACAddress',
             'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization','SecureBoot')
         foreach ($key in $parameterNames) {
+
             if ($PSBoundParameters.ContainsKey($key)) {
+
                 $configurationNode[$key] = $PSBoundParameters.$key;
             }
         }
@@ -746,6 +769,7 @@ function New-LabVM {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+
                 $currentNodeCount++;
                 [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
                 $activity = $localized.ConfiguringNode -f $vmName;
@@ -758,6 +782,7 @@ function New-LabVM {
         } #end foreach name
 
         if (-not [System.String]::IsNullOrEmpty($activity)) {
+
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
 
@@ -793,6 +818,7 @@ function Remove-LabVM {
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+
                 $currentNodeCount++;
                 [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
                 $activity = $localized.ConfiguringNode -f $vmName;
@@ -800,17 +826,20 @@ function Remove-LabVM {
 
                 ## Create a skeleton config data if one wasn't supplied
                 if (-not $PSBoundParameters.ContainsKey('ConfigurationData')) {
+
                     $configurationData = @{
                         AllNodes = @(
                             @{  NodeName = $vmName; }
                         )
                     };
                 }
+
                 RemoveLabVM -Name $vmName -ConfigurationData $configurationData;
             } #end if should process
         } #end foreach VM
 
         if (-not [System.String]::IsNullOrEmpty($activity)) {
+
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
         }
 
