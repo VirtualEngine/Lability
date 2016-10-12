@@ -299,11 +299,14 @@ function SetDiskImageBootVolume {
     process {
 
         switch ($PartitionStyle) {
+
             'MBR' {
+
                 SetDiskImageBootVolumeMbr -Vhd $Vhd;
                 break;
             }
             'GPT' {
+
                 SetDiskImageBootVolumeGpt -Vhd $Vhd;
                 break;
             }
@@ -419,7 +422,7 @@ function AddDiskImagePackage {
             LogPath = '{0}\{1}.log' -f $logPath, $Name;
             LogLevel = 'Errors';
         }
-        [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
+        [ref] $null = Microsoft.Dism.Powershell\Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
 
     } #end process
 } #end function AddDiskImagePackage

@@ -95,6 +95,7 @@ Other generous members of the community have written some comprehensive guides t
 * Fixes bug where 'Hotfixes' in defined in configuration data (.psd1) media where not injected (#148)
 * Adds Server 2016 RTM Nano Server support
 * Fixes bug where media ProductKey entry was not specified in the generated unattend.xml (#134)
+* Adds Windows ADK support to enable Win 10 and Server 2016 deployments on Win 8.1 and 2012 R2 hosts (#139)
 
 ### v0.10.0
 

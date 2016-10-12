@@ -44,3 +44,6 @@ $credentialCheckScriptBlock = {
 
 ## Load the call stack logging setting referenced by WriteVerbose
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
+
+## Ensure we load the required DISM module version
+ImportDismModule;

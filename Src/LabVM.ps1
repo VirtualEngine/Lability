@@ -306,9 +306,9 @@ function NewLabVM {
 
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $NodeName = $node.NodeName;
-
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
+
         if (-not (TestComputerName -ComputerName $displayName)) {
 
             throw (localized.InvalidComputerNameError -f $displayName);
@@ -330,6 +330,7 @@ function NewLabVM {
 
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Client');
             }
+
             if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
 
                 $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
@@ -342,6 +343,7 @@ function NewLabVM {
 
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
             }
+
         } #end if not quick VM
 
         foreach ($switchName in $node.SwitchName) {
@@ -394,6 +396,7 @@ function NewLabVM {
                 ConfigurationCustomBootstrap = $node.CustomBootstrap;
                 MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
             }
+
             $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
             if ($customBootstrap) {
 

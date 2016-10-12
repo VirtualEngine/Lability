@@ -65,6 +65,7 @@ function ExpandWindowsImage {
         $mediaFileInfo = Get-Item -Path $MediaPath;
 
         if ($mediaFileInfo.Extension -eq '.ISO') {
+
             ## Mount ISO
             WriteVerbose ($localized.MountingDiskImage -f $MediaPath);
             $iso = Mount-DiskImage -ImagePath $MediaPath -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
@@ -75,12 +76,19 @@ function ExpandWindowsImage {
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'Name') {
+
             ## Locate the image index
             $WimImageIndex = GetWindowsImageIndex -ImagePath $windowsImagePath -ImageName $WimImageName;
         }
 
-        if ($PartitionStyle -eq 'MBR') { $partitionType = 'IFS'; }
-        elseif ($PartitionStyle -eq 'GPT') { $partitionType = 'Basic'; }
+        if ($PartitionStyle -eq 'MBR') {
+
+            $partitionType = 'IFS';
+        }
+        elseif ($PartitionStyle -eq 'GPT') {
+
+            $partitionType = 'Basic';
+        }
         $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
 
         $logName = '{0}.log' -f [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
@@ -108,6 +116,7 @@ function ExpandWindowsImage {
                 PackageLocale = $PackageLocale;
             }
             if (-not $PackagePath.StartsWith('\')) {
+
                 ## Use the specified/literal path
                 $addWindowsPackageParams['PackagePath'] = $PackagePath;
             }
@@ -126,6 +135,7 @@ function ExpandWindowsImage {
                 WindowsOptionalFeature = $WindowsOptionalFeature;
             }
             if ($mediaFileInfo.Extension -eq '.WIM') {
+
                 ## The Windows optional feature source path for .WIM files is a literal path
                 $addWindowsOptionalFeatureParams['ImagePath'] = $SourcePath;
             }
@@ -133,6 +143,7 @@ function ExpandWindowsImage {
         } #end if WindowsOptionalFeature
 
         if ($mediaFileInfo.Extension -eq '.ISO') {
+
             ## Dismount ISO
             WriteVerbose ($localized.DismountingDiskImage -f $MediaPath);
             Dismount-DiskImage -ImagePath $MediaPath;
@@ -179,8 +190,9 @@ function AddWindowsOptionalFeature {
             FeatureName = $WindowsOptionalFeature;
             LimitAccess = $true;
             All = $true;
+            Verbose = $false;
         }
-        $dismOutput = Enable-WindowsOptionalFeature @enableWindowsOptionalFeatureParams -Verbose:$false;
+        $dismOutput = Microsoft.Dism.Powershell\Enable-WindowsOptionalFeature @enableWindowsOptionalFeatureParams;
 
     } #end process
 } #end function AddDiskImageOptionalFeature

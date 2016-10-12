@@ -169,7 +169,11 @@ function Set-LabHostDefault {
 
         ## Enable call stack logging in verbose output
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
+        [System.Management.Automation.SwitchParameter] $EnableCallStackLogging,
+
+        ## Custom DISM/ADK path
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DismPath
     )
     process {
 
@@ -198,18 +202,28 @@ function Set-LabHostDefault {
         }
 
         if ($PSBoundParameters.ContainsKey('ResourceShareName')) {
+
             $hostDefaults.ResourceShareName = $ResourceShareName;
         }
         if ($PSBoundParameters.ContainsKey('DisableLocalFileCaching')) {
+
             $hostDefaults.DisableLocalFileCaching = $DisableLocalFileCaching.ToBool();
         }
         if ($PSBoundParameters.ContainsKey('EnableCallStackLogging')) {
+
             ## Set the global script variable read by WriteVerbose
             $script:labDefaults.CallStackLogging = $EnableCallStackLogging;
             $hostDefaults.EnableCallStackLogging = $EnableCallStackLogging.ToBool();
         }
+        if ($PSBoundParameters.ContainsKey('DismPath')) {
+
+            $hostDefaults.DismPath = ResolveDismPath -Path $DismPath;
+            WriteWarning -Message ($localized.DismSessionRestartWarning);
+        }
 
         SetConfigurationData -Configuration Host -InputObject $hostDefaults;
+        ImportDismModule;
+
         return $hostDefaults;
 
     } #end process
@@ -278,7 +292,11 @@ function Set-LabHostDefaults {
 
         ## Enable call stack logging in verbose output
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $EnableCallStackLogging
+        [System.Management.Automation.SwitchParameter] $EnableCallStackLogging,
+
+        ## Custom DISM/ADK path
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DismPath
     )
     process {
 

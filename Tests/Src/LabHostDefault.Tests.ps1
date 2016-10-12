@@ -9,6 +9,8 @@ Describe 'Src\LabHostDefaults' {
 
     InModuleScope $moduleName {
 
+        Mock ImportDismModule { }
+
         Context 'Validates "Get-LabHostDefault" method' {
 
             It 'Calls "GetConfigurationData"' {
