@@ -119,6 +119,7 @@ function SetLabVMDiskFileModule {
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
+
             WriteVerbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
             SetLabVMDiskModule @setLabVMDiskDscModuleParams;
         }
@@ -134,6 +135,7 @@ function SetLabVMDiskFileModule {
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskPowerShellModuleParams['Module']) {
+
             WriteVerbose -Message ($localized.AddingPowerShellModules -f $programFilesPath);
             SetLabVMDiskModule @setLabVMDiskPowerShellModuleParams;
         }
@@ -170,6 +172,10 @@ function SetLabVMDiskFileUnattendXml {
         [System.Management.Automation.CredentialAttribute()]
         $Credential,
 
+        ## Media-defined product key
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ProductKey,
+
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
@@ -191,9 +197,17 @@ function SetLabVMDiskFileUnattendXml {
             RegisteredOrganization = $node.RegisteredOrganization;
         }
         WriteVerbose -Message $localized.SettingAdministratorPassword;
+
+        ## Node defined Product Key takes preference over key defined in the media definition
         if ($node.CustomData.ProductKey) {
+
             $newUnattendXmlParams['ProductKey'] = $node.CustomData.ProductKey;
         }
+        elseif ($PSBoundParameters.ContainsKey('ProductKey')) {
+
+            $newUnattendXmlParams['ProductKey'] = $ProductKey;
+        }
+
         ## TODO: We probably need to be localise the \Windows\ (%ProgramFiles% has been done) directory?
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $VhdDriveLetter;
         WriteVerbose -Message ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
@@ -233,9 +247,11 @@ function SetLabVMDiskFileBootstrap {
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
         WriteVerbose -Message ($localized.AddingBootStrapFile -f $bootStrapPath);
         if ($CustomBootStrap) {
+
             SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
         }
         else {
+
             SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
         }
 
@@ -277,9 +293,11 @@ function SetLabVMDiskFileMof {
         $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $NodeName);
 
         if (-not (Test-Path -Path $mofPath)) {
+
             WriteWarning -Message ($localized.CannotLocateMofFileError -f $mofPath);
         }
         else {
+
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMofPath);
             Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
@@ -287,6 +305,7 @@ function SetLabVMDiskFileMof {
 
         $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $NodeName);
         if (Test-Path -Path $metaMofPath -PathType Leaf) {
+
             $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
             Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force;
@@ -328,6 +347,7 @@ function SetLabVMDiskFileCertificate {
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
 
         if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
+
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
@@ -335,6 +355,7 @@ function SetLabVMDiskFileCertificate {
         }
 
         if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
+
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
             $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
@@ -383,7 +404,11 @@ function SetLabVMDiskFile {
 
         ## CoreCLR
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $CoreCLR
+        [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Media-defined product key
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $ProductKey
     )
     process {
 
