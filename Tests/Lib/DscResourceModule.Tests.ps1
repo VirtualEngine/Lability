@@ -55,6 +55,8 @@ Describe 'Lib\DscResourceModule' {
                 $testModulesName = 'Modules';
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
+                [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\$testModuleName.psd1" -ItemType File -Force -ErrorAction SilentlyContinue;
+
                 Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
