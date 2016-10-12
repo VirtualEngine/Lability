@@ -287,42 +287,54 @@ function NewLabVM {
 
         $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $NodeName = $node.NodeName;
-
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
+
         if (-not (TestComputerName -ComputerName $displayName)) {
+
             throw (localized.InvalidComputerNameError -f $displayName);
         }
 
         ## Don't attempt to check certificates for 'Quick VMs'
         if (-not $IsQuickVM) {
+
             ## Check for certificate before we (re)create the VM
             if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
+
                 $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
                 if (-not (Test-Path -Path $expandedClientCertificatePath -PathType Leaf)) {
+
                     throw ($localized.CannotFindCertificateError -f 'Client', $node.ClientCertificatePath);
                 }
             }
             else {
+
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Client');
             }
+
             if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
+
                 $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
                 if (-not (Test-Path -Path $expandedRootCertificatePath -PathType Leaf)) {
+
                     throw ($localized.CannotFindCertificateError -f 'Root', $node.RootCertificatePath);
                 }
             }
             else {
+
                 WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
             }
+
         } #end if not quick VM
 
         foreach ($switchName in $node.SwitchName) {
+
             WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switchName);
             SetLabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
         if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
+
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
 
@@ -365,25 +377,38 @@ function NewLabVM {
                 ConfigurationCustomBootstrap = $node.CustomBootstrap;
                 MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
             }
+
             $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
             if ($customBootstrap) {
+
                 $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;
             }
+
+            $mediaProductKey = $media.CustomData.ProductKey;
+            if ($mediaProductKey) {
+
+                $setLabVMDiskFileParams['ProductKey'] = $mediaProductKey;
+            }
+
             SetLabVMDiskFile @setLabVMDiskFileParams;
 
         } #end Windows VMs
 
         if (-not $NoSnapshot) {
+
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
             Checkpoint-VM -Name $displayName -SnapshotName $snapshotName;
         }
 
         if ($node.WarningMessage) {
+
             if ($node.WarningMessage -is [System.String]) {
+
                 WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage);
             }
             else {
+
                 WriteWarning ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
             }
         }

@@ -83,11 +83,14 @@ function NewLabMedia {
             CustomData = $CustomData;
             Hotfixes = $Hotfixes;
         }
+
+        ## Ensure any explicit product key overrides the CustomData value
         if ($ProductKey) {
 
             $CustomData['ProductKey'] = $ProductKey;
         }
         return $labMedia;
+
     } #end process
 } #end function NewLabMedia
 
