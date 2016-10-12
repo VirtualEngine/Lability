@@ -566,8 +566,8 @@ Describe 'Src\LabVM' {
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
                 Mock SetLabVirtualMachine -MockWith { }
-                Mock SetLabVMDiskFile -MockWith { }
                 Mock ResolveLabMedia -MockWith { return @{ Id = $Id; OperatingSystem = 'Linux'; } }
+                Mock SetLabVMDiskFile -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
@@ -589,11 +589,35 @@ Describe 'Src\LabVM' {
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
-                Mock SetLabVMDiskFile -ParameterFilter { $NodeName -eq $testVMName } -MockWith { }
+                #Mock SetLabVMDiskFile -ParameterFilter { $NodeName -eq $testVMName } -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
                 Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $NodeName -eq $testVMName } -Scope It;
+            }
+
+            It 'Passes media "ProductKey" when specified (#134)' {
+                $testVMName = 'TestVM';
+                $testProductKey   = 'ABCDE-12345-EDCBA-54321-ABCDE';
+                $configurationData = @{
+                    AllNodes = @(
+                        @{ NodeName = $testVMName; Resource = 'TestResource'; }
+                    )
+                }
+                Mock ResolveLabMedia -MockWith { return @{ Id = $Id; CustomData = @{ ProductKey = $testProductKey } } }
+                Mock SetLabSwitch -MockWith { }
+                Mock ResetLabVMDisk -MockWith { }
+                Mock SetLabVirtualMachine -MockWith { }
+                Mock Checkpoint-VM -MockWith { }
+                Mock Get-VM -MockWith { }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock New-LabImage -MockWith { }
+                Mock SetLabVMDiskFile -MockWith { }
+
+                $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                Assert-MockCalled SetLabVMDiskFile -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
             }
 
             It 'Does not create a snapshot when "NoSnapshot" is specified' {
