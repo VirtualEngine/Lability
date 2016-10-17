@@ -606,10 +606,10 @@ function Get-VhdHierarchy
         [Parameter(Mandatory)]
         [System.String] $VhdPath
     )
-
+    
     $vmVhdPath = Get-VHD -Path $VhdPath
     Write-Output -InputObject $vmVhdPath.Path
-    while($vmVhdPath.ParentPath -ne [String]::Empty)
+    while(-not [System.String]::IsNullOrEmpty($vmVhdPath.ParentPath))
     {
         $vmVhdPath.ParentPath
         $vmVhdPath = (Get-VHD -Path $vmVhdPath.ParentPath)

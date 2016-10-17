@@ -96,6 +96,8 @@ Other generous members of the community have written some comprehensive guides t
 * Adds Server 2016 RTM Nano Server support
 * Fixes bug where media ProductKey entry was not specified in the generated unattend.xml (#134)
 * Adds Windows ADK support to enable Win 10 and Server 2016 deployments on Win 8.1 and 2012 R2 hosts (#139)
+* Updates bundled xHyper-V DSC resource module to 3.5.0.0
+* Updates bundled xPendingReboot DSC resource module to 0.3.0.0
 
 ### v0.10.0
 
