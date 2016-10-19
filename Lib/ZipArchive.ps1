@@ -1,7 +1,7 @@
 function ExpandZipArchive {
 <#
     .SYNOPSIS
-        Extracts a GitHub Zip archive.
+        Extracts a Zip archive.
     .NOTES
         This is an internal function and should not be called directly.
     .LINK
@@ -9,16 +9,18 @@ function ExpandZipArchive {
     .OUTPUTS
         A System.IO.FileInfo object for each extracted file.
 #>
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         # Source path to the Zip Archive.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
+        [ValidateNotNullOrEmpty()]
         [Alias('PSPath','FullName')] [System.String[]] $Path,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
@@ -30,27 +32,35 @@ function ExpandZipArchive {
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
+
         ## Validate destination path
         if (-not (Test-Path -Path $DestinationPath -IsValid)) {
             throw ($localized.InvalidDestinationPathError -f $DestinationPath);
         }
+
         $DestinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
         WriteVerbose -Message ($localized.ResolvedDestinationPath -f $DestinationPath);
         [ref] $null = NewDirectory -Path $DestinationPath;
+
         foreach ($pathItem in $Path) {
             foreach ($resolvedPath in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pathItem)) {
                 WriteVerbose -Message ($localized.ResolvedSourcePath -f $resolvedPath);
                 $LiteralPath += $resolvedPath;
             }
         }
+
         ## If all tests passed, load the required .NET assemblies
         Write-Debug -Message 'Loading ''System.IO.Compression'' .NET binaries.';
         Add-Type -AssemblyName 'System.IO.Compression';
         Add-Type -AssemblyName 'System.IO.Compression.FileSystem';
+
     } # end begin
     process {
+
         foreach ($pathEntry in $LiteralPath) {
+
             try {
+
                 $zipArchive = [System.IO.Compression.ZipFile]::OpenRead($pathEntry);
                 $expandZipArchiveItemParams = @{
                     InputObject = [ref] $zipArchive.Entries;
@@ -58,7 +68,9 @@ function ExpandZipArchive {
                     ExcludeNuSpecFiles = $ExcludeNuSpecFiles;
                     Force = $Force;
                 }
+
                 ExpandZipArchiveItem @expandZipArchiveItemParams;
+
             } # end try
             catch {
                 Write-Error -Message $_.Exception;
@@ -67,14 +79,17 @@ function ExpandZipArchive {
                 ## Close the file handle
                 CloseZipArchive;
             }
+
         } # end foreach
+
     } # end process
 } #end function ExpandZipArchive
+
 
 function ExpandZipArchiveItem {
 <#
     .SYNOPSIS
-        Extracts file(s) from a GitHub Zip archive.
+        Extracts file(s) from a Zip archive.
     .NOTES
         This is an internal function and should not be called directly.
     .LINK
@@ -82,15 +97,16 @@ function ExpandZipArchiveItem {
     .OUTPUTS
         A System.IO.FileInfo object for each extracted file.
 #>
-    [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess, ConfirmImpact = 'Medium')]
     [OutputType([System.IO.FileInfo])]
     param (
         # Reference to Zip archive item.
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, ParameterSetName = 'InputObject')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'InputObject')]
         [ValidateNotNullOrEmpty()] [System.IO.Compression.ZipArchiveEntry[]] [ref] $InputObject,
 
         # Destination file path to extract the Zip Archive item to.
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, Position = 1)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         # Excludes NuGet .nuspec specific files
@@ -102,16 +118,21 @@ function ExpandZipArchiveItem {
         [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
+
         Write-Debug -Message 'Loading ''System.IO.Compression'' .NET binaries.';
         Add-Type -AssemblyName 'System.IO.Compression';
         Add-Type -AssemblyName 'System.IO.Compression.FileSystem';
+
     }
     process {
+
         try {
+
             [System.Int32] $fileCount = 0;
             $activity = $localized.DecompressingArchive -f $DestinationPath;
             Write-Progress -Activity $activity -PercentComplete 0;
             foreach ($zipArchiveEntry in $InputObject) {
+
                 $fileCount++;
                 if (($fileCount % 5) -eq 0) {
                     [System.Int16] $percentComplete = ($fileCount / $InputObject.Count) * 100
@@ -178,14 +199,19 @@ function ExpandZipArchiveItem {
                         Write-Output -InputObject (Get-Item -Path $fullDestinationFilePath);
                     }
                 } # end if
+
             } # end foreach zipArchiveEntry
+
             Write-Progress -Activity $activity -Completed;
+
         } # end try
         catch {
             Write-Error -Message $_.Exception;
         }
+
     } # end process
 } #end function ExpandZipArchiveItem
+
 
 function CloseZipArchive {
 <#
@@ -195,12 +221,14 @@ function CloseZipArchive {
     [CmdletBinding()]
     param ()
     process {
+
         WriteVerbose -Message ($localized.ClosingZipArchive -f $Path);
-        if ($zipArchive -ne $null) {
+        if ($null -ne $zipArchive) {
             $zipArchive.Dispose();
         }
         if ($null -ne $fileStream) {
             $fileStream.Close();
         }
+
     } # end process
 } #end function CloseZipArchive

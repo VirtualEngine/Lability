@@ -7,22 +7,27 @@ function GetDiskImageDriveLetter {
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.Object] $DiskImage,
-        
-        [Parameter(Mandatory)] [ValidateSet('Basic','System','IFS')]
+
+        [Parameter(Mandatory)]
+        [ValidateSet('Basic','System','IFS')]
         [System.String] $PartitionType
     )
     process {
+
         # Microsoft.Vhd.PowerShell.VirtualHardDisk
         $driveLetter = Get-Partition -DiskNumber $DiskImage.DiskNumber |
             Where-Object Type -eq $PartitionType |
                 Where-Object DriveLetter |
                     Select-Object -Last 1 -ExpandProperty DriveLetter;
+
         if (-not $driveLetter) {
+
             throw ($localized.CannotLocateDiskImageLetter -f $DiskImage.Path);
         }
         return $driveLetter;
     }
 } #end function GetDiskImageDriveLetter
+
 
 function NewDiskImageMbr {
 <#
@@ -32,22 +37,28 @@ function NewDiskImageMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
+
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
-        WriteVerbose ($localized.CreatingDiskPartition -f 'OS');
+
+        WriteVerbose ($localized.CreatingDiskPartition -f 'Windows');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -MbrType IFS -IsActive |
             Add-PartitionAccessPath -AssignDriveLetter -PassThru |
                 Get-Partition;
-        WriteVerbose ($localized.FormattingDiskPartition -f 'OS');
+        WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
         $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
+
         Start-Service -Name 'ShellHWDetection';
+
     } #end proces
 } #end function NewDiskImageMbr
+
 
 function NewDiskPartFat32Partition {
 <#
@@ -58,7 +69,7 @@ function NewDiskPartFat32Partition {
     param (
         [Parameter(Mandatory)]
         [System.Int32] $DiskNumber,
-        
+
         [Parameter(Mandatory)]
         [System.Int32] $PartitionNumber
     )
@@ -71,6 +82,7 @@ format fs=fat32 label="System"
     }
 }
 
+
 function NewDiskImageGpt {
 <#
     .SYNOPSIS
@@ -79,24 +91,34 @@ function NewDiskImageGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
+
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
-        WriteVerbose ($localized.CreatingDiskPartition -f 'System');
-        $systemPartition = New-Partition -DiskNumber $Vhd.DiskNumber -Size 250MB -GptType '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}' -AssignDriveLetter;
-        WriteVerbose ($localized.FormattingDiskPartition -f 'System');
-        NewDiskPartFat32Partition -DiskNumber $Vhd.DiskNumber -PartitionNumber $systemPartition.PartitionNumber;
-        WriteVerbose ($localized.CreatingDiskPartition -f 'OS');
+
+        WriteVerbose ($localized.CreatingDiskPartition -f 'EFI');
+        $efiPartition = New-Partition -DiskNumber $Vhd.DiskNumber -Size 250MB -GptType '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}' -AssignDriveLetter;
+        WriteVerbose ($localized.FormattingDiskPartition -f 'EFI');
+        NewDiskPartFat32Partition -DiskNumber $Vhd.DiskNumber -PartitionNumber $efiPartition.PartitionNumber;
+
+        WriteVerbose ($localized.CreatingDiskPartition -f 'MSR');
+        [ref] $null = New-Partition -DiskNumber $Vhd.DiskNumber -Size 128MB -GptType '{e3c9e316-0b5c-4db8-817d-f92df00215ae}';
+
+        WriteVerbose ($localized.CreatingDiskPartition -f 'Windows');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -GptType '{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}' -AssignDriveLetter;
-        WriteVerbose ($localized.FormattingDiskPartition -f 'OS');
+        WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
         $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
+
         Start-Service -Name 'ShellHWDetection';
+
     } #end process
 } #end function NewDiskImageGpt
+
 
 function NewDiskImage {
 <#
@@ -106,36 +128,43 @@ function NewDiskImage {
     [CmdletBinding()]
     param (
         ## VHD/x file path
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
-        
+
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
+        [Parameter(Mandatory)]
+        [ValidateSet('MBR','GPT')]
         [System.String] $PartitionStyle,
-        
+
         ## Disk image size in bytes
         [Parameter()]
         [System.UInt64] $Size = 127GB,
-        
+
         ## Overwrite/recreate existing disk image
         [Parameter()]
         [System.Management.Automation.SwitchParameter] $Force,
-        
+
         ## Do not dismount the VHD/x and return a reference
         [Parameter()]
         [System.Management.Automation.SwitchParameter] $Passthru
     )
     begin {
+
         if ((Test-Path -Path $Path -PathType Leaf) -and (-not $Force)) {
+
             throw ($localized.ImageAlreadyExistsError -f $Path);
         }
         elseif ((Test-Path -Path $Path -PathType Leaf) -and ($Force)) {
+
             Dismount-VHD -Path $Path -ErrorAction Stop;
             WriteVerbose ($localized.RemovingDiskImage -f $Path);
             Remove-Item -Path $Path -Force -ErrorAction Stop;
         }
+
     } #end begin
     process {
+
         WriteVerbose ($localized.CreatingDiskImage -f $Path);
         $vhd = New-Vhd -Path $Path -Dynamic -SizeBytes $Size;
         WriteVerbose ($localized.MountingDiskImage -f $Path);
@@ -152,10 +181,18 @@ function NewDiskImage {
             }
         }
 
-        if ($Passthru) { return $vhdMount; }
-        else { Dismount-VHD -Path $Path; }
+        if ($Passthru) {
+
+            return $vhdMount;
+        }
+        else {
+
+            Dismount-VHD -Path $Path;
+        }
+
     } #end process
 } #end function NewDiskImage
+
 
 function SetDiskImageBootVolumeMbr {
 <#
@@ -165,10 +202,12 @@ function SetDiskImageBootVolumeMbr {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
+
         $bcdBootExe = 'bcdboot.exe';
         $bcdEditExe = 'bcdedit.exe';
         $imageName = [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
@@ -200,8 +239,10 @@ function SetDiskImageBootVolumeMbr {
             '/set {default} osdevice locate'
         );
         InvokeExecutable -Path $bcdEditExe -Arguments $defaultOsDeviceArgs -LogName ('{0}-DefaultOsDevice.log' -f $imageName);
+
     } #end process
 } #end function
+
 
 function SetDiskImageBootVolumeGpt {
 <#
@@ -211,10 +252,12 @@ function SetDiskImageBootVolumeGpt {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd # Microsoft.Vhd.PowerShell.VirtualHardDisk
     )
     process {
+
         $bcdBootExe = 'bcdboot.exe';
         $imageName = [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
 
@@ -231,8 +274,10 @@ function SetDiskImageBootVolumeGpt {
         ## Clean up and remove drive access path
         Remove-PSDrive -Name $osPartitionDriveLetter -PSProvider FileSystem -ErrorAction Ignore;
         [ref] $null = Get-PSDrive;
+
     } #end process
 } #end function
+
 
 function SetDiskImageBootVolume {
 <#
@@ -242,26 +287,34 @@ function SetDiskImageBootVolume {
     [CmdletBinding()]
     param (
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
-        
+
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
+        [Parameter(Mandatory)]
+        [ValidateSet('MBR','GPT')]
         [System.String] $PartitionStyle
     )
     process {
+
         switch ($PartitionStyle) {
+
             'MBR' {
+
                 SetDiskImageBootVolumeMbr -Vhd $Vhd;
                 break;
             }
             'GPT' {
+
                 SetDiskImageBootVolumeGpt -Vhd $Vhd;
                 break;
             }
         } #end switch
+
     } #end process
 } #end function SetDiskImageBootVolume
+
 
 function AddDiskImageHotfix {
 <#
@@ -270,31 +323,57 @@ function AddDiskImageHotfix {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Id,
-        
+
         ## Mounted VHD(X) Operating System disk image
-        [Parameter(Mandatory)] [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
         [System.Object] $Vhd, # Microsoft.Vhd.PowerShell.VirtualHardDisk
-        
+
         ## Disk image partition scheme
-        [Parameter(Mandatory)] [ValidateSet('MBR','GPT')]
-        [System.String] $PartitionStyle
+        [Parameter(Mandatory)]
+        [ValidateSet('MBR','GPT')]
+        [System.String] $PartitionStyle,
+
+        ## Lab DSC configuration data
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Collections.Hashtable]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
+        $ConfigurationData
     )
     process {
-        if ($PartitionStyle -eq 'MBR') { $partitionType = 'IFS'; }
-        elseif ($PartitionStyle -eq 'GPT') { $partitionType = 'Basic'; }
+
+        if ($PartitionStyle -eq 'MBR') {
+
+            $partitionType = 'IFS';
+        }
+        elseif ($PartitionStyle -eq 'GPT') {
+
+            $partitionType = 'Basic';
+        }
         $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
-        $media = Get-LabMedia -Id $Id;
-        
+
+        $resolveLabMediaParams = @{
+            Id = $Id;
+        }
+        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+            $resolveLabMediaParams['ConfigurationData'] = $ConfigurationData;
+        }
+        $media = ResolveLabMedia @resolveLabMediaParams;
+
         foreach ($hotfix in $media.Hotfixes) {
+
             $hotfixFileInfo = InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
             $packageName = [System.IO.Path]::GetFileNameWithoutExtension($hotfixFileInfo.FullName);
 
             AddDiskImagePackage -Name $packageName -Path $hotfixFileInfo.FullName -DestinationPath $vhdDriveLetter;
         }
+
     } #end process
 } #end function AddDiskImageHotfix
+
 
 function AddDiskImagePackage {
 <#
@@ -308,27 +387,34 @@ function AddDiskImagePackage {
     [CmdletBinding()]
     param (
         ## Package name (used for logging)
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## File path to the package (.cab) file
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path,
 
         ## Destination operating system path (mounted VHD), i.e. G:\
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath
     )
     begin {
+
         ## We just want the drive letter
         if ($DestinationPath.Length -gt 1) {
+
             $DestinationPath = $DestinationPath.Substring(0,1);
         }
+
     }
     process {
+
         $logPath = '{0}:\Windows\Logs\{1}' -f $DestinationPath, $labDefaults.ModuleName;
         [ref] $null = NewDirectory -Path $logPath -Verbose:$false;
-        
+
         WriteVerbose ($localized.AddingImagePackage -f $Name, $DestinationPath);
         $addWindowsPackageParams = @{
             PackagePath = $Path;
@@ -336,6 +422,7 @@ function AddDiskImagePackage {
             LogPath = '{0}\{1}.log' -f $logPath, $Name;
             LogLevel = 'Errors';
         }
-        [ref] $null = Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
+        [ref] $null = Microsoft.Dism.Powershell\Add-WindowsPackage @addWindowsPackageParams -Verbose:$false;
+
     } #end process
 } #end function AddDiskImagePackage

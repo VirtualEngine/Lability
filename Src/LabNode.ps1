@@ -1,36 +1,43 @@
+<# DEPRECATED
 function TestLabNodeCertificate {
-<#
+#
     .SYNOPSIS
         Tests whether the certificate is installed.
-#>
+#
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $CertificatePath,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateSet('My','Root')]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateSet('My','Root')]
         [System.String] $Store
     )
     process {
+
         $CertificatePath = ResolvePathEx -Path $CertificatePath;
         if (-not (Test-Path -Path $CertificatePath)) {
             return $false;
         }
+
         $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate]::CreateFromCertFile($CertificatePath);
 
         $localCertificate = Get-ChildItem -Path "Cert:\LocalMachine\$Store" |
             Where-Object { $_.Subject -eq $certificate.Subject }
 
         return ($null -ne $localCertificate);
+
     } #end process
 } #end function TestLabNodeCertificate
+#>
 
+<# DEPRECATED
 function InstallLabNodeCertificates {
-<#
+#
     .SYNOPSIS
         Installs lab node certificates
     .NOTES
         Enables easier unit testing!
-#>
+#
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $RootCertificatePath,
@@ -42,23 +49,28 @@ function InstallLabNodeCertificates {
         [System.Management.Automation.SwitchParameter] $Force
     )
     process {
+
         ## Import certificates
         $resolvedRootCertificatePath = ResolvePathEx -Path $RootCertificatePath;
         if ($Force -or (-not (TestLabNodeCertificate -CertificatePath $resolvedRootCertificatePath -Store 'Root'))) {
             WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $resolvedRootCertificatePath);
             certutil.exe -addstore -f "Root" $resolvedRootCertificatePath | WriteVerbose;
         }
+
         ## Import the .PFX certificate with a blank password
         $resolvedClientCertificatePath = ResolvePathEx -Path $ClientCertificatePath;
         if ($Force -or (-not (TestLabNodeCertificate -CertificatePath $resolvedClientCertificatePath -Store 'My'))) {
             WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $resolvedClientCertificatePath);
             "" | certutil.exe -f -importpfx $resolvedClientCertificatePath | WriteVerbose;
         }
+
     } #end process
 } #end function InstallLabNodeCertificates
+#>
 
+<# DEPRECATED
 function Test-LabNodeConfiguration {
-<#
+#
     .SYNOPSIS
         Test a node's configuration for manual deployment.
     .DESCRIPTION
@@ -84,7 +96,7 @@ function Test-LabNodeConfiguration {
         Specifies that checking of the local certificates is skipped.
     .LINK
         Invoke-LabNodeConfiguration
-#>
+#
     [CmdletBinding(DefaultParameterSetName = 'All')]
     [OutputType([System.Boolean])]
     param (
@@ -94,10 +106,12 @@ function Test-LabNodeConfiguration {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $NodeName = ([System.Net.Dns]::GetHostName()),
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'SkipDscCheck')]
@@ -110,6 +124,7 @@ function Test-LabNodeConfiguration {
         [System.Management.Automation.SwitchParameter] $SkipCertificateCheck
     )
     process {
+
         $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         if ((-not $node) -or ($node.NodeName -eq '*') -or ([System.String]::IsNullOrEmpty($node.NodeName))) {
             throw ($localized.CannotLocateNodeError -f $NodeName);
@@ -155,12 +170,12 @@ function Test-LabNodeConfiguration {
             foreach ($resourceId in $node.Resource) {
                 ## Check resource is available locally
                 WriteVerbose -Message ($localized.TestingNodeResource -f $resourceId);
-                $testLabLocalResourceParams = @{
+                $testLabResourceIsLocalParams = @{
                     ConfigurationData = $ConfigurationData;
                     ResourceId = $resourceId;
                     LocalResourcePath = $DestinationPath;
                 }
-                $isAvailableLocally = TestLabLocalResource @testLabLocalResourceParams;
+                $isAvailableLocally = TestLabResourceIsLocal @testLabResourceIsLocalParams;
                 if (-not $isAvailableLocally) {
                     $resourceFilename = Join-Path -Path $DestinationPath -ChildPath $resourceId;
                     WriteWarning -Message ($localized.MissingRequiredResourceWarning -f $resourceFilename);
@@ -170,11 +185,14 @@ function Test-LabNodeConfiguration {
         }
 
         return $inDesiredState;
+
     } #end process
 } #end function Test-LabNodeConfiguration
+#>
 
+<# DEPRECATED
 function Invoke-LabNodeConfiguration {
-<#
+#
     .SYNOPSIS
         Configures a node for manual lab deployment.
     .DESCRIPTION
@@ -198,9 +216,11 @@ function Invoke-LabNodeConfiguration {
         defaults to the default ResourceShareName in the root of the system drive, i.e. C:\Resources.
     .PARAMETER Force
         Specifies that DSC resources should be re-downloaded, overwriting existing versions.
+    .NOTES
+        Deprecated functionality. This will move into the LabilityBootstrap module.
     .LINK
         Test-LabNodeConfiguration
-#>
+#
     [CmdletBinding()]
     param (
         ## Lab DSC configuration data
@@ -209,17 +229,20 @@ function Invoke-LabNodeConfiguration {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $NodeName = ([System.Net.Dns]::GetHostName()),
 
         ## Node's local target resource folder
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath,
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
     process {
+
         $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         if ((-not $node) -or ($node.NodeName -eq '*') -or ([System.String]::IsNullOrEmpty($node.NodeName))) {
             throw ($localized.CannotLocateNodeError -f $NodeName);
@@ -243,25 +266,30 @@ function Invoke-LabNodeConfiguration {
                     $module['MinimumVersion'] = '0.0';
                 }
                 if (-not (TestModule @module) -or $Force) {
-                    InvokeDscResourceDownload -DSCResource $module -Force;
+                    #InvokeModuleCacheDownload
+                    #ExpandModuleCache
+                    # InvokeDscResourceDownload -DSCResource $module -Force;
                 }
             } #end foreach module
         }
 
         ## Call Test-LabNodeConfiguration to display any remaining warnings
         [ref] $null = Test-LabNodeConfiguration -ConfigurationData $ConfigurationData -DestinationPath $DestinationPath -NodeName $NodeName -SkipDscCheck;
+
     } #end process
 } #end function Invoke-LabNodeConfiguration
+#>
 
+<# DEPRECATED
 function Get-LabNodeResourceList {
-<#
+#
     .SYNOPSIS
         Generates a list of required resources for each node.
     .DESCRIPTION
         Outputs a hashtable of each selected node containing all required custom resources. This is handy to create
         a list of resources when manually configuring nodes is required, e.g. locally on VMware Workstation or in
         Microsoft Azure etc.
-#>
+#
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
@@ -270,17 +298,21 @@ function Get-LabNodeResourceList {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name
     )
     process {
+
         $requiredResources = @{ };
         if (-not $PSBoundParameters.ContainsKey('Name')) {
             $Name = $ConfigurationData.AllNodes |
                 Where-Object { $_.NodeName -ne '*' } |
                     ForEach-Object { $_.NodeName }
         }
+
         foreach ($nodeName in $Name) {
+
             $node = ResolveLabVMProperties -NodeName $nodeName -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
             if ([System.String]::IsNullOrEmpty($node.NodeName)) {
                 throw ($localized.CannotLocateNodeError -f $nodeName);
@@ -288,6 +320,7 @@ function Get-LabNodeResourceList {
 
             $requiredResources[$node.NodeName] = @();
             foreach ($resourceId in $node.Resource) {
+
                 $resource = [PSCustomObject] (ResolveLabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId);
                 if ($resource) {
                     if (-not $resource.DestinationPath) {
@@ -317,21 +350,28 @@ function Get-LabNodeResourceList {
                 else {
                     WriteWarning -Message ($localized.ResourceNotFound -f $resourceId);
                 }
+
             } #end foreach resource id
+
         } #end foreach node
+
         Write-Output -InputObject $requiredResources;
+
     } #end process
 } #end function Get-LabNodeResource
+#>
 
+
+<# DEPRECATED
 function Show-LabNodeResourceList {
-<#
+#
     .SYNOPSIS
         Generates a display-friendly list of required custom resources for each node.
     .DESCRIPTION
         Outputs string of each selected node containing all required custom resources. This is handy to create a
         list of resources when manually configuring nodes is required, e.g. locally on VMware Workstation or in
         Microsoft Azure etc.
-#>
+#
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
@@ -340,16 +380,20 @@ function Show-LabNodeResourceList {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $Name
     )
     process {
+
         $requiredResources = Get-LabNodeResourceList @PSBoundParameters;
         $stringBuilder = New-Object -TypeName System.Text.StringBuilder;
         $now = Get-Date;
         [ref] $null = $stringBuilder.AppendFormat('Resource checklist generated {0} {1}.', $now.ToShortDateString(), $now.ToShortTimeString());
         [ref] $null = $stringBuilder.AppendLine().AppendLine();
+
         foreach ($node in $requiredResources.Keys) {
+
             [ref] $null = $stringBuilder.AppendFormat('{0}', $node.ToUpper()).AppendLine();
             [ref] $null = $stringBuilder.AppendFormat('{0}', ('=' * $node.Length)).AppendLine();
 
@@ -371,6 +415,9 @@ function Show-LabNodeResourceList {
             }
             [ref] $null = $stringBuilder.AppendLine();
         }
+
         Write-Output $stringBuilder.ToString();
+
     } #end process
 } #end function Show-LabNodeResourceList
+#>

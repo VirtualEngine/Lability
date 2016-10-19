@@ -5,6 +5,8 @@ function TestDscResourceModule {
     .DESCRIPTION
         The TestDscResourceModule determines whether the specified path is a PowerShell DSC resource module. This is
         used to only copy DSC resources to a VM's VHD(X) file - not ALL modules!
+    .NOTES
+        THIS METHOD IS DEPRECATED IN FAVOUR OF THE NEW MODULE CACHE FUNCTIONALITY
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -16,8 +18,10 @@ function TestDscResourceModule {
         [System.String] $ModuleName
     )
     process {
+
         ## This module contains a \DSCResources folder, but we don't want to enumerate this!
         if ($Path -notmatch "\\$($labDefaults.ModuleName)$") {
+
             Write-Debug -Message ('Testing for MOF-based DSC Resource ''{0}'' directory.' -f "$Path\DSCResources");
             if (Test-Path -Path "$Path\DSCResources" -PathType Container) {
                 ## We have a WMF 4.0/MOF DSC resource module
@@ -36,9 +40,12 @@ function TestDscResourceModule {
                 }
             }
         } #end if this module
+
         return $false;
+
     } #end process
 } #end TestDscResourceModule
+
 
 function GetDscResourceModule {
 <#
@@ -50,6 +57,7 @@ function GetDscResourceModule {
         is returned, removing any versioned folders that are introduced in WMF 5.0, but cannot be interpreted by
         down-level WMF versions.
     .NOTES
+        THIS METHOD IS DEPRECATED IN FAVOUR OF THE NEW MODULE CACHE FUNCTIONALITY
         More context can be found here https://github.com/VirtualEngine/Lab/issues/25
 #>
     [CmdletBinding()]
@@ -60,20 +68,26 @@ function GetDscResourceModule {
         [System.String[]] $Path
     )
     process {
+
         foreach ($basePath in $Path) {
+
             Get-ChildItem -Path $basePath -Directory | ForEach-Object {
+
                 $moduleInfo = $PSItem;
                 ## Check to see if we have a MOF or class resource in the module
                 if (TestDscResourceModule -Path $moduleInfo.FullName -ModuleName $moduleInfo.Name) {
                     Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f $moduleInfo.FullName);
                     $testModuleManifestPath = '{0}\{1}.psd1' -f $moduleInfo.FullName, $moduleInfo.Name;
                     ## Convert the .psd1 file into a hashtable (Test-ModuleManifest can actually load the module)
-                    $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
-                    Write-Output -InputObject ([PSCustomObject] @{
-                        ModuleName = $moduleInfo.Name;
-                        ModuleVersion = $module.ModuleVersion -as [System.Version];
-                        Path = $moduleInfo.FullName;
-                    });
+                    if (Test-Path -Path $testModuleManifestPath -PathType Leaf) {
+
+                        $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
+                        Write-Output -InputObject ([PSCustomObject] @{
+                            ModuleName = $moduleInfo.Name;
+                            ModuleVersion = $module.ModuleVersion -as [System.Version];
+                            Path = $moduleInfo.FullName;
+                        });
+                    }
                 }
                 else {
                     ## Enumerate each module\<number>.<number> subdirectory
@@ -97,7 +111,10 @@ function GetDscResourceModule {
                     } | #end foreach module\<number>.<number> sub directory
                         Sort-Object -Property ModuleVersion -Descending | Select-Object -First 1;
                 }
+
             } #end foreach module directory
+
         } #end foreach path
+
     } #end process
 } #end function GetDscResourceModule

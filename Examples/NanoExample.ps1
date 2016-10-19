@@ -1,16 +1,16 @@
 Configuration NanoExample {
 <#
     Requires the following DSC resources:
-        
+
         xNetworking (v2.5.0.0 or later)                  : https://github.com/PowerShell/xNetworking
         xPSDesiredStateConfiguration (v3.7.0.0 or later) : https://github.com/PowerShell/xPSDesiredStateConfiguration
 #>
     param ()
-    
+
     Import-DscResource -Module xNetworking, xPSDesiredStateConfiguration;
 
     node $AllNodes.Where({$true}).NodeName {
-    
+
         LocalConfigurationManager {
             RebootNodeIfNeeded   = $true;
             AllowModuleOverwrite = $true;
@@ -42,7 +42,7 @@ Configuration NanoExample {
                 }
             }
         } #end if IPAddress
-        
+
         xFirewall 'FPS-ICMP4-ERQ-In' {
             Name = 'FPS-ICMP4-ERQ-In';
             DisplayName = 'File and Printer Sharing (Echo Request - ICMPv4-In)';
@@ -63,11 +63,6 @@ Configuration NanoExample {
             Profile = 'Any';
         }
 
-        xWindowsOptionalFeature 'MicrosoftHyperV' {
-            Name = 'Microsoft-Hyper-V';
-            Ensure = 'Present';
-        }
-
-    } #end nodes ALL 
+    } #end nodes ALL
 
 } #end Configuration Example

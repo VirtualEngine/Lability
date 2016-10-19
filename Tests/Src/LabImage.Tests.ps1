@@ -2,14 +2,10 @@
 #requires -Version 4
 
 $moduleName = 'Lability';
-if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
-    $PSScriptRoot = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)
-}
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'LabImage' {
+Describe 'Src\LabImage' {
 
     InModuleScope $moduleName {
 
@@ -151,6 +147,59 @@ Describe 'LabImage' {
                 { New-LabImage -Id $testImageId } | Should Throw;
             }
 
+            It 'Throws when no "ImageName" is defined (#148)' {
+
+                $testImageId = '2012R2_x64_Datacenter_EN_VL';
+                $testParentImagePath = 'TestDrive:'
+                $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+                $testArchitecture = 'x64';
+                $testWimImageName = 'Fake windows image';
+                $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+                $testCustomWimPath = '\custom\install.wim';
+
+                $testMedia = @{
+                    Id = $testImageId;
+                    Filename = '2012R2_x64_EN_VL.iso';
+                    Architecture = 'x64';
+                    Uri = 'file://C:\Users\Public\Documents\Downloads\en_windows_server_2012_R2_refresh_x64.ISO';
+                    Checksum = '';
+                    Description = 'Windows Server 2012 R2 Datacenter 64bit English Volume License';
+                    MediaType = 'ISO';
+                    OperatingSystem = 'Windows';
+                }
+
+                $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+                $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+                New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+                Mock Test-LabImage -MockWith { return $false; }
+                Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock ResolveLabMedia -MockWith { return $testMedia; }
+                Mock AddDiskImageHotfix -MockWith { }
+                Mock SetDiskImageBootVolume -MockWith { }
+                Mock Dismount-VHD -MockWith { }
+                Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
+                Mock ExpandWindowsImage -ParameterFilter { $WimPath -eq $testCustomWimPath } -MockWith { }
+
+                $customMediaConfigurationData = @{
+                    NonNodeData = @{
+                        Lability = @{
+                            Media = @($testMedia)
+                        }
+                    }
+                }
+
+                $newLabImageParams = @{
+                    Id = $testImageId;
+                    ConfigurationData = $customMediaConfigurationData;
+                    WarningAction = 'SilentlyContinue';
+                }
+                { New-LabImage @newLabImageParams } | Should Throw 'An image name is required for ISO and WIM media';
+
+            }
+
             It 'Deletes parent VHDX when image creation fails' {
                 $testImageId = 'NewLabImage';
                 $testParentImagePath = 'TestDrive:'
@@ -258,7 +307,7 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-                Mock NewDiskImage -ParameterFilter { $PassThru -eq $true } -MockWith { return $fakeVhdImage; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
                 New-LabImage -Id $testImageId
 
@@ -286,7 +335,7 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-                Mock NewDiskImage -ParameterFilter { $PartitionStyle -eq 'GPT' } -MockWith { return $fakeVhdImage; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
                 New-LabImage -Id $testImageId
 
@@ -314,7 +363,7 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-                Mock NewDiskImage -ParameterFilter { $PartitionStyle -eq 'MBR' } -MockWith { return $fakeVhdImage; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
                 New-LabImage -Id $testImageId
 
@@ -348,7 +397,7 @@ Describe 'LabImage' {
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
-                Mock NewDiskImage -ParameterFilter { $PartitionStyle -eq 'GPT' } -MockWith { return $fakeVhdImage; }
+                Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
                 New-LabImage -Id $testImageId
 
@@ -405,7 +454,7 @@ Describe 'LabImage' {
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-                Mock ExpandWindowsImage -ParameterFilter { $WimImageIndex -eq $testWimImageIndex } -MockWith { }
+                Mock ExpandWindowsImage -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -439,7 +488,7 @@ Describe 'LabImage' {
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-                Mock ExpandWindowsImage -ParameterFilter { $WindowsOptionalFeature -ne $null } -MockWith { }
+                Mock ExpandWindowsImage -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -474,7 +523,7 @@ Describe 'LabImage' {
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-                Mock ExpandWindowsImage -ParameterFilter { $WimPath -eq $testCustomWimPath } -MockWith { }
+                Mock ExpandWindowsImage -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -509,7 +558,7 @@ Describe 'LabImage' {
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-                Mock ExpandWindowsImage -ParameterFilter { $SourcePath -eq $testCustomSourcePath } -MockWith { }
+                Mock ExpandWindowsImage -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -537,7 +586,7 @@ Describe 'LabImage' {
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
                 Mock ExpandWindowsImage -MockWith { }
-                Mock AddDiskImageHotfix -ParameterFilter { $Id -eq $testImageId } -MockWith { }
+                Mock AddDiskImageHotfix -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -593,7 +642,7 @@ Describe 'LabImage' {
                 Mock ExpandWindowsImage -MockWith { }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
-                Mock Dismount-VHD -ParameterFilter { $Path -eq $testImagePath } -MockWith { }
+                Mock Dismount-VHD -MockWith { }
 
                 New-LabImage -Id $testImageId
 
@@ -622,8 +671,8 @@ Describe 'LabImage' {
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
-                Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
-                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $fakeLabImage; }
+                Mock Test-LabImage -MockWith { return $true; }
+                Mock Get-LabImage -MockWith { return $fakeLabImage; }
 
                 New-LabImage -Id $testImageId -ConfigurationData @{} -Force;
 
@@ -631,8 +680,10 @@ Describe 'LabImage' {
                 Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             }
 
+
+
         } #end context Validates "New-LabImage" method
 
     } #end InModuleScope
 
-} #end describe LabImage
+} #end describe Src\LabImage

@@ -3,10 +3,9 @@
 
 $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'DscModule' {
+Describe 'Lib\DscResourceModule' {
 
     InModuleScope $moduleName {
 
@@ -56,6 +55,8 @@ Describe 'DscModule' {
                 $testModulesName = 'Modules';
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
+                [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\$testModuleName.psd1" -ItemType File -Force -ErrorAction SilentlyContinue;
+
                 Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
@@ -133,4 +134,4 @@ Describe 'DscModule' {
 
     } #end InModuleScope
 
-} #end describe DscModule
+} #end describe Lib\DscResourceModule

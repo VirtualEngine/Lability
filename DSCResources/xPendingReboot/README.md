@@ -42,6 +42,8 @@ Details are returned by Get-DSCConfiguration.
 
 ### Unreleased
 
+### 0.3.0.0
+
 * Suppresses warning output in Test-TargetResource when 'SkipCcmClientSDK' is specified.
 * Fixes 'Null-valued expression' bug when 'Auto Update' or 'Component Based Servicing' registry keys are empty.
 

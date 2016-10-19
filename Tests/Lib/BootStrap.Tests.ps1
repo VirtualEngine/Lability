@@ -9,12 +9,12 @@ $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
 
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'BootStrap' {
-    
+Describe 'Lib\BootStrap' {
+
     InModuleScope $moduleName {
 
         Context 'Validates NewBootStrap method' {
-            
+
             It 'Returns a "System.Management.Automation.ScriptBlock" type' {
                 $bootstrap = NewBootStrap;
                 $bootstrap -is [System.Management.Automation.ScriptBlock] | Should Be $true;
@@ -130,7 +130,7 @@ Describe 'BootStrap' {
 
                 $bootstrap | Should Be "$mediaBootstrap`r`n$configurationBootStrap";
             }
-            
+
             It 'Returns configuration bootstrap when "MediaCustomBootstrap" is null' {
                 $configurationBootstrap = 'Configuration';
 
@@ -151,4 +151,4 @@ Describe 'BootStrap' {
 
     } #end InModuleScope
 
-} #end describe Bootstrap
+} #end describe Lib\Bootstrap

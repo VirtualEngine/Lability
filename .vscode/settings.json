@@ -1,4 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "files.exclude": {
+        "**/Release": true
+    }
 }

@@ -8,7 +8,7 @@ language (DSL) document, __Lability__ extends existing PowerShell Desired
 State Configuration (DSC) configuration .psd1 documents with metadata that can
 be interpreted by the module.
 
-By using this approach, it allows the use of a single confiugration document to
+By using this approach, it allows the use of a single configuration document to
 describe all properties for provisioning Windows-centric development and/or test
 environments.
 
@@ -73,12 +73,52 @@ will:
  * Create differencing VHDX for each VM
  * Inject a dynamically created Unattend.xml file into the differencing VHDX
 
+### Community Resources
 A brief introduction to the __VirtualEngineLab__ module presented at the European
 PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__.
+Other generous members of the community have written some comprehensive guides to compliment the built-in documentation – thank you!
+
+* [Building A Lab using Hyper-V and Lability](https://blog.kilasuit.org/2016/04/13/building-a-lab-using-hyper-v-and-lability-the-end-to-end-example/) via @kilasuit
+* [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/posts/lability-the-ultimate-hyper-v-lab-tool/) via @absolutejam
+* [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
+* [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
 
 ## Versions
 
 ### Unreleased
+
+* Updates bundled xHyper-V DSC resource module to 3.5.0.0
+* Updates bundled xPendingReboot DSC resource module to 0.3.0.0
+
+### v0.10.1
+
+* Removes local Administrator password from verbose output (#140)
+* Reinstates the xDhcpServerOption 'Router' parameter in example TestLabGuide.ps1
+* Fixes bug in 'IsLocal' resource when combined with a custom 'DestinationPath' location
+* Adds Server 2016 RTM (and deprecates Server 2016 technical preview) media
+* Adds output formatting to lab images and media
+* Adds descriptive error message for a missing WIM Image Name parameter (#148)
+* Fixes bug where 'Hotfixes' in defined in configuration data (.psd1) media where not injected (#148)
+* Adds Server 2016 RTM Nano Server support
+* Fixes bug where media ProductKey entry was not specified in the generated unattend.xml (#134)
+* Adds Windows ADK support to enable Win 10 and Server 2016 deployments on Win 8.1 and 2012 R2 hosts (#139)
+
+### v0.10.0
+
+* Updates Windows 10 media to build 14393 (1607).
+* Adds `WIN10_x64_Enterprise_LTSB_EN_Eval` and `WIN10_x86_Enterprise_LTSB_EN_Eval` media.
+ * Adds July 2016 CU hotfix (KB3163912) to Windows 10 x86 and x64 LTSB media.
+* Adds June 2016 CU hotfix (KB3172982) to WS2016 TP5 default lab media registrations.
+* Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
+* Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
+* Adds support for injecting modules in VMs (#106).
+ * Caches multiple module and DSC resource versions.
+ * Adds `-ModuleCachePath` to `Set-LabHostDefault`.
+ * Adds `NonNodeData\Lability\Module = @()` and `Node\Lability_Module` support.
+ * Adds `Provider = 'FileSystem'` support to DSC resource and PowerShell module definitions.
+* Deprecates LabNode functionality (will move to the LabilityBootstrap module).
+* As 'IsLocal' resource flag to support local-only resources, i.e. stored in version control.
+* Fixes bug in VM test when multiple switches are specified on a node.
 
 ### v0.9.11
 
