@@ -84,6 +84,11 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
+### Unreleased
+
+* Updates bundled xHyper-V DSC resource module to 3.5.0.0
+* Updates bundled xPendingReboot DSC resource module to 0.3.0.0
+
 ### v0.10.1
 
 * Removes local Administrator password from verbose output (#140)
