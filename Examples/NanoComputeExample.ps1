@@ -1,4 +1,4 @@
-Configuration NanoExample {
+Configuration NanoContainerExample {
 <#
     Requires the following DSC resources:
 
@@ -19,6 +19,7 @@ Configuration NanoExample {
         }
 
         if (-not [System.String]::IsNullOrEmpty($node.IPAddress)) {
+
             xIPAddress 'PrimaryIPAddress' {
                 IPAddress      = $node.IPAddress;
                 InterfaceAlias = $node.InterfaceAlias;
@@ -41,6 +42,7 @@ Configuration NanoExample {
                     AddressFamily = $node.AddressFamily;
                 }
             }
+
         } #end if IPAddress
 
         xFirewall 'FPS-ICMP4-ERQ-In' {

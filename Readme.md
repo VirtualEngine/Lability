@@ -73,10 +73,29 @@ will:
  * Create differencing VHDX for each VM
  * Inject a dynamically created Unattend.xml file into the differencing VHDX
 
+### Community Resources
 A brief introduction to the __VirtualEngineLab__ module presented at the European
 PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__.
+Other generous members of the community have written some comprehensive guides to compliment the built-in documentation – thank you!
+
+* [Building A Lab using Hyper-V and Lability](https://blog.kilasuit.org/2016/04/13/building-a-lab-using-hyper-v-and-lability-the-end-to-end-example/) via @kilasuit
+* [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/posts/lability-the-ultimate-hyper-v-lab-tool/) via @absolutejam
+* [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 
 ## Versions
+
+### v0.10.1
+
+* Removes local Administrator password from verbose output (#140)
+* Reinstates the xDhcpServerOption 'Router' parameter in example TestLabGuide.ps1
+* Fixes bug in 'IsLocal' resource when combined with a custom 'DestinationPath' location
+* Adds Server 2016 RTM (and deprecates Server 2016 technical preview) media
+* Adds output formatting to lab images and media
+* Adds descriptive error message for a missing WIM Image Name parameter (#148)
+* Fixes bug where 'Hotfixes' in defined in configuration data (.psd1) media where not injected (#148)
+* Adds Server 2016 RTM Nano Server support
+* Fixes bug where media ProductKey entry was not specified in the generated unattend.xml (#134)
+* Adds Windows ADK support to enable Win 10 and Server 2016 deployments on Win 8.1 and 2012 R2 hosts (#139)
 
 ### v0.10.0
 

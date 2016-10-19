@@ -79,12 +79,15 @@ function GetDscResourceModule {
                     Write-Debug -Message ('Discovered DSC resource ''{0}''.' -f $moduleInfo.FullName);
                     $testModuleManifestPath = '{0}\{1}.psd1' -f $moduleInfo.FullName, $moduleInfo.Name;
                     ## Convert the .psd1 file into a hashtable (Test-ModuleManifest can actually load the module)
-                    $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
-                    Write-Output -InputObject ([PSCustomObject] @{
-                        ModuleName = $moduleInfo.Name;
-                        ModuleVersion = $module.ModuleVersion -as [System.Version];
-                        Path = $moduleInfo.FullName;
-                    });
+                    if (Test-Path -Path $testModuleManifestPath -PathType Leaf) {
+
+                        $module = ConvertToConfigurationData -ConfigurationData $testModuleManifestPath;
+                        Write-Output -InputObject ([PSCustomObject] @{
+                            ModuleName = $moduleInfo.Name;
+                            ModuleVersion = $module.ModuleVersion -as [System.Version];
+                            Path = $moduleInfo.FullName;
+                        });
+                    }
                 }
                 else {
                     ## Enumerate each module\<number>.<number> subdirectory

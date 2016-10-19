@@ -127,12 +127,19 @@ function Test-LabHostConfiguration {
         ## Test folders/directories
         $hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
+        
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
-                WriteVerbose ($localized.TestingPathExists -f $property.Value);
-                $resolvedPath = ResolvePathEx -Path $property.Value;
-                if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
-                    WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
-                    return $false;
+
+                ## DismPath is not a folder and should be ignored (#159)
+                if ($property.Name -ne 'DismPath') {
+                
+                    WriteVerbose ($localized.TestingPathExists -f $property.Value);
+                    $resolvedPath = ResolvePathEx -Path $property.Value;
+                    if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
+                    
+                        WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
+                        return $false;
+                    }
                 }
             }
         }
@@ -182,8 +189,14 @@ function Start-LabHostConfiguration {
         ## Create required directory structure
         $hostDefaults = GetConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
+        
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
-                [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
+
+                ## DismPath is not a folder and should be ignored (#159)
+                if ($property.Name -ne 'DismPath') {
+            
+                    [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
+                }
             }
         }
 

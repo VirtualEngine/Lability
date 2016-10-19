@@ -151,9 +151,12 @@ function NewUnattendXml {
             foreach($component in $setting.Component) {
 
                 if ($setting.'Pass' -eq 'specialize' -and $component.'Name' -eq 'Microsoft-Windows-Deployment') {
+
                     if (($null -ne $ExecuteCommand) -or ($ExecuteCommand.Length -gt 0)) {
+
                         $commandOrder = 1;
                         foreach ($synchronousCommand in $ExecuteCommand) {
+
                             $runSynchronousElement = $component.AppendChild($unattendXml.CreateElement('RunSynchronous','urn:schemas-microsoft-com:unattend'));
                             $syncCommandElement = $runSynchronousElement.AppendChild($unattendXml.CreateElement('RunSynchronousCommand','urn:schemas-microsoft-com:unattend'));
                             [ref] $null = $syncCommandElement.SetAttribute('action','http://schemas.microsoft.com/WMIConfig/2002/State','add');
@@ -169,17 +172,21 @@ function NewUnattendXml {
                 }
 
                 if (($setting.'Pass' -eq 'specialize') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
+
                     if ($ComputerName) {
+
                         $computerNameElement = $component.AppendChild($unattendXml.CreateElement('ComputerName','urn:schemas-microsoft-com:unattend'));
                         [ref] $null = $computerNameElement.AppendChild($unattendXml.CreateTextNode($ComputerName));
                     }
                     if ($ProductKey) {
+
                         $productKeyElement = $component.AppendChild($unattendXml.CreateElement('ProductKey','urn:schemas-microsoft-com:unattend'));
                         [ref] $null = $productKeyElement.AppendChild($unattendXml.CreateTextNode($ProductKey.ToUpper()));
                     }
                 }
 
                 if ((($setting.'Pass' -eq 'specialize') -or ($setting.'Pass' -eq 'oobeSystem')) -and ($component.'Name' -eq 'Microsoft-Windows-International-Core')) {
+
                     $component.InputLocale = $InputLocale;
                     $component.SystemLocale = $SystemLocale;
                     $component.UILanguage = $UILanguage;
@@ -187,6 +194,7 @@ function NewUnattendXml {
                 }
 
                 if (($setting.'Pass' -eq 'oobeSystem') -and ($component.'Name' -eq 'Microsoft-Windows-Shell-Setup')) {
+
                     $component.TimeZone = $Timezone;
                     $concatenatedPassword = '{0}AdministratorPassword' -f $Credential.GetNetworkCredential().Password;
                     $component.UserAccounts.AdministratorPassword.Value = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($concatenatedPassword));
