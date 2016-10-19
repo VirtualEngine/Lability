@@ -84,7 +84,7 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
-### Unreleased
+### v0.10.1
 
 * Removes local Administrator password from verbose output (#140)
 * Reinstates the xDhcpServerOption 'Router' parameter in example TestLabGuide.ps1
