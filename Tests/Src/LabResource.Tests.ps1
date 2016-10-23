@@ -3,7 +3,7 @@
 
 $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
-Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
+Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psd1") -Force;
 
 Describe 'Src\LabResource' {
 

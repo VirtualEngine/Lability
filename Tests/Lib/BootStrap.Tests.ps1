@@ -7,7 +7,7 @@ if (!$PSScriptRoot) { # $PSScriptRoot is not defined in 2.0
 }
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
 
-Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
+Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psd1") -Force;
 
 Describe 'Lib\BootStrap' {
 
