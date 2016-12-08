@@ -311,7 +311,7 @@ function NewLabVM {
 
         if (-not (TestComputerName -ComputerName $displayName)) {
 
-            throw (localized.InvalidComputerNameError -f $displayName);
+            throw ($localized.InvalidComputerNameError -f $displayName);
         }
 
         ## Don't attempt to check certificates for 'Quick VMs'

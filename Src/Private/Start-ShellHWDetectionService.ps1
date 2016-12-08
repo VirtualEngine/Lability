@@ -7,7 +7,7 @@ function Start-ShellHWDetectionService {
     param ( )
     process {
         if (Get-Service -Name 'ShellHWDetection' -ErrorAction SilentlyContinue) {
-            Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
+            Start-Service -Name 'ShellHWDetection' -ErrorAction Ignore;
         }
     } #end process
 } #end function Start-ShellHWDetectionService
