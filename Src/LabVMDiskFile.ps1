@@ -414,7 +414,7 @@ function SetLabVMDiskFile {
 
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
+        Stop-ShellHWDetectionService;
 
         $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $vhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;
@@ -425,7 +425,7 @@ function SetLabVMDiskFile {
         $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
                                 Select-Object -Last 1 -ExpandProperty DriveLetter;
-        Start-Service -Name 'ShellHWDetection';
+        Start-ShellHWDetectionService;
 
         SetLabVMDiskFileResource @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
         SetLabVMDiskFileBootstrap @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;

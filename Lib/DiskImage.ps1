@@ -45,7 +45,8 @@ function NewDiskImageMbr {
 
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
+
+        Stop-ShellHWDetectionService;
 
         WriteVerbose ($localized.CreatingDiskPartition -f 'Windows');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -MbrType IFS -IsActive |
@@ -54,7 +55,7 @@ function NewDiskImageMbr {
         WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
         $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
 
-        Start-Service -Name 'ShellHWDetection';
+        Start-ShellHWDetectionService;
 
     } #end proces
 } #end function NewDiskImageMbr
@@ -99,7 +100,7 @@ function NewDiskImageGpt {
 
         ## Temporarily disable Windows Explorer popup disk initialization and format notifications
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
-        Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
+        Stop-ShellHWDetectionService;
 
         WriteVerbose ($localized.CreatingDiskPartition -f 'EFI');
         $efiPartition = New-Partition -DiskNumber $Vhd.DiskNumber -Size 250MB -GptType '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}' -AssignDriveLetter;
@@ -114,7 +115,7 @@ function NewDiskImageGpt {
         WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
         $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
 
-        Start-Service -Name 'ShellHWDetection';
+        Start-ShellHWDetectionService;
 
     } #end process
 } #end function NewDiskImageGpt

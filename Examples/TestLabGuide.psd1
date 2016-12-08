@@ -80,6 +80,12 @@
                     AddressFamily: IP address family: { IPv4 | IPv6 }
                 #>
             );
+
+            <#
+                If you are generating the .mof files on the host and/or you want Labilty to use the DSC
+                resource versions/modules installed on the physical host, you should remove the 'DSCResource' key.
+                Lability will then "just" copy all local DSC resources.
+            #>
             DSCResource = @(
                 ## Download published version from the PowerShell Gallery
                 @{ Name = 'xComputerManagement'; MinimumVersion = '1.3.0.0'; Provider = 'PSGallery'; }

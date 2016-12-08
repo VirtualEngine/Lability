@@ -89,6 +89,7 @@ Other generous members of the community have written some comprehensive guides t
 
 * Updates bundled xHyper-V DSC resource module to 3.5.0.0
 * Updates bundled xPendingReboot DSC resource module to 0.3.0.0
+* Fixes calls to stop/start Shell Hardware Detection service on Server Core (#175)
 
 ### v0.10.1
 
