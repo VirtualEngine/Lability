@@ -419,7 +419,8 @@ Describe 'Src\LabVMDiskFile' {
             $testVhdPath = 'TestDrive:\{0}.vhdx' -f $testNode;
 
             Mock ResolveLabVMDiskPath -MockWith { return $testVhdPath; }
-            Mock Stop-Service -MockWith { }
+            Mock Stop-ShellHWDetectionService { }
+            Mock Start-ShellHWDetectionService { }
             Mock Mount-Vhd -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
             Mock Get-Partition -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
             Mock Start-Service -MockWith { }
@@ -442,7 +443,7 @@ Describe 'Src\LabVMDiskFile' {
 
                 SetLabVMDiskFile @testParams;
 
-                Assert-MockCalled Stop-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -Scope It;
+                Assert-MockCalled Stop-ShellHWDetectionService -Scope It;
             }
 
             It 'Mounts virtual machine VHDX file' {
@@ -456,7 +457,7 @@ Describe 'Src\LabVMDiskFile' {
 
                 SetLabVMDiskFile @testParams;
 
-                Assert-MockCalled Start-Service -ParameterFilter { $Name -eq 'ShellHWDetection' } -Scope It;
+                Assert-MockCalled Start-ShellHWDetectionService -Scope It;
             }
 
             It 'Calls "SetLabVMDiskFileResource" to copy node resources' {
