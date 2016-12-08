@@ -80,7 +80,10 @@ function TestLabVMDisk {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData
+        $ConfigurationData,
+
+        [ValidateSet('Present','Absent')]
+        [String] $Ensure = 'Present'
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -102,7 +105,10 @@ function TestLabVMDisk {
             $vhd['Generation'] = 'VHDX';
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-        TestDscResource -ResourceName VHD -Parameters $vhd;
+
+        $testDscResourceResult = TestDscResource -ResourceName VHD -Parameters $vhd;
+        if ($Ensure -eq 'Absent') { return -not $testDscResourceResult; }
+        else { return $testDscResourceResult; }
     } #end process
 } #end function TestLabVMDisk
 
