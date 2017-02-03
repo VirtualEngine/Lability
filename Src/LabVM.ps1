@@ -832,7 +832,7 @@ function Remove-LabVM {
                             @{
                                 NodeName = $vmName;
                                 <# If we don't have configuration document, we need to locate
-                                the lab image id so that the VM's VHD/X can be removed #183 #>
+                                the lab image id so that the VM's VHD/X can be removed #182 #>
                                 Media = (Resolve-LabVMImage -Name $vmName).Id;
                             }
                         )
