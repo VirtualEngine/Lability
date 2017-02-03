@@ -90,6 +90,8 @@ Other generous members of the community have written some comprehensive guides t
 * Updates bundled xHyper-V DSC resource module to 3.5.0.0
 * Updates bundled xPendingReboot DSC resource module to 0.3.0.0
 * Fixes calls to stop/start Shell Hardware Detection service on Server Core (#175)
+* Fixes incorrect WIN10_x86_Enterprise_EN_Eval uri (#183)
+* Fixes .VHD files not being removed (#182)
 
 ### v0.10.1
 
