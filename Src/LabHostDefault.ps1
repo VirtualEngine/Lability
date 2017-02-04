@@ -146,6 +146,7 @@ function Set-LabHostDefault {
         ## Lab module storage location/path.
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
+        [Alias('ModulePath')]
         [System.String] $ModuleCachePath,
 
         ## Lab custom resource storage location/path.

@@ -488,7 +488,7 @@ function RemoveLabVM {
         }
         RemoveLabVirtualMachine @removeLabVirtualMachineParams;
 
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHDX', "$Name.vhdx");
+        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHD/X', "$Name.vhd/vhdx");
         $removeLabVMDiskParams = @{
             Name = $node.NodeDisplayName;
             Media = $node.Media;
@@ -797,7 +797,7 @@ function Remove-LabVM {
     .DESCRIPTION
         The Remove-LabVM cmdlet removes a virtual machine and it's VHD(X) file.
 #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param (
         ## Virtual machine name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -829,7 +829,12 @@ function Remove-LabVM {
 
                     $configurationData = @{
                         AllNodes = @(
-                            @{  NodeName = $vmName; }
+                            @{
+                                NodeName = $vmName;
+                                <# If we don't have configuration document, we need to locate
+                                the lab image id so that the VM's VHD/X can be removed #182 #>
+                                Media = (Resolve-LabVMImage -Name $vmName).Id;
+                            }
                         )
                     };
                 }
