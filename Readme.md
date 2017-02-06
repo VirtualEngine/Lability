@@ -94,6 +94,7 @@ Other generous members of the community have written some comprehensive guides t
 * Fixes .VHD files not being removed (#182)
 * Fixes .VHDX files not being dismounted when there are errors creating the disk (#185)
 * Adds Windows Management Framework 5.1 evaluation media
+* Updates examples with xNetworking v3.0.0.0 breaking change (#172)
 
 ### v0.10.1
 
