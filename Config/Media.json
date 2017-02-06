@@ -167,6 +167,26 @@
 	]
 },
 {
+	"Id": "2012R2_x64_Standard_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+    "ImageName": "Windows Server 2012 R2 SERVERSTANDARD",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
+		}
+	]
+},
+{
 	"Id": "2012R2_x64_Standard_Core_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Standard Core 64bit English Evaluation",
@@ -227,6 +247,26 @@
 		{
 			"Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+		}
+	]
+},
+{
+	"Id": "2012R2_x64_Standard_Core_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Standard Core 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+    "ImageName": "Windows Server 2012 R2 SERVERSTANDARDCORE",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
 		}
 	]
 },
@@ -295,6 +335,26 @@
 	]
 },
 {
+	"Id": "2012R2_x64_Datacenter_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+	"ImageName": "Windows Server 2012 R2 SERVERDATACENTER",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
+		}
+	]
+},
+{
 	"Id": "2012R2_x64_Datacenter_Core_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Datacenter Core 64bit English Evaluation",
@@ -355,6 +415,26 @@
 		{
 			"Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+		}
+	]
+},
+{
+	"Id": "2012R2_x64_Datacenter_Core_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter Core 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+	"ImageName": "Windows Server 2012 R2 SERVERDATACENTERCORE",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
 		}
 	]
 },
@@ -437,6 +517,33 @@
 	]
 },
 {
+	"Id": "WIN81_x64_Enterprise_EN_V5_1_Eval",
+    "Filename": "WIN81_x64_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 64bit Enterprise English Evaluation with WMF 5.1",
+	"Architecture": "x64",
+	"ImageName": "Windows 8.1 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "EE63618E3BE220D86B993C1ABBCF32EB",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
+		}
+	]
+},
+{
 	"Id": "WIN81_x86_Enterprise_EN_Eval",
     "Filename": "WIN81_x86_ENT_EN_Eval.iso",
     "Description": "Windows 8.1 32bit Enterprise English Evaluation",
@@ -507,6 +614,33 @@
 		{
 			"Id": "Win8.1-KB3134758-x86.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1-KB3134758-x86.msu"
+		}
+	]
+},
+{
+	"Id": "WIN81_x86_Enterprise_EN_V5_1_Eval",
+    "Filename": "WIN81_x86_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 32bit Enterprise English Evaluation with WMF 5.1",
+	"Architecture": "x86",
+	"ImageName": "Windows 8.1 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X86FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X86FREE_EN-US_DV9.ISO",
+	"Checksum": "B2ACCD5F135C3EEDE256D398856AEEAD",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1-KB3191564-x86.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1-KB3191564-x86.msu"
 		}
 	]
 },
