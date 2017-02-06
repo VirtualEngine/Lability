@@ -1,29 +1,29 @@
 @{
     AllNodes = @(
         @{
-            NodeName = '*';
-            InterfaceAlias = 'Ethernet';
-            DefaultGateway = '10.0.0.254';
-            SubnetMask = 24;
-            AddressFamily = 'IPv4';
-            DnsServerAddress = '10.0.0.1';
+            NodeName                    = '*';
+            InterfaceAlias              = 'Ethernet';
+            DefaultGateway              = '10.0.0.254';
+            PrefixLength                = 24;
+            AddressFamily               = 'IPv4';
+            DnsServerAddress            = '10.0.0.1';
             PSDscAllowPlainTextPassword = $true;
-            Lability_SwitchName = 'Internal';
+            Lability_SwitchName         = 'Internal';
         }
         @{
-            NodeName = 'NANO1';
-            IPAddress = '10.0.0.10';
-            Lability_Media = '2016_x64_Standard_Nano_EN_Eval';
-            Lability_ProcessorCount = 2;
-            Lability_StartupMemory = 2GB;
-            Lability_WarningMessage = "Keyboard layout will be 'EN-US'";
+            NodeName                    = 'NANO1';
+            IPAddress                   = '10.0.0.10';
+            Lability_Media              = '2016_x64_Datacenter_Nano_EN_Eval';
+            Lability_ProcessorCount     = 2;
+            Lability_StartupMemory      = 2GB;
+            Lability_WarningMessage     = "Keyboard layout will be 'EN-US'";
         }
     );
     NonNodeData = @{
         Lability = @{
             DSCResource = @(
-                @{ Name = 'xNetworking'; MinimumVersion = '2.5.0.0'; }
-                @{ Name = 'xPSDesiredStateConfiguration'; MinimumVersion = '3.7.0.0'; }
+                @{ Name = 'xNetworking'; RequiredVersion = '3.2.0.0'; }
+                @{ Name = 'xPSDesiredStateConfiguration'; RequiredVersion = '6.0.0.0'; }
             )
         };
     };
