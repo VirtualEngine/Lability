@@ -15,7 +15,7 @@
             Lability_SwitchName         = 'Corpnet';
             Lability_ProcessorCount     = 1;
             Lability_StartupMemory      = 2GB;
-            Lability_Media              = '2012R2_x64_Standard_EN_Eval';
+            Lability_Media              = '2012R2_x64_Standard_EN_V5_1_Eval';
         }
         @{
             NodeName                = 'DC1';
@@ -54,7 +54,7 @@
         @{
             NodeName       = 'CLIENT1';
             Role           = 'CLIENT';
-            Lability_Media = 'Win81_x64_Enterprise_EN_Eval';
+            Lability_Media = 'WIN81_x64_Enterprise_EN_V5_1_Eval';
             <# Lability_CustomBootStrap = 'Now implemented in the Media's CustomData.CustomBootstrap property #>
         }
         @{
