@@ -407,7 +407,7 @@ function NewLabVM {
 
                 $setLabVMDiskFileParams['ProductKey'] = $media.CustomData.ProductKey;
             }
-            SetLabVMDiskFile @setLabVMDiskFileParams;
+            Set-LabVMDiskFile @setLabVMDiskFileParams;
 
         } #end Windows VMs
 

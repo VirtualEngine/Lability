@@ -92,6 +92,7 @@ Other generous members of the community have written some comprehensive guides t
 * Fixes calls to stop/start Shell Hardware Detection service on Server Core (#175)
 * Fixes incorrect WIN10_x86_Enterprise_EN_Eval uri (#183)
 * Fixes .VHD files not being removed (#182)
+* Fixes .VHDX files not being dismounted when there are errors creating the disk (#185)
 
 ### v0.10.1
 
