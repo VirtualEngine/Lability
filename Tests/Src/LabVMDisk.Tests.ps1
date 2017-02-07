@@ -172,7 +172,7 @@ Describe 'Src\LabVMDisk' {
             It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
                 $testVMName = 'TestVM';
                 $testMedia = 'TestMedia';
-                Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
+                Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
                 Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -MockWith { }
 
@@ -187,7 +187,7 @@ Describe 'Src\LabVMDisk' {
                 $testImagePath = "TestDrive:\$testMedia.vhdx";
                 $testLabVMDiskPath = "TestDrive:\$testVMName.vhdx";
                 Mock GetConfigurationData -MockWith { return @{ DifferencingVhdPath = 'TestDrive:'; } }
-                Mock Get-LabImage -MockWith { return @{ ImagePath = $testImagePath; } }
+                Mock Get-LabImage -MockWith { return @{ ImagePath = $testImagePath; Generation = 'VHDX'; } }
                 Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $Parameters.Ensure -eq 'Absent' } -MockWith { }
                 New-Item -Path $testLabVMDiskPath -ItemType File -Force -ErrorAction SilentlyContinue;
@@ -200,7 +200,7 @@ Describe 'Src\LabVMDisk' {
             It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
                 $testVMName = 'TestVM';
                 $testMedia = 'TestMedia';
-                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
+                Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -MockWith { }
 

@@ -1,6 +1,6 @@
 @{
     RootModule = 'Lability.psm1';
-    ModuleVersion = '0.10.1';
+    ModuleVersion = '0.10.2';
     GUID = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author = 'Iain Brighton';
     CompanyName = 'Virtual Engine';
@@ -15,7 +15,7 @@
         'Get-LabVM', 'Test-LabVM', 'Reset-LabVM', 'New-LabVM', 'Remove-LabVM', 'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault',
         'Export-LabHostConfiguration','Import-LabHostConfiguration', 'Reset-LabHostDefaults', 'Get-LabHostDefaults', 'Set-LabHostDefaults',
         'Reset-LabVMDefaults', 'Set-LabVMDefaults', 'Get-LabVMDefaults');
-    CmdletsToExport = @(); # Suppresses exporting of imported the DISM cmdlet
+    CmdletsToExport = @(); # Suppresses exporting of imported the DISM cmdlets
     PrivateData = @{
         PSData = @{  # Private data to pass to the module specified in RootModule/ModuleToProcess
             Tags = @('VirtualEngine','Lability','Powershell','Development','HyperV','Hyper-V','Test','Lab','TestLab');

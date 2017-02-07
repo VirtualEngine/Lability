@@ -229,7 +229,8 @@ function Test-TargetResource
             if($Ensure -eq 'Present')
             {
                 ## Only check the BandwidthReservationMode if specified
-                if ($PSBoundParameters.ContainsKey('BandwidthReservationMode')) {
+                if($PSBoundParameters.ContainsKey('BandwidthReservationMode'))
+                {
                     # If the BandwidthReservationMode is correct, or if $switch.BandwidthReservationMode is $null which means it isn't supported on the OS
                     Write-Verbose -Message "Checking if Switch $Name has correct BandwidthReservationMode ..."
                     if($switch.BandwidthReservationMode -eq $BandwidthReservationMode -or $switch.BandwidthReservationMode -eq $null)

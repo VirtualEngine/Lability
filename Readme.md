@@ -79,11 +79,22 @@ PowerShell Summit 2015 can be found __[here](https://www.youtube.com/watch?v=jef
 Other generous members of the community have written some comprehensive guides to compliment the built-in documentation – thank you!
 
 * [Building A Lab using Hyper-V and Lability](https://blog.kilasuit.org/2016/04/13/building-a-lab-using-hyper-v-and-lability-the-end-to-end-example/) via @kilasuit
-* [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/posts/lability-the-ultimate-hyper-v-lab-tool/) via @absolutejam
+* [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
 
 ## Versions
+
+### v0.10.2
+
+* Updates bundled xHyper-V DSC resource module to 3.5.0.0
+* Updates bundled xPendingReboot DSC resource module to 0.3.0.0
+* Fixes calls to stop/start Shell Hardware Detection service on Server Core (#175)
+* Fixes incorrect WIN10_x86_Enterprise_EN_Eval uri (#183)
+* Fixes .VHD files not being removed (#182)
+* Fixes .VHDX files not being dismounted when there are errors creating the disk (#185)
+* Adds Windows Management Framework 5.1 evaluation media
+* Updates examples with xNetworking v3.0.0.0 breaking change (#172)
 
 ### v0.10.1
 

@@ -12,11 +12,11 @@ DATA localizedData
         StartUpMemGreaterThanMaxMemError = StartupMemory '{0}' should not be greater than MaximumMemory '{1}'.
         VhdUnsupportedOnGen2VMError = Generation 2 virtual machines do not support the .VHD virtual disk extension.
         CannotUpdatePropertiesOnlineError = Can not change properties for VM '{0}' in '{1}' state unless 'RestartIfNeeded' is set to true.
-        
+
         AdjustingGreaterThanMemoryWarning = VM {0} '{1}' is greater than {2} '{3}'. Adjusting {0} to be '{3}'.
         AdjustingLessThanMemoryWarning = VM {0} '{1}' is less than {2} '{3}'. Adjusting {0} to be '{3}'.
         VMStateWillBeOffWarning = VM '{0}' state will be 'OFF' and not 'Paused'.
-        
+
         CheckingVMExists = Checking if VM '{0}' exists ...
         VMExists = VM '{0}' exists.
         VMDoesNotExist = VM '{0}' does not exist.
@@ -51,23 +51,23 @@ function Get-TargetResource
     }
 
     $vmobj = Get-VM -Name $Name -ErrorAction SilentlyContinue
-    
+
     # Check if 1 or 0 VM with name = $name exist
     if($vmobj.count -gt 1)
     {
-       Throw ($localizedData.MoreThanOneVMExistsError -f $Name) 
+       Throw ($localizedData.MoreThanOneVMExistsError -f $Name)
     }
-    
+
     ## Retrieve the Vhd hierarchy to ensure we enumerate snapshots/differencing disks
     ## Fixes #28
     $vhdChain = @(Get-VhdHierarchy -VhdPath ($vmObj.HardDrives[0].Path))
-    
+
     $vmSecureBootState = $false;
     if ($vmobj.Generation -eq 2) {
        # Retrieve secure boot status (can only be enabled on Generation 2 VMs) and convert to a boolean.
        $vmSecureBootState = ($vmobj | Get-VMFirmware).SecureBoot -eq 'On'
-    } 
-    
+    }
+
     @{
         Name             = $Name
         ## Return the Vhd specified if it exists in the Vhd chain
@@ -103,11 +103,11 @@ function Set-TargetResource
         # Name of the VM
         [parameter(Mandatory)]
         [String]$Name,
-        
+
         # VHD associated with the VM
         [parameter(Mandatory)]
         [String]$VhdPath,
-        
+
         # Virtual switch associated with the VM
         [String[]]$SwitchName,
 
@@ -183,7 +183,7 @@ function Set-TargetResource
         }
 
         # If VM is present, check its state, startup memory, minimum memory, maximum memory,processor countand mac address
-        # One cannot set the VM's vhdpath, path, generation and switchName after creation 
+        # One cannot set the VM's vhdpath, path, generation and switchName after creation
         else
         {
             # If state has been specified and the VM is not in right state, set it to right state
@@ -211,7 +211,7 @@ function Set-TargetResource
                 Write-Verbose -Message ($localizedData.AdjustingGreaterThanMemoryWarning -f 'StartupMemory', $vmObj.MemoryStartup, 'MaximumMemory', $MaximumMemory)
                 $changeProperty["MemoryStartup"]=$MaximumMemory
             }
-            
+
             # If the VM does not have the right minimum or maximum memory, stop the VM, set the right memory, start the VM
             if($MinimumMemory -or $MaximumMemory)
             {
@@ -272,10 +272,10 @@ function Set-TargetResource
                     $vmObj = Get-VM -Name $Name -ErrorAction SilentlyContinue
                 }
             }
-            
+
             # If the VM does not have the right MACAddress, stop the VM, set the right MACAddress, start the VM
             for ($i = 0; $i -lt $MACAddress.Count; $i++)
-            { 
+            {
                 $address = $MACAddress[$i]
                 $nic = $vmObj.NetworkAdapters[$i]
                 if ($nic.MacAddress -ne $address)
@@ -331,7 +331,7 @@ function Set-TargetResource
         if($Ensure -eq "Present")
         {
             Write-Verbose -Message ($localizedData.CreatingVM -f $Name)
-            
+
             $parameters = @{}
             $parameters["Name"] = $Name
             $parameters["VHDPath"] = $VhdPath
@@ -404,7 +404,7 @@ function Set-TargetResource
             {
                 Enable-VMIntegrationService -VMName $Name -Name 'Guest Service Interface'
             }
-            
+
             Write-Verbose -Message ($localizedData.VMCreated -f $Name)
 
             if ($State)
@@ -412,7 +412,7 @@ function Set-TargetResource
                 Set-VMState -Name $Name -State $State -WaitForIP $WaitForIP
                 Write-Verbose -Message ($localizedData.VMPropertySet -f 'State', $State)
             }
-            
+
         }
     }
 }
@@ -426,11 +426,11 @@ function Test-TargetResource
         # Name of the VM
         [parameter(Mandatory)]
         [String]$Name,
-        
+
         # VHD associated with the VM
         [parameter(Mandatory)]
         [String]$VhdPath,
-        
+
         # Virtual switch associated with the VM
         [String[]]$SwitchName,
 
@@ -483,7 +483,7 @@ function Test-TargetResource
     )
 
     #region input validation
-    
+
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if(!(Get-Module -ListAvailable -Name Hyper-V))
     {
@@ -495,9 +495,9 @@ function Test-TargetResource
     {
        Throw ($localizedData.MoreThanOneVMExistsError -f $Name)
     }
-    
+
     # Check if $VhdPath exist
-    if(!(Test-Path $VhdPath))
+    if(($Ensure -eq 'Present') -and (!(Test-Path -Path $VhdPath)))
     {
         Throw ($localizedData.VhdPathDoesNotExistError -f $VhdPath)
     }
@@ -507,18 +507,18 @@ function Test-TargetResource
     {
         Throw ($localizedData.MinMemGreaterThanStartupMemError -f $MinimumMemory, $StartupMemory)
     }
-    
+
     # Check if Minimum memory is greater than Maximummemory
     if($MaximumMemory -and $MinimumMemory -and ($MinimumMemory -gt $MaximumMemory))
     {
         Throw ($localizedData.MinMemGreaterThanMaxMemError -f $MinimumMemory, $MaximumMemory)
     }
-    
+
     # Check if Startup memory is greater than Maximummemory
     if($MaximumMemory -and $StartupMemory -and ($StartupMemory -gt $MaximumMemory))
     {
         Throw ($localizedData.StartUpMemGreaterThanMaxMemError -f $StartupMemory, $MaximumMemory)
-    }        
+    }
 
     <#  VM Generation has no direct relation to the virtual hard disk format and cannot be changed
         after the virtual machine has been created. Generation 2 VMs do not support .VHD files.  #>
@@ -560,7 +560,7 @@ function Test-TargetResource
             if($state -and ($vmObj.State -ne $State)){return $false}
             if($StartupMemory -and ($vmObj.MemoryStartup -ne $StartupMemory)){return $false}
             for ($i = 0; $i -lt $MACAddress.Count; $i++)
-            { 
+            {
                 if ($vmObj.NetworkAdapters[$i].MACAddress -ne $MACAddress[$i])
                 {
                     Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'MACAddress', $MACAddress[$i], $vmObj.NetworkAdapters[$i].MACAddress)
@@ -609,7 +609,7 @@ function Get-VhdHierarchy
 
     $vmVhdPath = Get-VHD -Path $VhdPath
     Write-Output -InputObject $vmVhdPath.Path
-    while($vmVhdPath.ParentPath -ne [String]::Empty)
+    while(-not [System.String]::IsNullOrEmpty($vmVhdPath.ParentPath))
     {
         $vmVhdPath.ParentPath
         $vmVhdPath = (Get-VHD -Path $vmVhdPath.ParentPath)
@@ -638,7 +638,7 @@ function Set-VMState
             if($oldState -eq "Paused"){Resume-VM -Name $Name}
             # If VM is Off, use start-vm to make it running
             elseif ($oldState -eq "Off"){Start-VM -Name $Name}
-            
+
             if($WaitForIP) { Get-VMIPAddress -Name $Name -Verbose }
         }
         'Paused' {if($oldState -ne 'Off'){Suspend-VM -Name $Name}}
@@ -666,7 +666,7 @@ function Change-VMMACAddress
     $vmObj = Get-VM -Name $Name
     $originalState = $vmObj.state
     if($originalState -ne "Off" -and $RestartIfNeeded)
-    { 
+    {
         Set-VMState -Name $Name -State Off
         $vmObj.NetworkAdapters[$NICIndex] | Set-VMNetworkAdapter -StaticMacAddress $MACAddress
 
@@ -675,7 +675,7 @@ function Change-VMMACAddress
         {
             Set-VMState -Name $Name -State Running -WaitForIP $WaitForIP
         }
-        
+
         # Cannot make a paused VM to go back to Paused state after turning Off
         if($originalState -eq "Paused")
         {
@@ -714,7 +714,7 @@ function Change-VMProperty
     $vmObj = Get-VM -Name $Name
     $originalState = $vmObj.state
     if($originalState -ne "Off" -and $RestartIfNeeded)
-    { 
+    {
         Set-VMState -Name $Name -State Off
         &$VMCommand -Name $Name @ChangeProperty
 
@@ -734,7 +734,7 @@ function Change-VMProperty
     }
     elseif($originalState -eq "Off")
     {
-        &$VMCommand -Name $Name @ChangeProperty 
+        &$VMCommand -Name $Name @ChangeProperty
         Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
     }
     else
@@ -760,7 +760,7 @@ function Change-VMSecureBoot
     $vmObj = Get-VM -Name $Name
     $originalState = $vmObj.state
     if($originalState -ne "Off" -and $RestartIfNeeded)
-    { 
+    {
         Set-VMState -Name $Name -State Off
         if ($SecureBoot)
         {

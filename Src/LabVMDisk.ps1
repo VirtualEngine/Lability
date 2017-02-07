@@ -80,7 +80,10 @@ function TestLabVMDisk {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData
+        $ConfigurationData,
+
+        [ValidateSet('Present','Absent')]
+        [String] $Ensure = 'Present'
     )
     process {
         $hostDefaults = GetConfigurationData -Configuration Host;
@@ -102,7 +105,10 @@ function TestLabVMDisk {
             $vhd['Generation'] = 'VHDX';
         }
         ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-        TestDscResource -ResourceName VHD -Parameters $vhd;
+
+        $testDscResourceResult = TestDscResource -ResourceName VHD -Parameters $vhd;
+        if ($Ensure -eq 'Absent') { return -not $testDscResourceResult; }
+        else { return $testDscResourceResult; }
     } #end process
 } #end function TestLabVMDisk
 
@@ -179,9 +185,13 @@ function RemoveLabVMDisk {
         else {
             $image = Get-LabImage -Id $Media -ErrorAction Stop;
         }
+        ## If the parent image isn't there, the differencing VHD won't be either!
         if ($image) {
-            ## If the parent image isn't there, the differencing VHD won't be either
-            $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath "$Name.vhdx";
+
+            ## Ensure we look for the correct file extension (#182)
+            $vhdFilename = '{0}.{1}' -f $Name, $image.Generation;
+            $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdFilename;
+
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
                 if ($PSCmdlet.ShouldProcess($vhdPath)) {
