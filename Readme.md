@@ -85,7 +85,7 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
-### Unreleased
+### v0.10.2
 
 * Updates bundled xHyper-V DSC resource module to 3.5.0.0
 * Updates bundled xPendingReboot DSC resource module to 0.3.0.0
