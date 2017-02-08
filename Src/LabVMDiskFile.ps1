@@ -300,7 +300,7 @@ function SetLabVMDiskFileMof {
 
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMofPath);
-            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
+            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop -Confirm:$false;
         }
 
         $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $NodeName);
@@ -308,7 +308,7 @@ function SetLabVMDiskFileMof {
 
             $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
-            Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force;
+            Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force -Confirm:$false;
         }
 
     } #end process
@@ -351,7 +351,7 @@ function SetLabVMDiskFileCertificate {
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
-            Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force;
+            Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
         if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
@@ -359,7 +359,7 @@ function SetLabVMDiskFileCertificate {
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
             $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
-            Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force;
+            Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
     } #end process

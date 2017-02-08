@@ -85,6 +85,12 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
+### Unreleased
+
+* Adds -Confirm/-WhatIf support to:
+  * Start-LabConfiguration, Remove-LabConfiguration
+  * Start-Lab, Stop-Lab, Reset-Lab and Restore-Lab
+
 ### v0.10.2
 
 * Updates bundled xHyper-V DSC resource module to 3.5.0.0

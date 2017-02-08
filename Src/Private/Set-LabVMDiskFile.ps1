@@ -52,7 +52,7 @@ function Set-LabVMDiskFile {
         $vhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;
 
         WriteVerbose -Message ($localized.MountingDiskImage -f $VhdPath);
-        $vhd = Mount-Vhd -Path $vhdPath -Passthru;
+        $vhd = Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
         [ref] $null = Get-PSDrive;
         $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
@@ -78,7 +78,7 @@ function Set-LabVMDiskFile {
 
             ## Ensure the VHD is dismounted (#185)
             WriteVerbose -Message ($localized.DismountingDiskImage -f $VhdPath);
-            Dismount-Vhd -Path $VhdPath;
+            Dismount-Vhd -Path $VhdPath -Confirm:$false;
         }
 
     } #end process

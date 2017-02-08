@@ -124,7 +124,7 @@ function SetSetupCompleteCmd {
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path;
+        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
         $setupCompletePath = Join-Path -Path $Path -ChildPath 'SetupComplete.cmd';
         if ($CoreCLR) {
 
@@ -139,7 +139,7 @@ schtasks /run /tn "BootStrap"
             WriteVerbose -Message $localized.UsingDefaultSetupComplete;
             $setupCompleteCmd = 'Powershell.exe -NoProfile -ExecutionPolicy Bypass -NonInteractive -File "%SYSTEMDRIVE%\BootStrap\BootStrap.ps1"';
         }
-        Set-Content -Path $setupCompletePath -Value $setupCompleteCmd -Encoding Ascii -Force;
+        Set-Content -Path $setupCompletePath -Value $setupCompleteCmd -Encoding Ascii -Force -Confirm:$false;
 
     } #end process
 } #end function SetSetupCompleteCmd
@@ -167,14 +167,14 @@ function SetBootStrap {
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path;
+        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
         $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
         $bootStrap = (NewBootStrap -CoreCLR:$CoreCLR).ToString();
         if ($CustomBootStrap) {
 
             $bootStrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $CustomBootStrap;
         }
-        Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force;
+        Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force -Confirm:$false;
 
     } #end process
 } #end function SetBootStrap

@@ -929,6 +929,7 @@ function ExpandModuleCache {
                     Force = $true;
                     Verbose = $false;
                     WarningAction = 'SilentlyContinue';
+                    Confirm = $false;
                 }
                 [ref] $null = ExpandZipArchive @expandZipArchiveParams;
 
@@ -945,6 +946,7 @@ function ExpandModuleCache {
                     Force = $true;
                     Verbose = $false;
                     WarningAction = 'SilentlyContinue';
+                    Confirm = $false;
                 }
 
                 if ($moduleInfo.ContainsKey('OverrideRepository')) {
@@ -968,6 +970,7 @@ function ExpandModuleCache {
                             Force = $true;
                             Verbose = $false;
                             WarningAction = 'SilentlyContinue';
+                            Confirm = $false;
                         }
                         [ref] $null = ExpandZipArchive @expandZipArchiveParams;
                     }
@@ -985,6 +988,7 @@ function ExpandModuleCache {
                             Recurse = $true;
                             Force = $true;
                             Verbose = $false;
+                            Confirm = $false;
                         }
                         Copy-Item @copyItemParams;
                     }

@@ -30,6 +30,7 @@ function Resolve-VhdHierarchy {
         Returns VM VHDs, including snapshots and differencing disks
 #>
     param (
+        ## Path to current virtual machine VHD/X file
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.String] $VhdPath
     )

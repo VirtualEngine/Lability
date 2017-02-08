@@ -112,6 +112,6 @@ Describe 'Validates "SetLabVMDiskFile" method' {
             Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
         }
 
-    }
+    } #end InModuleScope
 
-}  #end describe "Set-LabVMDiskFile" method
+}  #end describe

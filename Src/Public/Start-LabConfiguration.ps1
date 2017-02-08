@@ -1,99 +1,3 @@
-function Test-LabConfiguration {
-<#
-    .SYNOPSIS
-        Tests the configuration of all VMs in a lab.
-    .DESCRIPTION
-        The Test-LabConfiguration determines whether all nodes defined in a PowerShell DSC configuration document
-        are configured correctly and returns the results.
-
-        WANRING: Only the virtual machine configuration is checked, not in the internal VM configuration. For example,
-        the virtual machine's memory configuraiton, virtual switch configuration and processor count are tested. The
-        VM's operating system configuration is not checked.
-    .PARAMETER ConfigurationData
-        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
-        configuration document used to create the virtual machines. Each node defined in the AllNodes array is
-        tested.
-    .LINK
-        about_ConfigurationData
-        Start-LabConfiguration
-#>
-    [CmdletBinding()]
-    param (
-        ## Lab DSC configuration data
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Collections.Hashtable]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData
-    )
-    process {
-        WriteVerbose $localized.StartedLabConfigurationTest;
-        $currentNodeCount = 0;
-        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
-        foreach ($node in $nodes) {
-            $currentNodeCount++;
-            $nodeProperties = ResolveLabVMProperties -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
-            [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
-            $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
-            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-            $nodeResult = [PSCustomObject] @{
-                Name = $nodeProperties.NodeName;
-                IsConfigured = Test-LabVM -Name $node.NodeName -ConfigurationData $ConfigurationData;
-                DisplayName = $nodeProperties.NodeDisplayName;
-            }
-            Write-Output -InputObject $nodeResult;
-        }
-        WriteVerbose $localized.FinishedLabConfigurationTest;
-    } #end process
-} #end function Test-LabConfiguration
-
-function TestLabConfigurationMof {
-<#
-    .SYNOPSIS
-        Checks for node MOF and meta MOF configuration files.
-#>
-    [CmdletBinding()]
-    param (
-        ## Lab DSC configuration data
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Collections.Hashtable]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData,
-
-        ## Lab vm/node name
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Name,
-
-        ## Path to .MOF files created from the DSC configuration
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Path = (GetLabHostDSCConfigurationPath),
-
-        ## Ignores missing MOF file
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $SkipMofCheck
-    )
-    process {
-        $Path = Resolve-Path -Path $Path -ErrorAction Stop;
-        $node = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -eq $Name };
-
-        $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $node.NodeName);
-        WriteVerbose ($localized.CheckingForNodeFile -f $mofPath);
-        if (-not (Test-Path -Path $mofPath -PathType Leaf)) {
-            if ($SkipMofCheck) {
-                WriteWarning ($localized.CannotLocateMofFileError -f $mofPath)
-            }
-            else {
-                throw ($localized.CannotLocateMofFileError -f $mofPath);
-            }
-        }
-
-        $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $node.NodeName);
-        WriteVerbose ($localized.CheckingForNodeFile -f $metaMofPath);
-        if (-not (Test-Path -Path $metaMofPath -PathType Leaf)) {
-            WriteWarning ($localized.CannotLocateLCMFileWarning -f $metaMofPath);
-        }
-    } #end process
-} #end function TestLabConfigurationMof
-
 function Start-LabConfiguration {
 <#
     .SYNOPSIS
@@ -178,7 +82,7 @@ function Start-LabConfiguration {
         Set-LabVMDefault
         Reset-Lab
 #>
-    [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'PSCredential')]
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -229,93 +133,58 @@ function Start-LabConfiguration {
         }
     }
     process {
+
         WriteVerbose $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
 
         $Path = ResolvePathEx -Path $Path;
         foreach ($node in $nodes) {
+
             $testLabConfigurationMofParams = @{
                 ConfigurationData = $ConfigurationData;
                 Name = $node.NodeName;
                 Path = $Path;
             }
-            TestLabConfigurationMof @testLabConfigurationMofParams -SkipMofCheck:$SkipMofCheck;
+            Test-LabConfigurationMof @testLabConfigurationMofParams -SkipMofCheck:$SkipMofCheck;
         } #end foreach node
 
         $currentNodeCount = 0;
         foreach ($node in (Test-LabConfiguration -ConfigurationData $ConfigurationData)) {
+
             $currentNodeCount++;
             [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
             $activity = $localized.ConfiguringNode -f $node.Name;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             if ($node.IsConfigured -and $Force) {
-                WriteVerbose ($localized.NodeForcedConfiguration -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+
+                WriteVerbose -Message ($localized.NodeForcedConfiguration -f $node.Name);
+
+                $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-VM', $node.Name;
+                $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
+                if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+                    NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                }
             }
             elseif ($node.IsConfigured) {
+
                 WriteVerbose ($localized.NodeAlreadyConfigured -f $node.Name);
             }
             else {
-                WriteVerbose ($localized.NodeMissingOrMisconfigured -f $node.Name);
-                NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+
+                WriteVerbose -Message ($localized.NodeMissingOrMisconfigured -f $node.Name);
+
+                $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Start-LabConfiguration', $node.Name;
+                $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
+                if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+
+                    NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                }
             }
-        }
+
+        } #end foreach node
+
         Write-Progress -Id 42 -Activity $activity -Completed;
         WriteVerbose $localized.FinishedLabConfiguration;
+
     } #end process
 } #end function Start-LabConfiguration
-
-function Remove-LabConfiguration {
-<#
-    .SYNOPSIS
-        Removes all VMs and associated snapshots of all nodes defined in a PowerShell DSC configuration document.
-    .DESCRIPTION
-        The Remove-LabConfiguration removes all virtual machines that have a corresponding NodeName defined in the
-        AllNode array of the PowerShell DSC configuration document.
-
-        WARNING: ALL EXISTING VIRTUAL MACHINE DATA WILL BE LOST WHEN VIRTUAL MACHINES ARE REMOVED.
-
-        By default, associated virtual machine switches are not removed as they may be used by other virtual
-        machines or lab configurations. If you wish to remove any virtual switche defined in the PowerShell DSC
-        configuration document, specify the -RemoveSwitch parameter.
-    .PARAMETER ConfigurationData
-        Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
-        configuration document used to remove existing virtual machines. One virtual machine is removed per node
-        defined in the AllNodes array.
-    .PARAMETER RemoveSwitch
-        Specifies that any connected virtual switch should also be removed when the virtual machine is removed.
-    .LINK
-        about_ConfigurationData
-        Start-LabConfiguration
-#>
-    [CmdletBinding(SupportsShouldProcess)]
-    param (
-        ## Lab DSC configuration data
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [System.Collections.Hashtable]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData,
-
-        ## Include removal of virtual switch(es). By default virtual switches are not removed.
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $RemoveSwitch
-    )
-    process {
-        WriteVerbose $localized.StartedLabConfiguration;
-        $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
-        $currentNodeCount = 0;
-        foreach ($node in $nodes) {
-            $currentNodeCount++;
-            $nodeProperties = ResolveLabVMProperties -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
-            [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
-            $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
-            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-            ##TODO: Should this not ensure that VMs are powered off
-            if ($PSCmdlet.ShouldProcess($nodeProperties.NodeDisplayName, 'RemoveLabVM')) {
-                RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch -Confirm:$false;
-            }
-        }
-        Write-Progress -Id 42 -Activity $activity -Completed;
-        WriteVerbose $localized.FinishedLabConfiguration;
-    } #end process
-} #end function Remove-LabConfiguration

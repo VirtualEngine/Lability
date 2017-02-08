@@ -415,14 +415,14 @@ function NewLabVM {
 
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
-            Checkpoint-VM -Name $displayName -SnapshotName $snapshotName;
+            Checkpoint-VM -Name $displayName -SnapshotName $snapshotName -Confirm:$false;
         }
 
         if ($node.WarningMessage) {
 
             if ($node.WarningMessage -is [System.String]) {
 
-                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage);
+                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage.Trim("\n"));
             }
             else {
 
@@ -827,13 +827,22 @@ function Remove-LabVM {
                 ## Create a skeleton config data if one wasn't supplied
                 if (-not $PSBoundParameters.ContainsKey('ConfigurationData')) {
 
+                    try {
+
+                        <# If we don't have configuration document, we need to locate
+                        the lab image id so that the VM's VHD/X can be removed #182 #>
+                        $mediaId = (Resolve-LabVMImage -Name $vmName).Id;
+                    }
+                    catch {
+
+                        throw ($localized.CannotResolveMediaIdError -f $vmName);
+                    }
+
                     $configurationData = @{
                         AllNodes = @(
                             @{
                                 NodeName = $vmName;
-                                <# If we don't have configuration document, we need to locate
-                                the lab image id so that the VM's VHD/X can be removed #182 #>
-                                Media = (Resolve-LabVMImage -Name $vmName).Id;
+                                Media = $mediaId;
                             }
                         )
                     };
