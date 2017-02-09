@@ -35,7 +35,8 @@ function Restore-Lab {
         $ConfigurationData,
 
         ## Snapshot name
-        [Parameter(Mandatory)] [Alias('Name')]
+        [Parameter(Mandatory)]
+        [Alias('Name')]
         [System.String] $SnapshotName,
 
         ## Force snapshots if virtual machines are on
@@ -48,7 +49,7 @@ function Restore-Lab {
             Where-Object { $_.NodeName -ne '*' } |
                 ForEach-Object {
 
-                    $nodes += ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
+                    $nodes += Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
                 };
 
         $runningNodes = $nodes |

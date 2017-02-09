@@ -21,7 +21,7 @@ Describe 'Src\LabVM' {
                     )
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties -is [System.Collections.Hashtable] | Should Be $true;
             }
@@ -36,7 +36,7 @@ Describe 'Src\LabVM' {
                     )
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
             }
@@ -51,7 +51,7 @@ Describe 'Src\LabVM' {
                     )
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
 
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
             }
@@ -66,7 +66,7 @@ Describe 'Src\LabVM' {
                     )
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $testAllNodesProcessorCount;
             }
@@ -82,7 +82,7 @@ Describe 'Src\LabVM' {
                 }
 
                 $hostDefaultProperties = Get-LabVMDefault;
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName -NoEnumerateWildcardNode;
 
                 $vmProperties.ProcessorCount | Should Be $hostDefaultProperties.ProcessorCount;
             }
@@ -96,7 +96,7 @@ Describe 'Src\LabVM' {
                 }
 
                 $hostDefaultProperties = Get-LabVMDefault;
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $hostDefaultProperties.ProcessorCount;
             }
@@ -110,7 +110,7 @@ Describe 'Src\LabVM' {
                     )
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $vmProperties.ProcessorCount | Should Be $testVMProcessorCount;
             }
@@ -123,7 +123,7 @@ Describe 'Src\LabVM' {
                     NonNodeData = @{ Lability = @{ EnvironmentPrefix = $testPrefix; } }
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $expected = '{0}{1}' -f $testPrefix, $testVMName;
                 $vmProperties.NodeDisplayName | Should Be $expected;
@@ -137,7 +137,7 @@ Describe 'Src\LabVM' {
                     NonNodeData = @{ Lability = @{ EnvironmentSuffix = $testSuffix; } }
                 }
 
-                $vmProperties = ResolveLabVMProperties -ConfigurationData $configurationData -NodeName $testVMName;
+                $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testVMName;
 
                 $expected = '{0}{1}' -f $testVMName, $testSuffix;
                 $vmProperties.NodeDisplayName | Should Be $expected;
@@ -750,7 +750,7 @@ Describe 'Src\LabVM' {
                     SwitchName = 'Test Switch';
                     SecureBoot = $false;
                 }
-                Mock ResolveLabVMProperties -MockWith { return $fakeVMProperties; }
+                Mock Resolve-NodePropertyValue -MockWith { return $fakeVMProperties; }
 
                 { NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -WarningAction Stop 3>&1 } | Should Throw;
             }
@@ -892,84 +892,6 @@ Describe 'Src\LabVM' {
             }
 
         } #end context Validates "RemoveLabVM" method
-
-        Context 'Validates "Reset-LabVM" method' {
-
-            $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
-
-            It 'Removes existing virtual machine' {
-                $testVMName = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
-                Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
-
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
-
-                Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
-            }
-
-            It 'Creates a new virtual machine' {
-                $testVMName = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
-                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
-
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
-
-                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
-            }
-
-            It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
-                $testVMName = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVMName; }
-                    )
-                }
-                Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
-                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
-
-                Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword -NoSnapshot;
-
-                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
-            }
-
-        } #end context Validates "Reset-LabVM" method
-
-        Context 'Validates "New-LabVM" method' {
-
-            $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
-            $MediaId = 'DummyMediaId'
-
-            It 'Creates a new virtual machine' {
-                $testVMName = 'TestVM';
-                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -MockWith { }
-                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
-
-                New-LabVM -Name $testVMName -MediaId $MediaId -Credential $testPassword;
-
-                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
-            }
-
-            It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
-                $testVMName = 'TestVM';
-                Mock NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -MockWith { }
-                Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
-
-                New-LabVM -Name $testVMName -MediaId $MediaId  -Credential $testPassword -NoSnapshot;
-
-                Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
-            }
-
-        } #end context Validates "New-LabVM" method
 
         Context 'Validates "Remove-LabVM" method' {
 

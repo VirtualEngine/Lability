@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Public\Test-LabConfigurationMof' {
+Describe 'Src\Private\Test-LabConfigurationMof' {
 
     InModuleScope -ModuleName $moduleName {
 

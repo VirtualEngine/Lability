@@ -182,7 +182,7 @@ function SetLabVMDiskFileUnattendXml {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -343,7 +343,7 @@ function SetLabVMDiskFileCertificate {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
 
         if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {

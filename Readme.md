@@ -90,6 +90,7 @@ Other generous members of the community have written some comprehensive guides t
 * Adds -Confirm/-WhatIf support to:
   * Start-LabConfiguration, Remove-LabConfiguration
   * Start-Lab, Stop-Lab, Reset-Lab and Restore-Lab
+* Searches $PWD folder and EnvironmentName sub folder for .mof files (#181)
 
 ### v0.10.2
 

@@ -91,18 +91,21 @@ function Start-LabConfiguration {
         $ConfigurationData,
 
         ## Local administrator password of the VM. The username is NOT used.
-        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'PSCredential', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $Credential = (& $credentialCheckScriptBlock),
 
         ## Local administrator password of the VM.
-        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
 
         ## Path to .MOF files created from the DSC configuration
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [System.String] $Path,
 
         ## Skip creating baseline snapshots
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -121,6 +124,7 @@ function Start-LabConfiguration {
         [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
     )
     begin {
+
         ## If we have only a secure string, create a PSCredential
         if ($PSCmdlet.ParameterSetName -eq 'Password') {
             $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
@@ -129,6 +133,7 @@ function Start-LabConfiguration {
         elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
 
         if (-not (Test-LabHostConfiguration -IgnorePendingReboot:$IgnorePendingReboot) -and (-not $Force)) {
+
             throw $localized.HostConfigurationTestError;
         }
     }
@@ -137,7 +142,15 @@ function Start-LabConfiguration {
         WriteVerbose $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
 
-        $Path = ResolvePathEx -Path $Path;
+        ## There is an assumption here is all .mofs are in the same folder
+        $resolveConfigurationPathParams = @{
+            ConfigurationData = $ConfigurationData;
+            Name = $nodes | Select-Object -First 1 | ForEach-Object { $_.NodeName };
+            Path = $Path;
+            UseDefaultPath = $SkipMofCheck;
+        }
+        $Path = Resolve-ConfigurationPath @resolveConfigurationPathParams;
+
         foreach ($node in $nodes) {
 
             $testLabConfigurationMofParams = @{
@@ -146,6 +159,7 @@ function Start-LabConfiguration {
                 Path = $Path;
             }
             Test-LabConfigurationMof @testLabConfigurationMofParams -SkipMofCheck:$SkipMofCheck;
+
         } #end foreach node
 
         $currentNodeCount = 0;

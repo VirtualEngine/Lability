@@ -43,7 +43,7 @@ function Stop-Lab {
         $ConfigurationData.AllNodes |
             Where-Object { $_.NodeName -ne '*' } |
                 ForEach-Object {
-                    $nodes += [PSCustomObject] (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData);
+                    $nodes += [PSCustomObject] (Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData);
                 };
 
         $currentGroupCount = 0;

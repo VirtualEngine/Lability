@@ -4,6 +4,7 @@ function Stop-ShellHWDetectionService {
         Stops the ShellHWDetectionService - if present!
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param ( )
     process {
 

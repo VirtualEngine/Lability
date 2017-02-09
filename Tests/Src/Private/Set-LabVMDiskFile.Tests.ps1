@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Validates "SetLabVMDiskFile" method' {
+Describe 'Src\Private\Set-LabVMDiskFile' {
 
     InModuleScope $moduleName {
 

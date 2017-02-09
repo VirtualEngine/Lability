@@ -36,11 +36,11 @@ function ResolveLabModule {
     )
     process {
 
-        $resolveLabVMPropertiesParams = @{
+        $resolveNodePropertyValueParams = @{
             NodeName = $NodeName;
             ConfigurationData = $ConfigurationData;
         }
-        $nodeProperties = ResolveLabVMProperties @resolveLabVMPropertiesParams;
+        $nodeProperties = Resolve-NodePropertyValue @resolveNodePropertyValueParams;
 
         $resolveModuleParams = @{
             ConfigurationData = $ConfigurationData;

@@ -8,6 +8,7 @@ function Set-LabVMDiskFile {
         VHD(X) file.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -48,7 +49,7 @@ function Set-LabVMDiskFile {
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-ShellHWDetectionService;
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $vhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;
 
         WriteVerbose -Message ($localized.MountingDiskImage -f $VhdPath);

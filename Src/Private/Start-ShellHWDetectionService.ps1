@@ -4,6 +4,7 @@ function Start-ShellHWDetectionService {
         Starts the ShellHWDetectionService - if present!
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param ( )
     process {
 

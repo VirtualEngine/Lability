@@ -43,7 +43,7 @@ Describe 'Src\Public\Start-LabConfiguration' {
         }
 
         It 'Calls "NewLabVM" if node is not configured' {
-            $testPath = 'TestDrive:';
+            $testPath = 'TestDrive:\';
             $testVM = 'VM1';
             New-MofFiles -Name $testVM -Path $testPath;
             $configurationData = @{ AllNodes = @( @{ NodeName = $testVM; } ) }

@@ -41,7 +41,7 @@ function Remove-LabConfiguration {
         foreach ($node in $nodes) {
 
             $currentNodeCount++;
-            $nodeProperties = ResolveLabVMProperties -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
+            $nodeProperties = Resolve-NodePropertyValue -NodeName $node.NodeName -ConfigurationData $ConfigurationData;
             [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
             $activity = $localized.ConfiguringNode -f $nodeProperties.NodeDisplayName;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;

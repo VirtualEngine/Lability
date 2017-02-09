@@ -239,7 +239,7 @@ function Invoke-LabResourceDownload {
                 WriteVerbose ($Localized.DownloadingAllRequiredMedia);
                 $uniqueMediaIds = @();
                 $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
-                    $id = (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
+                    $id = (Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
                     if ($uniqueMediaIds -notcontains $id) { $uniqueMediaIds += $id; }
                 }
                 $MediaId = $uniqueMediaIds;
@@ -419,7 +419,7 @@ function ExpandLabResource {
             [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force -Confirm:$false;
         }
 
-        $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
 
             WriteVerbose ($localized.AddingResource -f $resourceId);

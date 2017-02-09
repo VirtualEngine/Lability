@@ -148,6 +148,8 @@ ConvertFrom-StringData -StringData @'
     ModuleVersionNotCached          = Module '{0}' v{1} was not found in the module cache or -Force was specified.
     ModuleMinmumVersionNotCached    = Module '{0}' v{1} or later was not found in the module cache or -Force was specified.
     NoModuleBranchSpecified         = GitHub module '{0}' has no branch specified; defaulting to 'master' branch.
+    SearchingConfigurationPaths     = Searching configuration paths.
+    FoundConfigurationPath          = Found configuration path '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -186,7 +188,7 @@ ConvertFrom-StringData -StringData @'
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
     CannotFindCertificateError      = Cannot locate {0} certificate '{1}'.
-    CannotLocateMofFileError        = Cannot locate node '{0}' file. No DSC configuration will be applied. Ensure the DSC configuration has been run successfully.
+    CannotLocateMofFileError        = Cannot locate node '{0}' file and no DSC configuration can be applied. Ensure the DSC configuration has been run successfully.
     CannotLocateNodeError           = Cannot locate node '{0}'.
     CannotSnapshotNodeError         = Cannot perform a snapshot operation on virtual machine '{0}' as it is not powered off. You can force the snapshot operation with the -Force switch.
     HostConfigurationTestError      = Host configuration test failed and may have a pending reboot.

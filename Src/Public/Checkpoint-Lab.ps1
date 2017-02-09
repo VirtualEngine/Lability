@@ -32,22 +32,29 @@ function Checkpoint-Lab {
         $ConfigurationData,
 
         ## Snapshot name
-        [Parameter(Mandatory)] [Alias('Name')]
+        [Parameter(Mandatory)]
+        [Alias('Name')]
         [System.String] $SnapshotName,
 
         ## Force snapshots if virtual machines are on
         [System.Management.Automation.SwitchParameter] $Force
     )
     process {
+
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' } | ForEach-Object {
-             ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
+             Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
         };
+
         $runningNodes = Get-VM -Name $nodes.NodeDisplayName | Where-Object { $_.State -ne 'Off' }
+
         if ($runningNodes -and $Force) {
+
             NewLabVMSnapshot -Name $nodes.NodeDisplayName -SnapshotName $SnapshotName;
         }
         elseif ($runningNodes) {
+
             foreach ($runningNode in $runningNodes) {
+
                 Write-Error -Message ($localized.CannotSnapshotNodeError -f $runningNode.Name);
             }
         }
@@ -61,5 +68,6 @@ function Checkpoint-Lab {
                 NewLabVMSnapshot -Name $nodes.NodeDisplayName -SnapshotName $SnapshotName;
             }
         }
+
     } #end process
 } #end function Checkpoint-Lab
