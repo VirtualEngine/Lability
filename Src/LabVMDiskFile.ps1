@@ -109,13 +109,13 @@ function SetLabVMDiskFileModule {
         $programFilesPath = '{0}\WindowsPowershell\Modules' -f (ResolveProgramFilesFolder -Drive $VhdDriveLetter).FullName
 
         ## Add the DSC resource modules
-        $resolveLabDscModuleParams =@{
+        $resolveLabModuleParams =@{
             ConfigurationData = $ConfigurationData;
             NodeName = $NodeName;
             ModuleType = 'DscResource';
         }
         $setLabVMDiskDscModuleParams = @{
-            Module = ResolveLabModule @resolveLabDscModuleParams;
+            Module = Resolve-LabModule @resolveLabModuleParams;
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
@@ -125,13 +125,13 @@ function SetLabVMDiskFileModule {
         }
 
         ## Add the PowerShell resource modules
-        $resolveLabPowerShellModuleParams =@{
+        $resolveLabModuleParams =@{
             ConfigurationData = $ConfigurationData;
             NodeName = $NodeName;
             ModuleType = 'Module';
         }
         $setLabVMDiskPowerShellModuleParams = @{
-            Module = ResolveLabModule @resolveLabPowerShellModuleParams;
+            Module = Resolve-LabModule @resolveLabModuleParams;
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskPowerShellModuleParams['Module']) {

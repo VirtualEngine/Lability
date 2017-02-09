@@ -1,4 +1,4 @@
-function ResolveLabModule {
+function Resolve-LabModule {
 <#
     .SYNOPSIS
         Returns the Node\DSCResource or Node\Module definitions from the
@@ -75,4 +75,4 @@ function ResolveLabModule {
 
         return $modules;
     }
-} #end function ResolveLabModule
+} #end function Resolve-LabModule
