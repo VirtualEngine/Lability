@@ -25,4 +25,4 @@ Describe 'Src\Private\Resolve-LabImage' {
 
     } #end InModuleScope
 
-} #end describe Src\Lab
+} #end describe

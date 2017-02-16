@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Validates "SetLabVMDiskFile" method' {
+Describe 'Src\Private\Set-LabVMDiskFile' {
 
     InModuleScope $moduleName {
 
@@ -13,13 +13,10 @@ Describe 'Validates "SetLabVMDiskFile" method' {
         $testConfigurationData = @{ AllNodes = @( @{ NodeName = $testNode; } ) }
         $testDiskNumber = 42;
         $testDriveLetter = $env:SystemDrive.Trim(':');
-
         $testCredential = [System.Management.Automation.PSCredential]::Empty;
-
-
         $testVhdPath = 'TestDrive:\{0}.vhdx' -f $testNode;
 
-        Mock ResolveLabVMDiskPath -MockWith { return $testVhdPath; }
+        Mock Resolve-LabVMGenerationDiskPath -MockWith { return $testVhdPath; }
         Mock Stop-ShellHWDetectionService { }
         Mock Start-ShellHWDetectionService { }
         Mock Mount-Vhd -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
@@ -112,6 +109,6 @@ Describe 'Validates "SetLabVMDiskFile" method' {
             Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
         }
 
-    }
+    } #end InModuleScope
 
-}  #end describe "Set-LabVMDiskFile" method
+}  #end describe

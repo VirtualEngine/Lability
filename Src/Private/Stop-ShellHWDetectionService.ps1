@@ -4,10 +4,14 @@ function Stop-ShellHWDetectionService {
         Stops the ShellHWDetectionService - if present!
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param ( )
     process {
+
         if (Get-Service -Name 'ShellHWDetection' -ErrorAction SilentlyContinue) {
-            Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore;
+
+            Stop-Service -Name 'ShellHWDetection' -Force -ErrorAction Ignore -Confirm:$false;
         }
+
     } #end process
 } #end function Stop-ShellHWDetectionService
