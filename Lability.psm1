@@ -22,7 +22,10 @@ $moduleSrcPath = Join-Path -Path $moduleRoot -ChildPath 'Src';
 Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurse |
     ForEach-Object {
         Write-Verbose -Message ('Importing library\source file ''{0}''.' -f $_.FullName);
-        . $_.FullName;
+        ## https://becomelotr.wordpress.com/2017/02/13/expensive-dot-sourcing/
+        . ([System.Management.Automation.ScriptBlock]::Create(
+                [System.IO.File]::ReadAllText($_.FullName)
+            ));
     }
 
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
