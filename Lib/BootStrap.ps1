@@ -15,7 +15,9 @@ function NewBootStrap {
 ## Lability CoreCLR DSC Bootstrap
 $VerbosePreference = 'Continue';
 
-## TODO: Need to find a Nano equivalent of CertUtil.exe!
+Import-Certificate -FilePath "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer" -CertStoreLocation 'Cert:\LocalMachine\Root\' -Verbose;
+## Import the .PFX certificate with a blank password
+Import-PfxCertificate -FilePath "$env:SYSTEMDRIVE\BootStrap\LabClient.pfx" -CertStoreLocation 'Cert:\LocalMachine\My\' -Verbose;
 
 <#CustomBootStrapInjectionPoint#>
 

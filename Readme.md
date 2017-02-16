@@ -93,6 +93,7 @@ Other generous members of the community have written some comprehensive guides t
 * Searches $PWD folder and EnvironmentName sub folder for .mof files (#181)
 * Throws error if unsupported module values are defined (#170)
 * Fixes error copying resource files into custom VHD Windows media (#193)
+* Adds credential encryption/certificate support on Nano server
 
 ### v0.10.2
 
