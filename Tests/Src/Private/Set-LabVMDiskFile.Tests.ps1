@@ -13,13 +13,10 @@ Describe 'Src\Private\Set-LabVMDiskFile' {
         $testConfigurationData = @{ AllNodes = @( @{ NodeName = $testNode; } ) }
         $testDiskNumber = 42;
         $testDriveLetter = $env:SystemDrive.Trim(':');
-
         $testCredential = [System.Management.Automation.PSCredential]::Empty;
-
-
         $testVhdPath = 'TestDrive:\{0}.vhdx' -f $testNode;
 
-        Mock ResolveLabVMDiskPath -MockWith { return $testVhdPath; }
+        Mock Resolve-LabVMGenerationDiskPath -MockWith { return $testVhdPath; }
         Mock Stop-ShellHWDetectionService { }
         Mock Start-ShellHWDetectionService { }
         Mock Mount-Vhd -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }

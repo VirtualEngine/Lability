@@ -50,7 +50,13 @@ function Set-LabVMDiskFile {
         Stop-ShellHWDetectionService;
 
         $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
-        $vhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;
+
+        $resolveLabVMGenerationDiskPathParams = @{
+            Name = $node.NodeDisplayName;
+            Media = $node.Media;
+            ConfigurationData = $ConfigurationData;
+        }
+        $vhdPath = Resolve-LabVMGenerationDiskPath @resolveLabVMGenerationDiskPathParams;
 
         WriteVerbose -Message ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;

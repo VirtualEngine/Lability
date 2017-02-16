@@ -22,7 +22,7 @@ function ResolveLabVMDiskPath {
 function GetLabVMDisk {
 <#
     .SYNOPSIS
-        Retrieves lab virtual machine disk (VHDX) is present.
+        Retrieves lab virtual machine disk (VHDX) if present.
     .DESCRIPTION
         Gets a VM disk configuration using the xVHD DSC resource.
 #>
