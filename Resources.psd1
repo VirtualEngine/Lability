@@ -208,6 +208,7 @@ ConvertFrom-StringData -StringData @'
     InvalidComputerNameError        = Computer name '{0}' in invalid. Standard names may contain letters (a-z, A-Z), numbers (0-9), and hyphens (-), but no spaces or periods (.).
     ReadingArchiveItemError         = Error reading archive item '{0}'.
     RequiredModuleParameterError    = Required module parameter '{0}' is invalid or missing.
+    InvalidtModuleParameterError    = Module parameter '{0}' is invalid.
     InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
     CannotLocateDismDllError        = Cannot locate 'Microsoft.Dism.Powershell.dll' in path '{0}'.
     CannotResolveMediaIdError       = Cannot resolve node '{0}' source media Id.

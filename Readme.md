@@ -91,6 +91,7 @@ Other generous members of the community have written some comprehensive guides t
   * Start-LabConfiguration, Remove-LabConfiguration
   * Start-Lab, Stop-Lab, Reset-Lab and Restore-Lab
 * Searches $PWD folder and EnvironmentName sub folder for .mof files (#181)
+* Throws error if unsupported module values are defined (#170)
 
 ### v0.10.2
 
