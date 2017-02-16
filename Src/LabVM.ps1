@@ -124,7 +124,7 @@ function NewLabVM {
             GuestIntegrationServices = $node.GuestIntegrationServices;
             ConfigurationData = $ConfigurationData;
         }
-        SetLabVirtualMachine @setLabVirtualMachineParams;
+        Set-LabVirtualMachine @setLabVirtualMachineParams;
 
         $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
         if ($media.OperatingSystem -eq 'Linux') {

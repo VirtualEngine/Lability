@@ -33,24 +33,25 @@ LONG DESCRIPTION
 
 SUPPORTED MEDIA PROPERTIES
 
-        Id
-        Description
-        Filename
-        Architecture { x86 | x64 }
-        Uri
-        Checksum
-        MediaType { VHD | ISO | WIM }
-        ImageName [string] ( supports [int32] for image numbers )
-        OperatingSystem { Windows | Linux } ( defaults to Windows if not specified )
+        Id  [string]
+        Description  [string]
+        Filename  [string]
+        Architecture  [string] { x86 | x64 }
+        Uri  [string]
+        Checksum  [string]
+        MediaType  [string] { VHD | ISO | WIM }
+        ImageName  [string] ( supports [int32] for image numbers )
+        OperatingSystem  [string] { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
-            PartitionStyle { MBR | GPT }
-            WimPath
-            SourcePath
-            WindowsOptionalFeature
-            Package
-            PackagePath
-            SetupComplete { CoreCLR }
-            CustomBootstrap [string[]]
+            PartitionStyle [string] { MBR | GPT }
+            WimPath  [string]
+            SourcePath  [string]
+            WindowsOptionalFeature  [string[]]
+            Package  [string[]]
+            PackagePath  [string]
+            SetupComplete  [string] { CoreCLR }
+            CustomBootstrap  [string[]]
+            VmGeneration  [int] { 1 | 2 }
         }
         Hotfixes
 
@@ -120,7 +121,7 @@ LINUX DISK IMAGES
                 Filename = "NSVPX-11.0-63.16_nc.vhd"
                 Description = "Citrix NetScaler 11.0 VPX Build 63.16_nc";
                 Architecture = "x64";
-	            MediaType = "VHD";
+	        MediaType = "VHD";
                 OperatingSystem = "Linux";
                 Uri = "\\MyFileServer\Images\NSVPX-11.0-63.16_nc.vhd";
             }

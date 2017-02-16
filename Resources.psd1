@@ -123,6 +123,7 @@ ConvertFrom-StringData -StringData @'
     ModuleFoundInPath               = Found module in '{0}'.
     CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
     CreatingVM                      = Creating VM '{0}'.
+    CreatingVMGeneration            = Creating generation '{0}' VM.
     RemovingVM                      = Removing VM '{0}'.
     ResettingVM                     = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.

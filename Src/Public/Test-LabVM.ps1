@@ -74,7 +74,7 @@ function Test-LabVM {
                         GuestIntegrationServices = $node.GuestIntegrationServices;
                         ConfigurationData = $ConfigurationData;
                     }
-                    if (-not (TestLabVirtualMachine @testLabVirtualMachineParams)) {
+                    if (-not (Test-LabVirtualMachine @testLabVirtualMachineParams)) {
 
                         $isNodeCompliant = $false;
                     }

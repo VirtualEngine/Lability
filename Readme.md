@@ -94,6 +94,7 @@ Other generous members of the community have written some comprehensive guides t
 * Throws error if unsupported module values are defined (#170)
 * Fixes error copying resource files into custom VHD Windows media (#193)
 * Adds credential encryption/certificate support on Nano server
+* Permits overriding VM generation with the Media\CustomData\VmGeneration property (#194)
 
 ### v0.10.2
 
