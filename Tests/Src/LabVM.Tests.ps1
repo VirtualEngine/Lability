@@ -36,7 +36,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -69,7 +69,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -91,7 +91,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -114,7 +114,7 @@ Describe 'Src\LabVM' {
                 }
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -138,7 +138,7 @@ Describe 'Src\LabVM' {
                 }
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -162,7 +162,7 @@ Describe 'Src\LabVM' {
                 }
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -192,11 +192,11 @@ Describe 'Src\LabVM' {
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
-                Mock SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
+                Mock Set-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
+                Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
             }
 
             It 'Creates virtual machine with "GuestIntegrationServices" when specified' {
@@ -216,11 +216,11 @@ Describe 'Src\LabVM' {
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock New-LabImage -MockWith { }
-                Mock SetLabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -MockWith { }
+                Mock Set-LabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -Scope It;
+                Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -Scope It;
             }
 
             It 'Does not inject resources when "OperatingSystem" is "Linux"' {
@@ -232,7 +232,7 @@ Describe 'Src\LabVM' {
                 Mock New-LabImage -MockWith { }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock ResolveLabMedia -MockWith { return @{ Id = $Id; OperatingSystem = 'Linux'; } }
                 Mock Set-LabVMDiskFile -MockWith { }
 
@@ -251,7 +251,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -275,7 +275,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return @{ Id = $Id; CustomData = @{ ProductKey = $testProductKey } } }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -297,7 +297,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -319,7 +319,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Get-VM -MockWith { }
                 Mock Test-LabImage -MockWith { return $true; }
@@ -341,7 +341,7 @@ Describe 'Src\LabVM' {
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
                 Mock ResetLabVMDisk -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -364,7 +364,7 @@ Describe 'Src\LabVM' {
                 }
                 Mock ResolveLabMedia -MockWith { return $Id; }
                 Mock SetLabSwitch -MockWith { }
-                Mock SetLabVirtualMachine -MockWith { }
+                Mock Set-LabVirtualMachine -MockWith { }
                 Mock Set-LabVMDiskFile -MockWith { }
                 Mock Checkpoint-VM -MockWith { }
                 Mock Get-VM -MockWith { }
@@ -377,7 +377,7 @@ Describe 'Src\LabVM' {
                 Assert-MockCalled ResetLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             }
 
-            It 'Calls "SetLabVirtualMachine" with "ConfigurationData" (#97)' {
+            It 'Calls "Set-LabVirtualMachine" with "ConfigurationData" (#97)' {
                 $testVMName = 'TestVM';
                 $testMedia = 'Test-Media';
                 $testVMSwitch = 'Test Switch';
@@ -394,11 +394,11 @@ Describe 'Src\LabVM' {
                 Mock Get-VM -MockWith { }
                 Mock New-LabImage -MockWith { }
                 Mock Test-LabImage -MockWith { return $false; }
-                Mock SetLabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+                Mock Set-LabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
 
                 $labVM = NewLabVM -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-                Assert-MockCalled SetLabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+                Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             }
 
             It 'Warns when no client or root certificate is used' {

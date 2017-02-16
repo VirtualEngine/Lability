@@ -13,7 +13,7 @@ Describe 'Src\Public\Reset-Lab' {
         Mock Test-LabImage -MockWith { }
         Mock TestLabSwitch -MockWith { }
         Mock TestLabVMDisk -MockWith { }
-        Mock TestLabVirtualMachine -MockWith { }
+        Mock Test-LabVirtualMachine -MockWith { }
 
         It 'Returns a "System.Boolean" object type' {
                 $testVM = 'TestVM';
@@ -25,7 +25,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
 
                 $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
 
@@ -42,7 +42,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $false; }
+                Mock Test-LabVirtualMachine -MockWith { return $false; }
 
                 $vms = Test-LabVM -ConfigurationData $configurationData;
                 $vms.Count | Should Be $configurationData.AllNodes.Count;
@@ -55,7 +55,7 @@ Describe 'Src\Public\Reset-Lab' {
                         @{ NodeName = $testVM; }
                     )
                 }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
 
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $true;
             }
@@ -70,7 +70,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
 
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
             }
@@ -85,7 +85,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock TestLabSwitch -MockWith { return $false; }
                 Mock TestLabVMDisk -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
 
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
             }
@@ -100,7 +100,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -MockWith { return $false; }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
 
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
             }
@@ -115,7 +115,7 @@ Describe 'Src\Public\Reset-Lab' {
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $false; }
+                Mock Test-LabVirtualMachine -MockWith { return $false; }
 
                 Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
             }
@@ -129,7 +129,7 @@ Describe 'Src\Public\Reset-Lab' {
                 }
                 Mock TestLabSwitch -MockWith { return $true; }
                 Mock TestLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
-                Mock TestLabVirtualMachine -MockWith { return $true; }
+                Mock Test-LabVirtualMachine -MockWith { return $true; }
                 Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
 
                 $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
