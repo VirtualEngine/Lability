@@ -96,6 +96,7 @@ Other generous members of the community have written some comprehensive guides t
 * Adds credential encryption/certificate support on Nano server
 * Permits overriding VM generation with the Media\CustomData\VmGeneration property (#194)
 * Adds -RepositoryUri parameter to Set-LabHostDefault to support internal repositories (partially implements #195)
+* Changes default PowerShell gallery URI to HTTPS
 
 ### v0.10.2
 

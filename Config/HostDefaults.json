@@ -5,7 +5,7 @@
     "IsoPath": "%SYSTEMDRIVE%\\Lability\\ISOs",
     "ModuleCachePath": "%ALLUSERSPROFILE%\\Lability\\Modules",
 	"ParentVhdPath": "%SYSTEMDRIVE%\\Lability\\MasterVirtualHardDisks",
-    "PSRepositoryUri": "http://www.powershellgallery.com/api/v2/package",
+    "RepositoryUri": "https://www.powershellgallery.com/api/v2/package",
 	"ResourcePath": "%SYSTEMDRIVE%\\Lability\\Resources",
     "ResourceShareName": "Resources",
 	"DisableLocalFileCaching": false
