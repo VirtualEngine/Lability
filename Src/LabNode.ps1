@@ -130,7 +130,7 @@ function Test-LabNodeConfiguration {
             throw ($localized.CannotLocateNodeError -f $NodeName);
         }
         if (-not $PSBoundParameters.ContainsKey('DestinationPath')) {
-            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (GetConfigurationData -Configuration Host).ResourceShareName;
+            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (Get-ConfigurationData -Configuration Host).ResourceShareName;
         }
 
         $inDesiredState = $true;
@@ -248,7 +248,7 @@ function Invoke-LabNodeConfiguration {
             throw ($localized.CannotLocateNodeError -f $NodeName);
         }
         if (-not $PSBoundParameters.ContainsKey('DestinationPath')) {
-            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (GetConfigurationData -Configuration Host).ResourceShareName;
+            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (Get-ConfigurationData -Configuration Host).ResourceShareName;
         }
 
         ## Install lab root CA and client certificate

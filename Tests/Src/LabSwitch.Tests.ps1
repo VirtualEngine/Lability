@@ -77,7 +77,7 @@ Describe 'Src\LabSwitch' {
                         $labDefaults.ModuleName = @{
                             Network = @( ) } } }
                 $fakeConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
 
                 $labSwitch = ResolveLabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;
 
@@ -105,7 +105,7 @@ Describe 'Src\LabSwitch' {
                             ) } } }
                 $fakeConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
 
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
                 Mock Get-NetAdapter { return @{ Name = 'Ethernet Adapter #1';} }
                 Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
                 Mock Get-VMSwitch { }
@@ -131,7 +131,7 @@ Describe 'Src\LabSwitch' {
                 }
                 $configurationData = @{ }
                 $fakeConfigurationData = [PSCustomObject] @{ SwitchName = 'DefaultInternalSwitch'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
                 Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
                 Mock Get-VMSwitch { }
                 Mock Get-NetAdapter { return @{ Name = 'Ethernet Adapter #1';} }
@@ -151,7 +151,7 @@ Describe 'Src\LabSwitch' {
                         $labDefaults.ModuleName = @{
                             Network = @( ) } } }
                 $fakeConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $fakeConfigurationData; }
                 Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { }
                 Mock Get-VMSwitch { }
 

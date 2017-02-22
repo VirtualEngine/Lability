@@ -62,7 +62,7 @@ function SetLabVMDiskFileResource {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $resourceDestinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
         $expandLabResourceParams = @{
             ConfigurationData = $ConfigurationData;

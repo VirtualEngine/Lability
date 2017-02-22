@@ -23,7 +23,7 @@ Describe 'Src\LabImage' {
                 foreach ($media in $fakeLabMedia) {
                     New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
 
                 $images = Get-LabImage -Id 'NonExistentId';
@@ -34,7 +34,7 @@ Describe 'Src\LabImage' {
             It 'Returns null when there is are no parent images' {
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\EmptyPath'; }
                 New-Item -Path 'TestDrive:\EmptyPath' -ItemType Directory -Force -ErrorAction SilentlyContinue;
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
                 Mock Get-DiskImage -MockWith { }
 
@@ -55,7 +55,7 @@ Describe 'Src\LabImage' {
                 foreach ($media in $fakeLabMedia) {
                     New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
 
@@ -76,7 +76,7 @@ Describe 'Src\LabImage' {
                 foreach ($media in $fakeLabMedia) {
                     New-Item -Path "TestDrive:\$($media.Id).vhdx" -ItemType File -Force -ErrorAction SilentlyContinue;
                 }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $fakeLabMediaId1 } -MockWith { return $fakeLabMedia[0]; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
 
@@ -98,7 +98,7 @@ Describe 'Src\LabImage' {
                     )
                     $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
                     New-Item -Path $testDiskImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
-                    Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                    Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                     Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
                     Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
 
@@ -174,7 +174,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $testMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -214,7 +214,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock NewDiskImage -MockWith { Write-Error 'DOH!'; }
                 Mock ExpandWindowsImage -MockWith { }
@@ -243,7 +243,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $true; }
                 Mock Get-LabImage -MockWith { return $fakeLabImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
                 Mock ExpandWindowsImage -MockWith { }
@@ -271,7 +271,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
                 Mock ExpandWindowsImage -MockWith { }
@@ -300,7 +300,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock ExpandWindowsImage -MockWith { }
                 Mock AddDiskImageHotfix -MockWith { }
@@ -328,7 +328,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock ExpandWindowsImage -MockWith { }
                 Mock AddDiskImageHotfix -MockWith { }
@@ -356,7 +356,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock ExpandWindowsImage -MockWith { }
                 Mock AddDiskImageHotfix -MockWith { }
@@ -390,7 +390,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock ExpandWindowsImage -MockWith { }
                 Mock AddDiskImageHotfix -MockWith { }
@@ -418,7 +418,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -447,7 +447,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -481,7 +481,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -516,7 +516,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -551,7 +551,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock AddDiskImageHotfix -MockWith { }
                 Mock SetDiskImageBootVolume -MockWith { }
@@ -579,7 +579,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock SetDiskImageBootVolume -MockWith { }
                 Mock Dismount-VHD -MockWith { }
@@ -607,7 +607,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock Dismount-VHD -MockWith { }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
@@ -635,7 +635,7 @@ Describe 'Src\LabImage' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Test-LabImage -MockWith { return $false; }
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }
@@ -663,7 +663,7 @@ Describe 'Src\LabImage' {
                 $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
-                Mock GetConfigurationData -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
                 Mock ResolveLabMedia -MockWith { return $fakeMedia; }
                 Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
                 Mock NewDiskImage -MockWith { return $fakeVhdImage; }

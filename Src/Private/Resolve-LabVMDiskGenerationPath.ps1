@@ -20,7 +20,7 @@ function Resolve-LabVMGenerationDiskPath {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         $vhdName = '{0}.{1}' -f $Name, $image.Generation.ToLower();
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;

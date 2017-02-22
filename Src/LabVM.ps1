@@ -32,7 +32,7 @@ function NewLabVM {
 
         ## Virtual machine DSC .mof and .meta.mof location
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [System.String] $Path = (Get-LabHostDscConfigurationPath),
 
         ## Skip creating baseline snapshots
         [Parameter(ValueFromPipelineByPropertyName)]

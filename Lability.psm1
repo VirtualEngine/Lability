@@ -10,6 +10,7 @@ $labDefaults = @{
     MediaConfigFilename = 'Media.json';
     CustomMediaConfigFilename = 'CustomMedia.json';
     DscResourceDirectory = 'DSCResources';
+    RepositoryUri = 'http://www.powershellgallery.com/api/v2/package';
 }
 
 ## Import localisation strings

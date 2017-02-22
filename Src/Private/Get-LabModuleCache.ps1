@@ -129,7 +129,7 @@ function Get-LabModuleCache {
     }
     process {
 
-        $moduleCachePath = (GetConfigurationData -Configuration Host).ModuleCachePath;
+        $moduleCachePath = (Get-ConfigurationData -Configuration Host).ModuleCachePath;
 
         ## If no provider specified, default to the PSGallery
         if (([System.String]::IsNullOrEmpty($Provider)) -or ($Provider -eq 'PSGallery')) {

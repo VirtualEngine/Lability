@@ -266,7 +266,7 @@ function GetModuleCacheManifest  {
             }
 
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($moduleManifestArchiveEntry, $temporaryArchivePath, $true);
-            $moduleManifest = ConvertToConfigurationData -ConfigurationData $temporaryArchivePath;
+            $moduleManifest = ConvertTo-ConfigurationData -ConfigurationData $temporaryArchivePath;
         }
 
         catch {
@@ -357,7 +357,7 @@ function InvokeModuleDownloadFromPSGallery {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
         ## The minimum version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')]
@@ -379,7 +379,7 @@ function InvokeModuleDownloadFromPSGallery {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri = ResolvePSGalleryModuleUri @PSBoundParameters;
+            Uri = Resolve-PSGalleryModuleUri @PSBoundParameters;
             NoCheckSum = $true;
         }
         $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
@@ -407,7 +407,7 @@ function InvokeModuleDownloadFromGitHub {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
 
         ## The GitHub repository owner, typically 'PowerShell'
@@ -540,7 +540,7 @@ function InvokeModuleCacheDownload {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
         ## Force a download of the module(s) even if they already exist in the cache.
         [Parameter(ValueFromPipelineByPropertyName)]

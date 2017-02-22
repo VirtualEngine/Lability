@@ -5,13 +5,11 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Test-Resolve-ConfigurationPath' {
+Describe 'Src\Private\Resolve-ConfigurationPath' {
 
     InModuleScope -ModuleName $moduleName {
 
-
-
-        Mock GetLabHostDSCConfigurationPath -Mock { return "TestDrive:\Configurations"; }
+        Mock Get-LabHostDscConfigurationPath -Mock { return "TestDrive:\Configurations"; }
 
         It 'returns mof in the specified path root' {
 
@@ -183,7 +181,6 @@ Describe 'Src\Private\Test-Resolve-ConfigurationPath' {
 
             $result | Should Be $expected;
         }
-
 
     } #end InModuleScope
 } #end describe

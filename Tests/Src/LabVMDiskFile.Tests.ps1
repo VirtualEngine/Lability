@@ -49,7 +49,7 @@ Describe 'Src\LabVMDiskFile' {
                 $testHostConfiguration = [PSCustomObject] @{
                     ResourceShareName = $testResourceShare;
                 }
-                Mock GetConfigurationData -MockWith { return $testHostConfiguration; }
+                Mock Get-ConfigurationData -MockWith { return $testHostConfiguration; }
                 Mock ExpandLabResource -MockWith { }
 
                 $testParams = @{

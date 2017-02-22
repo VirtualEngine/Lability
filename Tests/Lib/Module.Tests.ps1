@@ -305,7 +305,7 @@ Describe 'Lib\Module' {
                 ModuleVersion = $testModuleVersion;
             }
             Mock GetModuleCacheManifest -MockWith { return $testModuleManifest; }
-            Mock ResolvePSGalleryModuleUri -MockWith { return 'http://fake.uri' }
+            Mock Resolve-PSGalleryModuleUri -MockWith { return 'http://fake.uri' }
             Mock SetResourceDownload -MockWith { return $testModulePath }
 
             BeforeEach {
@@ -324,7 +324,7 @@ Describe 'Lib\Module' {
                 $result -is [System.IO.FileInfo] | Should Be $true;
             }
 
-            It 'Calls "ResolvePSGalleryModuleUri" with "RequiredVersion" when specified' {
+            It 'Calls "Resolve-PSGalleryModuleUri" with "RequiredVersion" when specified' {
                 $testParams = @{
                     Name = $testModuleName;
                     DestinationPath = $testDestinationPath;
@@ -332,10 +332,10 @@ Describe 'Lib\Module' {
                 }
                 InvokeModuleDownloadFromPSGallery @testParams;
 
-                Assert-MockCalled ResolvePSGalleryModuleUri -ParameterFilter { $null -ne $RequiredVersion } -Scope It;
+                Assert-MockCalled Resolve-PSGalleryModuleUri -ParameterFilter { $null -ne $RequiredVersion } -Scope It;
             }
 
-            It 'Calls "ResolvePSGalleryModuleUri" with "MinimumVersion" when specified' {
+            It 'Calls "Resolve-PSGalleryModuleUri" with "MinimumVersion" when specified' {
                 $testParams = @{
                     Name = $testModuleName;
                     DestinationPath = $testDestinationPath;
@@ -343,7 +343,7 @@ Describe 'Lib\Module' {
                 }
                 InvokeModuleDownloadFromPSGallery @testParams;
 
-                Assert-MockCalled ResolvePSGalleryModuleUri -ParameterFilter { $null -ne $MinimumVersion } -Scope It;
+                Assert-MockCalled Resolve-PSGalleryModuleUri -ParameterFilter { $null -ne $MinimumVersion } -Scope It;
             }
 
         } #end context Validates "InvokeModuleDownloadFromPSGallery" method

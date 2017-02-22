@@ -139,7 +139,7 @@ function ResolveLabMedia {
         ## If we have custom media, return that
         if (-not $media) {
 
-            $media = GetConfigurationData -Configuration CustomMedia;
+            $media = Get-ConfigurationData -Configuration CustomMedia;
             $media = $media | Where-Object { $_.Id -eq $Id };
         }
 
@@ -190,10 +190,10 @@ function Get-LabMedia {
         ## Retrieve built-in media
         if (-not $CustomOnly) {
 
-            $defaultMedia = GetConfigurationData -Configuration Media;
+            $defaultMedia = Get-ConfigurationData -Configuration Media;
         }
         ## Retrieve custom media
-        $customMedia = @(GetConfigurationData -Configuration CustomMedia);
+        $customMedia = @(Get-ConfigurationData -Configuration CustomMedia);
         if (-not $customMedia) {
 
             $customMedia = @();
@@ -259,7 +259,7 @@ function Test-LabMedia {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $media = Get-LabMedia -Id $Id;
         if ($media) {
 
@@ -311,7 +311,7 @@ function InvokeLabMediaImageDownload {
         [System.Management.Automation.SwitchParameter] $Force
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         $invokeResourceDownloadParams = @{
             DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
@@ -385,7 +385,7 @@ function InvokeLabMediaHotfixDownload {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $destinationPath = Join-Path -Path $hostDefaults.HotfixPath -ChildPath $Id;
         $invokeResourceDownloadParams = @{
             DestinationPath = $destinationPath;
@@ -502,7 +502,7 @@ function Register-LabMedia {
         }
 
         ## Get the custom media list (not the built in media)
-        $existingCustomMedia = @(GetConfigurationData -Configuration CustomMedia);
+        $existingCustomMedia = @(Get-ConfigurationData -Configuration CustomMedia);
         if (-not $existingCustomMedia) {
 
             $existingCustomMedia = @();
@@ -541,7 +541,7 @@ function Register-LabMedia {
         }
 
         WriteVerbose ($localized.SavingConfiguration -f $Id);
-        SetConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
+        Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
         return $customMedia;
 
     } #end process
@@ -570,7 +570,7 @@ function Unregister-LabMedia {
     process {
 
         ## Get the custom media list
-        $customMedia = GetConfigurationData -Configuration CustomMedia;
+        $customMedia = Get-ConfigurationData -Configuration CustomMedia;
         if (-not $customMedia) {
 
             ## We don't have anything defined
@@ -594,7 +594,7 @@ function Unregister-LabMedia {
 
             $customMedia = $customMedia | Where-Object { $_.Id -ne $Id };
             WriteVerbose ($localized.SavingConfiguration -f $Id);
-            SetConfigurationData -Configuration CustomMedia -InputObject @($customMedia);
+            Set-ConfigurationData -Configuration CustomMedia -InputObject @($customMedia);
             return $media;
         }
 
@@ -616,7 +616,7 @@ function Reset-LabMedia {
     param ( )
     process {
 
-        RemoveConfigurationData -Configuration CustomMedia;
+        Remove-ConfigurationData -Configuration CustomMedia;
         Get-Labmedia;
 
     }

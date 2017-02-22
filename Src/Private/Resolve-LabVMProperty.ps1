@@ -62,7 +62,7 @@ function Resolve-NodePropertyValue {
         }
 
         ## Check VM defaults
-        $labDefaultProperties = GetConfigurationData -Configuration VM;
+        $labDefaultProperties = Get-ConfigurationData -Configuration VM;
         $properties = Get-Member -InputObject $labDefaultProperties -MemberType NoteProperty;
         foreach ($propertyName in $properties.Name) {
 

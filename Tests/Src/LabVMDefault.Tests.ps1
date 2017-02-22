@@ -11,12 +11,12 @@ Describe 'Src\LabVMDefaults' {
 
         Context 'Validates "Reset-LabVMDefault" method' {
 
-            It 'Calls "RemoveConfigurationData" method' {
-                Mock RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
+            It 'Calls "Remove-ConfigurationData" method' {
+                Mock Remove-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
 
                 $defaults = Reset-LabVMDefault;
 
-                Assert-MockCalled RemoveConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -Scope It;
+                Assert-MockCalled Remove-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -Scope It;
             }
 
         } #end context Validates "Reset-LabMDefault" method
@@ -40,7 +40,7 @@ Describe 'Src\LabVMDefaults' {
         Context 'Validates "Set-LabVMDefault" method' {
 
             It 'Does not return "BootOrder" property' {
-                Mock SetConfigurationData -MockWith { }
+                Mock Set-ConfigurationData -MockWith { }
                 $defaults = Set-LabVMDefault;
 
                 $defaults.BootOrder | Should BeNullOrEmpty;
@@ -67,7 +67,7 @@ Describe 'Src\LabVMDefaults' {
             )
             foreach ($property in $testProperties) {
                 It "Sets ""$($property.Keys[0])"" value" {
-                    Mock SetConfigurationData -MockWith { }
+                    Mock Set-ConfigurationData -MockWith { }
                     $defaults = Set-LabVMDefault @property;
 
                     $defaults.($property.Keys[0]) | Should Be $property.Values[0];
@@ -80,7 +80,7 @@ Describe 'Src\LabVMDefaults' {
             )
             foreach ($file in $testFiles) {
                 It "Sets ""$($file.Keys[0])"" value" {
-                    Mock SetConfigurationData -MockWith { }
+                    Mock Set-ConfigurationData -MockWith { }
                     New-Item -Path $file.Values[0] -Force -ErrorAction SilentlyContinue -ItemType File;
                     $defaults = Set-LabVMDefault @file;
 
@@ -112,12 +112,12 @@ Describe 'Src\LabVMDefaults' {
                 { Set-LabVMDefault -Media 'LabilityTestMedia' } | Should Throw;
             }
 
-            It 'Calls "SetConfigurationData" to write data to disk' {
-                Mock SetConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
+            It 'Calls "Set-ConfigurationData" to write data to disk' {
+                Mock Set-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { }
 
                 $defaults = Set-LabVMDefault;
 
-                Assert-MockCalled SetConfigurationData -ParameterFilter { $Configuration -eq 'VM' }
+                Assert-MockCalled Set-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' }
             }
 
         } #end context Validates "Set-LabVMDefault" method

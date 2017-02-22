@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Get-LabVirtualMachineProperty' {
+Describe 'Unit\Src\Private\Get-LabVirtualMachineProperty' {
 
     InModuleScope $moduleName {
 
@@ -22,10 +22,11 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
             ProcessorCount = 1;
         }
 
+        Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+
         It 'Returns generation 1 VM for x86 media architecture' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x86'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x86'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -33,9 +34,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 2 VM for x64 media architecture' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -43,10 +43,9 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 1 VM when custom "MBR" partition style is defined' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
-                return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'MBR'; } } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+            Mock Get-LabMedia -MockWith {
+                return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'MBR'; } } }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -54,10 +53,9 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 2 VM when custom "GPT" partition style is defined' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
-                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ PartitionStyle = 'GPT'; } } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+            Mock Get-LabMedia -MockWith {
+                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ PartitionStyle = 'GPT'; } } }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -65,9 +63,9 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 1 VM when image generation is "VHD", but media "x64" and partition style is "GPT"' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
-                return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'GPT'; } } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHD';}; }
+            Mock Get-LabMedia -MockWith {
+                return [PSCustomObject] @{ Architecture = 'x64'; CustomData = @{ PartitionStyle = 'GPT'; } } }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -75,9 +73,9 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 1 VM when image generation is "VHDX", but custom data "VmGeneration" is "1"' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
-                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ VmGeneration = 1; } } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
+            Mock Get-LabMedia -MockWith {
+                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ VmGeneration = 1; } } }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -85,9 +83,9 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns generation 2 VM when image generation is "VHD", but custom data "VmGeneration" is "2"' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith {
-                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ VmGeneration = 2; } } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHD';}; }
+            Mock Get-LabMedia -MockWith {
+                return [PSCustomObject] @{ Architecture = 'x86'; CustomData = @{ VmGeneration = 2; } } }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -95,9 +93,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns additional "VhdPath" property' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -105,9 +102,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns additional "RestartIfNeeded" property' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -115,9 +111,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Does not return "Media" property' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -125,9 +120,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Does not return "EnableGuestService" property by default' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 
@@ -135,9 +129,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Returns "EnableGuestService" property when "GuestIntegrationServices" is specified' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams -GuestIntegrationServices $true;
 
@@ -147,7 +140,6 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
 
         It 'Calls "ResolveLabMedia" with "ConfigurationData" when specified (#97)' {
             Mock ResolveLabMedia -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams -ConfigurationData @{};;
 
@@ -155,8 +147,7 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
-            Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams -ConfigurationData @{};;
 
@@ -164,9 +155,8 @@ Describe 'Src\Private\Get-LabVirtualMachineProperty' {
         }
 
         It 'Does not return "ConfigurationData" property by default (#97)' {
-            Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x64'; } }
             Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
-            Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
             $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
 

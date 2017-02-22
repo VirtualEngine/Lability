@@ -27,20 +27,22 @@ function Test-LabModuleVersion {
     process {
 
         try {
+
             WriteVerbose -Message ($localized.QueryingModuleVersion -f [System.IO.Path]::GetFileNameWithoutExtension($ModulePath));
-            #$moduleManifest = Test-ModuleManifest -Path $ModulePath -Verbose:$false;
-            $moduleManifest = ConvertToConfigurationData -ConfigurationData $ModulePath;
+            $moduleManifest = ConvertTo-ConfigurationData -ConfigurationData $ModulePath;
             WriteVerbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.ModuleVersion);
         }
         catch {
+
             Write-Error "Oops $ModulePath"
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'MinimumVersion') {
+
             return (($moduleManifest.ModuleVersion -as [System.Version]) -ge $MinimumVersion);
         }
-
         elseif ($PSCmdlet.ParameterSetName -eq 'RequiredVersion') {
+
             return (($moduleManifest.ModuleVersion -as [System.Version]) -eq $RequiredVersion);
         }
 

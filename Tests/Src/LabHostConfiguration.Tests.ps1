@@ -79,7 +79,7 @@ Describe 'Src\LabHostConfiguration' {
 
             It 'Passes when target paths exist' {
                 $fakeHostDefaults = '{ "APath": "TestDrive:\\", "TestShare": "TestShare", "BPath": "C:\\" }' | ConvertFrom-Json;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
 
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
@@ -90,7 +90,7 @@ Describe 'Src\LabHostConfiguration' {
 
             It 'Fails when a target path does not exist' {
                 $fakeHostDefaults = '{ "APath": "TestDrive:\\NonExistentFolderPath", "TestShare": "TestShare", "BPath": "C:\\" }' | ConvertFrom-Json;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
 
                 Mock ImportDscResource -MockWith { }
                 Mock TestDscResource -MockWith { return $true; }
@@ -104,7 +104,7 @@ Describe 'Src\LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'Passes'; Parameters = @{ P1 = 1; } }
                 )
                 $fakeHostDefaults = '{ }' | ConvertFrom-Json;
-                Mock GetConfigurationData -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
                 Mock Test-Path -MockWith { return $true; }
                 Mock ImportDscResource -MockWith { }
@@ -120,7 +120,7 @@ Describe 'Src\LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'Fails'; Parameters = @{ P1 = 1; } }
                 )
                 $fakeHostDefaults = '{ }' | ConvertFrom-Json;
-                Mock GetConfigurationData -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
                 Mock Test-Path -MockWith { return $true; }
                 Mock ImportDscResource -MockWith { }
@@ -136,7 +136,7 @@ Describe 'Src\LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'PendingReboot'; Parameters = @{ P1 = 1; } }
                 )
                 $fakeHostDefaults = '{ }' | ConvertFrom-Json;
-                Mock GetConfigurationData -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
                 Mock Test-Path -MockWith { return $true; }
                 Mock ImportDscResource -MockWith { }
@@ -152,7 +152,7 @@ Describe 'Src\LabHostConfiguration' {
                     @{ ModuleName = 'TestModule2'; ResourceName = 'TestResource2'; Prefix = 'PendingReboot'; Parameters = @{ P1 = 1; } }
                 )
                 $fakeHostDefaults = '{ }' | ConvertFrom-Json;
-                Mock GetConfigurationData -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
                 Mock Test-Path -MockWith { return $true; }
                 Mock ImportDscResource -MockWith { }
@@ -168,7 +168,7 @@ Describe 'Src\LabHostConfiguration' {
 
             It 'Does not attempt to create an empty path' {
                 $fakeHostDefaults = '{ "APath": "" }' | ConvertFrom-Json;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -MockWith { }
@@ -181,7 +181,7 @@ Describe 'Src\LabHostConfiguration' {
 
             It 'Calls "NewDirectory" for each path' {
                 $fakeHostDefaults = '{ "APath": "TestDrive:\\", "BPath": "C:\\" }' | ConvertFrom-Json;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
                 Mock GetLabHostSetupConfiguration -MockWith { }
                 Mock ImportDscResource -MockWith { }
                 Mock InvokeDscResource -MockWith { }
@@ -194,7 +194,7 @@ Describe 'Src\LabHostConfiguration' {
 
             It 'Calls "InvokeDscResource" for each host configuration item' {
                 $fakeHostDefaults = '{ "APath": "TestDrive:\\", "BPath": "C:\\" }' | ConvertFrom-Json;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
 
                 $fakeConfiguration = @(
                     @{ ModuleName = 'TestModule1'; ResourceName = 'TestResource1'; Prefix = 'Prefix1'; Parameters = @{ P1 = 1; } }
