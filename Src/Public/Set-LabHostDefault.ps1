@@ -65,7 +65,8 @@ function Set-LabHostDefault {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $DismPath,
 
-        ## Custom/internal PS repository Uri.
+        ## Specifies an custom/internal PS repository Uri. Use the full Uri without any package
+        ## name(s). '/{PackageName}/{PackageVersion}' will automatically be appended as needed.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $RepositoryUri
     )
@@ -198,7 +199,12 @@ function Set-LabHostDefaults {
 
         ## Custom DISM/ADK path
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $DismPath
+        [System.String] $DismPath,
+
+        ## Specifies an custom/internal PS repository Uri. Use the full Uri without any package
+        ## name(s). '/{PackageName}/{PackageVersion}' will automatically be appended as needed.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $RepositoryUri
     )
     process {
 
