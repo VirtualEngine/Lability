@@ -9,7 +9,7 @@ function Reset-LabVMDefault {
     param ( )
     process {
 
-        RemoveConfigurationData -Configuration VM;
+        Remove-ConfigurationData -Configuration VM;
         Get-LabVMDefault;
 
     }
@@ -46,7 +46,7 @@ function Get-LabVMDefault {
     param ( )
     process {
 
-        $vmDefaults = GetConfigurationData -Configuration VM;
+        $vmDefaults = Get-ConfigurationData -Configuration VM;
 
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault
         $vmDefaults.PSObject.Properties.Remove('BootOrder');
@@ -176,7 +176,7 @@ function Set-LabVMDefault {
     )
     process {
 
-        $vmDefaults = GetConfigurationData -Configuration VM;
+        $vmDefaults = Get-ConfigurationData -Configuration VM;
 
         if ($PSBoundParameters.ContainsKey('StartupMemory')) {
             $vmDefaults.StartupMemory = $StartupMemory;
@@ -260,7 +260,7 @@ function Set-LabVMDefault {
         $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Set-LabVMDefault', $vmName;
         $verboseProcessMessage = $localized.SettingVMDefaults;
         if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
-            SetConfigurationData -Configuration VM -InputObject $vmDefaults;
+            Set-ConfigurationData -Configuration VM -InputObject $vmDefaults;
         }
 
         ## BootOrder property should not be exposed via the Get-LabVMDefault/Set-LabVMDefault

@@ -57,7 +57,7 @@ Describe 'Lib\DscResourceModule' {
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\$testModuleName.psd1" -ItemType File -Force -ErrorAction SilentlyContinue;
 
-                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
+                Mock ConvertTo-ConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
 
@@ -71,7 +71,7 @@ Describe 'Lib\DscResourceModule' {
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\DSCResources" -Force -ErrorAction SilentlyContinue;
                 Set-Content -Path "$testModulesPath\$testModuleName\$testModuleName.psm1" -Value "enum Ensure {`r`n Absent `r`n Present `r`n } `r`n [DSCResource()] `r`n" -Force;
-                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
+                Mock ConvertTo-ConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
 
@@ -96,7 +96,7 @@ Describe 'Lib\DscResourceModule' {
                 $testModulesName = 'Modules';
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = New-Item -Path "$testModulesPath\$testModuleName\$testModuleVersion\DSCResources" -ItemType Directory -Force -ErrorAction SilentlyContinue;
-                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
+                Mock ConvertTo-ConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
 
@@ -110,7 +110,7 @@ Describe 'Lib\DscResourceModule' {
                 $testModulesPath = "TestDrive:\$testModulesName";
                 [ref] $null = Remove-Item -Path "$testModulesPath\$testModuleName\$testModuleVersion\DSCResources" -Force -ErrorAction SilentlyContinue;
                 Set-Content -Path "$testModulesPath\$testModuleName\$testModuleVersion\$testModuleName.psm1" -Value "enum Ensure {`r`n Absent `r`n Present `r`n } `r`n [DSCResource()] `r`n" -Force;
-                Mock ConvertToConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
+                Mock ConvertTo-ConfigurationData -MockWith { return [PSCustomObject] @{ ModuleVersion = $testModuleVersion; } }
 
                 $module = GetDscResourceModule -Path $testModulesPath;
 

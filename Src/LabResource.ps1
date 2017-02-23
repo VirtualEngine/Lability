@@ -25,7 +25,7 @@ function Test-LabResource {
     begin {
 
         if (-not $ResourcePath) {
-            $hostDefaults = GetConfigurationData -Configuration Host;
+            $hostDefaults = Get-ConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
 
@@ -224,7 +224,7 @@ function Invoke-LabResourceDownload {
     )
     begin {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if (-not $DestinationPath) {
             $DestinationPath = $hostDefaults.ResourcePath;
         }
@@ -406,7 +406,7 @@ function ExpandLabResource {
 
         if (-not $ResourcePath) {
 
-            $hostDefaults = GetConfigurationData -Configuration Host;
+            $hostDefaults = Get-ConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
 

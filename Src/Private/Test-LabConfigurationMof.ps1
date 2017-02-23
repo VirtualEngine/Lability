@@ -17,7 +17,7 @@ function Test-LabConfigurationMof {
 
         ## Path to .MOF files created from the DSC configuration
         [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
-        [System.String] $Path = (GetLabHostDSCConfigurationPath),
+        [System.String] $Path = (Get-LabHostDscConfigurationPath),
 
         ## Ignores missing MOF file
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -50,4 +50,4 @@ function Test-LabConfigurationMof {
         }
 
     } #end process
-} #end function TestLabConfigurationMof
+} #end function Test-LabConfigurationMof

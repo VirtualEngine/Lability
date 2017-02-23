@@ -125,18 +125,18 @@ function Test-LabHostConfiguration {
     process {
         WriteVerbose $localized.StartedHostConfigurationTest;
         ## Test folders/directories
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
-        
+
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
 
                 ## DismPath is not a folder and should be ignored (#159)
                 if ($property.Name -ne 'DismPath') {
-                
+
                     WriteVerbose ($localized.TestingPathExists -f $property.Value);
                     $resolvedPath = ResolvePathEx -Path $property.Value;
                     if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
-                    
+
                         WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
                         return $false;
                     }
@@ -187,14 +187,14 @@ function Start-LabHostConfiguration {
     process {
         WriteVerbose $localized.StartedHostConfiguration;
         ## Create required directory structure
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
-        
+
             if (($property.Name.EndsWith('Path')) -and (-not [System.String]::IsNullOrEmpty($property.Value))) {
 
                 ## DismPath is not a folder and should be ignored (#159)
                 if ($property.Name -ne 'DismPath') {
-            
+
                     [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
                 }
             }
@@ -213,7 +213,7 @@ function Start-LabHostConfiguration {
         }
         if ($hostdefaultupdated) {
             # Write the changes back to the json file in the $env:ALLUSERSPROFILE
-            $hostDefaults | ConvertTo-Json | Out-File -FilePath $(ResolveConfigurationDataPath -Configuration host)
+            $hostDefaults | ConvertTo-Json | Out-File -FilePath $(Resolve-ConfigurationDataPath -Configuration Host);
         }
 
         $labHostSetupConfiguation = GetLabHostSetupConfiguration;
@@ -258,9 +258,9 @@ function Export-LabHostConfiguration {
             GenerationHost = $env:COMPUTERNAME;
             GenerationDate = '{0} {1}' -f $now.ToShortDateString(), $now.ToString('hh:mm:ss');
             ModuleVersion = (Get-Module -Name $labDefaults.ModuleName).Version.ToString();
-            HostDefaults = [PSCustomObject] (GetConfigurationData -Configuration Host);
-            VMDefaults = [PSCustomObject] (GetConfigurationData -Configuration VM);
-            CustomMedia = @([PSCustomObject] (GetConfigurationData -Configuration CustomMedia));
+            HostDefaults = [PSCustomObject] (Get-ConfigurationData -Configuration Host);
+            VMDefaults = [PSCustomObject] (Get-ConfigurationData -Configuration VM);
+            CustomMedia = @([PSCustomObject] (Get-ConfigurationData -Configuration CustomMedia));
         }
 
         if ($PSCmdlet.ParameterSetName -eq 'Path') {

@@ -1,114 +1,3 @@
-function Reset-LabHostDefault {
-<#
-    .SYNOPSIS
-        Resets lab host default settings to default.
-    .DESCRIPTION
-        The Reset-LabHostDefault cmdlet resets the lab host's settings to default values.
-    .LINK
-        Get-LabHostDefault
-        Set-LabHostDefault
-#>
-    [CmdletBinding(SupportsShouldProcess)]
-    [OutputType([System.Management.Automation.PSCustomObject])]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
-    param ( )
-    process {
-
-        RemoveConfigurationData -Configuration Host;
-        Get-LabHostDefault;
-
-    } #end process
-} #end function Reset-LabHostDefault
-
-function Reset-LabHostDefaults {
-<#
-    .SYNOPSIS
-        Resets lab host default settings to default.
-    .DESCRIPTION
-        The Reset-LabHostDefault cmdlet resets the lab host's settings to default values.
-    .NOTES
-        Proxy function replacing alias to enable warning output.
-    .LINK
-        Get-LabHostDefault
-        Set-LabHostDefault
-#>
-    [CmdletBinding(SupportsShouldProcess)]
-    [OutputType([System.Management.Automation.PSCustomObject])]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
-    param ( )
-    process {
-
-        Write-Warning -Message ($localized.DeprecatedCommandWarning -f 'Reset-LabHostDefaults','Reset-LabHostDefault');
-        Reset-LabHostDefault @PSBoundParameters;
-
-    } #end process
-} #end function Reset-LabHostDefaults
-
-
-function Get-LabHostDefault {
-<#
-    .SYNOPSIS
-        Gets the lab host's default settings.
-    .DESCRIPTION
-        The Get-LabHostDefault cmdlet returns the lab host's current settings.
-    .LINK
-        Set-LabHostDefault
-        Reset-LabHostDefault
-#>
-    [CmdletBinding()]
-    [OutputType([System.Management.Automation.PSCustomObject])]
-    param ( )
-    process {
-
-        GetConfigurationData -Configuration Host;
-
-    } #end process
-} #end function Get-LabHostDefault
-
-function Get-LabHostDefaults {
-<#
-    .SYNOPSIS
-        Gets the lab host's default settings.
-    .DESCRIPTION
-        The Get-LabHostDefault cmdlet returns the lab host's current settings.
-    .NOTES
-        Proxy function replacing alias to enable warning output.
-    .LINK
-        Set-LabHostDefault
-        Reset-LabHostDefault
-#>
-    [CmdletBinding()]
-    [OutputType([System.Management.Automation.PSCustomObject])]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
-    param ( )
-    process {
-
-        Write-Warning -Message ($localized.DeprecatedCommandWarning -f 'Get-LabHostDefaults','Get-LabHostDefault');
-        Get-LabHostDefault @PSBoundParameters;
-
-
-    } #end process
-} #end function Get-LabHostDefaults
-
-
-function GetLabHostDSCConfigurationPath {
-<#
-    .SYNOPSIS
-        Shortcut function to resolve the host's default ConfigurationPath property
-#>
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param ( )
-    process {
-
-        $labHostDefaults = GetConfigurationData -Configuration Host;
-        return $labHostDefaults.ConfigurationPath;
-
-    } #end process
-} #end function GetLabHostDSCConfigurationPath
-
-
 function Set-LabHostDefault {
 <#
     .SYNOPSIS
@@ -174,11 +63,15 @@ function Set-LabHostDefault {
 
         ## Custom DISM/ADK path
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $DismPath
+        [System.String] $DismPath,
+
+        ## Custom/internal PS repository Uri.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $RepositoryUri
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         $resolvablePaths = @(
             'IsoPath',
@@ -191,12 +84,16 @@ function Set-LabHostDefault {
             'ModuleCachePath'
         )
         foreach ($path in $resolvablePaths) {
+
             if ($PSBoundParameters.ContainsKey($path)) {
+
                 $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
                 if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
+
                     throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);
                 }
                 else {
+
                     $hostDefaults.$path = $resolvedPath.Trim('\');
                 }
             }
@@ -221,8 +118,12 @@ function Set-LabHostDefault {
             $hostDefaults.DismPath = ResolveDismPath -Path $DismPath;
             WriteWarning -Message ($localized.DismSessionRestartWarning);
         }
+        if ($PSBoundParameters.ContainsKey('RepositoryUri')) {
 
-        SetConfigurationData -Configuration Host -InputObject $hostDefaults;
+            $hostDefaults.RepositoryUri = $RepositoryUri.TrimEnd('/');
+        }
+
+        Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;
         ImportDismModule;
 
         return $hostDefaults;

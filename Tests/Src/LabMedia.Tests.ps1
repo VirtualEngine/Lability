@@ -136,7 +136,7 @@ Describe 'Src\LabMedia' {
                 $testHostIsoPath = 'TestDrive:';
                 $testMediaFilename = 'test-media.iso';
                 $fakeLabMedia = @{ Filename = $testMediaFilename; Uri = 'http//testmedia.com/test-media.iso'; Checksum = ''; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
                 New-Item -Path "$testHostIsoPath\$testMediaFilename" -ItemType File -Force -ErrorAction SilentlyContinue;
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] $fakeLabMedia; }
 
@@ -148,7 +148,7 @@ Describe 'Src\LabMedia' {
                 $testHostIsoPath = 'TestDrive:';
                 $testMediaFilename = 'test-media.iso';
                 $fakeLabMedia = @{ Filename = $testMediaFilename; Uri = 'http//testmedia.com/test-media.iso'; Checksum = ''; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
                 Remove-Item -Path "$testHostIsoPath\$testMediaFilename" -Force -ErrorAction SilentlyContinue;
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { return [PSCustomObject] $fakeLabMedia; }
 
@@ -160,7 +160,7 @@ Describe 'Src\LabMedia' {
                 $testHostIsoPath = 'TestDrive:';
                 $testMediaFilename = 'test-media.iso';
                 $fakeLabMedia = @{ Filename = $testMediaFilename; Uri = 'http//testmedia.com/test-media.iso'; Checksum = ''; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] @{ IsoPath = $testHostIsoPath; } }
                 Mock Get-LabMedia -ParameterFilter { $Id -eq $testMediaId } -MockWith { }
 
                 Test-LabMedia -Id $testMediaId | Should Be $false;
@@ -178,7 +178,7 @@ Describe 'Src\LabMedia' {
                 $fakeConfigurationData = [PSCustomObject] @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = [PSCustomObject] @{ Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = $testMediaType; }
                 New-Item -Path "$testHostIsoPath\$testMediaFilename" -ItemType File -Force -ErrorAction SilentlyContinue;
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeConfigurationData; }
                 Mock InvokeResourceDownload -MockWith { }
 
                 $fileInfo = InvokeLabMediaImageDownload -Media $fakeLabMedia;;
@@ -194,7 +194,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'VHD'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
                 Mock InvokeResourceDownload { Write-Host $Destinationpath -ForegroundColor Yellow }
 
@@ -211,7 +211,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'ISO'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
@@ -227,7 +227,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'WIM'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
@@ -243,7 +243,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'ISO'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $Force -eq $true } -MockWith { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia -Force;
@@ -259,7 +259,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'WIM'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $BufferSize -gt 64KB } -MockWith { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
@@ -275,7 +275,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; DisableLocalFileCaching = $true; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://$testImagePath"; Checksum = ''; MediaType = 'WIM'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -MockWith { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
@@ -291,7 +291,7 @@ Describe 'Src\LabMedia' {
                 New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; DisableLocalFileCaching = $true; }
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://$testImagePath"; Checksum = ''; MediaType = 'WIM'; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
 
                 $media = InvokeLabMediaImageDownload -Media $fakeLabMedia;
 
@@ -309,7 +309,7 @@ Describe 'Src\LabMedia' {
                 $testHotfixFilename = "$testHotfixPath\$testHotfixId";
                 New-Item -Path $testHotfixFilename -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ HotfixPath = $testHotfixPath;}
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testHotfixFilename } -MockWith { }
 
                 $hotfix = InvokeLabMediaHotfixDownload -Id $testHotfixId -Uri $testHotfixUri;
@@ -324,7 +324,7 @@ Describe 'Src\LabMedia' {
                 $testHotfixFilename = "$testHotfixPath\$testHotfixId";
                 New-Item -Path $testHotfixFilename -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ HotfixPath = $testHotfixPath;}
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $Checksum -eq $testHotfixChecksum } -MockWith { }
 
                 InvokeLabMediaHotfixDownload -Id $testHotfixId -Uri $testHotfixUri -Checksum $testHotfixChecksum;
@@ -339,7 +339,7 @@ Describe 'Src\LabMedia' {
                 $testHotfixFilename = "$testHotfixPath\$testHotfixId";
                 New-Item -Path $testHotfixFilename -ItemType File -Force -ErrorAction SilentlyContinue;
                 $fakeConfigurationData = @{ HotfixPath = $testHotfixPath;}
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $Force -eq $true } -MockWith { }
 
                 InvokeLabMediaHotfixDownload -Id $testHotfixId -Uri $testHotfixUri -Force;
@@ -385,16 +385,16 @@ Describe 'Src\LabMedia' {
 
             It 'Does not throw when custom media type is "VHD" and "ImageName" is not specified' {
                 Mock ResolveLabMedia { }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { };
-                Mock SetConfigurationData { }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { };
+                Mock Set-ConfigurationData { }
 
                 { Register-LabMedia @testMediaParams -MediaType VHD -WarningAction SilentlyContinue } | Should Not Throw;
             }
 
             It 'Does not throw when custom media already exists and "Force" is specified' {
                 Mock ResolveLabMedia { return $testCustomMedia[0]; }
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
-                Mock SetConfigurationData { }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
+                Mock Set-ConfigurationData { }
 
                 { Register-LabMedia @testMediaParams -MediaType VHD -Force -WarningAction SilentlyContinue } | Should Not Throw;
             }
@@ -410,23 +410,23 @@ Describe 'Src\LabMedia' {
 
             It "Removes existing custom media entry when 'Id' does exist" {
 
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
-                Mock SetConfigurationData { }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
+                Mock Set-ConfigurationData { }
 
                 Unregister-LabMedia -Id $testMediaId -WarningAction SilentlyContinue;
 
-                Assert-MockCalled SetConfigurationData -ParameterFilter { $InputObject.Count -eq ($testCustomMedia.Count -1) } -Scope It;
+                Assert-MockCalled Set-ConfigurationData -ParameterFilter { $InputObject.Count -eq ($testCustomMedia.Count -1) } -Scope It;
 
             }
 
             It "Does not remove any entries when custom media 'Id' doesn't exist" {
 
-                Mock GetConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
-                Mock SetConfigurationData { }
+                Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'CustomMedia' } -MockWith { return $testCustomMedia; };
+                Mock Set-ConfigurationData { }
 
                 Unregister-LabMedia -Id 'Non-existent' -WarningAction SilentlyContinue;
 
-                Assert-MockCalled SetConfigurationData -Scope It -Exactly 0;
+                Assert-MockCalled Set-ConfigurationData -Scope It -Exactly 0;
             }
 
         } #end context Validates "Unregister-LabMedia" method

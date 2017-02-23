@@ -12,7 +12,7 @@ function ResolveLabVMDiskPath {
         [System.String] $Generation = 'VHDX'
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $vhdName = '{0}.{1}' -f $Name, $Generation.ToLower();
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
         return $vhdPath;
@@ -43,7 +43,7 @@ function GetLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
@@ -87,7 +87,7 @@ function TestLabVMDisk {
         [String] $Ensure = 'Present'
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
@@ -137,7 +137,7 @@ function SetLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
         }
@@ -179,7 +179,7 @@ function RemoveLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
         }

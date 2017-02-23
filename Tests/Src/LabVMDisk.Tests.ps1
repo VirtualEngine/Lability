@@ -14,7 +14,7 @@ Describe 'Src\LabVMDisk' {
             It 'Appends the VM''s name to the host "DifferencingVhdPath"' {
                 $testVMName = 'TestVM';
                 $testDifferencingVhdPath = 'TestDrive:';
-                Mock GetConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDifferencingVhdPath; } }
+                Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDifferencingVhdPath; } }
 
                 $vhdPath = ResolveLabVMDiskPath -Name $testVMName;
 
@@ -186,7 +186,7 @@ Describe 'Src\LabVMDisk' {
                 $testMedia = 'TestMedia';
                 $testImagePath = "TestDrive:\$testMedia.vhdx";
                 $testLabVMDiskPath = "TestDrive:\$testVMName.vhdx";
-                Mock GetConfigurationData -MockWith { return @{ DifferencingVhdPath = 'TestDrive:'; } }
+                Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = 'TestDrive:'; } }
                 Mock Get-LabImage -MockWith { return @{ ImagePath = $testImagePath; Generation = 'VHDX'; } }
                 Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
                 Mock InvokeDscResource -ParameterFilter { $Parameters.Ensure -eq 'Absent' } -MockWith { }

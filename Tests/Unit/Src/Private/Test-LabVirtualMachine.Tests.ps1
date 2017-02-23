@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Test-LabVirtualMachine' {
+Describe 'Unit\Src\Private\Test-LabVirtualMachine' {
 
     InModuleScope $moduleName {
 
@@ -25,9 +25,9 @@ Describe 'Src\Private\Test-LabVirtualMachine' {
         ## Guard mocks
         Mock ResolveLabMedia -MockWith { }
         Mock ImportDscResource -MockWith { }
+        Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
 
         It 'Imports Hyper-V DSC resource' {
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
             Mock TestDscResource -MockWith { return $true; }
 
             Test-LabVirtualMachine @testLabVirtualMachineParams;
@@ -36,22 +36,18 @@ Describe 'Src\Private\Test-LabVirtualMachine' {
         }
 
         It 'Returns true when VM matches specified configuration' {
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
             Mock TestDscResource -MockWith { return $true; }
 
             Test-LabVirtualMachine @testLabVirtualMachineParams | Should Be $true;
         }
 
         It 'Returns false when VM does not match specified configuration' {
-            Mock ResolveLabMedia -ParameterFilter { $null -eq $ConfigurationData } -MockWith { }
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
             Mock TestDscResource -MockWith { return $false; }
 
             Test-LabVirtualMachine @testLabVirtualMachineParams | Should Be $false;
         }
 
         It 'Returns false when error is thrown' {
-            Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
             Mock TestDscResource -MockWith { throw 'Vhd not found' }
 
             Test-LabVirtualMachine @testLabVirtualMachineParams | Should Be $false;

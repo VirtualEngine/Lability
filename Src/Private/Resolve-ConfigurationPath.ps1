@@ -62,7 +62,7 @@ function Resolve-ConfigurationPath {
         }
 
         ## Search the ConfigurationPath path
-        $configurationPath = GetLabHostDSCConfigurationPath;
+        $configurationPath = Get-LabHostDscConfigurationPath;
         $resolvedPath = ResolvePathEx -Path $configurationPath;
         if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
 
@@ -105,7 +105,7 @@ function Resolve-ConfigurationPath {
             else {
 
                 ## Return the default configuration path
-                return GetLabHostDSCConfigurationPath;
+                return Get-LabHostDscConfigurationPath;
             }
         }
         else {

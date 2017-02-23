@@ -9,7 +9,7 @@ Describe 'Src\Private\Set-LabVMDiskFile' {
 
     InModuleScope $moduleName {
 
-        Mock GetConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDifferencingVhdPath; } }
+        Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDifferencingVhdPath; } }
         Mock Get-LabImage { return @{ Id = $testMediaId; Generation = $testGeneration; } }
 
         $testMediaId = 'TestMedia';

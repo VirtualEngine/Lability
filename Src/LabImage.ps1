@@ -33,7 +33,7 @@ function Get-LabImage {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $parentVhdPath = ResolvePathEx -Path $hostDefaults.ParentVhdPath;
 
         if ($PSBoundParameters.ContainsKey('Id')) {
@@ -199,7 +199,7 @@ function New-LabImage {
 
         $media = ResolveLabMedia @PSBoundParameters;
         $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         if ($media.MediaType -eq 'VHD') {
 
