@@ -29,6 +29,7 @@ function Resolve-VhdHierarchy {
     .SYNOPSIS
         Returns VM VHDs, including snapshots and differencing disks
 #>
+    [CmdletBinding()]
     param (
         ## Path to current virtual machine VHD/X file
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

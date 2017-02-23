@@ -3,6 +3,7 @@ function Resolve-LabVMGenerationDiskPath {
     .SYNOPSIS
         Resolves the specified VM name's target VHD/X path.
 #>
+    [CmdletBinding()]
     param (
         ## VM/node name.
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]

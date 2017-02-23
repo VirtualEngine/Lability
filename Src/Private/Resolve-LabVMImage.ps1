@@ -3,6 +3,7 @@ function Resolve-LabVMImage {
     .SYNOPSIS
         Resolves a virtual machine's Lability image.
 #>
+    [CmdletBinding()]
     param (
         ## VM name
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

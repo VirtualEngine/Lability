@@ -38,6 +38,7 @@ function Add-LabImageWindowsOptionalFeature {
             Verbose = $false;
         }
         $dismOutput = Microsoft.Dism.Powershell\Enable-WindowsOptionalFeature @enableWindowsOptionalFeatureParams;
+        Write-Debug -Message $dismOutput;
 
     } #end process
 } #end function Add-LabImageWindowsOptionalFeature

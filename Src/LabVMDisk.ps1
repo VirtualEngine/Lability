@@ -163,6 +163,7 @@ function RemoveLabVMDisk {
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]

@@ -153,12 +153,12 @@ function Start-LabConfiguration {
 
         foreach ($node in $nodes) {
 
-            $testLabConfigurationMofParams = @{
+            $assertLabConfigurationMofParams = @{
                 ConfigurationData = $ConfigurationData;
                 Name = $node.NodeName;
                 Path = $Path;
             }
-            Test-LabConfigurationMof @testLabConfigurationMofParams -SkipMofCheck:$SkipMofCheck;
+            Assert-LabConfigurationMof @assertLabConfigurationMofParams -SkipMofCheck:$SkipMofCheck;
 
         } #end foreach node
 
