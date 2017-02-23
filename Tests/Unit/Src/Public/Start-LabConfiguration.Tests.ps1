@@ -21,7 +21,6 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
         }
 
         ## Guard mocks
-        #Mock Test-LabConfigurationMof -MockWith { }
         Mock NewLabVM -MockWith { }
 
         $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);

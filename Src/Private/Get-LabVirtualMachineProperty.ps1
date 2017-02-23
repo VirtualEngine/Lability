@@ -3,6 +3,7 @@ function Get-LabVirtualMachineProperty {
     .SYNOPSIS
         Gets the properties required by DSC xVMHyperV.
 #>
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
         [System.String] $Name,

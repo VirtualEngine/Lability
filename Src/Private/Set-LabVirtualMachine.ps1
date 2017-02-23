@@ -5,6 +5,8 @@ function Set-LabVirtualMachine {
     .DESCRIPTION
         Invokes/sets a virtual machine configuration using the xVMHyperV DSC resource.
 #>
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]

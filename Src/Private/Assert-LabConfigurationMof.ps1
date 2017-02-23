@@ -1,4 +1,4 @@
-function Test-LabConfigurationMof {
+function Assert-LabConfigurationMof {
 <#
     .SYNOPSIS
         Checks for node MOF and meta MOF configuration files.
@@ -50,4 +50,4 @@ function Test-LabConfigurationMof {
         }
 
     } #end process
-} #end function Test-LabConfigurationMof
+} #end function Assert-LabConfigurationMof

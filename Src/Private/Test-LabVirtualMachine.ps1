@@ -5,6 +5,8 @@ function Test-LabVirtualMachine {
     .DESCRIPTION
         Tests the current configuration a virtual machine using the xVMHyperV DSC resource.
 #>
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
