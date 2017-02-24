@@ -196,7 +196,7 @@ function Test-TargetResource
 
     if(! ($ParentPath -or $MaximumSizeBytes))
     {
-       Throw "Either specify ParentPath or MaximumSize property." 
+       Throw "Either specify ParentPath or MaximumSizeBytes property." 
     }
             
     if($ParentPath)
@@ -204,7 +204,7 @@ function Test-TargetResource
         # Ensure only one value is specified - differencing disk or new disk
         if($MaximumSizeBytes)
         {
-            Throw "Cannot specify both ParentPath and MaximumSize. Specify only one and try again."
+            Throw "Cannot specify both ParentPath and MaximumSizeBytes. Specify only one and try again."
         }
         
         if(! (Test-Path -Path $ParentPath))
