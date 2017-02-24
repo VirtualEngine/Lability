@@ -98,6 +98,7 @@ Other generous members of the community have written some comprehensive guides t
 * Adds -RepositoryUri parameter to Set-LabHostDefault to support internal repositories (partially implements #195)
 * Changes default PowerShell gallery URI to HTTPS
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
+* Updates bundled xHyper-V DSC resource module to 3.7.0.0
 
 ### v0.10.2
 
