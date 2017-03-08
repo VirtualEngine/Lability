@@ -231,12 +231,17 @@ function SetLabVMDiskFileBootstrap {
         [System.String] $VhdDriveLetter,
 
         ## Custom bootstrap script
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $CustomBootstrap,
 
         ## CoreCLR
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom/replacement shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell,
 
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
@@ -246,14 +251,20 @@ function SetLabVMDiskFileBootstrap {
 
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
         WriteVerbose -Message ($localized.AddingBootStrapFile -f $bootStrapPath);
+        $setBootStrapParams = @{
+            Path = $bootStrapPath;
+            CoreCLR = $CoreCLR;
+        }
         if ($CustomBootStrap) {
 
-            SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
+            $setBootStrapParams['CustomBootStrap'] = $CustomBootStrap;
         }
-        else {
+        if ($PSBoundParameters.ContainsKey('DefaultShell')) {
 
-            SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
+            WriteVerbose -Message ($localized.SettingCustomShell -f $DefaultShell);
+            $setBootStrapParams['DefaultShell'] = $DefaultShell;
         }
+        SetBootStrap @setBootStrapParams;
 
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose -Message ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
@@ -312,7 +323,7 @@ function SetLabVMDiskFileMof {
         }
 
     } #end process
-} #end function SetLabVMDiskFileBootstrap
+} #end function SetLabVMDiskFileMof
 
 
 function SetLabVMDiskFileCertificate {
@@ -348,6 +359,7 @@ function SetLabVMDiskFileCertificate {
 
         if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
 
+            [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabClient.pfx' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
@@ -356,6 +368,7 @@ function SetLabVMDiskFileCertificate {
 
         if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
 
+            [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabRoot.cer' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
             $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
@@ -363,4 +376,4 @@ function SetLabVMDiskFileCertificate {
         }
 
     } #end process
-} #end function SetLabVMDiskFileBootstrap
+} #end functionSetLabVMDiskFileCertificate

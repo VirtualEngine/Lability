@@ -4,10 +4,14 @@ function NewBootStrap {
         Creates a lab DSC BootStrap script block.
 #>
     [CmdletBinding()]
-    [OutputType([System.Management.Automation.ScriptBlock])]
+    [OutputType([System.String])]
     param (
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $CoreCLR
+        [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom default shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell
     )
     process {
 
@@ -97,12 +101,27 @@ Stop-Transcript;
 
         if ($CoreCLR) {
 
-            return $coreCLRScriptBlock;
+            $bootstrap = $coreCLRScriptBlock.ToString();
         }
         else {
 
-            return $scriptBlock;
+            $bootstrap = $scriptBlock.ToString();
         }
+
+        if ($PSBoundParameters.ContainsKey('DefaultShell')) {
+
+            $shellScriptBlock = {
+                Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\' -Name Shell -Value '{0}' -Force;
+
+                <#CustomBootStrapInjectionPoint#>
+            }
+
+            $shellScriptBlockString = $shellScriptBlock.ToString() -f $DefaultShell;
+            $bootstrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString;
+        }
+
+        return $bootstrap;
+
     } #end process
 } #end function NewBootStrap
 
@@ -165,17 +184,30 @@ function SetBootStrap {
 
         ## Is a CoreCLR VM. The PowerShell switches are different in the CoreCLR, i.e. Nano Server
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $CoreCLR
+        [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
-        $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
-        $bootStrap = (NewBootStrap -CoreCLR:$CoreCLR).ToString();
+        $newBootStrapParams = @{
+            CoreCLR = $CoreCLR;
+        }
+        if (-not [System.String]::IsNullOrEmpty($DefaultShell)) {
+
+            $newBootStrapParams['DefaultShell'] = $DefaultShell;
+        }
+        $bootStrap = NewBootStrap @newBootStrapParams;
+
         if ($CustomBootStrap) {
 
             $bootStrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $CustomBootStrap;
         }
+
+        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
+        $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
         Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force -Confirm:$false;
 
     } #end process

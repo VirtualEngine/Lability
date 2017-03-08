@@ -39,6 +39,10 @@ function Set-LabVMDiskFile {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CoreCLR,
 
+        ## Custom/replacement Shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell,
+
         ## Media-defined product key
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ProductKey

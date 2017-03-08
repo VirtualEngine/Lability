@@ -140,6 +140,10 @@ function NewLabVM {
                 Credential = $Credential;
                 CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
             }
+            if (-not [System.String]::IsNullOrEmpty($media.CustomData.DefaultShell)) {
+
+                $setLabVMDiskFileParams['DefaultShell'] = $media.CustomData.DefaultShell;
+            }
 
             $resolveCustomBootStrapParams = @{
                 CustomBootstrapOrder = $node.CustomBootstrapOrder;

@@ -43,7 +43,7 @@ SUPPORTED MEDIA PROPERTIES
         ImageName  [string] ( supports [int32] for image numbers )
         OperatingSystem  [string] { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
-            PartitionStyle [string] { MBR | GPT }
+            PartitionStyle  [string] { MBR | GPT }
             WimPath  [string]
             SourcePath  [string]
             WindowsOptionalFeature  [string[]]
@@ -52,6 +52,7 @@ SUPPORTED MEDIA PROPERTIES
             SetupComplete  [string] { CoreCLR }
             CustomBootstrap  [string[]]
             VmGeneration  [int] { 1 | 2 }
+            DefaultShell  [string]
         }
         Hotfixes
 
@@ -78,7 +79,7 @@ NANO DISK IMAGES
             Hotfixes        : {}
 
         The Nano specific packages included in the VHDX are contained in the CustomData property. Custom media can be
-        added to installed alternate packages, as required.
+        added to installed alternate packages as required, or use the NanoServerPackage provider.
 
 EXISTING DISK IMAGES
 

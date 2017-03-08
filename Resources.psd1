@@ -151,6 +151,7 @@ ConvertFrom-StringData -StringData @'
     NoModuleBranchSpecified         = GitHub module '{0}' has no branch specified; defaulting to 'master' branch.
     SearchingConfigurationPaths     = Searching configuration paths.
     FoundConfigurationPath          = Found configuration path '{0}'.
+    SettingCustomShell              = Setting '{0}' as default shell.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
