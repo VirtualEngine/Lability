@@ -82,6 +82,7 @@ Other generous members of the community have written some comprehensive guides t
 * [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
+* [Using Lability, DSC and ARM to define and deploy multi-VM environments](https://blogs.blackmarble.co.uk/blogs/rhepworth/post/2017/03/02/Define-Once-Deploy-Everywhere-(Sort-of…)) via @@rikhepworth
 
 ## Versions
 
@@ -99,6 +100,7 @@ Other generous members of the community have written some comprehensive guides t
 * Changes default PowerShell gallery URI to HTTPS
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
 * Updates bundled xHyper-V DSC resource module to 3.7.0.0
+* Adds setting the default shell via media 'CustomData\DefaultShell' setting
 
 ### v0.10.2
 
