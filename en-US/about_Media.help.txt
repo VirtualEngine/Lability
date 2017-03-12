@@ -33,31 +33,33 @@ LONG DESCRIPTION
 
 SUPPORTED MEDIA PROPERTIES
 
-        Id
-        Description
-        Filename
-        Architecture { x86 | x64 }
-        Uri
-        Checksum
-        MediaType { VHD | ISO | WIM }
-        ImageName [string] ( supports [int32] for image numbers )
-        OperatingSystem { Windows | Linux } ( defaults to Windows if not specified )
+        Id  [string]
+        Description  [string]
+        Filename  [string]
+        Architecture  [string] { x86 | x64 }
+        Uri  [string]
+        Checksum  [string]
+        MediaType  [string] { VHD | ISO | WIM }
+        ImageName  [string] ( supports [int32] for image numbers )
+        OperatingSystem  [string] { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
-            PartitionStyle { MBR | GPT }
-            WimPath
-            SourcePath
-            WindowsOptionalFeature
-            Package
-            PackagePath
-            SetupComplete { CoreCLR }
-            CustomBootstrap [string[]]
+            PartitionStyle  [string] { MBR | GPT }
+            WimPath  [string]
+            SourcePath  [string]
+            WindowsOptionalFeature  [string[]]
+            Package  [string[]]
+            PackagePath  [string]
+            SetupComplete  [string] { CoreCLR }
+            CustomBootstrap  [string[]]
+            VmGeneration  [int] { 1 | 2 }
+            DefaultShell  [string]
         }
         Hotfixes
 
 NANO DISK IMAGES
 
         Deploying Nano server images is possible, but requires registering custom media specifying the packages to
-        include. The built-in Nano server media only contains the Guest, DSC, Compute, Containers and DNS packages.
+        include or using the . The built-in Nano server media only contains the Guest, DSC, Compute, Containers and DNS packages.
         To see an example of the existing Nano server configuration, run the following command:
 
             PS C:\> Get-LabMedia -Id 2016TP4_x64_NANO_EN
@@ -77,11 +79,7 @@ NANO DISK IMAGES
             Hotfixes        : {}
 
         The Nano specific packages included in the VHDX are contained in the CustomData property. Custom media can be
-        added to installed alternate packages, as required.
-
-        NOTE: DUE TO THE CURRENT RESTRICTIONS IN THE CORECLR IMPLEMENTATION ON NANO SERVER, IMPORTING .PFX CERTIFICATES
-              IS UNRELIABLE. THEREFORE, IT IS NOT PRESENTLY POSSIBLE TO USE ENCRYPTED CREDENTIALS. THIS WILL HOPEFULLY
-              BE RESOLVED IN A LATER SERVER 2016 RELEASE.
+        added to installed alternate packages as required, or use the NanoServerPackage provider.
 
 EXISTING DISK IMAGES
 
@@ -124,7 +122,7 @@ LINUX DISK IMAGES
                 Filename = "NSVPX-11.0-63.16_nc.vhd"
                 Description = "Citrix NetScaler 11.0 VPX Build 63.16_nc";
                 Architecture = "x64";
-	            MediaType = "VHD";
+	        MediaType = "VHD";
                 OperatingSystem = "Linux";
                 Uri = "\\MyFileServer\Images\NSVPX-11.0-63.16_nc.vhd";
             }

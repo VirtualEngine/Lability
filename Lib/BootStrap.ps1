@@ -4,10 +4,14 @@ function NewBootStrap {
         Creates a lab DSC BootStrap script block.
 #>
     [CmdletBinding()]
-    [OutputType([System.Management.Automation.ScriptBlock])]
+    [OutputType([System.String])]
     param (
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $CoreCLR
+        [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom default shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell
     )
     process {
 
@@ -15,7 +19,9 @@ function NewBootStrap {
 ## Lability CoreCLR DSC Bootstrap
 $VerbosePreference = 'Continue';
 
-## TODO: Need to find a Nano equivalent of CertUtil.exe!
+Import-Certificate -FilePath "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer" -CertStoreLocation 'Cert:\LocalMachine\Root\' -Verbose;
+## Import the .PFX certificate with a blank password
+Import-PfxCertificate -FilePath "$env:SYSTEMDRIVE\BootStrap\LabClient.pfx" -CertStoreLocation 'Cert:\LocalMachine\My\' -Verbose;
 
 <#CustomBootStrapInjectionPoint#>
 
@@ -95,12 +101,27 @@ Stop-Transcript;
 
         if ($CoreCLR) {
 
-            return $coreCLRScriptBlock;
+            $bootstrap = $coreCLRScriptBlock.ToString();
         }
         else {
 
-            return $scriptBlock;
+            $bootstrap = $scriptBlock.ToString();
         }
+
+        if ($PSBoundParameters.ContainsKey('DefaultShell')) {
+
+            $shellScriptBlock = {
+                Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\' -Name Shell -Value '{0}' -Force;
+
+                <#CustomBootStrapInjectionPoint#>
+            }
+
+            $shellScriptBlockString = $shellScriptBlock.ToString() -f $DefaultShell;
+            $bootstrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString;
+        }
+
+        return $bootstrap;
+
     } #end process
 } #end function NewBootStrap
 
@@ -124,7 +145,7 @@ function SetSetupCompleteCmd {
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path;
+        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
         $setupCompletePath = Join-Path -Path $Path -ChildPath 'SetupComplete.cmd';
         if ($CoreCLR) {
 
@@ -139,7 +160,7 @@ schtasks /run /tn "BootStrap"
             WriteVerbose -Message $localized.UsingDefaultSetupComplete;
             $setupCompleteCmd = 'Powershell.exe -NoProfile -ExecutionPolicy Bypass -NonInteractive -File "%SYSTEMDRIVE%\BootStrap\BootStrap.ps1"';
         }
-        Set-Content -Path $setupCompletePath -Value $setupCompleteCmd -Encoding Ascii -Force;
+        Set-Content -Path $setupCompletePath -Value $setupCompleteCmd -Encoding Ascii -Force -Confirm:$false;
 
     } #end process
 } #end function SetSetupCompleteCmd
@@ -163,18 +184,31 @@ function SetBootStrap {
 
         ## Is a CoreCLR VM. The PowerShell switches are different in the CoreCLR, i.e. Nano Server
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $CoreCLR
+        [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path;
-        $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
-        $bootStrap = (NewBootStrap -CoreCLR:$CoreCLR).ToString();
+        $newBootStrapParams = @{
+            CoreCLR = $CoreCLR;
+        }
+        if (-not [System.String]::IsNullOrEmpty($DefaultShell)) {
+
+            $newBootStrapParams['DefaultShell'] = $DefaultShell;
+        }
+        $bootStrap = NewBootStrap @newBootStrapParams;
+
         if ($CustomBootStrap) {
 
             $bootStrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $CustomBootStrap;
         }
-        Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force;
+
+        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
+        $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
+        Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force -Confirm:$false;
 
     } #end process
 } #end function SetBootStrap

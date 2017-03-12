@@ -8,6 +8,7 @@ function Set-LabVMDiskFile {
         VHD(X) file.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -38,6 +39,10 @@ function Set-LabVMDiskFile {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CoreCLR,
 
+        ## Custom/replacement Shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell,
+
         ## Media-defined product key
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ProductKey
@@ -48,11 +53,17 @@ function Set-LabVMDiskFile {
         ## http://blogs.technet.com/b/heyscriptingguy/archive/2013/05/29/use-powershell-to-initialize-raw-disks-and-partition-and-format-volumes.aspx
         Stop-ShellHWDetectionService;
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
-        $vhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+
+        $resolveLabVMGenerationDiskPathParams = @{
+            Name = $node.NodeDisplayName;
+            Media = $node.Media;
+            ConfigurationData = $ConfigurationData;
+        }
+        $vhdPath = Resolve-LabVMGenerationDiskPath @resolveLabVMGenerationDiskPathParams;
 
         WriteVerbose -Message ($localized.MountingDiskImage -f $VhdPath);
-        $vhd = Mount-Vhd -Path $vhdPath -Passthru;
+        $vhd = Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
         [ref] $null = Get-PSDrive;
         $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
@@ -78,7 +89,7 @@ function Set-LabVMDiskFile {
 
             ## Ensure the VHD is dismounted (#185)
             WriteVerbose -Message ($localized.DismountingDiskImage -f $VhdPath);
-            Dismount-Vhd -Path $VhdPath;
+            Dismount-Vhd -Path $VhdPath -Confirm:$false;
         }
 
     } #end process

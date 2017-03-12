@@ -49,7 +49,7 @@ Describe 'Src\LabVMDiskFile' {
                 $testHostConfiguration = [PSCustomObject] @{
                     ResourceShareName = $testResourceShare;
                 }
-                Mock GetConfigurationData -MockWith { return $testHostConfiguration; }
+                Mock Get-ConfigurationData -MockWith { return $testHostConfiguration; }
                 Mock ExpandLabResource -MockWith { }
 
                 $testParams = @{
@@ -76,8 +76,8 @@ Describe 'Src\LabVMDiskFile' {
                 @{ Name = 'DscResourceModule'; }
             )
 
-            It 'Calls "ResolveLabModule" to query DSC resource modules' {
-                Mock ResolveLabModule -MockWith { return $testModules; }
+            It 'Calls "Resolve-LabModule" to query DSC resource modules' {
+                Mock Resolve-LabModule -MockWith { return $testModules; }
                 Mock SetLabVMDiskModule -MockWith { }
 
                 $testParams = @{
@@ -87,11 +87,11 @@ Describe 'Src\LabVMDiskFile' {
                 }
                 SetLabVMDiskFileModule @testParams;
 
-                Assert-MockCalled ResolveLabModule -ParameterFilter { $ModuleType -eq 'DscResource'; } -Scope It;
+                Assert-MockCalled Resolve-LabModule -ParameterFilter { $ModuleType -eq 'DscResource'; } -Scope It;
             }
 
-            It 'Calls "ResolveLabModule" to query PowerShell modules' {
-                Mock ResolveLabModule -MockWith { return $testModules; }
+            It 'Calls "Resolve-LabModule" to query PowerShell modules' {
+                Mock Resolve-LabModule -MockWith { return $testModules; }
                 Mock SetLabVMDiskModule -MockWith { }
 
                 $testParams = @{
@@ -101,11 +101,11 @@ Describe 'Src\LabVMDiskFile' {
                 }
                 SetLabVMDiskFileModule @testParams;
 
-                Assert-MockCalled ResolveLabModule -ParameterFilter { $ModuleType -eq 'Module'; } -Scope It;
+                Assert-MockCalled Resolve-LabModule -ParameterFilter { $ModuleType -eq 'Module'; } -Scope It;
             }
 
             It 'Calls "SetLabVMDiskModule" to expand modules' {
-                Mock ResolveLabModule -MockWith { return $testModules; }
+                Mock Resolve-LabModule -MockWith { return $testModules; }
                 Mock SetLabVMDiskModule -MockWith { }
 
                 $testParams = @{

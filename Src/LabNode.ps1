@@ -125,12 +125,12 @@ function Test-LabNodeConfiguration {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         if ((-not $node) -or ($node.NodeName -eq '*') -or ([System.String]::IsNullOrEmpty($node.NodeName))) {
             throw ($localized.CannotLocateNodeError -f $NodeName);
         }
         if (-not $PSBoundParameters.ContainsKey('DestinationPath')) {
-            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (GetConfigurationData -Configuration Host).ResourceShareName;
+            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (Get-ConfigurationData -Configuration Host).ResourceShareName;
         }
 
         $inDesiredState = $true;
@@ -243,12 +243,12 @@ function Invoke-LabNodeConfiguration {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         if ((-not $node) -or ($node.NodeName -eq '*') -or ([System.String]::IsNullOrEmpty($node.NodeName))) {
             throw ($localized.CannotLocateNodeError -f $NodeName);
         }
         if (-not $PSBoundParameters.ContainsKey('DestinationPath')) {
-            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (GetConfigurationData -Configuration Host).ResourceShareName;
+            $DestinationPath = '{0}\{1}' -f $env:SystemDrive, (Get-ConfigurationData -Configuration Host).ResourceShareName;
         }
 
         ## Install lab root CA and client certificate
@@ -313,7 +313,7 @@ function Get-LabNodeResourceList {
 
         foreach ($nodeName in $Name) {
 
-            $node = ResolveLabVMProperties -NodeName $nodeName -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
+            $node = Resolve-NodePropertyValue -NodeName $nodeName -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
             if ([System.String]::IsNullOrEmpty($node.NodeName)) {
                 throw ($localized.CannotLocateNodeError -f $nodeName);
             }

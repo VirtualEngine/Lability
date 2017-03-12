@@ -25,7 +25,7 @@ function Test-LabResource {
     begin {
 
         if (-not $ResourcePath) {
-            $hostDefaults = GetConfigurationData -Configuration Host;
+            $hostDefaults = Get-ConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
 
@@ -224,7 +224,7 @@ function Invoke-LabResourceDownload {
     )
     begin {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if (-not $DestinationPath) {
             $DestinationPath = $hostDefaults.ResourcePath;
         }
@@ -239,7 +239,7 @@ function Invoke-LabResourceDownload {
                 WriteVerbose ($Localized.DownloadingAllRequiredMedia);
                 $uniqueMediaIds = @();
                 $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
-                    $id = (ResolveLabVMProperties -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
+                    $id = (Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
                     if ($uniqueMediaIds -notcontains $id) { $uniqueMediaIds += $id; }
                 }
                 $MediaId = $uniqueMediaIds;
@@ -406,7 +406,7 @@ function ExpandLabResource {
 
         if (-not $ResourcePath) {
 
-            $hostDefaults = GetConfigurationData -Configuration Host;
+            $hostDefaults = Get-ConfigurationData -Configuration Host;
             $ResourcePath = $hostDefaults.ResourcePath;
         }
 
@@ -416,10 +416,10 @@ function ExpandLabResource {
         ## Create the root destination (\Resources) container
         if (-not (Test-Path -Path $DestinationPath -PathType Container)) {
 
-            [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force;
+            [ref] $null = New-Item -Path $DestinationPath -ItemType Directory -Force -Confirm:$false;
         }
 
-        $node = ResolveLabVMProperties -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
 
             WriteVerbose ($localized.AddingResource -f $resourceId);
@@ -462,7 +462,7 @@ function ExpandLabResource {
                 ## We can't create a drive-rooted folder!
                 if (($resource.DestinationPath -ne '\') -and (-not (Test-Path -Path $resourceDestinationPath))) {
 
-                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force;
+                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force  -Confirm:$false;
                 }
             }
             elseif ($resource.IsLocal -and ($resource.IsLocal -eq $true)) {
@@ -481,7 +481,7 @@ function ExpandLabResource {
 
                 if (-not (Test-Path -Path $resourceDestinationPath)) {
 
-                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force;
+                    [ref] $null = New-Item -Path $resourceDestinationPath -ItemType Directory -Force -Confirm:$false;
                 }
 
                 switch ([System.IO.Path]::GetExtension($resourceSourcePath)) {
@@ -518,6 +518,7 @@ function ExpandLabResource {
                     Force = $true;
                     Recurse = $true;
                     Verbose = $false;
+                    Confirm = $false;
                 }
                 Copy-Item @copyItemParams;
             }

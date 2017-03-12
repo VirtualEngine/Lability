@@ -7,6 +7,7 @@ function Resolve-LabImage {
         causes issues removing a VMs VHD/X file. The ResolveLabImage function locates the image
         by its physical path.
 #>
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [System.String] $Path

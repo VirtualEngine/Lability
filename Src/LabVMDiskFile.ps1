@@ -62,7 +62,7 @@ function SetLabVMDiskFileResource {
     )
     process {
 
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $resourceDestinationPath = '{0}:\{1}' -f $vhdDriveLetter, $hostDefaults.ResourceShareName;
         $expandLabResourceParams = @{
             ConfigurationData = $ConfigurationData;
@@ -109,13 +109,13 @@ function SetLabVMDiskFileModule {
         $programFilesPath = '{0}\WindowsPowershell\Modules' -f (ResolveProgramFilesFolder -Drive $VhdDriveLetter).FullName
 
         ## Add the DSC resource modules
-        $resolveLabDscModuleParams =@{
+        $resolveLabModuleParams =@{
             ConfigurationData = $ConfigurationData;
             NodeName = $NodeName;
             ModuleType = 'DscResource';
         }
         $setLabVMDiskDscModuleParams = @{
-            Module = ResolveLabModule @resolveLabDscModuleParams;
+            Module = Resolve-LabModule @resolveLabModuleParams;
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
@@ -125,13 +125,13 @@ function SetLabVMDiskFileModule {
         }
 
         ## Add the PowerShell resource modules
-        $resolveLabPowerShellModuleParams =@{
+        $resolveLabModuleParams =@{
             ConfigurationData = $ConfigurationData;
             NodeName = $NodeName;
             ModuleType = 'Module';
         }
         $setLabVMDiskPowerShellModuleParams = @{
-            Module = ResolveLabModule @resolveLabPowerShellModuleParams;
+            Module = Resolve-LabModule @resolveLabModuleParams;
             DestinationPath = $programFilesPath;
         }
         if ($null -ne $setLabVMDiskPowerShellModuleParams['Module']) {
@@ -182,7 +182,7 @@ function SetLabVMDiskFileUnattendXml {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
@@ -231,12 +231,17 @@ function SetLabVMDiskFileBootstrap {
         [System.String] $VhdDriveLetter,
 
         ## Custom bootstrap script
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $CustomBootstrap,
 
         ## CoreCLR
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $CoreCLR,
+
+        ## Custom/replacement shell
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $DefaultShell,
 
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
@@ -246,14 +251,20 @@ function SetLabVMDiskFileBootstrap {
 
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
         WriteVerbose -Message ($localized.AddingBootStrapFile -f $bootStrapPath);
+        $setBootStrapParams = @{
+            Path = $bootStrapPath;
+            CoreCLR = $CoreCLR;
+        }
         if ($CustomBootStrap) {
 
-            SetBootStrap -Path $bootStrapPath -CustomBootStrap $CustomBootStrap -CoreCLR:$CoreCLR;
+            $setBootStrapParams['CustomBootStrap'] = $CustomBootStrap;
         }
-        else {
+        if ($PSBoundParameters.ContainsKey('DefaultShell')) {
 
-            SetBootStrap -Path $bootStrapPath -CoreCLR:$CoreCLR;
+            WriteVerbose -Message ($localized.SettingCustomShell -f $DefaultShell);
+            $setBootStrapParams['DefaultShell'] = $DefaultShell;
         }
+        SetBootStrap @setBootStrapParams;
 
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
         WriteVerbose -Message ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
@@ -300,7 +311,7 @@ function SetLabVMDiskFileMof {
 
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMofPath);
-            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop;
+            Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop -Confirm:$false;
         }
 
         $metaMofPath = Join-Path -Path $Path -ChildPath ('{0}.meta.mof' -f $NodeName);
@@ -308,11 +319,11 @@ function SetLabVMDiskFileMof {
 
             $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
             WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
-            Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force;
+            Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force -Confirm:$false;
         }
 
     } #end process
-} #end function SetLabVMDiskFileBootstrap
+} #end function SetLabVMDiskFileMof
 
 
 function SetLabVMDiskFileCertificate {
@@ -343,24 +354,26 @@ function SetLabVMDiskFileCertificate {
     )
     process {
 
-        $node = ResolveLabVMProperties -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $node = Resolve-NodePropertyValue -NodeName $NodeName -ConfigurationData $ConfigurationData -ErrorAction Stop;
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
 
         if (-not [System.String]::IsNullOrWhitespace($node.ClientCertificatePath)) {
 
+            [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabClient.pfx' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
-            Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force;
+            Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
         if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
 
+            [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabRoot.cer' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
             $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
             WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
-            Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force;
+            Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
     } #end process
-} #end function SetLabVMDiskFileBootstrap
+} #end functionSetLabVMDiskFileCertificate

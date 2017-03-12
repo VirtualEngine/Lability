@@ -51,7 +51,7 @@ ConvertFrom-StringData -StringData @'
     AddingDSCResource               = Adding DSC resource '{0}' (v{1}).
     AddingUnattendXmlFile           = Adding Unattend file '{0}'.
     CreatingBaselineSnapshot        = Creating baseline snapshot '{0}'.
-    SnapshottingVirtualMachine      = Creating virtual machine '{0}' snapshot '{1}'.
+    CreatingVirtualMachineSnapshot  = Creating virtual machine(s) '{0}' snapshot '{1}'.
     RemovingSnapshot                = Removing VM '{0}' snapshot '{1}'.
     AddingDscConfiguration          = Adding DSC file '{0}'.
     AddingBootStrapFile             = Adding BootStrap.ps1 file to '{0}'.
@@ -122,6 +122,8 @@ ConvertFrom-StringData -StringData @'
     ModuleNotFound                  = Module '{0}' was not found.
     ModuleFoundInPath               = Found module in '{0}'.
     CreatingQuickVM                 = Creating quick VM '{0}' using media '{1}'.
+    CreatingVM                      = Creating VM '{0}'.
+    CreatingVMGeneration            = Creating generation '{0}' VM.
     RemovingVM                      = Removing VM '{0}'.
     ResettingVM                     = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch   = Creating Internal '{0}' virtual switch.
@@ -147,6 +149,9 @@ ConvertFrom-StringData -StringData @'
     ModuleVersionNotCached          = Module '{0}' v{1} was not found in the module cache or -Force was specified.
     ModuleMinmumVersionNotCached    = Module '{0}' v{1} or later was not found in the module cache or -Force was specified.
     NoModuleBranchSpecified         = GitHub module '{0}' has no branch specified; defaulting to 'master' branch.
+    SearchingConfigurationPaths     = Searching configuration paths.
+    FoundConfigurationPath          = Found configuration path '{0}'.
+    SettingCustomShell              = Setting '{0}' as default shell.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -185,9 +190,9 @@ ConvertFrom-StringData -StringData @'
     DscResourceNotFoundError        = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError    = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
     CannotFindCertificateError      = Cannot locate {0} certificate '{1}'.
-    CannotLocateMofFileError        = Cannot locate node '{0}' file. No DSC configuration will be applied. Ensure the DSC configuration has been run successfully.
+    CannotLocateMofFileError        = Cannot locate node '{0}' file and no DSC configuration can be applied. Ensure the DSC configuration has been run successfully.
     CannotLocateNodeError           = Cannot locate node '{0}'.
-    CannotSnapshotNodeError         = Cannot perform a snapshot operation on virtual machine '{0}' as it is not powered off. You can force the operation with the -Force switch.
+    CannotSnapshotNodeError         = Cannot perform a snapshot operation on virtual machine '{0}' as it is not powered off. You can force the snapshot operation with the -Force switch.
     HostConfigurationTestError      = Host configuration test failed and may have a pending reboot.
     IncorrectPropertyTypeError      = Incorrect '{0}' property type. Property type must be '{1}'.
     CannotResolveResourceIdError    = Cannot resolve resource Id '{0}'.
@@ -205,6 +210,8 @@ ConvertFrom-StringData -StringData @'
     InvalidComputerNameError        = Computer name '{0}' in invalid. Standard names may contain letters (a-z, A-Z), numbers (0-9), and hyphens (-), but no spaces or periods (.).
     ReadingArchiveItemError         = Error reading archive item '{0}'.
     RequiredModuleParameterError    = Required module parameter '{0}' is invalid or missing.
+    InvalidtModuleParameterError    = Module parameter '{0}' is invalid.
     InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
     CannotLocateDismDllError        = Cannot locate 'Microsoft.Dism.Powershell.dll' in path '{0}'.
+    CannotResolveMediaIdError       = Cannot resolve node '{0}' source media Id.
 '@

@@ -12,7 +12,7 @@ function ResolveLabVMDiskPath {
         [System.String] $Generation = 'VHDX'
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $vhdName = '{0}.{1}' -f $Name, $Generation.ToLower();
         $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
         return $vhdPath;
@@ -22,7 +22,7 @@ function ResolveLabVMDiskPath {
 function GetLabVMDisk {
 <#
     .SYNOPSIS
-        Retrieves lab virtual machine disk (VHDX) is present.
+        Retrieves lab virtual machine disk (VHDX) if present.
     .DESCRIPTION
         Gets a VM disk configuration using the xVHD DSC resource.
 #>
@@ -43,7 +43,7 @@ function GetLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
@@ -67,6 +67,7 @@ function TestLabVMDisk {
         Checks whether the lab virtual machine disk (VHDX) is present.
 #>
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param (
         ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -86,7 +87,7 @@ function TestLabVMDisk {
         [String] $Ensure = 'Present'
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
@@ -136,7 +137,7 @@ function SetLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
         }
@@ -162,6 +163,7 @@ function RemoveLabVMDisk {
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         ## VM/node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -178,7 +180,7 @@ function RemoveLabVMDisk {
         $ConfigurationData
     )
     process {
-        $hostDefaults = GetConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
         }
@@ -194,17 +196,15 @@ function RemoveLabVMDisk {
 
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
-                if ($PSCmdlet.ShouldProcess($vhdPath)) {
-                    $vhd = @{
-                        Name = $Name;
-                        Path = $hostDefaults.DifferencingVhdPath;
-                        ParentPath = $image.ImagePath;
-                        Generation = $image.Generation;
-                        Ensure = 'Absent';
-                    }
-                    ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-                    [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
+                $vhd = @{
+                    Name = $Name;
+                    Path = $hostDefaults.DifferencingVhdPath;
+                    ParentPath = $image.ImagePath;
+                    Generation = $image.Generation;
+                    Ensure = 'Absent';
                 }
+                ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+                [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
             }
         }
     } #end process

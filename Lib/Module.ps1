@@ -28,57 +28,6 @@ function GetModule {
 
     } #end process
 } #end function GetModule
-#>
-
-
-function TestModuleVersion {
-<#
-    .SYNOPSIS
-        Tests whether an exising PowerShell module meets the minimum or required version
-#>
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param (
-        ## Path to the module's manifest file
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $ModulePath,
-
-        ## The minimum version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')] [ValidateNotNullOrEmpty()]
-        [ValidateNotNullOrEmpty()]
-        [System.Version] $MinimumVersion,
-
-        ## The exact version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
-        [ValidateNotNullOrEmpty()]
-        [System.Version] $RequiredVersion,
-
-        ## Catch all to be able to pass parameters via $PSBoundParameters
-        [Parameter(ValueFromRemainingArguments)] $RemainingArguments
-    )
-    process {
-
-        try {
-            WriteVerbose -Message ($localized.QueryingModuleVersion -f [System.IO.Path]::GetFileNameWithoutExtension($ModulePath));
-            #$moduleManifest = Test-ModuleManifest -Path $ModulePath -Verbose:$false;
-            $moduleManifest = ConvertToConfigurationData -ConfigurationData $ModulePath;
-            WriteVerbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.ModuleVersion);
-        }
-        catch {
-            Write-Error "Oops $ModulePath"
-        }
-
-        if ($PSCmdlet.ParameterSetName -eq 'MinimumVersion') {
-            return (($moduleManifest.ModuleVersion -as [System.Version]) -ge $MinimumVersion);
-        }
-
-        elseif ($PSCmdlet.ParameterSetName -eq 'RequiredVersion') {
-            return (($moduleManifest.ModuleVersion -as [System.Version]) -eq $RequiredVersion);
-        }
-
-    } #end process
-} #end function TestModuleVersion
 
 
 function TestModule {
@@ -112,19 +61,19 @@ function TestModule {
         $module = GetModule -Name $Name;
         if ($module) {
 
-            $testModuleVersionParams = @{
+            $testLabModuleVersionParams = @{
                 ModulePath = $module.Path;
             }
 
             if ($MinimumVersion) {
-                $testModuleVersionParams['MinimumVersion'] = $MinimumVersion;
+                $testLabModuleVersionParams['MinimumVersion'] = $MinimumVersion;
             }
 
             if ($RequiredVersion) {
-                $testModuleVersionParams['RequiredVersion'] = $RequiredVersion;
+                $testLabModuleVersionParams['RequiredVersion'] = $RequiredVersion;
             }
 
-            return (TestModuleVersion @testModuleVersionParams);
+            return (Test-LabModuleVersion @testLabModuleVersionParams);
         }
         else {
             return $false;
@@ -184,205 +133,6 @@ function ResolveModule {
 } #end function ResolveLabResource
 
 
-function GetModuleCache {
-<#
-    .SYNOPSIS
-        Returns the requested cached PowerShell module zip [System.IO.FileInfo] object.
-    .NOTES
-        File system modules are not stored in the module cache.
-#>
-    [CmdletBinding(DefaultParameterSetName = 'Name')]
-    [OutputType([System.IO.FileInfo])]
-    param (
-        ## PowerShell module/DSC resource module name
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Name,
-
-        ## The minimum version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [ValidateNotNullOrEmpty()]
-        [System.Version] $MinimumVersion,
-
-        ## The exact version of the module required
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateNotNullOrEmpty()]
-        [System.Version] $RequiredVersion,
-
-        ## GitHub repository owner
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Owner,
-
-        ## GitHub repository branch
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Branch,
-
-        ## Source Filesystem module path
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Path,
-
-        ## Provider used to download the module
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
-        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateSet('PSGallery','GitHub','FileSystem')]
-        [System.String] $Provider,
-
-        ## Lability PowerShell module info hashtable
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Module')]
-        [ValidateNotNullOrEmpty()]
-        [System.Collections.Hashtable] $Module,
-
-        ## Catch all to be able to pass parameter via $PSBoundParameters
-        [Parameter(ValueFromRemainingArguments)] $RemainingArguments
-    )
-    begin {
-
-        if ([System.String]::IsNullOrEmpty($Provider)) {
-            $Provider = 'PSGallery'
-        }
-
-        if ($PSCmdlet.ParameterSetName -eq 'Module') {
-
-            if ([System.String]::IsNullOrEmpty($Module.Name)) {
-                throw ($localized.RequiredModuleParameterError -f 'Name');
-            }
-
-            $Name = $Module.Name
-
-            if (-not [System.String]::IsNullOrEmpty($Module.Provider)) {
-                $Provider = $Module.Provider;
-            }
-            if (-not [System.String]::IsNullOrEmpty($Module.MinimumVersion)) {
-                $MinimumVersion = $Module.MinimumVersion;
-            }
-            if (-not [System.String]::IsNullOrEmpty($Module.RequiredVersion)) {
-                $RequiredVersion = $Module.RequiredVersion;
-            }
-            if (-not [System.String]::IsNullOrEmpty($Module.Owner)) {
-                $Owner = $Module.Owner;
-            }
-            if (-not [System.String]::IsNullOrEmpty($Module.Branch)) {
-                $Branch = $Module.Branch;
-            }
-            if (-not [System.String]::IsNullOrEmpty($Module.Path)) {
-                $Path = $Module.Path;
-            }
-
-        } #end if Module
-
-        if ($Provider -eq 'GitHub') {
-
-            if ([System.String]::IsNullOrEmpty($Owner)) {
-                throw ($localized.RequiredModuleParameterError -f 'Owner');
-            }
-
-            ## Default to master branch if none specified
-            if ([System.String]::IsNullOrEmpty($Branch)) {
-                $Branch = 'master';
-            }
-
-        } #end if GitHub
-        elseif ($Provider -eq 'FileSystem') {
-
-            if ([System.String]::IsNullOrEmpty($Path)) {
-                throw ($localized.RequiredModuleParameterError -f 'Path');
-            }
-            elseif (-not (Test-Path -Path $Path)) {
-                throw ($localized.InvalidPathError -f 'Module', $Path);
-            }
-            else {
-
-                ## If we have a file, ensure it's a .Zip file
-                $fileSystemInfo = Get-Item -Path $Path;
-                if ($fileSystemInfo -is [System.IO.FileInfo]) {
-                    if ($fileSystemInfo.Extension -ne '.zip') {
-                        throw ($localized.InvalidModulePathExtensionError -f $Path);
-                    }
-                }
-            }
-
-        } #end if FileSystem
-
-    }
-    process {
-
-        $moduleCachePath = (GetConfigurationData -Configuration Host).ModuleCachePath;
-
-        ## If no provider specified, default to the PSGallery
-        if (([System.String]::IsNullOrEmpty($Provider)) -or ($Provider -eq 'PSGallery')) {
-
-            ## PowerShell Gallery modules are just suffixed with -v<Version>.zip
-            $moduleRegex = '^{0}-v.+\.zip$' -f $Name;
-        }
-        elseif ($Provider -eq 'GitHub') {
-
-            ## GitHub modules are suffixed with -v<Version>_<Owner>_<Branch>.zip
-            $moduleRegex = '^{0}(-v.+)?_{1}_{2}\.zip$' -f $Name, $Owner, $Branch;
-        }
-        Write-Debug -Message ("Searching for files matching pattern '$moduleRegex'.");
-        if ($Provider -in 'FileSystem') {
-
-            ## We have a directory or a .zip file, so just return this
-            return (Get-Item -Path $Path);
-        }
-        elseif ($Provider -in 'PSGallery','GitHub') {
-            $modules = Get-ChildItem -Path $moduleCachePath -ErrorAction SilentlyContinue |
-                Where-Object Name -match $moduleRegex |
-                    ForEach-Object {
-
-                         Write-Debug -Message ("Discovered file '$($_.FullName)'.");
-                        $trimStart = '{0}-v' -f $Name;
-                        $moduleVersionString = $PSItem.Name.TrimStart($trimStart);
-                        $moduleVersionString = $moduleVersionString -replace '(_\S+_\S+)?\.zip', '';
-
-                        ## If we have no version number, default to the lowest version
-                        if ([System.String]::IsNullOrEmpty($moduleVersionString)) {
-                            $moduleVersionString = '0.0';
-                        }
-
-                        $discoveredModule = [PSCustomObject] @{
-                            Name = $Name;
-                            Version = $moduleVersionString -as [System.Version];
-                            FileInfo = $PSItem;
-                        }
-                        Write-Output -InputObject $discoveredModule;
-                    }
-        }
-
-        if ($null -ne $RequiredVersion) {
-            Write-Debug -Message ("Checking for modules that match version '$RequiredVersion'.");
-            Write-Output -InputObject (
-                $modules | Where-Object { $_.Version -eq $RequiredVersion } |
-                    Select-Object -ExpandProperty FileInfo);
-        }
-        elseif ($null -ne $MinimumVersion) {
-            Write-Debug -Message ("Checking for modules with a minimum version of '$MinimumVersion'.");
-            Write-Output -InputObject (
-                $modules | Where-Object Version -ge $MinimumVersion |
-                    Sort-Object -Property Version |
-                        Select-Object -Last 1 -ExpandProperty FileInfo);
-        }
-        else {
-            Write-Debug -Message ("Checking for the latest module version.");
-            Write-Output -InputObject (
-                $modules | Sort-Object -Property Version |
-                    Select-Object -Last 1 -ExpandProperty FileInfo);
-        }
-
-    } #end process
-} #end function GetModuleCache
 
 
 function TestModuleCache {
@@ -454,7 +204,7 @@ function TestModuleCache {
     }
     process {
 
-        $moduleFileInfo = GetModuleCache @PSBoundParameters;
+        $moduleFileInfo = Get-LabModuleCache @PSBoundParameters;
         return ($null -ne $moduleFileInfo);
 
     } #end process
@@ -516,7 +266,7 @@ function GetModuleCacheManifest  {
             }
 
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($moduleManifestArchiveEntry, $temporaryArchivePath, $true);
-            $moduleManifest = ConvertToConfigurationData -ConfigurationData $temporaryArchivePath;
+            $moduleManifest = ConvertTo-ConfigurationData -ConfigurationData $temporaryArchivePath;
         }
 
         catch {
@@ -607,7 +357,7 @@ function InvokeModuleDownloadFromPSGallery {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
         ## The minimum version of the module required
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')]
@@ -629,7 +379,7 @@ function InvokeModuleDownloadFromPSGallery {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri = ResolvePSGalleryModuleUri @PSBoundParameters;
+            Uri = Resolve-PSGalleryModuleUri @PSBoundParameters;
             NoCheckSum = $true;
         }
         $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
@@ -657,7 +407,7 @@ function InvokeModuleDownloadFromGitHub {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
 
         ## The GitHub repository owner, typically 'PowerShell'
@@ -790,7 +540,7 @@ function InvokeModuleCacheDownload {
         ## Destination directory path to download the PowerShell module/DSC resource module to
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $DestinationPath = (GetConfigurationData -Configuration Host).ModuleCachePath,
+        [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
         ## Force a download of the module(s) even if they already exist in the cache.
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -865,7 +615,7 @@ function InvokeModuleCacheDownload {
                 }
             }
             else {
-                GetModuleCache @moduleInfo;
+                Get-LabModuleCache @moduleInfo;
             }
 
         } #end foreach module
@@ -909,7 +659,7 @@ function ExpandModuleCache {
 
         foreach ($moduleInfo in $Module) {
 
-            $moduleFileInfo = GetModuleCache @moduleInfo;
+            $moduleFileInfo = Get-LabModuleCache @moduleInfo;
             $moduleSourcePath = $moduleFileInfo.FullName;
             $moduleDestinationPath = Join-Path -Path $DestinationPath -ChildPath $moduleInfo.Name;
 
@@ -929,6 +679,7 @@ function ExpandModuleCache {
                     Force = $true;
                     Verbose = $false;
                     WarningAction = 'SilentlyContinue';
+                    Confirm = $false;
                 }
                 [ref] $null = ExpandZipArchive @expandZipArchiveParams;
 
@@ -945,6 +696,7 @@ function ExpandModuleCache {
                     Force = $true;
                     Verbose = $false;
                     WarningAction = 'SilentlyContinue';
+                    Confirm = $false;
                 }
 
                 if ($moduleInfo.ContainsKey('OverrideRepository')) {
@@ -968,6 +720,7 @@ function ExpandModuleCache {
                             Force = $true;
                             Verbose = $false;
                             WarningAction = 'SilentlyContinue';
+                            Confirm = $false;
                         }
                         [ref] $null = ExpandZipArchive @expandZipArchiveParams;
                     }
@@ -985,6 +738,7 @@ function ExpandModuleCache {
                             Recurse = $true;
                             Force = $true;
                             Verbose = $false;
+                            Confirm = $false;
                         }
                         Copy-Item @copyItemParams;
                     }

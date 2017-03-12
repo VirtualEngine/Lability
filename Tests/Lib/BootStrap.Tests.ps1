@@ -15,9 +15,9 @@ Describe 'Lib\BootStrap' {
 
         Context 'Validates NewBootStrap method' {
 
-            It 'Returns a "System.Management.Automation.ScriptBlock" type' {
+            It 'Returns a "System.String" type' {
                 $bootstrap = NewBootStrap;
-                $bootstrap -is [System.Management.Automation.ScriptBlock] | Should Be $true;
+                $bootstrap -is [System.String] | Should Be $true;
             }
 
             It 'Includes custom BootStrap injection point' {
