@@ -14,7 +14,7 @@
         'Test-LabMedia', 'Register-LabMedia', 'Unregister-LabMedia', 'Reset-LabMedia', 'Test-LabResource', 'Invoke-LabResourceDownload',
         'Get-LabVM', 'Test-LabVM', 'Reset-LabVM', 'New-LabVM', 'Remove-LabVM', 'Reset-LabVMDefault', 'Set-LabVMDefault', 'Get-LabVMDefault',
         'Export-LabHostConfiguration','Import-LabHostConfiguration', 'Reset-LabHostDefaults', 'Get-LabHostDefaults', 'Set-LabHostDefaults',
-        'Reset-LabVMDefaults', 'Set-LabVMDefaults', 'Get-LabVMDefaults');
+        'Get-LabStatus', 'Test-LabStatus', 'Wait-Lab', 'Reset-LabVMDefaults', 'Set-LabVMDefaults', 'Get-LabVMDefaults');
     CmdletsToExport = @(); # Suppresses exporting of imported the DISM cmdlets
     PrivateData = @{
         PSData = @{  # Private data to pass to the module specified in RootModule/ModuleToProcess

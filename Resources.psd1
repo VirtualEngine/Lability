@@ -152,6 +152,13 @@ ConvertFrom-StringData -StringData @'
     SearchingConfigurationPaths     = Searching configuration paths.
     FoundConfigurationPath          = Found configuration path '{0}'.
     SettingCustomShell              = Setting '{0}' as default shell.
+    TestingWinRMConnection          = Testing WinRM service on computer '{0}'.
+    ConnectingRemoteSession         = Connecting remote session to computer '{0}'.
+    ReusingExistingRemoteSession    = Reusing existing remote session to computer '{0}'.
+    QueryingActiveSessions          = Querying active session(s): '{0}'.
+    StartingWaitForLabDeployment    = Starting wait for lab deployment...
+    SleepingWaitingForLabDeployment = Sleeping for {0} seconds to wait for lab deployment...
+    WaitForLabDeploymentComplete    = Lab deployment complete after '{0}'.
 
     NoCertificateFoundWarning       = No '{0}' certificate was found.
     CannotLocateLcmFileWarning      = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -170,6 +177,7 @@ ConvertFrom-StringData -StringData @'
     DeprecatedCommandWarning        = Command '{0}' has been deprecated and will be removed in a future release. Please use the alternative '{1}' command.
     DscResourcesNotDefinedWarning   = No DSC resources have been defined. Locally registered DSC resources will be copied, but this is deprecated functionality. Please update the Lability configuration document with required DSC resource definitions.
     DismSessionRestartWarning       = Updating the Dism version requires a session reload. Please restart the PowerShell session to ensure the required Dism version is loaded.
+    ComputerNotReachableWarning     = Computer '{0}' is not reachable.
 
     InvalidPathError                = {0} path '{1}' is invalid.
     InvalidDestinationPathError     = Invalid destination path '{0}' specified.
@@ -214,4 +222,5 @@ ConvertFrom-StringData -StringData @'
     InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
     CannotLocateDismDllError        = Cannot locate 'Microsoft.Dism.Powershell.dll' in path '{0}'.
     CannotResolveMediaIdError       = Cannot resolve node '{0}' source media Id.
+    WaitLabDeploymentTimeoutError   = Waiting for lab deployment has timed out after '{0}'.
 '@
