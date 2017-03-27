@@ -191,7 +191,14 @@ function Start-LabConfiguration {
                 $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
                 if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
-                    NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                    $newLabVMParams = @{
+                        Name = $node.Name;
+                        ConfigurationData = $ConfigurationData;
+                        Path = $Path;
+                        NoSnapshot = $NoSnapshot;
+                        Credential = $Credential;
+                    }
+                    [ref] $null = NewLabVM @newLabVMParams;
                 }
             }
 

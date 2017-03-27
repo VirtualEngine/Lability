@@ -29,6 +29,12 @@ DATA localizedData
 '@
 }
 
+# Import the common HyperV functions
+Import-Module -Name ( Join-Path `
+    -Path (Split-Path -Path $PSScriptRoot -Parent) `
+    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+
+
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -293,7 +299,13 @@ function Set-TargetResource
                 {
                     Write-Verbose -Message ($localizedData.VMPropertyShouldBe -f 'SecureBoot', $SecureBoot, $vmSecureBoot)
                     ## Cannot change the secure boot state whilst the VM is powered on.
-                    Change-VMSecureBoot -Name $Name -SecureBoot $SecureBoot -RestartIfNeeded $RestartIfNeeded
+                    $setVMPropertyParams = @{
+                        VMName = $Name;
+                        VMCommand = 'Set-VMFirmware';
+                        ChangeProperty = @{ EnableSecureBoot = if ($SecureBoot) { 'On' } else { 'Off' } }
+                        RestartIfNeeded = $RestartIfNeeded;
+                    }
+                    Set-VMProperty @setVMPropertyParams
                     Write-Verbose -Message ($localizedData.VMPropertySet -f 'SecureBoot', $SecureBoot)
                 }
             }
@@ -497,7 +509,7 @@ function Test-TargetResource
     }
 
     # Check if $VhdPath exist
-    if(($Ensure -eq 'Present') -and (!(Test-Path -Path $VhdPath)))
+    if(!(Test-Path $VhdPath))
     {
         Throw ($localizedData.VhdPathDoesNotExistError -f $VhdPath)
     }
@@ -616,36 +628,8 @@ function Get-VhdHierarchy
     }
 }
 
-function Set-VMState
-{
-    param
-    (
-        [Parameter(Mandatory)]
-        [String]$Name,
-
-        [Parameter(Mandatory)]
-        [ValidateSet("Running","Paused","Off")]
-        [String]$State,
-
-        [Boolean]$WaitForIP
-    )
-
-    switch ($State)
-    {
-        'Running' {
-            $oldState = (Get-VM -Name $Name).State
-            # If VM is in paused state, use resume-vm to make it running
-            if($oldState -eq "Paused"){Resume-VM -Name $Name}
-            # If VM is Off, use start-vm to make it running
-            elseif ($oldState -eq "Off"){Start-VM -Name $Name}
-
-            if($WaitForIP) { Get-VMIPAddress -Name $Name -Verbose }
-        }
-        'Paused' {if($oldState -ne 'Off'){Suspend-VM -Name $Name}}
-        'Off' {Stop-VM -Name $Name -Force -WarningAction SilentlyContinue}
-    }
-}
-
+# The 'Change-VMProperty' method cannot be used as it cannot deal with piped
+# command in it's current implementation
 function Change-VMMACAddress
 {
     param
@@ -693,112 +677,6 @@ function Change-VMMACAddress
     }
 }
 
-function Change-VMProperty
-{
-    param
-    (
-        [Parameter(Mandatory)]
-        [String]$Name,
-
-        [Parameter(Mandatory)]
-        [String]$VMCommand,
-
-        [Parameter(Mandatory)]
-        [Hashtable]$ChangeProperty,
-
-        [Boolean]$WaitForIP,
-
-        [Boolean]$RestartIfNeeded
-    )
-
-    $vmObj = Get-VM -Name $Name
-    $originalState = $vmObj.state
-    if($originalState -ne "Off" -and $RestartIfNeeded)
-    {
-        Set-VMState -Name $Name -State Off
-        &$VMCommand -Name $Name @ChangeProperty
-
-        # Can not move a off VM to paused, but only to running state
-        if($originalState -eq "Running")
-        {
-            Set-VMState -Name $Name -State Running -WaitForIP $WaitForIP
-        }
-
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
-
-        # Cannot make a paused VM to go back to Paused state after turning Off
-        if($originalState -eq "Paused")
-        {
-            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
-        }
-    }
-    elseif($originalState -eq "Off")
-    {
-        &$VMCommand -Name $Name @ChangeProperty
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
-    }
-    else
-    {
-        Write-Error -Message ($localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmObj.State)
-    }
-}
-
-# The 'Change-VMProperty' method cannot be used as it's hard-coded to use the -Name
-# parameter and unfortunately, the Set-VMFirmware cmdlet uses the -VMName parameter instead!
-function Change-VMSecureBoot
-{
-    param
-    (
-        [Parameter(Mandatory)]
-        [String]$Name,
-
-        [Boolean]$SecureBoot,
-
-        [Boolean]$RestartIfNeeded
-    )
-
-    $vmObj = Get-VM -Name $Name
-    $originalState = $vmObj.state
-    if($originalState -ne "Off" -and $RestartIfNeeded)
-    {
-        Set-VMState -Name $Name -State Off
-        if ($SecureBoot)
-        {
-            Set-VMFirmware -VMName $Name -EnableSecureBoot On
-        }
-        else {
-            Set-VMFirmware -VMName $Name -EnableSecureBoot Off
-        }
-
-        # Can not move a off VM to paused, but only to running state
-        if($originalState -eq "Running")
-        {
-            Set-VMState -Name $Name -State Running -WaitForIP $true
-        }
-
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
-
-        # Cannot make a paused VM to go back to Paused state after turning Off
-        if($originalState -eq "Paused")
-        {
-            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
-        }
-    }
-    elseif($originalState -eq "Off")
-    {
-        if ($SecureBoot)
-        {
-            Set-VMFirmware -VMName $Name -EnableSecureBoot On
-        }
-        else {
-            Set-VMFirmware -VMName $Name -EnableSecureBoot Off
-        }
-    }
-    else
-    {
-        Write-Error -Message ($localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmObjState)
-    }
-}
 
 function Test-VMSecureBoot
 {
@@ -808,21 +686,6 @@ function Test-VMSecureBoot
     )
     $vm = Get-VM -Name $Name;
     return (Get-VMFirmware -VM $vm).SecureBoot -eq 'On';
-}
-
-function Get-VMIPAddress
-{
-    param
-    (
-        [Parameter(Mandatory)]
-        [string]$Name
-    )
-
-    while((Get-VMNetworkAdapter -VMName $Name).ipaddresses.count -lt 2)
-    {
-        Write-Verbose -Message ($localizedData.WaitingForVMIPAddress -f $Name)
-        Start-Sleep -Seconds 3;
-    }
 }
 
 #endregion

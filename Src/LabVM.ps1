@@ -124,6 +124,19 @@ function NewLabVM {
             GuestIntegrationServices = $node.GuestIntegrationServices;
             ConfigurationData = $ConfigurationData;
         }
+
+        ## Add VMProcessor options
+        if ($node.ContainsKey('ProcessorOption')) {
+
+            $setLabVirtualMachineParams['ProcessorOption'] = $node.ProcessorOption;
+        }
+
+        ## Add VM DVD Drive options
+        if ($node.ContainsKey('DvdDrive')) {
+
+            $setLabVirtualMachineParams['DvdDrive'] = $node.DvdDrive;
+        }
+
         Set-LabVirtualMachine @setLabVirtualMachineParams;
 
         $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
@@ -176,7 +189,7 @@ function NewLabVM {
 
             if ($node.WarningMessage -is [System.String]) {
 
-                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage.Trim("\n"));
+                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage.Trim("`n"));
             }
             else {
 

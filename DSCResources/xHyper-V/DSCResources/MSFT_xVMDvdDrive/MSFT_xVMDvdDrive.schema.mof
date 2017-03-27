@@ -1,0 +1,9 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xVMDvdDrive")]
+class MSFT_xVMDvdDrive : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the virtual machine to which the DVD drive is to be added.")] String VMName;
+    [Key, Description("Specifies the number of the controller to which the DVD drive is to be added.")] Uint32 ControllerNumber;
+    [Key, Description("Specifies the number of the location on the controller at which the DVD drive is to be added.")] Uint32 ControllerLocation;
+    [Write, Description("Specifies the full path to the virtual hard disk file or physical hard disk volume for the added DVD drive.")] String Path;
+    [Write, Description("Specifies if the DVD Drive should exist or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};

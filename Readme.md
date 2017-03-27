@@ -86,6 +86,14 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
+### Unreleased
+
+* Updates bundled xHyper-V DSC resource module to 3.7.0.0
+* Adds support for setting VM processor options, e.g. nested virtualisation extensions
+  * See Examples\NanoComputeExample.psd1 for an example (#81)
+* Adds support for mounting ISO images
+  * See Examples\CustomMedia.psd1 for an example (#99, #135)
+
 ### v0.10.3
 
 * Adds -Confirm/-WhatIf support to:
@@ -99,7 +107,6 @@ Other generous members of the community have written some comprehensive guides t
 * Adds -RepositoryUri parameter to Set-LabHostDefault to support internal repositories (partially implements #195)
 * Changes default PowerShell gallery URI to HTTPS
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
-* Updates bundled xHyper-V DSC resource module to 3.7.0.0
 * Adds setting the default shell via media 'CustomData\DefaultShell' setting
 
 ### v0.10.2
