@@ -106,7 +106,7 @@ function SetLabVMDiskFileModule {
     process {
 
         ## Resolve the localized %ProgramFiles% directory
-        $programFilesPath = '{0}\WindowsPowershell\Modules' -f (ResolveProgramFilesFolder -Drive $VhdDriveLetter).FullName
+        $programFilesPath = '{0}\WindowsPowershell\Modules' -f (Resolve-ProgramFilesFolder -Drive $VhdDriveLetter).FullName
 
         ## Add the DSC resource modules
         $resolveLabModuleParams =@{

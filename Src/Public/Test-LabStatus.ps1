@@ -4,21 +4,26 @@ function Test-LabStatus {
         Queries computers' LCM state to determine whether an existing DSC configuration has applied successfully.
     .EXAMPLE
         Test-LabStatus -ComputerName CONTROLLER, XENAPP
+
         Tests the CONTROLLER and XENAPP computers' LCM state, returning $true if both have finished.
     .EXAMPLE
         Test-LabStatus -ComputerName CONTROLLER, EXCHANGE -Credential (Get-Credential)
+
         Prompts for credentials to connect to the CONTROLLER and EXCHANGE computers to query the LCM state, returning
         $true if both have finished.
     .EXAMPLE
         Test-LabStatus -ConfigurationData .\TestLabGuide.psd1 -Credential (Get-Credential)
+
         Prompts for credentials to connect to all the computers defined in the DSC configuration document (.psd1) and
         query the LCM state, returning $true if all have finished.
     .EXAMPLE
         Test-LabStatus -ConfigurationData .\TestLabGuide.psd1 -PreferNodeProperty IPAddress -Credential (Get-Credential)
+
         Prompts for credentials to connect to the computers by their IPAddress node property as defined in the DSC
         configuration document (.psd1) and query the LCM state.
 #>
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param (
         ## Connect to the computer name(s) specified.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'ComputerName')]

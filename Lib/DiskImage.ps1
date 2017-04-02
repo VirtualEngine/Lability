@@ -53,7 +53,7 @@ function NewDiskImageMbr {
             Add-PartitionAccessPath -AssignDriveLetter -PassThru |
                 Get-Partition;
         WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
-        $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
+        [ref] $null = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
 
         Start-ShellHWDetectionService;
 
@@ -113,7 +113,7 @@ function NewDiskImageGpt {
         WriteVerbose ($localized.CreatingDiskPartition -f 'Windows');
         $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -GptType '{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}' -AssignDriveLetter;
         WriteVerbose ($localized.FormattingDiskPartition -f 'Windows');
-        $osVolume = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
+        [ref] $null = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
 
         Start-ShellHWDetectionService;
 
@@ -167,7 +167,7 @@ function NewDiskImage {
     process {
 
         WriteVerbose ($localized.CreatingDiskImage -f $Path);
-        $vhd = New-Vhd -Path $Path -Dynamic -SizeBytes $Size;
+        [ref] $null = New-Vhd -Path $Path -Dynamic -SizeBytes $Size;
         WriteVerbose ($localized.MountingDiskImage -f $Path);
         $vhdMount = Mount-VHD -Path $Path -Passthru;
         WriteVerbose ($localized.InitializingDiskImage -f $Path);

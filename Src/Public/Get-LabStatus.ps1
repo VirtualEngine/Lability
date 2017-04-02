@@ -4,16 +4,20 @@ function Get-LabStatus {
         Queries computers' LCM state to determine whether an existing DSC configuration has applied.
     .EXAMPLE
         Get-LabStatus -ComputerName CONTROLLER, XENAPP
+
         Queries the CONTROLLER and XENAPP computers' LCM state.
     .EXAMPLE
         Get-LabStatus -ComputerName CONTROLLER, EXCHANGE -Credential (Get-Credential)
+
         Prompts for credentials to connect to the CONTROLLER and EXCHANGE computers to query the LCM state.
     .EXAMPLE
         Get-LabStatus -ConfigurationData .\TestLabGuide.psd1 -Credential (Get-Credential)
+
         Prompts for credentials to connect to the computers defined in the DSC configuration document (.psd1) and query
         the LCM state.
     .EXAMPLE
         Get-LabStatus -ConfigurationData .\TestLabGuide.psd1 -PreferNodeProperty IPAddress -Credential (Get-Credential)
+
         Prompts for credentials to connect to the computers by their IPAddress node property as defined in the DSC
         configuration document (.psd1) and query the LCM state.
 #>
@@ -141,6 +145,7 @@ function Get-LabStatus {
         [ref] $null = $PSBoundParameters.Remove('ComputerName');
         [ref] $null = $PSBoundParameters.Remove('ConfigurationData');
         [ref] $null = $PSBoundParameters.Remove('PreferNodeProperty');
+        [ref] $null = $PSBoundParameters.Remove('ErrorAction');
 
         foreach ($computer in $computerName) {
 
@@ -149,16 +154,24 @@ function Get-LabStatus {
             if (-not $session) {
 
                 WriteVerbose -Message ($localized.TestingWinRMConnection -f $computer);
-                if (-not (Test-WSMan -ComputerName $computer -ErrorAction SilentlyContinue @PSBoundParameters)) {
+                try {
 
-                    WriteWarning -Message ($localized.ComputerNotReachableWarning -f $computer);
-                    $inactiveSessions += $computer;
-                }
-                else {
+                    if (-not (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters)) {
 
-                    WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
-                    $activeSessions += New-PSSession -ComputerName $computer @PSBoundParameters;
+                        WriteWarning -Message ($localized.ComputerNotReachableWarning -f $computer);
+                        $inactiveSessions += $computer;
+                    }
+                    else {
+
+                        WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
+                        $activeSessions += New-PSSession -ComputerName $computer @PSBoundParameters;
+                    }
                 }
+                catch {
+
+                    Write-Error $_;
+                }
+
             }
             else {
 
@@ -168,34 +181,37 @@ function Get-LabStatus {
 
         } #end foreach computer
 
-        WriteVerbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
-        $results = Invoke-Command -Session $activeSessions -ScriptBlock { Get-DscLocalConfigurationManager | Select-Object -Property LCMVersion,LCMState; };
+        if ($activeSessions.Count -gt 0) {
 
-        foreach ($computer in $ComputerName) {
+            WriteVerbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
+            $results = Invoke-Command -Session $activeSessions -ScriptBlock { Get-DscLocalConfigurationManager | Select-Object -Property LCMVersion,LCMState; };
 
-            if ($computer -in $inactiveSessions) {
+            foreach ($computer in $ComputerName) {
 
-                $labState = [PSCustomObject] @{
-                    ComputerName = $inactiveSession;
-                    LCMVersion = '';
-                    LCMState = 'Unknown';
-                    Completed = $false;
+                if ($computer -in $inactiveSessions) {
+
+                    $labState = [PSCustomObject] @{
+                        ComputerName = $inactiveSession;
+                        LCMVersion = '';
+                        LCMState = 'Unknown';
+                        Completed = $false;
+                    }
+                    Write-Output -InputObject $labState;
                 }
-                Write-Output -InputObject $labState;
-            }
-            else {
+                else {
 
-                $result = $results | Where-Object { $_.PSComputerName -eq $computer };
-                $labState = [PSCustomObject] @{
-                    ComputerName = $result.PSComputerName;
-                    LCMVersion = $result.LCMVersion;
-                    LCMState = $result.LCMState;
-                    Completed = $result.LCMState -eq 'Idle';
+                    $result = $results | Where-Object { $_.PSComputerName -eq $computer };
+                    $labState = [PSCustomObject] @{
+                        ComputerName = $result.PSComputerName;
+                        LCMVersion = $result.LCMVersion;
+                        LCMState = $result.LCMState;
+                        Completed = $result.LCMState -eq 'Idle';
+                    }
+                    Write-Output -InputObject $labState;
                 }
-                Write-Output -InputObject $labState;
-            }
 
-        } #end foreach computer
+            } #end foreach computer
+        } #end if active sessions
 
     } #end process
 } #end function

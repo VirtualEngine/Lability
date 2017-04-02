@@ -9,11 +9,13 @@ function Get-WindowsImageByIndex {
     [OutputType([System.Int32])]
     param (
         # WIM image path
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ImagePath,
 
         # Windows image name
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $ImageName
     )
     process {

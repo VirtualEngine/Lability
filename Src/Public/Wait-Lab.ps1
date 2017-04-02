@@ -4,18 +4,22 @@ function Wait-Lab {
         Queries computers' LCM state, waiting for DSC configurations to be applied.
     .EXAMPLE
         Wait-Lab -ComputerName CONTROLLER, XENAPP
+
         Connects to the CONTROLLER and XENAPP machine to query and Wait for the LCM to finish applying the current
         configuration(s).
     .EXAMPLE
         Wait-Lab -ComputerName CONTROLLER, EXCHANGE -Credential (Get-Credential)
+
         Prompts for credentials to connect to the CONTROLLER and EXCHANGE computers to query and wait for the LCM
         to finish applying the current configuration(s).
     .EXAMPLE
         Wait-Lab -ConfigurationData .\TestLabGuide.psd1 -Credential (Get-Credential)
+
         Prompts for credentials to connect to all the computers defined in the DSC configuration document (.psd1) to
         query and wait for the LCM to finish applying the current configuration(s).
     .EXAMPLE
         Wait-Lab -ConfigurationData .\TestLabGuide.psd1 -PreferNodeProperty IPAddress -Credential (Get-Credential)
+
         Prompts for credentials to connect to all the computers by their IPAddress node property as defined in the
         DSC configuration document (.psd1) to query and wait for the LCM to finish applying the current
         configuration(s).

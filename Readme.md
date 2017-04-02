@@ -86,6 +86,19 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
+### Unreleased
+
+* Adds Continuous Integration (CI) cmdlets
+  * Get-LabStatus - Retrieves DSC configuration deployment status
+  * Test-LabStatus - Tests DSC configuration deployment status has completed
+  * Wait-Lab - waits for DSC  configurtion deployment to complete
+* Adds DSC compilation cmdlets
+  * Start-DscCompilation - Compiles DSC configurations in parallel
+* Adds Lability module cache cmdlets
+  * Install-LabModule - Install cachced modules into user's module path
+  * Clear-ModulePath - Clear user's module path
+  * Clear-LabModuleCache - Empties Lability module cache
+
 ### v0.10.3
 
 * Adds -Confirm/-WhatIf support to:
