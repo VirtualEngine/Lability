@@ -168,6 +168,7 @@ ConvertFrom-StringData -StringData @'
     ProcessedComilationStatus        = Processed
     CompletedCompilationProcessing   = Completed processing in '{0}'.
     LoadingConfiguration             = Loading configuration '{0}'.
+    TestingNodeStatus                = Node '{0}' reported status '{1}'; expecting 'Idle'.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.

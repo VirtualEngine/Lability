@@ -123,17 +123,19 @@ function Test-LabStatus {
     process {
 
         $labStatuses = @(Get-LabStatus @PSBoundParameters);
+        $isDeploymentCompleted = $true;
+
         foreach ($labStatus in $labStatuses) {
 
+            WriteVerbose -Message ($localized.TestingNodeStatus -f $labStatus.ComputerName, $labStatus.LCMState);
             if ($labStatus.Completed -eq $false) {
 
-                ## At least one VM still applying (or has failed)
-                return $false;
+                ## VM still applying (or has failed)
+                $isDeploymentCompleted = $false;
             }
         }
 
-        ## All VMs successfully completed
-        return $true;
+        return $isDeploymentCompleted;
 
     } #end process
 } #end function

@@ -156,12 +156,7 @@ function Get-LabStatus {
                 WriteVerbose -Message ($localized.TestingWinRMConnection -f $computer);
                 try {
 
-                    if (-not (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters)) {
-
-                        WriteWarning -Message ($localized.ComputerNotReachableWarning -f $computer);
-                        $inactiveSessions += $computer;
-                    }
-                    else {
+                    if (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters) {
 
                         WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
                         $activeSessions += New-PSSession -ComputerName $computer @PSBoundParameters;
@@ -169,6 +164,7 @@ function Get-LabStatus {
                 }
                 catch {
 
+                    $inactiveSessions += $computer;
                     Write-Error $_;
                 }
 
@@ -185,33 +181,33 @@ function Get-LabStatus {
 
             WriteVerbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
             $results = Invoke-Command -Session $activeSessions -ScriptBlock { Get-DscLocalConfigurationManager | Select-Object -Property LCMVersion,LCMState; };
+        }
 
-            foreach ($computer in $ComputerName) {
+        foreach ($computer in $ComputerName) {
 
-                if ($computer -in $inactiveSessions) {
+            if ($computer -in $inactiveSessions) {
 
-                    $labState = [PSCustomObject] @{
-                        ComputerName = $inactiveSession;
-                        LCMVersion = '';
-                        LCMState = 'Unknown';
-                        Completed = $false;
-                    }
-                    Write-Output -InputObject $labState;
+                $labState = [PSCustomObject] @{
+                    ComputerName = $computer;
+                    LCMVersion = '';
+                    LCMState = 'Unknown';
+                    Completed = $false;
                 }
-                else {
+                Write-Output -InputObject $labState;
+            }
+            else {
 
-                    $result = $results | Where-Object { $_.PSComputerName -eq $computer };
-                    $labState = [PSCustomObject] @{
-                        ComputerName = $result.PSComputerName;
-                        LCMVersion = $result.LCMVersion;
-                        LCMState = $result.LCMState;
-                        Completed = $result.LCMState -eq 'Idle';
-                    }
-                    Write-Output -InputObject $labState;
+                $result = $results | Where-Object { $_.PSComputerName -eq $computer };
+                $labState = [PSCustomObject] @{
+                    ComputerName = $result.PSComputerName;
+                    LCMVersion = $result.LCMVersion;
+                    LCMState = $result.LCMState;
+                    Completed = $result.LCMState -eq 'Idle';
                 }
+                Write-Output -InputObject $labState;
+            }
 
-            } #end foreach computer
-        } #end if active sessions
+        } #end foreach computer
 
     } #end process
 } #end function
