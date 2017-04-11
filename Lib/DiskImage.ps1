@@ -360,6 +360,7 @@ function AddDiskImageHotfix {
             Id = $Id;
         }
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+
             $resolveLabMediaParams['ConfigurationData'] = $ConfigurationData;
         }
         $media = ResolveLabMedia @resolveLabMediaParams;

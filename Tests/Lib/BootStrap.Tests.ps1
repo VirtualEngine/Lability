@@ -17,11 +17,13 @@ Describe 'Lib\BootStrap' {
 
             It 'Returns a "System.String" type' {
                 $bootstrap = NewBootStrap;
+
                 $bootstrap -is [System.String] | Should Be $true;
             }
 
             It 'Includes custom BootStrap injection point' {
                 $bootstrap = NewBootStrap;
+
                 $bootstrap.ToString() -match "<#CustomBootStrapInjectionPoint#>`r`n" | Should Be $true;
             }
 
@@ -37,12 +39,14 @@ Describe 'Lib\BootStrap' {
             It 'Bypasses Powershell execution policy' {
                 SetSetupCompleteCmd -Path TestDrive:\;
                 $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
+
                 $setupCompleteCmd -match '-ExecutionPolicy Bypass' | Should Be $true;
             }
 
             It 'Runs non-interactively' {
                 SetSetupCompleteCmd -Path TestDrive:\;
                 $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
+
                 $setupCompleteCmd -match '-NonInteractive' | Should Be $true;
             }
 
@@ -50,12 +54,15 @@ Describe 'Lib\BootStrap' {
                 ## Must execute before we mock Set-Content!
                 SetSetupCompleteCmd -Path TestDrive:\ -CoreCLR;
                 $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
-                $setupCompleteCmd -match 'Schtasks' | Should Be $true;
+
+                ($setupCompleteCmd -match 'Schtasks') -as [System.Boolean] | Should Be $true;
             }
 
             It 'Uses ASCII encoding' {
                 Mock Set-Content -ParameterFilter { $Encoding -eq 'ASCII' } -MockWith { }
+
                 SetSetupCompleteCmd -Path TestDrive:\;
+
                 Assert-MockCalled Set-Content -ParameterFilter { $Encoding -eq 'ASCII' } -Scope It
             }
 
@@ -65,20 +72,25 @@ Describe 'Lib\BootStrap' {
 
             It 'Creates target file "BootStrap.ps1"' {
                 SetBootStrap -Path TestDrive:\;
+
                 Test-Path -Path "TestDrive:\BootStrap.ps1" | Should Be $true;
             }
 
             It 'Replaces custom BootStrap injection point with custom BootStrap' {
                 $customBootStrap = 'This is a test custom bootstrap example';
+
                 SetBootStrap -Path TestDrive:\ -CustomBootStrap $customBootStrap;
                 $bootStrap = Get-Content -Path "TestDrive:\BootStrap.ps1";
+
                 $bootStrap -match $customBootStrap | Should Be $true;
                 $bootStrap -match "<#CustomBootStrapInjectionPoint#>" | Should BeNullOrEmpty;
             }
 
             It 'Uses UTF8 encoding' {
                 Mock Set-Content -ParameterFilter { $Encoding -eq 'UTF8' } -MockWith { }
+
                 SetBootStrap -Path TestDrive:\;
+
                 Assert-MockCalled Set-Content -ParameterFilter { $Encoding -eq 'UTF8' } -Scope It
             }
 
