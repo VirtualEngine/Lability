@@ -88,6 +88,8 @@ Other generous members of the community have written some comprehensive guides t
 
 ### Unreleased
 
+* Throws error when downloaded resource checksum is incorrect (#205)
+* Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
 * Updates bundled xHyper-V DSC resource module to 3.7.0.0
 * Adds support for setting VM processor options, e.g. nested virtualisation extensions
   * See Examples\NanoComputeExample.psd1 for an example (#81)

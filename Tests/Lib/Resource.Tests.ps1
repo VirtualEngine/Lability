@@ -140,6 +140,13 @@ Describe 'Lib\Resource' {
                 TestResourceDownload -DestinationPath $testResourcePath -Uri 'about:blank' -Checksum $testResourceChecksum | Should Be $false;
             }
 
+            It 'Returns false if the checksum is correct but the resource does not exist' {
+                Remove-Item -Path $testResourcePath -Force -ErrorAction SilentlyContinue;
+                Set-Content -Path $testResourcePath -Value $testResourceContent -Force;
+                Mock GetResourceDownload -MockWith { return @{ DestinationPath = $testResourcePath; Uri = 'about:blank'; Checksum = 'ThisIsAnIncorrectChecksum'; } }
+                TestResourceDownload -DestinationPath $testResourcePath -Uri 'about:blank' -Checksum $testResourceChecksum | Should Be $false;
+            }
+
         } #end context Validates "TestResourceDownload" method
 
         Context 'Validates "SetResourceDownload" method' {
@@ -262,6 +269,17 @@ Describe 'Lib\Resource' {
                 InvokeResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri -Checksum $testResourceChecksum;
 
                 Assert-MockCalled SetResourceDownload -Scope It -Exactly 0;
+            }
+
+            It 'Throws if "SetResourceDownload" downloaded resource checksum does not match' {
+                $testResourcePath = 'TestDrive:\TestResource.txt';
+                $testResourceUri = 'http://testresourcedomain.com/testresource.txt';
+                $testResourceChecksum = '0BA549AA1F04E4E788AF574AF0FF7668';
+                Mock TestResourceDownload -MockWith { return $false; }
+                Mock TestResourceDownload -ParameterFilter { $ThrowOnError -eq $true } -MockWith { throw 'Oops' }
+                Mock SetResourceDownload -MockWith { }
+
+                { InvokeResourceDownload -DestinationPath $testResourcePath -Uri $testResourceUri -Checksum $testResourceChecksum } | Should Throw
             }
 
         } #end context Validates "InvokeResourceDownload" method
