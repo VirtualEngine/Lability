@@ -646,14 +646,14 @@
 },
 {
 	"Id": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_EN_RS1_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 1607 English Evaluation",
+    "Filename": "WIN10_x64_ENT_RS2_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 1703 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
-	"Checksum": "482B970A9892CDC1D0E69372A9E430D7",
+	"Uri": "http://download.microsoft.com/download/B/8/B/B8B452EC-DD2D-4A8F-A88C-D2180C177624/15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
+	"Checksum": "CF812813211ADD8FE7C53B07B7CAFF8C",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -666,21 +666,20 @@
 	},
     "Hotfixes": [
 		{
-			"Id": "windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu",
-			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu"
+
 		}
 	]
 },
 {
 	"Id": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_RS1_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 1607 English Evaluation",
+    "Filename": "WIN10_x86_ENT_RS2_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 1703 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X86FRE_EN-US.ISO",
-	"Checksum": "50978CE784D0BC5921D0E89AF00C9361",
+	"Uri": "http://download.microsoft.com/download/B/8/B/B8B452EC-DD2D-4A8F-A88C-D2180C177624/15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X86FRE_EN-US.ISO",
+	"Checksum": "2C90C9A1B42DC36ED1B316DCC37051BB",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -693,21 +692,20 @@
 	},
     "Hotfixes": [
 		{
-			"Id": "windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu",
-			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu"
+
 		}
 	]
 },
 {
 	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x64_ENT_LTSB_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise LTSB English Evaluation",
+    "Filename": "WIN10_x64_ENT_LTSB_2016_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise LTSB 2016 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
-	"Checksum": "6CD2F47F2C32FAA7BE85F1DC81AF3220",
+	"Uri": "http://download.microsoft.com/download/1/B/F/1BFE5194-5951-452C-B62C-B2F667F9B86D/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISE_S_EVAL_X64FRE_EN-US.ISO",
+	"Checksum": "4D4828CB40554278D376F86CBAED0E03",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -720,21 +718,20 @@
 	},
     "Hotfixes": [
  		{
- 			"Id": "windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu",
- 			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu"
+
  		}
  	]
 },
 {
 	"Id": "WIN10_x86_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x86_ENT_LTSB_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise LTSB English Evaluation",
+    "Filename": "WIN10_x86_ENT_LTSB_2016_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSB 2016 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X86FRE_EN-US.ISO",
-	"Checksum": "5531E6EE40A69E22A7386864A9087CDD",
+	"Uri": "http://download.microsoft.com/download/1/B/F/1BFE5194-5951-452C-B62C-B2F667F9B86D/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISE_S_EVAL_X86FRE_EN-US.ISO",
+	"Checksum": "D057D6229343CF875D66334A2C06A010",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -747,8 +744,7 @@
 	},
     "Hotfixes": [
  		{
- 			"Id": "windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu",
- 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu"
+
  		}
  	]
 }]

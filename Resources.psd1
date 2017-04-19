@@ -214,4 +214,5 @@ ConvertFrom-StringData -StringData @'
     InvalidModulePathExtensionError = Module path '{0}' is not a valid .zip archive.
     CannotLocateDismDllError        = Cannot locate 'Microsoft.Dism.Powershell.dll' in path '{0}'.
     CannotResolveMediaIdError       = Cannot resolve node '{0}' source media Id.
+    ResourceChecksumMismatchError   = Resource download '{0}' checksum does not match '{1}'.
 '@
