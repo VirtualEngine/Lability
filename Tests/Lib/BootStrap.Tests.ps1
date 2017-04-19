@@ -54,8 +54,7 @@ Describe 'Lib\BootStrap' {
                 ## Must execute before we mock Set-Content!
                 SetSetupCompleteCmd -Path TestDrive:\ -CoreCLR;
                 $setupCompleteCmd = Get-Content -Path "TestDrive:\SetupComplete.cmd";
-
-                ($setupCompleteCmd -match 'Schtasks') -as [System.Boolean] | Should Be $true;
+                @($setupCompleteCmd -match 'Schtasks').Count -gt 0 | Should Be $true;
             }
 
             It 'Uses ASCII encoding' {

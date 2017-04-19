@@ -57,6 +57,7 @@ function GetResourceDownload {
         elseif (-not (Test-Path -Path $checksumPath)) {
             [ref] $null = SetResourceChecksum -Path $DestinationPath;
         }
+
         if (Test-Path -Path $checksumPath) {
             Write-Debug -Message ('MD5 checksum file ''{0}'' found.' -f $checksumPath);
             $md5Checksum = (Get-Content -Path $checksumPath -Raw).Trim();
@@ -65,6 +66,7 @@ function GetResourceDownload {
         else {
             Write-Debug -Message ('MD5 checksum file ''{0}'' not found.' -f $checksumPath);
         }
+
         $resource = @{
             DestinationPath = $DestinationPath;
             Uri = $Uri;
@@ -99,23 +101,41 @@ function TestResourceDownload {
         [System.String] $Checksum,
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.UInt32] $BufferSize = 64KB
+        [System.UInt32] $BufferSize = 64KB,
+
+        ## Enables mocking terminating calls from Pester
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $ThrowOnError
+
         ##TODO: Support Headers and UserAgent
     )
     process {
 
         $resource = GetResourceDownload @PSBoundParameters;
-        if ([System.String]::IsNullOrEmpty($Checksum) -and (Test-Path -Path $DestinationPath -PathType Leaf)) {
+        $isCompliant = $true;
+
+        if (-not (Test-Path -Path $DestinationPath -PathType Leaf)) {
+            ## If the actual file doesn't exist return a failure! (#205)
+            $isCompliant = $false;
+        }
+        elseif ([System.String]::IsNullOrEmpty($Checksum)) {
             WriteVerbose ($localized.ResourceChecksumNotSpecified -f $DestinationPath);
-            return $true;
+            $isCompliant = $true;
         }
         elseif ($Checksum -eq $resource.Checksum) {
             WriteVerbose ($localized.ResourceChecksumMatch -f $DestinationPath, $Checksum);
-            return $true;
+            $isCompliant = $true;
         }
         else {
             WriteVerbose ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
-            return $false;
+            $isCompliant = $false;
+        }
+
+        if ($ThrowOnError -and (-not $isCompliant)) {
+            throw $localized.ResourceChecksumMismatchError -f $DestinationPath, $Checksum;
+        }
+        else {
+            return $isCompliant;
         }
 
     } #end process
@@ -306,6 +326,7 @@ function InvokeResourceDownload {
         [ref] $null = $PSBoundParameters.Remove('Force');
         if (-not (TestResourceDownload @PSBoundParameters) -or $Force) {
             SetResourceDownload @PSBoundParameters -Verbose:$false;
+            [ref] $null = TestResourceDownload @PSBoundParameters -ThrowOnError;
         }
         $resource = GetResourceDownload @PSBoundParameters;
         return [PSCustomObject] $resource;

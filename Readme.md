@@ -88,6 +88,8 @@ Other generous members of the community have written some comprehensive guides t
 
 ### Unreleased
 
+* Throws error when downloaded resource checksum is incorrect (#205)
+* Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
 * Adds Continuous Integration (CI) cmdlets
   * Get-LabStatus - Retrieves DSC configuration deployment status
   * Test-LabStatus - Tests DSC configuration deployment status has completed

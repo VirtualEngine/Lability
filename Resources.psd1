@@ -236,4 +236,5 @@ ConvertFrom-StringData -StringData @'
     CannotResolveMediaIdError        = Cannot resolve node '{0}' source media Id.
     WaitLabDeploymentTimeoutError    = Waiting for lab deployment has timed out after '{0}'.
     NoConfigurationToCompileError    = No configurations to compile.
+    ResourceChecksumMismatchError   = Resource download '{0}' checksum does not match '{1}'.
 '@
