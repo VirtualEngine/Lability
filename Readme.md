@@ -86,6 +86,11 @@ Other generous members of the community have written some comprehensive guides t
 
 ## Versions
 
+### Unreleased
+
+* Throws error when downloaded resource checksum is incorrect (#205)
+* Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
+
 ### v0.10.3
 
 * Adds -Confirm/-WhatIf support to:
