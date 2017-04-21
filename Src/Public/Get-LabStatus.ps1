@@ -147,7 +147,7 @@ function Get-LabStatus {
         [ref] $null = $PSBoundParameters.Remove('PreferNodeProperty');
         [ref] $null = $PSBoundParameters.Remove('ErrorAction');
 
-        foreach ($computer in $computerName) {
+        foreach ($computer in $ComputerName) {
 
             $session = $sessions | Where-Object { $_.ComputerName -eq $computer -and $_.State -eq 'Opened' } | Select-Object -First 1;
 
@@ -156,16 +156,19 @@ function Get-LabStatus {
                 WriteVerbose -Message ($localized.TestingWinRMConnection -f $computer);
                 try {
 
-                    if (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters) {
-
-                        WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
-                        $activeSessions += New-PSSession -ComputerName $computer @PSBoundParameters;
-                    }
+                    $isContactable = Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
                 }
                 catch {
 
                     $inactiveSessions += $computer;
                     Write-Error $_;
+                }
+
+                if ($isContactable) {
+
+                    ## WSMan is up so we should be able to connect, if not throw..
+                    WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
+                    $activeSessions += New-PSSession -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
                 }
 
             }

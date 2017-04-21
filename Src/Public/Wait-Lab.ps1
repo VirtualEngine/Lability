@@ -23,6 +23,8 @@ function Wait-Lab {
         Prompts for credentials to connect to all the computers by their IPAddress node property as defined in the
         DSC configuration document (.psd1) to query and wait for the LCM to finish applying the current
         configuration(s).
+    .NOTES
+        The default timeout is 15 minutes.
 #>
 #>
     [CmdletBinding()]
@@ -116,9 +118,11 @@ function Wait-Lab {
         [System.Management.Automation.CredentialAttribute()]
         $Credential,
 
+        ## Specifies the interval between connection reties. Defaults to 60 seconds intervals.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Int32] $RetryIntervalSeconds = 60,
 
+        ## Specifies the number of connection attempts before failing. Defaults to 15 retries.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Int32] $RetryCount = 15
     )
@@ -148,11 +152,10 @@ function Wait-Lab {
                     WriteVerbose -Message ($localized.SleepingWaitingForLabDeployment -f $RetryIntervalSeconds)
                     Start-Sleep -Seconds $RetryIntervalSeconds;
                 }
-
             }
             else {
 
-                WriteVerbose -Message ($localized.WaitForLabDeploymentComplete -f $timer.Elapsed);
+                WriteVerbose -Message ($localized.WaitForLabDeploymentComplete -f $timer.Elapsed.ToString('hh\:mm\:ss\.ff'));
                 $timer = $null;
                 return;
             }
@@ -160,7 +163,7 @@ function Wait-Lab {
         } #end for
 
         ## We have timed out..
-        Write-Error -Message ($localized.WaitLabDeploymentTimeoutError -f $timer.Elapsed);
+        Write-Error -Message ($localized.WaitLabDeploymentTimeoutError -f $timer.Elapsed.ToString('hh\:mm\:ss\.ff'));
         $timer = $null;
 
     } #end process
