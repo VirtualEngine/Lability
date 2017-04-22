@@ -99,6 +99,16 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
+* Adds Continuous Integration (CI) cmdlets
+  * Get-LabStatus - Retrieves DSC configuration deployment status
+  * Test-LabStatus - Tests DSC configuration deployment status has completed
+  * Wait-Lab - waits for DSC configurtion deployment to complete
+* Adds DSC compilation cmdlets
+  * Start-DscCompilation - Compiles DSC configurations in parallel
+* Adds Lability module cache cmdlets
+  * Install-LabModule - Install cached modules onto the Lability host
+  * Clear-ModulePath - Clear user's module path
+  * Clear-LabModuleCache - Empties Lability module cache
 
 ### v0.10.3
 

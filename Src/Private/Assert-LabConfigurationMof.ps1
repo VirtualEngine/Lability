@@ -12,11 +12,13 @@ function Assert-LabConfigurationMof {
         $ConfigurationData,
 
         ## Lab vm/node name
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## Path to .MOF files created from the DSC configuration
-        [Parameter(ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Path = (Get-LabHostDscConfigurationPath),
 
         ## Ignores missing MOF file
