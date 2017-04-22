@@ -13,11 +13,13 @@ function Clear-ModulePath {
     .EXAMPLE
         Clear-ModulePath -Scope CurrentUser
 
-        Removes all PowerShell modules and DSC resources from the current user's module path,
+        Removes all PowerShell modules and DSC resources from the current user's module path.
     .EXAMPLE
         Clear-ModulePath -Scope AllUsers -Force
 
-        Removes all PowerShell modules and DSC resources from the local machine's module path,
+        Removes all PowerShell modules and DSC resources from the local machine's module path.
+    .NOTES
+        USE WITH CAUTION! Not sure thsi should even be in this module?
 #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param (
@@ -43,9 +45,13 @@ function Clear-ModulePath {
 
         if (Test-Path -Path $modulePath) {
 
-            ## The -Force on Remove-Item supresses the confirmation :()
-            if ($Force -or ($PSCmdlet.ShouldProcess($modulePath, "Remove directory"))) {
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Clear-ModulePath', $moduleCachePath;
+            $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
+            $shouldProcessWarning = $localized.ShouldProcessWarning;
+            if (($Force) -or
+                ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $shouldProcessWarning))) {
 
+                ## The -Force on Remove-Item supresses the confirmation :()
                 Remove-Item -Path $modulePath -Recurse -Force:$Force;
             }
         }

@@ -5,7 +5,7 @@ function Get-LabStatus {
     .EXAMPLE
         Get-LabStatus -ComputerName CONTROLLER, XENAPP
 
-        Queries the CONTROLLER and XENAPP computers' LCM state.
+        Queries the CONTROLLER and XENAPP computers' LCM state using the current user credential.
     .EXAMPLE
         Get-LabStatus -ComputerName CONTROLLER, EXCHANGE -Credential (Get-Credential)
 
@@ -149,7 +149,9 @@ function Get-LabStatus {
 
         foreach ($computer in $ComputerName) {
 
-            $session = $sessions | Where-Object { $_.ComputerName -eq $computer -and $_.State -eq 'Opened' } | Select-Object -First 1;
+            $session = $sessions |
+                            Where-Object { $_.ComputerName -eq $computer -and $_.State -eq 'Opened' } |
+                                Select-Object -First 1;
 
             if (-not $session) {
 
@@ -183,7 +185,10 @@ function Get-LabStatus {
         if ($activeSessions.Count -gt 0) {
 
             WriteVerbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
-            $results = Invoke-Command -Session $activeSessions -ScriptBlock { Get-DscLocalConfigurationManager | Select-Object -Property LCMVersion,LCMState; };
+            $results = Invoke-Command -Session $activeSessions -ScriptBlock {
+                            Get-DscLocalConfigurationManager |
+                                Select-Object -Property LCMVersion, LCMState;
+                        };
         }
 
         foreach ($computer in $ComputerName) {

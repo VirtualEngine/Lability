@@ -1,7 +1,7 @@
 function Wait-Lab {
 <#
     .SYNOPSIS
-        Queries computers' LCM state, waiting for DSC configurations to be applied.
+        Queries computers' LCM state, using current user credentials, waiting for DSC configurations to be applied.
     .EXAMPLE
         Wait-Lab -ComputerName CONTROLLER, XENAPP
 
@@ -155,7 +155,8 @@ function Wait-Lab {
             }
             else {
 
-                WriteVerbose -Message ($localized.WaitForLabDeploymentComplete -f $timer.Elapsed.ToString('hh\:mm\:ss\.ff'));
+                $elapsedTime = $timer.Elapsed.ToString('hh\:mm\:ss\.ff');
+                WriteVerbose -Message ($localized.WaitForLabDeploymentComplete -f $elapsedTime);
                 $timer = $null;
                 return;
             }
@@ -163,7 +164,8 @@ function Wait-Lab {
         } #end for
 
         ## We have timed out..
-        Write-Error -Message ($localized.WaitLabDeploymentTimeoutError -f $timer.Elapsed.ToString('hh\:mm\:ss\.ff'));
+        $elapsedTime = $timer.Elapsed.ToString('hh\:mm\:ss\.ff');
+        Write-Error -Message ($localized.WaitLabDeploymentTimeoutError -f $elapsedTime);
         $timer = $null;
 
     } #end process

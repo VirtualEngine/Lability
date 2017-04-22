@@ -5,7 +5,8 @@ function Test-LabStatus {
     .EXAMPLE
         Test-LabStatus -ComputerName CONTROLLER, XENAPP
 
-        Tests the CONTROLLER and XENAPP computers' LCM state, returning $true if both have finished.
+        Tests the CONTROLLER and XENAPP computers' LCM state, using the current user credentials, returning $true if
+        both have finished.
     .EXAMPLE
         Test-LabStatus -ComputerName CONTROLLER, EXCHANGE -Credential (Get-Credential)
 

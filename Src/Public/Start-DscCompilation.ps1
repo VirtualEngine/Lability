@@ -237,7 +237,6 @@ function Start-DscCompilation {
             $completedJobs = @();
 
             $activity = $localized.CompilingConfigurationActivity;
-            $elapsed = "$($localized.CompilingConfigurationActivity) {0:00}:{1:00}:{2:00}";
             $totalPercentComplete = 0;
             $stopwatch = [System.Diagnostics.Stopwatch]::StartNew();
 
@@ -262,7 +261,7 @@ function Start-DscCompilation {
                     }
                 }
 
-                $elapsedTime = $elapsed -f $stopwatch.Elapsed.Hours, $stopwatch.Elapsed.Minutes, $stopwatch.Elapsed.Seconds;
+                $elapsedTime =  $stopwatch.Elapsed.ToString('hh\:mm\:ss\.ff');
                 Write-Progress -Id $pid -Activity $activity -Status $elapsedTime -PercentComplete $totalPercentComplete;
 
                 foreach ($job in $jobs) {
@@ -277,8 +276,9 @@ function Start-DscCompilation {
 
                         if ($job -notin $completedJobs) {
 
-                            $elapsedTime = $stopwatch.Elapsed.ToString();
-                            WriteVerbose -Message ("$($localized.ProcessedComilationStatus) '{0}' in '{1}'." -f $job.Name, $elapsedTime);
+                            $elapsedTime = $stopwatch.Elapsed.ToString('hh\:mm\:ss\.ff');
+                            $compilationStatus = $localized.ProcessedComilationStatus;
+                            WriteVerbose -Message ("{0} '{1}' in '{2}'." -f $compilationStatus, $job.Name, $elapsedTime);
                             Write-Progress -Id $job.Id -ParentId $pid -Activity $job.Name -Completed;
                             $completedJobs += $job;
                         }
@@ -290,7 +290,8 @@ function Start-DscCompilation {
 
             } #end while active job(s)
 
-            WriteVerbose -Message ($localized.CompletedCompilationProcessing -f $stopwatch.Elapsed.ToString());
+            $elapsedTime = $stopwatch.Elapsed.ToString('hh\:mm\:ss\.ff');
+            WriteVerbose -Message ($localized.CompletedCompilationProcessing -f $elapsedTime);
             Write-Progress -Id $pid -Activity $activity -Completed;
             $stopwatch = $null;
 
@@ -298,4 +299,4 @@ function Start-DscCompilation {
 
     } #end end
 
-} #end function Start-DscCompilation
+} #end function

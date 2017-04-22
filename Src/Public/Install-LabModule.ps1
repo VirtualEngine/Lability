@@ -61,4 +61,4 @@ function Install-LabModule {
         Copy-LabModule @copyLabModuleParams;
 
     } #end process
-} #end function Install-LabModule
+} #end function

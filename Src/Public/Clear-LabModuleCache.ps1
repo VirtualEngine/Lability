@@ -1,7 +1,7 @@
 function Clear-LabModuleCache {
  <#
     .SYNOPSIS
-        Empties all Lability cached modules.
+        Removes all cached modules from the Lability module cache.
     .DESCRIPTION
         The Clear-LabModuleCache removes all cached PowerShell module and DSC resource modules stored in Lability's
         internal cache.
@@ -21,7 +21,11 @@ function Clear-LabModuleCache {
     process {
 
         $moduleCachePath = (Get-ConfigurationData -Configuration 'Host').ModuleCachePath;
-        if ($Force -or ($PSCmdlet.ShouldProcess($moduleCachePath, "Empty directory"))) {
+        $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Clear-LabModuleCache', $moduleCachePath;
+        $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
+        $shouldProcessWarning = $localized.ShouldProcessWarning;
+        if (($Force) -or
+            ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $shouldProcessWarning))) {
 
                 Remove-Item -Path $moduleCachePath -Recurse -Force:$Force;
                 $moduleCachePathParent = Split-Path -Path $moduleCachePath -Parent;
