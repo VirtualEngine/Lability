@@ -5,13 +5,16 @@ function Get-LabVirtualMachineProperty {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String[]] $SwitchName,
 
-        [Parameter(Mandatory)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Media,
 
         [Parameter(Mandatory)]
@@ -26,7 +29,8 @@ function Get-LabVirtualMachineProperty {
         [Parameter(Mandatory)]
         [System.Int32] $ProcessorCount,
 
-        [Parameter()] [AllowNull()]
+        [Parameter()]
+        [AllowNull()]
         [System.String[]] $MACAddress,
 
         [Parameter()]
