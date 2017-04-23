@@ -9,12 +9,15 @@ Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
 
     InModuleScope $moduleName {
 
+        ## Guard mocks
+        Mock ImportDscResource -MockWith { }
+        Mock InvokeDscResource -MockWith { }
+        Mock Get-LabImage -MockWith { }
+
          It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock InvokeDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -MockWith { }
 
             $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
 
@@ -28,8 +31,6 @@ Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
             $testLabVMDiskPath = "TestDrive:\$testVMName.vhdx";
             Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = 'TestDrive:'; } }
             Mock Get-LabImage -MockWith { return @{ ImagePath = $testImagePath; Generation = 'VHDX'; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock InvokeDscResource -ParameterFilter { $Parameters.Ensure -eq 'Absent' } -MockWith { }
             New-Item -Path $testLabVMDiskPath -ItemType File -Force -ErrorAction SilentlyContinue;
 
             $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
@@ -41,8 +42,6 @@ Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
-            Mock ImportDscResource -MockWith { }
-            Mock InvokeDscResource -MockWith { }
 
             $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia -ConfigurationData @{};
 

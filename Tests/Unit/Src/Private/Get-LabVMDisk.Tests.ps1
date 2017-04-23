@@ -5,16 +5,19 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\Get-LabVMDiskPath' {
+Describe 'Unit\Src\Private\Get-LabVMDisk' {
 
     InModuleScope $moduleName {
+
+        ## Guard mocks
+        Mock ImportDscResource -MockWith { }
+        Mock GetDscResource -MockWith { }
+        Mock Get-LabImage -MockWith { }
 
         It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock GetDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -MockWith { }
 
             $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia;
 
@@ -25,8 +28,6 @@ Describe 'Unit\Src\Private\Get-LabVMDiskPath' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock GetDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -MockWith { }
 
             $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia;
 
@@ -36,8 +37,6 @@ Describe 'Unit\Src\Private\Get-LabVMDiskPath' {
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
-            Mock ImportDscResource -MockWith { }
-            Mock GetDscResource -MockWith { }
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
             $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};

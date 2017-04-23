@@ -16,6 +16,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
         $testCredential = [System.Management.Automation.PSCredential]::Empty;
         $testVhdPath = 'TestDrive:\{0}.vhdx' -f $testNode;
 
+        ## Giard mocks
         Mock Resolve-LabVMGenerationDiskPath -MockWith { return $testVhdPath; }
         Mock Stop-ShellHWDetectionService { }
         Mock Start-ShellHWDetectionService { }

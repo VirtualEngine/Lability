@@ -9,12 +9,15 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
 
     InModuleScope $moduleName {
 
+        ## Guard mocks
+        Mock ImportDscResource -MockWith { }
+        Mock TestDscResource -MockWith { }
+        Mock Get-LabImage -MockWith { }
+
         It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
             $testVM = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock TestDscResource -MockWith { }
 
             $vmDisk = Test-LabVMDisk -Name $testVM -Media $testMedia;
 
@@ -25,8 +28,6 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testVMName = 'TestVMName';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock TestDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -MockWith { }
 
             $vmDisk = Test-LabVMDisk -Name $testVMName -Media $testMedia;
 
@@ -37,8 +38,6 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testVMSize = 'TestVMSize';
             $testMedia = 'TestNewMedia';
             Mock Get-LabImage -MockWith { }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock TestDscResource -ParameterFilter { $Parameters.MaximumSize -eq 127GB } -MockWith { }
 
             $vmDisk = Test-LabVMDisk -Name $testVMSize -Media $testMedia;
 
@@ -49,8 +48,6 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testVMGeneration = 'TestVMGeneration';
             $testMedia = 'TestNewMedia';
             Mock Get-LabImage -MockWith { }
-            Mock ImportDscResource -ParameterFilter { $Prefix -eq 'VHD' } -MockWith { }
-            Mock TestDscResource -ParameterFilter { $Parameters.Generation -eq 'VHDX' } -MockWith { }
 
             $vmDisk = Test-LabVMDisk -Name $testVMGeneration -Media $testMedia;
 
@@ -61,8 +58,6 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
-            Mock ImportDscResource -MockWith { }
-            Mock TestDscResource -MockWith { }
 
             $vmDisk = Test-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};
 

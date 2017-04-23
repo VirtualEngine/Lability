@@ -9,6 +9,12 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
 
     InModuleScope $moduleName {
 
+        ## Guard mocks
+        Mock Clear-LabVirtualMachine -MockWith { }
+        Mock Remove-LabVMDisk -MockWith { }
+        Mock RemoveLabSwitch -MockWith { }
+        Mock RemoveLabVMSnapshot -MockWith { }
+
         It 'Throws when VM cannot be found' {
             $testVMName = 'TestVM';
             $configurationData = @{
@@ -26,10 +32,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; }
                 )
             }
-            Mock Clear-LabVirtualMachine -MockWith { }
-            Mock Remove-LabVMDisk -MockWith { }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock RemoveLabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
@@ -43,10 +45,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; }
                 )
             }
-            Mock Remove-LabVMDisk -MockWith { }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock Clear-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
@@ -60,10 +58,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; }
                 )
             }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock Clear-LabVirtualMachine -MockWith { }
-            Mock Remove-LabVMDisk -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
@@ -77,10 +71,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; }
                 )
             }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock Clear-LabVirtualMachine -MockWith { }
-            Mock Remove-LabVMDisk -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
@@ -95,10 +85,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
                 )
             }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock Clear-LabVirtualMachine -MockWith { }
-            Mock Remove-LabVMDisk -MockWith { }
-            Mock RemoveLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
 
@@ -113,10 +99,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
                 )
             }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock Remove-LabVMDisk -MockWith { }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock Clear-LabVirtualMachine -ParameterFilter { $null -ne $configurationData } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
 
@@ -131,10 +113,6 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
                     @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
                 )
             }
-            Mock RemoveLabVMSnapshot -MockWith { }
-            Mock RemoveLabSwitch -MockWith { }
-            Mock Clear-LabVirtualMachine -MockWith { }
-            Mock Remove-LabVMDisk -ParameterFilter { $null -ne $configurationData } -MockWith { }
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
 
