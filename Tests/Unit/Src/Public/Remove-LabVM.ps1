@@ -15,11 +15,11 @@ Describe 'Unit\Src\Public\Remove-LabVM' {
         It 'Removes existing virtual machine' {
             $testVMName = 'TestVM';
             Mock Resolve-LabVMImage -MockWith { 'TestVMImageId'; }
-            Mock RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -MockWith { }
+            Mock Remove-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
             Remove-LabVM -Name $testVMName -Confirm:$false;
 
-            Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Remove-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
     } #end InModuleScope

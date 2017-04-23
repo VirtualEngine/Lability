@@ -10,8 +10,8 @@ Describe 'Unit\Src\Public\Reset-LabVM' {
     InModuleScope -ModuleName $moduleName {
 
         ## Guard mocks
-        Mock RemoveLabVM -MockWith { }
-        Mock NewLabVM -MockWith { }
+        Mock Remove-LabVirtualMachine -MockWith { }
+        Mock New-LabVirtualMachine -MockWith { }
         Mock Resolve-ConfigurationPath -MockWith { return (Get-Location -PSProvider Filesystem).Path; }
 
         $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
@@ -26,7 +26,7 @@ Describe 'Unit\Src\Public\Reset-LabVM' {
 
             Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
 
-            Assert-MockCalled RemoveLabVM -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Remove-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
         It 'Creates a new virtual machine' {
@@ -39,7 +39,7 @@ Describe 'Unit\Src\Public\Reset-LabVM' {
 
             Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword;
 
-            Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
+            Assert-MockCalled New-LabVirtualMachine -ParameterFilter { $NoSnapShot -eq $false } -Scope It;
         }
 
         It 'Creates a new virtual machine without a snapshot when "NoSnapshot" is specified' {
@@ -52,7 +52,7 @@ Describe 'Unit\Src\Public\Reset-LabVM' {
 
             Reset-LabVM -ConfigurationData $configurationData -Name $testVMName -Credential $testPassword -NoSnapshot;
 
-            Assert-MockCalled NewLabVM -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
+            Assert-MockCalled New-LabVirtualMachine -ParameterFilter { $NoSnapShot -eq $true } -Scope It;
         }
 
     } #end InModuleScope

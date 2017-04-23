@@ -46,6 +46,10 @@ function Set-LabVirtualMachine {
         [Parameter()]
         [System.Collections.Hashtable] $ProcessorOption,
 
+        ## xVMHardDiskDrive options
+        [Parameter()]
+        [System.Collections.Hashtable[]] $HardDiskDrive,
+
         ## xVMDvdDrive options
         [Parameter()]
         [System.Collections.Hashtable] $DvdDrive,
@@ -58,11 +62,13 @@ function Set-LabVirtualMachine {
     )
     process {
 
-        ## Store xVMProcessor and xVMDvdDrive options for after we have a VM
+        ## Store additional options for when we have a VM
         $vmProcessorParams = $PSBoundParameters['ProcessorOption'];
-        [ref] $null = $PSBoundParameters.Remove('ProcessorOption');
         $vmDvdDriveParams = $PSBoundParameters['DvdDrive'];
+        $vmHardDiskDriveParams = $PSBoundParameters['HardDiskDrive'];
+        [ref] $null = $PSBoundParameters.Remove('ProcessorOption');
         [ref] $null = $PSBoundParameters.Remove('DvdDrive');
+        [ref] $null = $PSBoundParameters.Remove('HardDiskDrive');
 
         ## Resolve the xVMHyperV resource parameters
         $vmHyperVParams = Get-LabVirtualMachineProperty @PSBoundParameters;
@@ -88,6 +94,16 @@ function Set-LabVirtualMachine {
             Write-Host $vmDvdDriveParams.Values -ForegroundColor Green;
             ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMDvdDrive -Prefix VMDvdDrive;
             InvokeDscResource -ResourceName VMDvdDrive -Parameters $vmDvdDriveParams;
+        }
+
+        if ($null -ne $vmHardDiskDriveParams) {
+
+            $setLabVirtualMachineHardDiskDriveParams = @{
+                NodeName = $Name;
+                VMGeneration = $vmHyperVParams.Generation;
+                HardDiskDrive = $vmHardDiskDriveParams;
+            }
+            Set-LabVirtualMachineHardDiskDrive @setLabVirtualMachineHardDiskDriveParams;
         }
 
     } #end process

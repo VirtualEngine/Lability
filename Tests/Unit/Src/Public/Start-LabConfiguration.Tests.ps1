@@ -21,7 +21,7 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
         }
 
         ## Guard mocks
-        Mock NewLabVM -MockWith { }
+        Mock New-LabVirtualMachine -MockWith { }
 
         $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
 
@@ -41,7 +41,7 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
             { Start-LabConfiguration -ConfigurationData $configurationData -Path 'TestDrive:\InvalidPath'  -Credential $testPassword } | Should Throw;
         }
 
-        It 'Calls "NewLabVM" if node is not configured' {
+        It 'Calls "New-LabVirtualMachine" if node is not configured' {
             $testPath = 'TestDrive:\';
             $testVM = 'VM1';
             New-MofFiles -Name $testVM -Path $testPath;
@@ -51,10 +51,10 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
 
             Start-LabConfiguration -ConfigurationData $configurationData -Path $testPath -Credential $testPassword;
 
-            Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Scope It;
+            Assert-MockCalled New-LabVirtualMachine -ParameterFilter { $Name -eq $testVM } -Scope It;
         }
 
-        It 'Does not call "NewLabVM" if node is configured' {
+        It 'Does not call "New-LabVirtualMachine" if node is configured' {
             $testPath = 'TestDrive:';
             $testVM = 'VM1';
             New-MofFiles -Name $testVM -Path $testPath;
@@ -64,10 +64,10 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
 
             Start-LabConfiguration -ConfigurationData $configurationData -Path $testPath -Credential $testPassword;
 
-            Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Exactly 0 -Scope It;
+            Assert-MockCalled New-LabVirtualMachine -ParameterFilter { $Name -eq $testVM } -Exactly 0 -Scope It;
         }
 
-        It 'Calls "NewLabVM" if node is configured but -Force is specified' {
+        It 'Calls "New-LabVirtualMachine" if node is configured but -Force is specified' {
             $testPath = 'TestDrive:';
             $testVM = 'VM1';
             New-MofFiles -Name $testVM -Path $testPath;
@@ -77,7 +77,7 @@ Describe 'Unit\Src\Public\Start-LabConfiguration' {
 
             Start-LabConfiguration -ConfigurationData $configurationData -Path $testPath -Credential $testPassword -Force;
 
-            Assert-MockCalled NewLabVM -ParameterFilter { $Name -eq $testVM } -Scope It;
+            Assert-MockCalled New-LabVirtualMachine -ParameterFilter { $Name -eq $testVM } -Scope It;
         }
 
     } #end InModuleScope

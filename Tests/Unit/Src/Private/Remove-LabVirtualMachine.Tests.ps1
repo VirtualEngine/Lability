@@ -5,47 +5,140 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\Remove-LabVirtualMachine' {
+Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
 
     InModuleScope $moduleName {
 
-        $testVMName = 'TestVM';
-        $testMediaId = 'TestMedia';
-        $testVMSwitch = 'TestSwitch';
-        $removeLabVirtualMachineParams = @{
-            Name = $testVMName;
-            SwitchName = $testVMSwitch;
-            Media = $testMediaId;
-            StartupMemory = 2GB;
-            MinimumMemory = 2GB;
-            MaximumMemory = 2GB;
-            ProcessorCount = 1;
+        It 'Throws when VM cannot be found' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = '*' }
+                )
+            }
+            { Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName } | Should Throw;
         }
 
-        ## Guard mocks
-        Mock Get-LabVirtualMachineProperty -MockWith { return @{}; }
-        Mock InvokeDscResource -MockWith { }
-        Mock ImportDscResource -MockWith { }
+        It 'Removes all snapshots' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; }
+                )
+            }
+            Mock Clear-LabVirtualMachine -MockWith { }
+            Mock Remove-LabVMDisk -MockWith { }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock RemoveLabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-        It 'Imports Hyper-V DSC resource' {
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
-            RemoveLabVirtualMachine @removeLabVirtualMachineParams;
-
-            Assert-MockCalled ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
+            Assert-MockCalled RemoveLabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
-        It 'Invokes Hyper-V DSC resource' {
+        It 'Removes the virtual machine' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; }
+                )
+            }
+            Mock Remove-LabVMDisk -MockWith { }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock Clear-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-            RemoveLabVirtualMachine @removeLabVirtualMachineParams;
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
+            Assert-MockCalled Clear-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
-        It 'Calls "Get-LabVirtualMachineProperty" with "ConfigurationData" when specified (#97)' {
+        It 'Removes the VHDX file' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; }
+                )
+            }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock Clear-LabVirtualMachine -MockWith { }
+            Mock Remove-LabVMDisk -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
-            RemoveLabVirtualMachine @removeLabVirtualMachineParams -ConfigurationData @{ Test = $true};
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
-            Assert-MockCalled Get-LabVirtualMachineProperty -ParameterFilter { $ConfigurationData -ne $null } -Scope It;
+            Assert-MockCalled Remove-LabVMDisk -ParameterFilter { $Name -eq $testVMName } -Scope It;
+        }
+
+        It 'Does not remove the virtual switch by default' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; }
+                )
+            }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock Clear-LabVirtualMachine -MockWith { }
+            Mock Remove-LabVMDisk -MockWith { }
+
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
+
+            Assert-MockCalled RemoveLabSwitch -Exactly 0 -Scope It;
+        }
+
+        It 'Removes the virtual switch when "RemoveSwitch" is specified' {
+            $testVMName = 'TestVM';
+            $testVMSwitch = 'Test Switch';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
+                )
+            }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock Clear-LabVirtualMachine -MockWith { }
+            Mock Remove-LabVMDisk -MockWith { }
+            Mock RemoveLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -MockWith { }
+
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
+
+            Assert-MockCalled RemoveLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
+        }
+
+        It 'Calls "RemoveLabVirtualMachine" with "ConfigurationData" (#97)' {
+            $testVMName = 'TestVM';
+            $testVMSwitch = 'Test Switch';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
+                )
+            }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock Remove-LabVMDisk -MockWith { }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock Clear-LabVirtualMachine -ParameterFilter { $null -ne $configurationData } -MockWith { }
+
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
+
+            Assert-MockCalled Clear-LabVirtualMachine -ParameterFilter { $null -ne $configurationData } -Scope It;
+        }
+
+        It 'Calls "Remove-LabVMDisk" with "ConfigurationData" (#97)' {
+            $testVMName = 'TestVM';
+            $testVMSwitch = 'Test Switch';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; SwitchName = $testVMSwitch; }
+                )
+            }
+            Mock RemoveLabVMSnapshot -MockWith { }
+            Mock RemoveLabSwitch -MockWith { }
+            Mock Clear-LabVirtualMachine -MockWith { }
+            Mock Remove-LabVMDisk -ParameterFilter { $null -ne $configurationData } -MockWith { }
+
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
+
+            Assert-MockCalled Remove-LabVMDisk -ParameterFilter { $null -ne $configurationData } -Scope It;
         }
 
     } #end InModuleScope

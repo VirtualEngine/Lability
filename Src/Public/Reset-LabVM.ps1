@@ -28,7 +28,8 @@ function Reset-LabVM {
         $Credential = (& $credentialCheckScriptBlock),
 
         ## Local administrator password of the virtual machine.
-        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
 
         ## Directory path containing the virtual machines' .mof file(s).
@@ -72,8 +73,16 @@ function Reset-LabVM {
                 $activity = $localized.ConfiguringNode -f $vmName;
                 Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
 
-                RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
-                NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                Remove-LabVirtualMachine -Name $vmName -ConfigurationData $ConfigurationData;
+
+                $newLabVirtualMachineParams = @{
+                    Name = $vmName;
+                    ConfigurationData = $ConfigurationData;
+                    Path = $Path;
+                    NoSnapshot = $NoSnapshot;
+                    Credential = $Credential;
+                }
+                New-LabVirtualMachine @newLabVirtualMachineParams;
 
             } #end if should process
         } #end foreach VMd
