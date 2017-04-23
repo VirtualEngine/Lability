@@ -10,4 +10,6 @@ ConvertFrom-StringData @'
     VMStateWillBeOffWarning           = VM '{0}' state will be 'OFF' and not 'Paused'.
 
     CannotUpdatePropertiesOnlineError = Can not change properties for VM '{0}' in '{1}' state unless 'RestartIfNeeded' is set to true.
+    RoleMissingError                  = Required role '{0}' is missing/not installed.
+    WaitForVMIPAddressTimeoutError    = Waiting for VM '{0}' IP address timed out after {1} seconds.
 '@

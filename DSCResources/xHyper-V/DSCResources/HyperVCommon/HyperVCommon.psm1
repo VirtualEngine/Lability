@@ -8,7 +8,7 @@ if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 }
 else
 {
-    #fallback to en-US
+    # fallback to en-US
     Import-LocalizedData `
         -BindingVariable LocalizedData `
         -Filename HyperVCommon.strings.psd1 `
@@ -31,13 +31,11 @@ function New-InvalidOperationError
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ErrorId,
 
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ErrorMessage
     )
@@ -49,7 +47,6 @@ function New-InvalidOperationError
         -ArgumentList $exception, $ErrorId, $errorCategory, $null
     throw $errorRecord
 } # end function New-InvalidOperationError
-
 
 <#
     .SYNOPSIS
@@ -66,13 +63,11 @@ function New-InvalidArgumentError
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ErrorId,
 
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ErrorMessage
     )
@@ -84,7 +79,6 @@ function New-InvalidArgumentError
         -ArgumentList $exception, $ErrorId, $errorCategory, $null
     throw $errorRecord
 } # end function New-InvalidArgumentError
-
 
 <#
     .SYNOPSIS
@@ -115,42 +109,48 @@ function Set-VMProperty
     [CmdletBinding(DefaultParameterSetName = 'Name')]
     param
     (
-        [Parameter(Mandatory, ParameterSetName = 'Name')]
-        [System.String] $Name,
+        [Parameter(Mandatory = $true, ParameterSetName = 'Name')]
+        [System.String]
+        $Name,
 
-        [Parameter(Mandatory, ParameterSetName = 'VMName')]
-        [System.String] $VMName,
+        [Parameter(Mandatory = $true, ParameterSetName = 'VMName')]
+        [System.String]
+        $VMName,
 
-        [Parameter(Mandatory)]
-        [System.String] $VMCommand,
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $VMCommand,
 
-        [Parameter(Mandatory)]
-        [System.Collections.Hashtable] $ChangeProperty,
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $ChangeProperty,
 
         [Parameter()]
-        [System.Boolean] $WaitForIP,
+        [System.Boolean]
+        $WaitForIP,
 
         [Parameter()]
-        [System.Boolean] $RestartIfNeeded
+        [System.Boolean]
+        $RestartIfNeeded
     )
 
     if ($PSBoundParameters.ContainsKey('VMName'))
     {
-        ## Add the -Name property to the ChangeProperty hashtable for splatting
+        # Add the -Name property to the ChangeProperty hashtable for splatting
         $ChangeProperty['VMName'] = $VMName
 
-        ## Set the common parameters for splatting against Get-VM and Set-VMState
+        # Set the common parameters for splatting against Get-VM and Set-VMState
         $vmCommonProperty = @{ Name = $VMName; }
 
-        ## Ensure that the name parameter is set for verbose messages
+        # Ensure that the name parameter is set for verbose messages
         $Name = $VMName
     }
     else
     {
-        ## Add the -Name property to the ChangeProperty hashtable for splatting
+        # Add the -Name property to the ChangeProperty hashtable for splatting
         $ChangeProperty['Name'] = $Name
 
-        ## Set the common parameters for splatting against Get-VM and Set-VMState
+        # Set the common parameters for splatting against Get-VM and Set-VMState
         $vmCommonProperty = @{ Name = $Name; }
     }
 
@@ -159,11 +159,11 @@ function Set-VMProperty
 
     if ($vmOriginalState -ne 'Off' -and $RestartIfNeeded)
     {
-        ## Turn the vm off to make changes
+        # Turn the vm off to make changes
         Set-VMState @vmCommonProperty -State Off
 
         Write-Verbose -Message ($localizedData.UpdatingVMProperties -f $Name)
-        ## Make changes using the passed hashtable
+        # Make changes using the passed hashtable
         & $VMCommand @ChangeProperty
 
         # Cannot move an off VM to a paused state - only to running state
@@ -194,7 +194,6 @@ function Set-VMProperty
 
 } #end function
 
-
 <#
     .SYNOPSIS
     Sets one or more virtual machine properties, powering the VM
@@ -218,15 +217,19 @@ function Set-VMState
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [Alias('VMName')]
-        [System.String] $Name,
+        [System.String]
+        $Name,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Running','Paused','Off')]
-        [System.String] $State,
+        [System.String]
+        $State,
 
-        [System.Boolean] $WaitForIP
+        [Parameter()]
+        [System.Boolean]
+        $WaitForIP
     )
 
     switch ($State)
@@ -268,31 +271,119 @@ function Set-VMState
     }
 } #end function
 
-
 <#
     .SYNOPSIS
     Waits for a virtual machine to be assigned an IP address.
 
     .PARAMETER Name
     Name of the virtual machine to apply the changes to.
+
+    .PARAMETER Timeout
+    Number of seconds to wait before timing out. Defaults to 300 (5 minutes).
 #>
 function Wait-VMIPAddress
 {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [Alias('VMName')]
-        [System.String] $Name
+        [System.String]
+        $Name,
+
+        [Parameter()]
+        [System.Int32]
+        $Timeout = 300
     )
 
+    [System.Int32] $elapsedSeconds = 0
     while ((Get-VMNetworkAdapter -VMName $Name).IpAddresses.Count -lt 2)
     {
         Write-Verbose -Message ($localizedData.WaitingForVMIPAddress -f $Name)
         Start-Sleep -Seconds 3;
+
+        $elapsedSeconds += 3
+        if ($elapsedSeconds -gt $Timeout)
+        {
+            $errorMessage = $localizedData.WaitForVMIPAddressTimeoutError -f $Name, $Timeout
+            New-InvalidOperationError -ErrorId 'WaitVmTimeout' -ErrorMessage $errorMessage
+        }
     }
 } #end function
 
+<#
+    .SYNOPSIS
+    Converts a System.TimeSpan into the number of seconds, mintutes, hours or days.
+
+    .PARAMETER TimeSpan
+    TimeSpan to convert into an integer
+
+    .PARAMETER TimeSpanType
+    Convert timespan into the total number of seconds, minutes, hours or days.
+#>
+function ConvertFrom-TimeSpan
+{
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.TimeSpan]
+        $TimeSpan,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Seconds','Minutes','Hours','Days')]
+        [System.String]
+        $TimeSpanType
+    )
+
+    switch ($TimeSpanType)
+    {
+        'Seconds' { return $TimeSpan.TotalSeconds -as [System.UInt32] }
+        'Minutes' { return $TimeSpan.TotalMinutes -as [System.UInt32] }
+        'Hours' { return $TimeSpan.TotalHours -as [System.UInt32] }
+        'Days' { return $TimeSpan.TotalDays -as [System.UInt32] }
+    }
+
+} #end function ConvertFrom-TimeSpan
+
+<#
+    .SYNOPSIS
+    Converts a number of seconds, mintutes, hours or days into a System.TimeSpan object.
+
+    .PARAMETER TimeInterval
+    The total number of seconds, mintues, hours or days to convert.
+
+    .PARAMETER TimeSpanType
+    Convert using specified interval type.
+#>
+function ConvertTo-TimeSpan
+{
+    [CmdletBinding()]
+    [OutputType([System.TimeSpan])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.UInt32]
+        $TimeInterval,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Seconds','Minutes','Hours','Days')]
+        [System.String]
+        $TimeIntervalType
+    )
+
+    $newTimeSpanParams = @{ }
+    switch ($TimeIntervalType)
+    {
+        'Seconds' { $newTimeSpanParams['Seconds'] = $TimeInterval }
+        'Minutes' { $newTimeSpanParams['Minutes'] = $TimeInterval }
+        'Hours' { $newTimeSpanParams['Hours'] = $TimeInterval }
+        'Days' { $newTimeSpanParams['Days'] = $TimeInterval }
+    }
+    return (New-TimeSpan @newTimeSpanParams)
+
+} #end function ConvertTo-TimeSpan
 
 <#
     .SYNOPSIS
@@ -306,8 +397,9 @@ function Assert-Module
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory)]
-        [System.String[]] $Name
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $Name
     )
 
     if (-not (Get-Module -Name $Name -ListAvailable ))
@@ -315,5 +407,4 @@ function Assert-Module
         $errorMessage = $localizedData.RoleMissingError -f $Name
         New-InvalidOperationError -ErrorId MissingRole -ErrorMessage $errorMessage
     }
-
 } #end function

@@ -99,7 +99,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
-* Updates bundled xHyper-V DSC resource module to 3.7.0.0
+* Updates bundled xHyper-V DSC resource module to include experimental xVMProcessor, xVMHost and xVMHardDiskDrive resources
 * Adds Continuous Integration (CI) cmdlets
   * Get-LabStatus - Retrieves DSC configuration deployment status
   * Test-LabStatus - Tests DSC configuration deployment status has completed

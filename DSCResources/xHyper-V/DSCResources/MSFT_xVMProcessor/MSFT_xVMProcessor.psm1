@@ -6,18 +6,16 @@ if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 }
 else
 {
-    #fallback to en-US
+    # fallback to en-US
     Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMProcessor.psd1 `
                          -BaseDirectory "${PSScriptRoot}\en-US"
 }
 #endregion
 
-
 # Import the common HyperV functions
 Import-Module -Name ( Join-Path `
     -Path (Split-Path -Path $PSScriptRoot -Parent) `
     -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
-
 
 <#
 .SYNOPSIS
@@ -30,22 +28,16 @@ function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
-    param (
-        [Parameter(Mandatory)]
-        [System.String] $VMName
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $VMName
     )
 
     Assert-Module -Name 'Hyper-V'
-
     Write-Verbose -Message ($localizedData.QueryingVMProcessor -f $VMName)
-    $vmProcessor = Get-VMProcessor -VMName $VMName -ErrorAction SilentlyContinue
-
-    if ($null -eq $vmProcessor)
-    {
-        $vmNotFoundErrorMessage = $localizedData.VMNotFoundError -f $VMName
-        New-InvalidArgumentError -ErrorId 'VMNotFound' -ErrorMessage $vmNotFoundErrorMessage
-    }
-
+    $vmProcessor = Get-VMProcessor -VMName $VMName -ErrorAction Stop
     $configuration = @{
         VMName = $VMName
         EnableHostResourceProtection = $vmProcessor.EnableHostResourceProtection
@@ -60,7 +52,6 @@ function Get-TargetResource
         CompatibilityForMigrationEnabled = $vmProcessor.CompatibilityForMigrationEnabled
         CompatibilityForOlderOperatingSystemsEnabled = $vmProcessor.CompatibilityForOlderOperatingSystemsEnabled
     }
-
     return $configuration
 }
 
@@ -123,45 +114,59 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param (
-        [Parameter(Mandatory)]
-        [System.String] $VMName,
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $VMName,
 
         [Parameter()]
-        [System.Boolean] $EnableHostResourceProtection,
+        [System.Boolean]
+        $EnableHostResourceProtection,
 
         [Parameter()]
-        [System.Boolean] $ExposeVirtualizationExtensions,
+        [System.Boolean]
+        $ExposeVirtualizationExtensions,
 
         [Parameter()]
-        [System.UInt64] $HwThreadCountPerCore,
+        [System.UInt64]
+        $HwThreadCountPerCore,
 
         [Parameter()]
-        [System.UInt64] $Maximum,
+        [System.UInt64]
+        $Maximum,
 
         [Parameter()]
-        [System.UInt32] $MaximumCountPerNumaNode,
+        [System.UInt32]
+        $MaximumCountPerNumaNode,
 
         [Parameter()]
-        [System.UInt32] $MaximumCountPerNumaSocket,
+        [System.UInt32]
+        $MaximumCountPerNumaSocket,
 
         [Parameter()]
-        [System.UInt32] $RelativeWeight,
+        [System.UInt32]
+        $RelativeWeight,
 
         [Parameter()]
-        [System.UInt64] $Reserve,
+        [System.UInt64]
+        $Reserve,
 
         [Parameter()]
-        [System.String] $ResourcePoolName,
+        [System.String]
+        $ResourcePoolName,
 
         [Parameter()]
-        [System.Boolean] $CompatibilityForMigrationEnabled,
+        [System.Boolean]
+        $CompatibilityForMigrationEnabled,
 
         [Parameter()]
-        [System.Boolean] $CompatibilityForOlderOperatingSystemsEnabled,
+        [System.Boolean]
+        $CompatibilityForOlderOperatingSystemsEnabled,
 
         [Parameter()]
-        [System.Boolean] $RestartIfNeeded
+        [System.Boolean]
+        $RestartIfNeeded
     )
 
     Assert-Module -Name 'Hyper-V'
@@ -252,51 +257,65 @@ function Test-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)]
-        [System.String] $VMName,
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $VMName,
 
         [Parameter()]
-        [System.Boolean] $EnableHostResourceProtection,
+        [System.Boolean]
+        $EnableHostResourceProtection,
 
         [Parameter()]
-        [System.Boolean] $ExposeVirtualizationExtensions,
-
-         [Parameter()]
-        [System.UInt64] $HwThreadCountPerCore,
+        [System.Boolean]
+        $ExposeVirtualizationExtensions,
 
         [Parameter()]
-        [System.UInt64] $Maximum,
+        [System.UInt64]
+        $HwThreadCountPerCore,
 
         [Parameter()]
-        [System.UInt32] $MaximumCountPerNumaNode,
+        [System.UInt64]
+        $Maximum,
 
         [Parameter()]
-        [System.UInt32] $MaximumCountPerNumaSocket,
+        [System.UInt32]
+        $MaximumCountPerNumaNode,
 
         [Parameter()]
-        [System.UInt32] $RelativeWeight,
+        [System.UInt32]
+        $MaximumCountPerNumaSocket,
 
         [Parameter()]
-        [System.UInt64] $Reserve,
+        [System.UInt32]
+        $RelativeWeight,
 
         [Parameter()]
-        [System.String] $ResourcePoolName,
+        [System.UInt64]
+        $Reserve,
 
         [Parameter()]
-        [System.Boolean] $CompatibilityForMigrationEnabled,
+        [System.String]
+        $ResourcePoolName,
 
         [Parameter()]
-        [System.Boolean] $CompatibilityForOlderOperatingSystemsEnabled,
+        [System.Boolean]
+        $CompatibilityForMigrationEnabled,
 
         [Parameter()]
-        [System.Boolean] $RestartIfNeeded
+        [System.Boolean]
+        $CompatibilityForOlderOperatingSystemsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartIfNeeded
     )
 
     Assert-Module -Name 'Hyper-V'
     Assert-TargetResourceParameter @PSBoundParameters
 
-    ## Parameters requiring shutdown.
+    # Parameters requiring shutdown.
     $restartRequiredParameterNames = @(
         'ExposeVirtualizationExtensions',
         'CompatibilityForMigrationEnabled',
@@ -309,7 +328,7 @@ function Set-TargetResource
     $isRestartRequired = $false
     $vmObject = Get-VM -Name $VMName
 
-    ## Only check for restart required parameters if VM is not off
+    # Only check for restart required parameters if VM is not off
     if ($vmObject.State -ne 'Off')
     {
         foreach ($parameterName in $restartRequiredParameterNames)
@@ -334,14 +353,14 @@ function Set-TargetResource
 
     if (-not $isRestartRequired)
     {
-        ## No parameter specified that requires a restart, so disable the restart flag
+        # No parameter specified that requires a restart, so disable the restart flag
         Write-Verbose -Message ($localizedData.UpdatingVMProperties -f $VMName)
         Set-VMProcessor -VMName $VMName @PSBoundParameters
         Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $VMName)
     }
     else
     {
-        ## Restart is required and that requires turning VM off
+        # Restart is required and that requires turning VM off
         $setVMPropertyParameters = @{
             VMName = $VMName;
             VMCommand = 'Set-VMProcessor';
@@ -351,7 +370,6 @@ function Set-TargetResource
         }
         Set-VMProperty @setVMPropertyParameters
     }
-
 } #end function
 
 <#
@@ -379,20 +397,23 @@ function Assert-TargetResourceParameter
     param
     (
         [Parameter()]
-        [System.Boolean] $EnableHostResourceProtection,
+        [System.Boolean]
+        $EnableHostResourceProtection,
 
         [Parameter()]
-        [System.Boolean] $ExposeVirtualizationExtensions,
+        [System.Boolean]
+        $ExposeVirtualizationExtensions,
 
         [Parameter()]
-        [System.UInt64] $HwThreadCountPerCore,
+        [System.UInt64]
+        $HwThreadCountPerCore,
 
         [Parameter(ValueFromRemainingArguments)]
-        [System.Object[]] $RemainingArguments
-
+        [System.Object[]]
+        $RemainingArguments
     )
 
-    ## Get-CimInstance returns build number as a string
+    # Get-CimInstance returns build number as a string
     $win32OperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Verbose:$false
     $osBuildNumber = $win32OperatingSystem.BuildNumber -as [System.Int64]
     $build14393RequiredParameterNames = @(
@@ -409,7 +430,6 @@ function Assert-TargetResourceParameter
             New-InvalidArgumentError -ErrorId SystemUnsupported -ErrorMessage $errorMessage
         }
     }
-
 } #end function
 
 Export-ModuleMember -Function *-TargetResource
