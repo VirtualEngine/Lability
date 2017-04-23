@@ -114,6 +114,8 @@ written some comprehensive guides to compliment the built-in documentation – a
   * See Examples\NanoComputeExample.psd1 for an example (#81)
 * Adds support for mounting ISO images
   * See Examples\CustomMedia.psd1 for an example (#99, #135)
+* Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
+  * See Examples\MultipleDiskExample.psd1 for an example
 
 ### v0.10.3
 

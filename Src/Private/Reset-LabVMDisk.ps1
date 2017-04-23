@@ -1,4 +1,4 @@
-function ResetLabVMDisk {
+function Reset-LabVMDisk {
 <#
     .SYNOPSIS
         Removes and resets lab VM disk file (VHDX) configuration.
