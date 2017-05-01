@@ -12,7 +12,7 @@ Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
         ## Guard mocks
         Mock ImportDscResource -MockWith { }
         Mock InvokeDscResource -MockWith { }
-        Mock Assert-VirtualMachineHardDiskDriveParameter -MockWith { }
+        Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDrive; } }
         Mock Test-Path { $true; }
 
         It "Should call 'InvokeDscResource' to create VHD when 'VhdPath' is not specified" {
