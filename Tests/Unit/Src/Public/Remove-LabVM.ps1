@@ -11,11 +11,11 @@ Describe 'Unit\Src\Public\Remove-LabVM' {
 
         ## Guard mocks
         Mock Restore-Lab -MockWith { }
+        Mock Remove-LabVirtualMachine -MockWith { }
 
         It 'Removes existing virtual machine' {
             $testVMName = 'TestVM';
             Mock Resolve-LabVMImage -MockWith { 'TestVMImageId'; }
-            Mock Remove-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -MockWith { }
 
             Remove-LabVM -Name $testVMName -Confirm:$false;
 

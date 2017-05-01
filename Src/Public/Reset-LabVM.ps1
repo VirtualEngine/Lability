@@ -39,7 +39,11 @@ function Reset-LabVM {
 
         ## Skip creation of the initial baseline snapshot.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [System.Management.Automation.SwitchParameter] $NoSnapshot,
+
+        ## Ignores missing MOF file
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
     begin {
 
@@ -58,6 +62,7 @@ function Reset-LabVM {
             ConfigurationData = $ConfigurationData;
             Name = $Name | Select-Object -First 1;
             Path = $Path;
+            UseDefaultPath = $SkipMofCheck;
         }
         $Path = Resolve-ConfigurationPath @resolveConfigurationPathParams;
 
@@ -73,7 +78,7 @@ function Reset-LabVM {
                 $activity = $localized.ConfiguringNode -f $vmName;
                 Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
 
-                Remove-LabVirtualMachine -Name $vmName -ConfigurationData $ConfigurationData;
+                [ref] $null = Remove-LabVirtualMachine -Name $vmName -ConfigurationData $ConfigurationData;
 
                 $newLabVirtualMachineParams = @{
                     Name = $vmName;

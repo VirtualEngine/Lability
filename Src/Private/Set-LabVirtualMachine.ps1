@@ -81,7 +81,6 @@ function Set-LabVirtualMachine {
             ## Ensure we have the node's name
             $vmProcessorParams['VMName'] = $Name;
             WriteVerbose ($localized.SettingVMConfiguration -f 'VM processor', $Name);
-            Write-Host $vmProcessorParams.Values -ForegroundColor Green;
             ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMProcessor -Prefix VMProcessor;
             InvokeDscResource -ResourceName VMProcessor -Parameters $vmProcessorParams;
         }
@@ -91,7 +90,6 @@ function Set-LabVirtualMachine {
             ## Ensure we have the node's name
             $vmDvdDriveParams['VMName'] = $Name;
             WriteVerbose ($localized.SettingVMConfiguration -f 'VM DVD drive', $Name);
-            Write-Host $vmDvdDriveParams.Values -ForegroundColor Green;
             ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMDvdDrive -Prefix VMDvdDrive;
             InvokeDscResource -ResourceName VMDvdDrive -Parameters $vmDvdDriveParams;
         }

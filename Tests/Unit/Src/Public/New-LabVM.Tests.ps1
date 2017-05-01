@@ -9,7 +9,6 @@ Describe 'Unit\Src\Public\New-LabVM' {
 
     InModuleScope -ModuleName $moduleName {
 
-
         $MediaId = 'DummyMediaId'
         $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
 
@@ -17,7 +16,7 @@ Describe 'Unit\Src\Public\New-LabVM' {
         Mock New-LabVirtualMachine -MockWith { }
         Mock Get-LabMedia -MockWith { New-Object -TypeName PSObject -Property @{ 'Id' = $MediaId } }
 
-        It 'Creates a new virtual machine' {
+        It 'Creates a new virtual machine with a snapshot by default' {
             $testVMName = 'TestVM';
 
             New-LabVM -Name $testVMName -MediaId $MediaId -Credential $testPassword;

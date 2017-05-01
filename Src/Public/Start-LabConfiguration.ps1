@@ -184,7 +184,7 @@ function Start-LabConfiguration {
                         NoSnapshot = $NoSnapshot;
                         Credential = $Credential;
                     }
-                    [ref] $null = New-LabVirtualMachine @newLabVirtualMachineParams;
+                    New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
             }
             elseif ($node.IsConfigured) {
@@ -206,7 +206,7 @@ function Start-LabConfiguration {
                         NoSnapshot = $NoSnapshot;
                         Credential = $Credential;
                     }
-                    [ref] $null = New-LabVirtualMachine @newLabVirtualMachineParams;
+                    New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
             }
 
