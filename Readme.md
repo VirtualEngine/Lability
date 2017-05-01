@@ -95,6 +95,15 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### Unreleased
+
+* Adds support for setting VM processor options, e.g. nested virtualisation extensions
+  * See Examples\NanoComputeExample.psd1 for an example (#81)
+* Adds support for mounting ISO images
+  * See Examples\CustomMedia.psd1 for an example (#99, #135)
+* Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
+  * See Examples\MultipleDiskExample.psd1 for an example
+
 ### v0.11.0
 
 * Throws error when downloaded resource checksum is incorrect (#205)
@@ -110,12 +119,6 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Install-LabModule - Install cached modules onto the Lability host
   * Clear-ModulePath - Clear user's module path
   * Clear-LabModuleCache - Empties Lability module cache
-* Adds support for setting VM processor options, e.g. nested virtualisation extensions
-  * See Examples\NanoComputeExample.psd1 for an example (#81)
-* Adds support for mounting ISO images
-  * See Examples\CustomMedia.psd1 for an example (#99, #135)
-* Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
-  * See Examples\MultipleDiskExample.psd1 for an example
 
 ### v0.10.3
 
