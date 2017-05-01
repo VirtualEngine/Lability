@@ -167,6 +167,7 @@ function New-LabImage {
                     PartitionStyle = $partitionStyle;
                 }
                 if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
+
                     $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData;
                 }
                 AddDiskImageHotfix @addDiskImageHotfixParams;

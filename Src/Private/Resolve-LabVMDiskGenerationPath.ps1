@@ -6,7 +6,8 @@ function Resolve-LabVMGenerationDiskPath {
     [CmdletBinding()]
     param (
         ## VM/node name.
-        [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [System.String] $Name,
 
         ## Media Id
