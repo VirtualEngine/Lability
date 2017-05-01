@@ -158,19 +158,17 @@ function Get-LabStatus {
                 WriteVerbose -Message ($localized.TestingWinRMConnection -f $computer);
                 try {
 
-                    $isContactable = Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
+                   if (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters) {
+
+                        ## WSMan is up so we should be able to connect, if not throw..
+                        WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
+                        $activeSessions += New-PSSession -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
+                    }
                 }
                 catch {
 
                     $inactiveSessions += $computer;
                     Write-Error $_;
-                }
-
-                if ($isContactable) {
-
-                    ## WSMan is up so we should be able to connect, if not throw..
-                    WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
-                    $activeSessions += New-PSSession -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
                 }
 
             }

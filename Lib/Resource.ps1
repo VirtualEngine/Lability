@@ -132,7 +132,7 @@ function TestResourceDownload {
         }
 
         if ($ThrowOnError -and (-not $isCompliant)) {
-            throw $localized.ResourceChecksumMismatchError -f $DestinationPath, $Checksum;
+            throw ($localized.ResourceChecksumMismatchError -f $DestinationPath, $Checksum);
         }
         else {
             return $isCompliant;
