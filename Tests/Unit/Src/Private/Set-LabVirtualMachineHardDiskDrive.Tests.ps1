@@ -5,13 +5,14 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
+Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
 
     InModuleScope $moduleName {
 
         ## Guard mocks
         Mock ImportDscResource -MockWith { }
         Mock InvokeDscResource -MockWith { }
+        Mock Assert-VirtualMachineHardDiskDriveParameter -MockWith { }
         Mock Test-Path { $true; }
 
         It "Should call 'InvokeDscResource' to create VHD when 'VhdPath' is not specified" {
