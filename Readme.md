@@ -95,7 +95,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
-### Unreleased
+### v0.11.0
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
