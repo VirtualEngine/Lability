@@ -95,10 +95,20 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### Unreleased
+
+* Adds support for setting VM processor options, e.g. nested virtualisation extensions
+  * See Examples\NanoComputeExample.psd1 for an example (#81)
+* Adds support for mounting ISO images
+  * See Examples\CustomMedia.psd1 for an example (#99, #135)
+* Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
+  * See Examples\MultipleDiskExample.psd1 for an example
+
 ### v0.11.0
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
+* Updates bundled xHyper-V DSC resource module to include experimental xVMProcessor, xVMHost and xVMHardDiskDrive resources
 * Adds Continuous Integration (CI) cmdlets
   * Get-LabStatus - Retrieves DSC configuration deployment status
   * Test-LabStatus - Tests DSC configuration deployment status has completed
@@ -123,7 +133,6 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds -RepositoryUri parameter to Set-LabHostDefault to support internal repositories (partially implements #195)
 * Changes default PowerShell gallery URI to HTTPS
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
-* Updates bundled xHyper-V DSC resource module to 3.7.0.0
 * Adds setting the default shell via media 'CustomData\DefaultShell' setting
 
 ### v0.10.2

@@ -1,7 +1,7 @@
-function NewLabVM {
+function New-LabVirtualMachine {
 <#
     .SYNOPSIS
-        Creates and configures a lab virtual machine.
+        Creates and configures a new lab virtual machine.
     .DESCRIPTION
         Creates an new VM, creating the switch if required, injecting all
         resources and snapshotting as required.
@@ -55,7 +55,7 @@ function NewLabVM {
     process {
 
         $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
-        $NodeName = $node.NodeName;
+        $nodeName = $node.NodeName;
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
 
@@ -108,7 +108,13 @@ function NewLabVM {
         }
 
         WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$displayName.vhdx");
-        ResetLabVMDisk -Name $DisplayName -Media $node.Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
+        $resetLabVMDiskParams = @{
+            Name = $displayName;
+            NodeName = $nodeName;
+            Media = $node.Media;
+            ConfigurationData = $ConfigurationData;
+        }
+        Reset-LabVMDisk @resetLabVMDiskParams -ErrorAction Stop;
 
         WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $displayName);
         $setLabVirtualMachineParams = @{
@@ -124,6 +130,16 @@ function NewLabVM {
             GuestIntegrationServices = $node.GuestIntegrationServices;
             ConfigurationData = $ConfigurationData;
         }
+
+        ## Add VMProcessor, Dvd Drive and additional HDD options
+        foreach ($additionalProperty in 'DvdDrive','ProcessorOption','HardDiskDrive') {
+
+            if ($node.ContainsKey($additionalProperty)) {
+
+                $setLabVirtualMachineParams[$additionalProperty] = $node[$additionalProperty];
+            }
+        }
+
         Set-LabVirtualMachine @setLabVirtualMachineParams;
 
         $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
@@ -134,7 +150,7 @@ function NewLabVM {
 
             WriteVerbose ($localized.AddingVMCustomization -f 'VM');
             $setLabVMDiskFileParams = @{
-                NodeName = $NodeName;
+                NodeName = $nodeName;
                 ConfigurationData = $ConfigurationData;
                 Path = $Path;
                 Credential = $Credential;
@@ -176,7 +192,7 @@ function NewLabVM {
 
             if ($node.WarningMessage -is [System.String]) {
 
-                WriteWarning ($localized.NodeCustomMessageWarning -f $NodeName, $node.WarningMessage.Trim("\n"));
+                WriteWarning ($localized.NodeCustomMessageWarning -f $nodeName, $node.WarningMessage.Trim("`n"));
             }
             else {
 
@@ -187,74 +203,4 @@ function NewLabVM {
         Write-Output -InputObject (Get-VM -Name $displayName);
 
     } #end process
-} #end function NewLabVM
-
-
-function RemoveLabVM {
-<#
-    .SYNOPSIS
-        Deletes a lab virtual machine.
-#>
-    [CmdletBinding(SupportsShouldProcess)]
-    param (
-        ## Specifies the lab virtual machine/node name.
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Name,
-
-        ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [System.Collections.Hashtable]
-        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData,
-
-        ## Include removal of virtual switch(es). By default virtual switches are not removed.
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $RemoveSwitch
-    )
-    process {
-
-        $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
-        if (-not $node.NodeName) {
-            throw ($localized.CannotLocateNodeError -f $Name);
-        }
-        $Name = $node.NodeDisplayName;
-
-        # Revert to oldest snapshot prior to VM removal to speed things up
-        Get-VMSnapshot -VMName $Name -ErrorAction SilentlyContinue |
-            Sort-Object -Property CreationTime |
-                Select-Object -First 1 |
-                    Restore-VMSnapshot -Confirm:$false;
-
-        RemoveLabVMSnapshot -Name $Name;
-
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VM', $Name);
-        $removeLabVirtualMachineParams = @{
-            Name = $Name;
-            SwitchName = $node.SwitchName;
-            Media = $node.Media;
-            StartupMemory = $node.StartupMemory;
-            MinimumMemory = $node.MinimumMemory;
-            MaximumMemory = $node.MaximumMemory;
-            MACAddress = $node.MACAddress;
-            ProcessorCount = $node.ProcessorCount;
-            ConfigurationData = $ConfigurationData;
-        }
-        RemoveLabVirtualMachine @removeLabVirtualMachineParams;
-
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHD/X', "$Name.vhd/vhdx");
-        $removeLabVMDiskParams = @{
-            Name = $node.NodeDisplayName;
-            Media = $node.Media;
-            ConfigurationData = $ConfigurationData;
-        }
-        RemoveLabVMDisk @removeLabVMDiskParams -ErrorAction Stop;
-
-        if ($RemoveSwitch) {
-
-            WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);
-            RemoveLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
-        }
-
-    } #end process
-} #end function RemoveLabVM
+} #end function

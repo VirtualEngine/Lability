@@ -28,7 +28,8 @@ function Reset-LabVM {
         $Credential = (& $credentialCheckScriptBlock),
 
         ## Local administrator password of the virtual machine.
-        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)] [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ParameterSetName = 'Password', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
         [System.Security.SecureString] $Password,
 
         ## Directory path containing the virtual machines' .mof file(s).
@@ -38,7 +39,11 @@ function Reset-LabVM {
 
         ## Skip creation of the initial baseline snapshot.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $NoSnapshot
+        [System.Management.Automation.SwitchParameter] $NoSnapshot,
+
+        ## Ignores missing MOF file
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $SkipMofCheck
     )
     begin {
 
@@ -57,6 +62,7 @@ function Reset-LabVM {
             ConfigurationData = $ConfigurationData;
             Name = $Name | Select-Object -First 1;
             Path = $Path;
+            UseDefaultPath = $SkipMofCheck;
         }
         $Path = Resolve-ConfigurationPath @resolveConfigurationPathParams;
 
@@ -72,8 +78,16 @@ function Reset-LabVM {
                 $activity = $localized.ConfiguringNode -f $vmName;
                 Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
 
-                RemoveLabVM -Name $vmName -ConfigurationData $ConfigurationData;
-                NewLabVM -Name $vmName -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                [ref] $null = Remove-LabVirtualMachine -Name $vmName -ConfigurationData $ConfigurationData;
+
+                $newLabVirtualMachineParams = @{
+                    Name = $vmName;
+                    ConfigurationData = $ConfigurationData;
+                    Path = $Path;
+                    NoSnapshot = $NoSnapshot;
+                    Credential = $Credential;
+                }
+                New-LabVirtualMachine @newLabVirtualMachineParams;
 
             } #end if should process
         } #end foreach VMd

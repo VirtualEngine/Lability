@@ -10,14 +10,14 @@ Describe 'Unit\Src\Public\Remove-LabConfiguration' {
     InModuleScope -ModuleName $moduleName {
 
         ## Guard mocks
-        Mock RemoveLabVM -MockWith { }
+        Mock Remove-LabVirtualMachine -MockWith { }
 
-        It 'Calls "RemoveLabVM" for each node' {
+        It 'Calls "Remove-LabVirtualMachine" for each node' {
             $configurationData = @{ AllNodes = @( @{ NodeName = 'VM1'; }, @{ NodeName = 'VM2'; } ) }
 
             Remove-LabConfiguration -ConfigurationData $configurationData -Confirm:$false;
 
-            Assert-MockCalled RemoveLabVM -Exactly $configurationData.AllNodes.Count -Scope It;
+            Assert-MockCalled Remove-LabVirtualMachine -Exactly $configurationData.AllNodes.Count -Scope It;
         }
 
     } #end InModuleScope

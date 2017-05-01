@@ -53,7 +53,7 @@ function Test-LabVM {
                     Media = $node.Media;
                     ConfigurationData = $ConfigurationData;
                 }
-                if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
+                if (-not (Test-LabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
 
                     $isNodeCompliant = $false;
                 }

@@ -22,7 +22,7 @@ Describe 'Unit\Src\Private\Get-LabVirtualMachineProperty' {
             ProcessorCount = 1;
         }
 
-        Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+        Mock Resolve-LabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
         It 'Returns generation 1 VM for x86 media architecture' {
             Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x86'; } }

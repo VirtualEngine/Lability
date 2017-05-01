@@ -1,0 +1,17 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xVMProcessor")]
+class MSFT_xVMProcessor : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the virtual machine on which the processor is to be configured.")] String VMName;
+    [Write, Description("Specifies whether to enable host resource protection.")] Boolean EnableHostResourceProtection;
+    [Write, Description("Specifies whether nested virtualization is enabled.")] Boolean ExposeVirtualizationExtensions;
+    [Write, Description("Specifies the maximum thread core per processor core.")] Uint64 HwThreadCountPerCore;
+    [Write, Description("Specifies the maximum percentage of resources available to the virtual machine processor to be configured. Allowed values range from 0 to 100.")] Uint64 Maximum;
+    [Write, Description("Specifies the maximum number of processors per NUMA node to be configured for the virtual machine.")] Uint32 MaximumCountPerNumaNode;
+    [Write, Description("Specifies the maximum number of sockets per NUMA node to be configured for the virtual machine.")] Uint32 MaximumCountPerNumaSocket;
+    [Write, Description("Specifies the priority for allocating the physical computer's processing power to this virtual machine relative to others. Allowed values range from 1 to 10000.")] Uint32 RelativeWeight;
+    [Write, Description("Specifies the percentage of processor resources to be reserved for this virtual machine. Allowed values range from 0 to 100.")] Uint64 Reserve;
+    [Write, Description("Specifies the name of the processor resource pool to be used.")] String ResourcePoolName;
+    [Write, Description("Specifies whether the virtual processors features are to be limited for compatibility when migrating the virtual machine to another host.")] Boolean CompatibilityForMigrationEnabled;
+    [Write, Description("Specifies whether the virtual processor’s features are to be limited for compatibility with older operating systems.")] Boolean CompatibilityForOlderOperatingSystemsEnabled;
+    [Write, Description("If specified, shutdowns and restarts the VM if needed for property changes.")] Boolean RestartIfNeeded;
+};

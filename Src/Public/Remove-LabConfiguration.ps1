@@ -51,7 +51,7 @@ function Remove-LabConfiguration {
             $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingVM -f $nodeProperties.NodeDisplayName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
-                RemoveLabVM -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch -Confirm:$false;
+                Remove-LabVirtualMachine -Name $node.NodeName -ConfigurationData $ConfigurationData -RemoveSwitch:$RemoveSwitch -Confirm:$false;
             }
 
         } #end foreach node

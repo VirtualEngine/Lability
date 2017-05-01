@@ -1,0 +1,20 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xVMHost")]
+class MSFT_xVMHost : OMI_BaseResource
+{
+    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("Indicates whether users can use enhanced mode when they connect to virtual machines on this server by using Virtual Machine Connection.")] Boolean EnableEnhancedSessionMode;
+    [Write, Description("Specifies the default value of the World Wide Node Name on the Hyper-V host.")] String FibreChannelWwnn;
+    [Write, Description("Specifies the maximum value that can be used to generate World Wide Port Names on the Hyper-V host.")] String FibreChannelWwpnMaximum;
+    [Write, Description("Specifies the minimum value that can be used to generate the World Wide Port Names on the Hyper-V host.")] String FibreChannelWwpnMinimum;
+    [Write, Description("Specifies the maximum MAC address using a valid hexadecimal value.")] String MacAddressMaximum;
+    [Write, Description("Specifies the minimum MAC address using a valid hexadecimal value.")] String MacAddressMinimum;
+    [Write, Description("Specifies the maximum number of storage migrations that can be performed at the same time on the Hyper-V host.")] Uint32 MaximumStorageMigrations;
+    [Write, Description("Specifies the maximum number of live migrations that can be performed at the same time on the Hyper-V host.")] Uint32 MaximumVirtualMachineMigrations;
+    [Write, Description("Specifies whether virtual machines on the Hyper-V host can use resources from more than one NUMA node.")] Boolean NumaSpanningEnabled;
+    [Write, Description("Specifies how often the Hyper-V host saves the data that tracks resource usage. The range is a minimum of 60 minutes to a maximum of 1440 (24 hours).")] Uint32 ResourceMeteringSaveIntervalMinute;
+    [Write, Description("Specifies how networks are selected for incoming live migration traffic.")] Boolean UseAnyNetworkForMigration;
+    [Write, Description("Specifies the default folder to store virtual hard disks on the Hyper-V host.")] String VirtualHardDiskPath;
+    [Write, Description("Specifies the type of authentication to be used for live migrations. The acceptable values for this parameter are 'Kerberos' and 'CredSSP'."), ValueMap{"CredSSP","Kerberos"}, Values{"CredSSP","Kerberos"}] String VirtualMachineMigrationAuthenticationType;
+    [Write, Description("Specifies the performance option to use for live migration. The acceptable values for this parameter are 'TCPIP', 'Compression' and 'SMB'."), ValueMap{"TCPIP","Compression","SMB"}, Values{"TCPIP","Compression","SMB"}] String VirtualMachineMigrationPerformanceOption;
+    [Write, Description("Specifies the default folder to store virtual machine configuration files on the Hyper-V host.")] String VirtualMachinePath;
+};

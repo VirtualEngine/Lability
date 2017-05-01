@@ -11,12 +11,15 @@
             Lability_SwitchName         = 'Internal';
         }
         @{
-            NodeName                = 'NANOCOMPUTE1';
-            IPAddress               = '10.0.0.10';
-            Lability_Media          = '2016_x64_Datacenter_Nano_Compute_EN_Eval';
-            Lability_ProcessorCount = 2;
-            Lability_StartupMemory  = 2GB;
-            Lability_WarningMessage = "Keyboard layout will be 'EN-US'";
+            NodeName                 = 'NANOCOMPUTE1';
+            IPAddress                = '10.0.0.10';
+            Lability_Media           = '2016_x64_Datacenter_Nano_Compute_EN_Eval';
+            Lability_ProcessorCount  = 2;
+            Lability_StartupMemory   = 2GB;
+            Lability_WarningMessage  = "Keyboard layout will be 'EN-US'";
+
+            ## Specify xVMProcessor options as a hashtable.
+            Lability_ProcessorOption = @{ ExposeVirtualizationExtensions = $true; }
         }
     );
     NonNodeData = @{

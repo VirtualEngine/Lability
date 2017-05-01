@@ -6,9 +6,14 @@
             Lability_Media = '2008R2_x64_Standard_EN_Eval';
         }
         @{
-            NodeName = '2012R2VL';
+            NodeName                = '2012R2VL';
             Lability_ProcessorCount = 2;
-            Lability_Media = '2012R2_x64_Standard_EN_VL';
+            Lability_Media          = '2012R2_x64_Standard_EN_VL';
+
+            # Specify xVMDvdDrive options as a hashtable to mount an ISO image
+            # Lability_DvdDrive       = @{ ControllerNumber   = 0;
+            #                              ControllerLocation = 1;
+            #                              Path               = 'C:\Path\To\Image.iso'; }
         }
     );
     NonNodeData = @{
