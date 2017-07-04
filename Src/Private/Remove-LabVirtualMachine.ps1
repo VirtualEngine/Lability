@@ -63,7 +63,7 @@ function Remove-LabVirtualMachine {
         if ($RemoveSwitch) {
 
             WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);
-            RemoveLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
+            Remove-LabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
         }
 
     } #end process

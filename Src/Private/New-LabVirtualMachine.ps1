@@ -99,7 +99,7 @@ function New-LabVirtualMachine {
         foreach ($switchName in $node.SwitchName) {
 
             WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switchName);
-            SetLabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
+            Set-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
         if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {

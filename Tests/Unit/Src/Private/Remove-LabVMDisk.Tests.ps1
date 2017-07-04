@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
+Describe 'Unit\Src\Private\Remove-LabVMDisk' {
 
     InModuleScope $moduleName {
 
@@ -19,7 +19,7 @@ Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
 
-            $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
+            $null = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
 
             Assert-MockCalled Get-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
         }
@@ -43,7 +43,7 @@ Describe 'Unit\Src\Private\Remove-LabVMDiskPath' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; Generation = 'VHDX'; } }
 
-            $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia -ConfigurationData @{};
+            $null = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia -ConfigurationData @{};
 
             Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }

@@ -5,14 +5,14 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
+Describe 'Unit\Src\Private\Remove-LabVirtualMachine' {
 
     InModuleScope $moduleName {
 
         ## Guard mocks
         Mock Clear-LabVirtualMachine -MockWith { }
         Mock Remove-LabVMDisk -MockWith { }
-        Mock RemoveLabSwitch -MockWith { }
+        Mock Remove-LabSwitch -MockWith { }
         Mock RemoveLabVMSnapshot -MockWith { }
 
         It 'Throws when VM cannot be found' {
@@ -74,7 +74,7 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
-            Assert-MockCalled RemoveLabSwitch -Exactly 0 -Scope It;
+            Assert-MockCalled Remove-LabSwitch -Exactly 0 -Scope It;
         }
 
         It 'Removes the virtual switch when "RemoveSwitch" is specified' {
@@ -88,7 +88,7 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -RemoveSwitch;
 
-            Assert-MockCalled RemoveLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
+            Assert-MockCalled Remove-LabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
         }
 
         It 'Calls "RemoveLabVirtualMachine" with "ConfigurationData" (#97)' {

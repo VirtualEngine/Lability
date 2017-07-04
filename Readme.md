@@ -104,6 +104,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
   * See Examples\MultipleDiskExample.psd1 for an example
 * Fixes bug checking downloaded resource checksums (#219)
+* Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
 
 ### v0.11.0
 
