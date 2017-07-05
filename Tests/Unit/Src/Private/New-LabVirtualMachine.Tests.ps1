@@ -19,7 +19,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         Mock Get-VM -MockWith { }
         Mock Test-LabImage -MockWith { return $true; }
         Mock New-LabImage -MockWith { }
-        Mock SetLabSwitch -MockWith { }
+        Mock Set-LabSwitch -MockWith { }
 
         $testPassword = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);
 
@@ -37,7 +37,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Does not throw when "ClientCertificatePath" cannot be found and "IsQuickVM" = "$true"' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -61,7 +60,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Does not throw when "RootCertificatePath" cannot be found and "IsQuickVM" = "$true"' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -74,7 +72,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Creates parent image if it is not already present' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -82,12 +79,12 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             }
             Mock Test-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return $false; }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled New-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
         }
 
-        It 'Calls "SetLabSwitch" to configure VM switch' {
+        It 'Calls "Set-LabSwitch" to configure VM switch' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
             $testVMSwitch = 'Test Switch';
@@ -97,12 +94,12 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-            Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
+            Assert-MockCalled Set-LabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Scope It;
         }
 
-        It 'Calls "SetLabSwitch" once per network switch' {
+        It 'Calls "Set-LabSwitch" once per network switch' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
             $testVMSwitch = 'Test Switch';
@@ -112,9 +109,9 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
-            Assert-MockCalled SetLabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Exactly 2 -Scope It;
+            Assert-MockCalled Set-LabSwitch -ParameterFilter { $Name -eq $testVMSwitch } -Exactly 2 -Scope It;
         }
 
         It 'Calls "Reset-LabVMDisk" to create VM disk' {
@@ -127,7 +124,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Reset-LabVMDisk -ParameterFilter { $Name -eq $testVMName -and $Media -eq $testMedia } -Scope It;
         }
@@ -142,7 +139,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
@@ -157,7 +154,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $GuestIntegrationServices -eq $true } -Scope It;
         }
@@ -181,7 +178,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             }
             Mock ResolveLabMedia -MockWith { return $Id; }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Set-LabVMDiskFile -ParameterFilter { $NodeName -eq $testVMName } -Scope It;
         }
@@ -209,7 +206,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                 )
             }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -NoSnapshot;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword -NoSnapshot;
 
             Assert-MockCalled Checkpoint-VM -Exactly 0 -Scope It;
         }
@@ -228,7 +225,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Calls "Test-LabImage" with "ConfigurationData" (#97)' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -236,7 +232,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             }
             Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $false; }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }
@@ -244,7 +240,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Calls "Reset-LabVMDisk" with "ConfigurationData" (#97)' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -252,7 +247,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             }
             Mock Test-LabImage -MockWith { return $false; }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Reset-LabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }
@@ -260,7 +255,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Calls "Set-LabVirtualMachine" with "ConfigurationData" (#97)' {
             $testVMName = 'TestVM';
             $testMedia = 'Test-Media';
-            $testVMSwitch = 'Test Switch';
             $configurationData = @{
                 AllNodes = @(
                     @{ NodeName = $testVMName; Media = $testMedia; }
@@ -268,7 +262,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             }
             Mock Test-LabImage -MockWith { return $false; }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }

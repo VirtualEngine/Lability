@@ -40,7 +40,7 @@ Describe 'Src\LabVMDiskFile' {
 
         Context 'Validates "SetLabVMDiskFileResource" method' {
 
-            It 'Calls "ExpandLabResource" using "ResourceShare" path' {
+            It 'Calls "Expand-LabResource" using "ResourceShare" path' {
 
                 $testNode = 'TestNode';
                 $testConfigurationData = @{}
@@ -50,7 +50,7 @@ Describe 'Src\LabVMDiskFile' {
                     ResourceShareName = $testResourceShare;
                 }
                 Mock Get-ConfigurationData -MockWith { return $testHostConfiguration; }
-                Mock ExpandLabResource -MockWith { }
+                Mock Expand-LabResource -MockWith { }
 
                 $testParams = @{
                     ConfigurationData = $testConfigurationData;
@@ -60,7 +60,7 @@ Describe 'Src\LabVMDiskFile' {
                 SetLabVMDiskFileResource @testParams;
 
                 $expectedDestinationPath = '{0}:\{1}' -f $testDriveLetter, $testResourceShare;
-                Assert-MockCalled ExpandLabResource -ParameterFilter { $DestinationPath -eq $expectedDestinationPath } -Scope It
+                Assert-MockCalled Expand-LabResource -ParameterFilter { $DestinationPath -eq $expectedDestinationPath } -Scope It
             }
 
         } #end context Validates "SetLabVMDiskFileResource" method

@@ -36,10 +36,16 @@ function Remove-LabVirtualMachine {
 
         RemoveLabVMSnapshot -Name $Name;
 
+        $environmentSwitchNames = @();
+        foreach ($switchName in $node.SwitchName) {
+
+            $environmentSwitchNames += Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
+        }
+
         WriteVerbose ($localized.RemovingNodeConfiguration -f 'VM', $Name);
         $clearLabVirtualMachineParams = @{
             Name = $Name;
-            SwitchName = $node.SwitchName;
+            SwitchName = $environmentSwitchNames;
             Media = $node.Media;
             StartupMemory = $node.StartupMemory;
             MinimumMemory = $node.MinimumMemory;
@@ -62,8 +68,12 @@ function Remove-LabVirtualMachine {
 
         if ($RemoveSwitch) {
 
-            WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $node.SwitchName);
-            RemoveLabSwitch -Name $node.SwitchName -ConfigurationData $ConfigurationData;
+            foreach ($switchName in $node.SwitchName) {
+
+                $environmentSwitchName = Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
+                WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $environmentSwitchName);
+                Remove-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
+            }
         }
 
     } #end process

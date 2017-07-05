@@ -29,17 +29,6 @@ function Resolve-NodePropertyValue {
     process {
 
         $node = @{ };
-        $moduleName = $labDefaults.ModuleName;
-
-        ## Set the node's display name, if defined.
-        if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix) {
-
-            $node["$($moduleName)_EnvironmentPrefix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentPrefix;
-        }
-        if ($ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix) {
-
-            $node["$($moduleName)_EnvironmentSuffix"] = $ConfigurationData.NonNodeData.$moduleName.EnvironmentSuffix;
-        }
 
         if (-not $NoEnumerateWildcardNode) {
 
@@ -73,19 +62,13 @@ function Resolve-NodePropertyValue {
             }
         }
 
-        ## Set the node's friendly/display name
-        $nodeDisplayName = $node.NodeName;
-        $environmentPrefix = '{0}_EnvironmentPrefix' -f $moduleName;
-        $environmentSuffix = '{0}_EnvironmentSuffix' -f $moduleName;
-        if (-not [System.String]::IsNullOrEmpty($node[$environmentPrefix])) {
-
-            $nodeDisplayName = '{0}{1}' -f $node[$environmentPrefix], $nodeDisplayName;
+        $moduleName = $labDefaults.ModuleName;
+        $resolveLabEnvironmentNameParams = @{
+            Name              = $NodeName;
+            ConfigurationData = $ConfigurationData;
         }
-        if (-not [System.String]::IsNullOrEmpty($node[$environmentSuffix])) {
-
-            $nodeDisplayName = '{0}{1}' -f $nodeDisplayName, $node[$environmentSuffix];
-        }
-        $node["$($moduleName)_NodeDisplayName"] = $nodeDisplayName;
+        ## Set the node's friendly/display name with any prefix/suffix
+        $node["$($moduleName)_NodeDisplayName"] = Resolve-LabEnvironmentName @resolveLabEnvironmentNameParams;
 
         ## Rename/overwrite existing parameter values where $moduleName-specific parameters exist
         foreach ($key in @($node.Keys)) {

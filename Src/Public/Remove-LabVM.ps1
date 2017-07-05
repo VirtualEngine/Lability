@@ -57,6 +57,7 @@ function Remove-LabVM {
                 }
 
                 Remove-LabVirtualMachine -Name $vmName -ConfigurationData $configurationData;
+
             } #end if should process
         } #end foreach VM
 

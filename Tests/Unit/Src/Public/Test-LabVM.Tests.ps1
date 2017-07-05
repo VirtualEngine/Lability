@@ -11,7 +11,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
 
         ## Guard mocks
         Mock Test-LabImage -MockWith { }
-        Mock TestLabSwitch -MockWith { }
+        Mock Test-LabSwitch -MockWith { }
         Mock Test-LabVMDisk -MockWith { }
         Mock Test-LabVirtualMachine -MockWith { }
 
@@ -23,7 +23,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $true; }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $true; }
 
@@ -40,7 +40,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $true; }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $false; }
 
@@ -68,7 +68,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $false; }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $true; }
 
@@ -83,7 +83,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $true; }
-            Mock TestLabSwitch -MockWith { return $false; }
+            Mock Test-LabSwitch -MockWith { return $false; }
             Mock Test-LabVMDisk -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $true; }
 
@@ -98,7 +98,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $true; }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -MockWith { return $false; }
             Mock Test-LabVirtualMachine -MockWith { return $true; }
 
@@ -113,7 +113,7 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                 )
             }
             Mock Test-LabImage -MockWith { return $true; }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $false; }
 
@@ -127,12 +127,12 @@ Describe 'Unit\Src\Public\Test-LabVM' {
                     @{ NodeName = $testVM; }
                 )
             }
-            Mock TestLabSwitch -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
             Mock Test-LabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
             Mock Test-LabVirtualMachine -MockWith { return $true; }
             Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
 
-            $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
+            $null = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
 
             Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             Assert-MockCalled Test-LabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;

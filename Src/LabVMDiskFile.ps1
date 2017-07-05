@@ -70,7 +70,7 @@ function SetLabVMDiskFileResource {
             DestinationPath = $resourceDestinationPath;
         }
         WriteVerbose -Message ($localized.AddingVMResource -f 'VM');
-        ExpandLabResource @expandLabResourceParams;
+        Expand-LabResource @expandLabResourceParams;
 
     } #end process
 } #end function SetLabVMDiskFileResource

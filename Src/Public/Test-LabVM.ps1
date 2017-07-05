@@ -41,7 +41,7 @@ function Test-LabVM {
                 WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
                 foreach ($switchName in $node.SwitchName) {
 
-                    if (-not (TestLabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
+                    if (-not (Test-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
 
                         $isNodeCompliant = $false;
                     }

@@ -196,7 +196,7 @@ Describe 'Src\LabMedia' {
                 $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'VHD'; }
                 Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
                 Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
-                Mock InvokeResourceDownload { Write-Host $Destinationpath -ForegroundColor Yellow }
+                Mock InvokeResourceDownload { }
 
                 InvokeLabMediaImageDownload -Media $fakeLabMedia;
 
