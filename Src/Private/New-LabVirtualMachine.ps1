@@ -96,9 +96,13 @@ function New-LabVirtualMachine {
 
         } #end if not quick VM
 
+        $environmentSwitchNames = @();
         foreach ($switchName in $node.SwitchName) {
 
-            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $switchName);
+            ## Create prefixed switch names for VM creation
+            $environmentSwitchName = Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $environmentSwitchName);
+            $environmentSwitchNames += $environmentSwitchName;
             Set-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
@@ -119,7 +123,7 @@ function New-LabVirtualMachine {
         WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $displayName);
         $setLabVirtualMachineParams = @{
             Name = $DisplayName;
-            SwitchName = $node.SwitchName;
+            SwitchName = $environmentSwitchNames;
             Media = $node.Media;
             StartupMemory = $node.StartupMemory;
             MinimumMemory = $node.MinimumMemory;

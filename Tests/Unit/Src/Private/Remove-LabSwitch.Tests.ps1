@@ -9,32 +9,32 @@ Describe 'Unit\Src\Private\Remove-LabSwitch' {
 
     InModuleScope $moduleName {
 
-        It 'Calls "InvokeDscResource" with "Ensure" = "Absent"' {
-            $configurationData = @{
-                NonNodeData = @{
-                    $labDefaults.ModuleName = @{
-                        Network = @( ) } } }
-            Mock Get-VMSwitch { }
-            Mock ImportDscResource -MockWith { }
-            Mock InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -MockWith { return $false; }
+        ## Guard mocks
+        Mock InvokeDscResource { }
 
-            Remove-LabSwitch -ConfigurationData $configurationData -Name 'Test Switch';
-
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
-        }
-
-        It 'Does not call "InvokeDscResource" for an existing switch' {
+        It 'Calls "InvokeDscResource" with "Ensure" = "Absent" when switch exists' {
             $testSwitchName = 'Existing Virtual Switch';
-            $fakeExistingSwitch = [PSCustomObject] @{
+            $fakeExistingSwitch = @{
                 Name = $testSwitchName;
                 SwitchType = 'Private';
                 IsExisting = $true;
             }
-            $configurationData = @{ }
             Mock Resolve-LabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
-            Mock InvokeDscResource { }
 
-            Remove-LabSwitch -ConfigurationData $configurationData -Name $testSwitchName;
+            Remove-LabSwitch -ConfigurationData @{ } -Name $testSwitchName;
+
+            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
+        }
+
+        It 'Does not call "InvokeDscResource" for a non-existent switch' {
+            $testSwitchName = 'Non-existent Virtual Switch';
+            $fakeNonexistentSwitch = @{
+                Name = $testSwitchName;
+                SwitchType = 'Private';
+            }
+            Mock Resolve-LabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeNonexistentSwitch}
+
+            Remove-LabSwitch -ConfigurationData @{ } -Name $testSwitchName;
 
             Assert-MockCalled InvokeDscResource -Exactly 0 -Scope It;
         }

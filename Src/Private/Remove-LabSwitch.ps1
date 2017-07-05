@@ -20,11 +20,12 @@ function Remove-LabSwitch {
     process {
 
         $networkSwitch = Resolve-LabSwitch @PSBoundParameters;
-        if (($null -eq $networkSwitch.IsExisting) -or ($networkSwitch.IsExisting -eq $false)) {
+        if (($null -ne $networkSwitch.IsExisting) -and ($networkSwitch.IsExisting -eq $true)) {
 
             if ($PSCmdlet.ShouldProcess($Name)) {
 
                 $networkSwitch['Ensure'] = 'Absent';
+                [ref] $null = $networkSwitch.Remove('IsExisting');
                 ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
                 [ref] $null = InvokeDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
             }
