@@ -105,6 +105,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * See Examples\MultipleDiskExample.psd1 for an example
 * Fixes bug checking downloaded resource checksums (#219)
 * Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
+* Fixes bug creating images with an empty hotfix array/object (#165, #221)
 
 ### v0.11.0
 
