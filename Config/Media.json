@@ -664,11 +664,7 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [
-		{
-
-		}
-	]
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x86_Enterprise_EN_Eval",
@@ -690,11 +686,7 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [
-		{
-
-		}
-	]
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
@@ -716,11 +708,7 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [
- 		{
-
- 		}
- 	]
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x86_Enterprise_LTSB_EN_Eval",
@@ -742,9 +730,5 @@
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
-    "Hotfixes": [
- 		{
-
- 		}
- 	]
+    "Hotfixes": []
 }]
