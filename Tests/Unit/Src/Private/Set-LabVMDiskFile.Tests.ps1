@@ -23,12 +23,12 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
         Mock Mount-Vhd -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
         Mock Get-Partition -MockWith { return [PSCustomObject] @{ DriveLetter = $testDriveLetter; } }
         Mock Start-Service -MockWith { }
-        Mock SetLabVMDiskFileResource -MockWith { }
-        Mock SetLabVMDiskFileBootstrap -MockWith { }
-        Mock SetLabVMDiskFileUnattendXml -MockWith { }
-        Mock SetLabVMDiskFileMof -MockWith { }
-        Mock SetLabVMDiskFileCertificate -MockWith { }
-        Mock SetLabVMDiskFileModule -MockWith { }
+        Mock Set-LabVMDiskFileResource -MockWith { }
+        Mock Set-LabVMDiskFileBootstrap -MockWith { }
+        Mock Set-LabVMDiskFileUnattendXml -MockWith { }
+        Mock Set-LabVMDiskFileMof -MockWith { }
+        Mock Set-LabVMDiskFileCertificate -MockWith { }
+        Mock Set-LabVMDiskFileModule -MockWith { }
         Mock Dismount-Vhd -MockWith { }
 
         $testParams = @{
@@ -59,40 +59,40 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
             Assert-MockCalled Start-ShellHWDetectionService -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileResource" to copy node resources' {
+        It 'Calls "Set-LabVMDiskFileResource" to copy node resources' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileResource -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileResource -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileBootstrap" to copy Lability bootstrap' {
+        It 'Calls "Set-LabVMDiskFileBootstrap" to copy Lability bootstrap' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileBootstrap -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileBootstrap -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileUnattendXml" to copy unattended installation file' {
+        It 'Calls "Set-LabVMDiskFileUnattendXml" to copy unattended installation file' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileUnattendXml -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileUnattendXml -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileMof" to copy node DSC configuaration files' {
+        It 'Calls "Set-LabVMDiskFileMof" to copy node DSC configuaration files' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileMof -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileMof -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileCertificate" to copy node certificate files' {
+        It 'Calls "Set-LabVMDiskFileCertificate" to copy node certificate files' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileCertificate -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileCertificate -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
-        It 'Calls "SetLabVMDiskFileModule" to copy PowerShell/DSC resource modules' {
+        It 'Calls "Set-LabVMDiskFileModule" to copy PowerShell/DSC resource modules' {
             Set-LabVMDiskFile @testParams;
 
-            Assert-MockCalled SetLabVMDiskFileModule -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
+            Assert-MockCalled Set-LabVMDiskFileModule -ParameterFilter { $VhdDriveLetter -eq $testDriveLetter } -Scope It;
         }
 
         It 'Dismounts virtual machine VHDX file' {
@@ -104,7 +104,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
 
         It 'Dismounts virtual machine VHDX file when error is thrown' {
 
-            Mock SetLabVMDiskFileResource -MockWith { throw 'Should still dismount'; }
+            Mock Set-LabVMDiskFileResource -MockWith { throw 'Should still dismount'; }
 
             { Set-LabVMDiskFile @testParams } | Should Throw;
             Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
