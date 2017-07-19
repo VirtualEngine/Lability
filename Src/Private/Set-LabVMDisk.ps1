@@ -6,6 +6,7 @@ function Set-LabVMDisk {
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

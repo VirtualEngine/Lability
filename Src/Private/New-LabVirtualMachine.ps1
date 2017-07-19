@@ -7,6 +7,7 @@ function New-LabVirtualMachine {
         resources and snapshotting as required.
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)]

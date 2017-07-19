@@ -4,6 +4,7 @@ function Reset-LabVMDisk {
         Removes and resets lab VM disk file (VHDX) configuration.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## VM/node display name
         [Parameter(Mandatory, ValueFromPipeline)]

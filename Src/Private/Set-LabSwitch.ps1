@@ -6,6 +6,7 @@ function Set-LabSwitch {
         Sets/invokes a virtual network switch configuration using the xVMSwitch DSC resource.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Switch Id/Name
         [Parameter(Mandatory, ValueFromPipeline)]
