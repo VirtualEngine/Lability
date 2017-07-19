@@ -191,8 +191,8 @@ function Set-LabVMDefault {
             $vmDefaults.ProcessorCount = $ProcessorCount;
         }
         if ($PSBoundParameters.ContainsKey('Media')) {
-            ## ResolveLabMedia will throw if media cannot be resolved
-            $labMedia = ResolveLabMedia -Id $Media;
+            ## Resolve-LabMedia will throw if media cannot be resolved
+            $labMedia = Resolve-LabMedia -Id $Media;
             $vmDefaults.Media = $labMedia.Id;
         }
         if ($PSBoundParameters.ContainsKey('SwitchName')) {

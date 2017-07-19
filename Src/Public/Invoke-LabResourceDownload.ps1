@@ -112,13 +112,13 @@ function Invoke-LabResourceDownload {
 
                 foreach ($id in $MediaId) {
 
-                    $labMedia = ResolveLabMedia -ConfigurationData $ConfigurationData -Id $id;
-                    InvokeLabMediaImageDownload -Media $labMedia -Force:$Force;
+                    $labMedia = Resolve-LabMedia -ConfigurationData $ConfigurationData -Id $id;
+                    Invoke-LabMediaImageDownload -Media $labMedia -Force:$Force;
 
                     WriteVerbose $Localized.DownloadingAllRequiredHotfixes;
                     if ($labMedia.Hotfixes.Count -gt 0) {
                         foreach ($hotfix in $labMedia.Hotfixes) {
-                            InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                            Invoke-LabMediaDownload -Id $hotfix.Id -Uri $hotfix.Uri;
                         }
                     }
                     else {

@@ -62,8 +62,8 @@ function New-LabImage {
             throw ($localized.ImageAlreadyExistsError -f $Id);
         }
 
-        $media = ResolveLabMedia @PSBoundParameters;
-        $mediaFileInfo = InvokeLabMediaImageDownload -Media $media;
+        $media = Resolve-LabMedia @PSBoundParameters;
+        $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
         $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         if ($media.MediaType -eq 'VHD') {

@@ -147,7 +147,7 @@ function New-LabVirtualMachine {
 
         Set-LabVirtualMachine @setLabVirtualMachineParams;
 
-        $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
+        $media = Resolve-LabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
         if ($media.OperatingSystem -eq 'Linux') {
             ## Skip injecting files for Linux VMs..
         }
