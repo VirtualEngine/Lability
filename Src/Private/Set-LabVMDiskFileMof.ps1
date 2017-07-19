@@ -4,6 +4,7 @@ function Set-LabVMDiskFileMof {
         Copies a node's mof files to a VHD(X) file.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

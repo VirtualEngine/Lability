@@ -5,6 +5,7 @@ function Set-LabVMDiskModule {
         them to the destination path specified.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lability PowerShell modules/DSC resource hashtable
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

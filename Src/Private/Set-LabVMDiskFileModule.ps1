@@ -5,6 +5,7 @@ function Set-LabVMDiskFileModule {
 #>
 
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

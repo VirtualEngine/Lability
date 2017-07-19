@@ -8,6 +8,7 @@ function Resolve-LabMedia {
         This also permits specifying of media within Configuration Data and not having to be registered on the lab host.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         ## Media ID
         [Parameter(Mandatory, ValueFromPipeline)]

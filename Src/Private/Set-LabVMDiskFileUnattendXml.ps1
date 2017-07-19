@@ -4,6 +4,7 @@ function Set-LabVMDiskFileUnattendXml {
         Copies a node's unattent.xml to a VHD(X) file.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

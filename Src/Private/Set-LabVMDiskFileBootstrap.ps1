@@ -3,8 +3,8 @@ function Set-LabVMDiskFileBootstrap {
     .SYNOPSIS
         Copies a the Lability bootstrap file to a VHD(X) file.
 #>
-
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Mounted VHD path
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]

@@ -4,6 +4,7 @@ function Set-LabVMDiskFileCertificate {
         Copies a node's certificate(s) to a VHD(X) file.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Lab VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]

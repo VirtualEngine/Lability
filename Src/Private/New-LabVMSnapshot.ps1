@@ -4,6 +4,7 @@ function New-LabVMSnapshot {
         Creates a snapshot of all virtual machines with the specified snapshot name.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         [Parameter(Mandatory, ValueFromPipeline)] [ValidateNotNullOrEmpty()]
         [System.String[]] $Name,
