@@ -106,6 +106,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug checking downloaded resource checksums (#219)
 * Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
 * Fixes bug creating images with an empty hotfix array/object (#165, #221)
+* Fixes bug in Install-LabModule deploying modules to the AllUsers scope (#224)
 
 ### v0.11.0
 

@@ -42,15 +42,18 @@ function Install-LabModule {
     )
     process {
 
+        $moduleRelativePath = 'WindowsPowerShell\Modules';
+
         if ($Scope -eq 'AllUsers') {
 
-            $localizedProgramFiles = Resolve-ProgramFilesFolder -Path $env:SystemRoot;
-            $DestinationPath = Join-Path -Path $localizedProgramFiles -ChildPath 'WindowsPowerShell\Modules';
+            $systemDrive = (Resolve-Path -Path $env:SystemDrive).Drive;
+            $localizedProgramFiles = Resolve-ProgramFilesFolder -Drive $systemDrive;
+            $DestinationPath = Join-Path -Path $localizedProgramFiles -ChildPath $moduleRelativePath;
         }
         elseif ($Scope -eq 'CurrentUser') {
 
             $userDocuments = [System.Environment]::GetFolderPath('MyDocuments');
-            $DestinationPath = Join-Path -Path $userDocuments -ChildPath 'WindowsPowerShell\Modules';
+            $DestinationPath = Join-Path -Path $userDocuments -ChildPath $moduleRelativePath;
         }
 
         $copyLabModuleParams = @{
