@@ -28,7 +28,7 @@ function Reset-LabVMDisk {
 
         $null = $PSBoundParameters.Remove('NodeName');
 
-        RemoveLabVMSnapshot -Name $Name;
+        Remove-LabVMSnapshot -Name $Name;
         Remove-LabVMDisk -NodeName $NodeName @PSBoundParameters;
         Set-LabVMDisk @PSBoundParameters;
 

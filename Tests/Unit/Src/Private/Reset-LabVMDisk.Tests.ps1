@@ -10,7 +10,7 @@ Describe 'Unit\Src\Private\Reset-LabVMDiskPath' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock RemoveLabVMSnapshot -MockWith { }
+        Mock Remove-LabVMSnapshot -MockWith { }
         Mock Remove-LabVMDisk -MockWith { }
         Mock Set-LabVMDisk -MockWith { }
 
@@ -20,7 +20,7 @@ Describe 'Unit\Src\Private\Reset-LabVMDiskPath' {
         It 'Removes any existing snapshots' {
             Reset-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
 
-            Assert-MockCalled RemoveLabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Remove-LabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
         It 'Removes the existing VHDX file' {

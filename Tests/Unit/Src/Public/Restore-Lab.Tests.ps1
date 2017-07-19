@@ -11,7 +11,7 @@ Describe 'Unit\Src\Public\Restore-Lab' {
 
         ## Guard mocks
         Mock Restore-VMSnapshot -MockWith { } #TODO: Cannot mock pipeline input to Restore-VMSnapshot?
-        Mock GetLabVMSnapshot -MockWith { }
+        Mock Get-LabVMSnapshot -MockWith { }
 
         It 'Restores specified snapshot when VMs are powered off' {
             $configurationData = @{
@@ -25,7 +25,7 @@ Describe 'Unit\Src\Public\Restore-Lab' {
 
             Restore-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
-            Assert-MockCalled GetLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName } -Scope It;
+            Assert-MockCalled Get-LabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName } -Scope It;
         }
 
         It 'Restores VM snapshot using display name' {
@@ -47,7 +47,7 @@ Describe 'Unit\Src\Public\Restore-Lab' {
 
             Restore-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
-            Assert-MockCalled GetLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
+            Assert-MockCalled Get-LabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
         }
 
         It 'Errors when there is a running VM' {
@@ -77,7 +77,7 @@ Describe 'Unit\Src\Public\Restore-Lab' {
 
             Restore-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName -Force;
 
-            Assert-MockCalled GetLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName } -Scope It;
+            Assert-MockCalled Get-LabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName } -Scope It;
         }
 
     } #end InModuleScope

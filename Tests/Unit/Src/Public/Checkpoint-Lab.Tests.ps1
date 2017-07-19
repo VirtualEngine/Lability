@@ -11,7 +11,7 @@ Describe 'Unit\Src\Public\Checkpoint-Lab' {
 
         ## Guard mocks
         Mock Get-VM -MockWith { }
-        Mock NewLabVMSnapshot -MockWith { }
+        Mock New-LabVMSnapshot -MockWith { }
 
         It 'Snapshots VMs when powered off' {
                 $configurationData = @{
@@ -24,7 +24,7 @@ Describe 'Unit\Src\Public\Checkpoint-Lab' {
 
                 Checkpoint-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
-                Assert-MockCalled NewLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName };
+                Assert-MockCalled New-LabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName };
             }
 
             It 'Snapshots VM using display name' {
@@ -46,7 +46,7 @@ Describe 'Unit\Src\Public\Checkpoint-Lab' {
 
                 Checkpoint-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName;
 
-                Assert-MockCalled NewLabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
+                Assert-MockCalled New-LabVMSnapshot -ParameterFilter { $Name -eq $testVMDisplayName };
             }
 
             It 'Errors when there is one running VM' {
@@ -90,7 +90,7 @@ Describe 'Unit\Src\Public\Checkpoint-Lab' {
 
                 Checkpoint-Lab -ConfigurationData $configurationData -SnapshotName $testSnapshotName -Force;
 
-                Assert-MockCalled NewLabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName };
+                Assert-MockCalled New-LabVMSnapshot -ParameterFilter { $SnapshotName -eq $testSnapshotName };
             }
 
     } #end InModuleScope

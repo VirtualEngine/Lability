@@ -68,7 +68,7 @@ function Restore-Lab {
                         Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
                         WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName, $SnapshotName);
 
-                        GetLabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
+                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
                     }
         }
         elseif ($runningNodes) {
@@ -91,7 +91,7 @@ function Restore-Lab {
                         Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
                         WriteVerbose ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName,  $SnapshotName);
 
-                        GetLabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
+                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
                     }
 
             Write-Progress -Id 42 -Activity $activity -Completed;
