@@ -107,7 +107,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
 * Fixes bug creating images with an empty hotfix array/object (#165, #221)
 * Fixes bug in Install-LabModule deploying modules to the AllUsers scope (#224)
-* Removes plural cmdlets: Reset-LabVMDefaults, Set-LabVMDefaults, Get-LabVMDefaults, Reset-LabHostDefaults, Get-LabHostDefaults, Set-LabHostDefaults
+* Removes deprecated/plural cmdlets: Reset-LabVMDefaults, Set-LabVMDefaults, Get-LabVMDefaults, Reset-LabHostDefaults, Get-LabHostDefaults, Set-LabHostDefaults
 
 ### v0.11.0
 
