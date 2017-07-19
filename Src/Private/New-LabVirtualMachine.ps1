@@ -7,6 +7,7 @@ function New-LabVirtualMachine {
         resources and snapshotting as required.
 #>
     [CmdletBinding(DefaultParameterSetName = 'PSCredential')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Specifies the lab virtual machine/node name.
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -146,7 +147,7 @@ function New-LabVirtualMachine {
 
         Set-LabVirtualMachine @setLabVirtualMachineParams;
 
-        $media = ResolveLabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
+        $media = Resolve-LabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
         if ($media.OperatingSystem -eq 'Linux') {
             ## Skip injecting files for Linux VMs..
         }

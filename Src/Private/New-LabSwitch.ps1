@@ -6,6 +6,7 @@ function New-LabSwitch {
         Permits validation of custom NonNodeData\Lability\Network entries.
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     [OutputType([System.Collections.Hashtable])]
     param (
         ## Virtual switch name

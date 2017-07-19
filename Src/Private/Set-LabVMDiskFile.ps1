@@ -72,12 +72,12 @@ function Set-LabVMDiskFile {
 
         try {
 
-            SetLabVMDiskFileResource @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            SetLabVMDiskFileBootstrap @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            SetLabVMDiskFileUnattendXml @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            SetLabVMDiskFileMof @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            SetLabVMDiskFileCertificate @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            SetLabVMDiskFileModule @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileResource @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileBootstrap @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileUnattendXml @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileMof @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileCertificate @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileModule @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
         }
         catch {
 

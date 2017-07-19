@@ -13,7 +13,7 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachine' {
         Mock Clear-LabVirtualMachine -MockWith { }
         Mock Remove-LabVMDisk -MockWith { }
         Mock Remove-LabSwitch -MockWith { }
-        Mock RemoveLabVMSnapshot -MockWith { }
+        Mock Remove-LabVMSnapshot -MockWith { }
 
         It 'Throws when VM cannot be found' {
             $testVMName = 'TestVM';
@@ -35,7 +35,7 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachine' {
 
             Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
 
-            Assert-MockCalled RemoveLabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Remove-LabVMSnapshot -ParameterFilter { $Name -eq $testVMName } -Scope It;
         }
 
         It 'Removes the virtual machine' {

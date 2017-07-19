@@ -34,7 +34,7 @@ function Remove-LabVirtualMachine {
                 Select-Object -First 1 |
                     Restore-VMSnapshot -Confirm:$false;
 
-        RemoveLabVMSnapshot -Name $Name;
+        Remove-LabVMSnapshot -Name $Name;
 
         $environmentSwitchNames = @();
         foreach ($switchName in $node.SwitchName) {

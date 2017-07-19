@@ -17,12 +17,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                     @{ NodeName = 'VM3'; Media = 'WIN81_x64_Enterprise_EN_Eval' }
                 )
             }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeLabMediaImageDownload -Exactly 2 -Scope It;
+            Assert-MockCalled Invoke-LabMediaImageDownload -Exactly 2 -Scope It;
         }
 
         It 'Downloads only unique media when "MediaId" parameter is not specified' {
@@ -33,12 +33,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                     @{ NodeName = 'VM3'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
                 )
             }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeLabMediaImageDownload -Exactly 1 -Scope It;
+            Assert-MockCalled Invoke-LabMediaImageDownload -Exactly 1 -Scope It;
         }
 
         It 'Downloads single media when "MediaId" parameter is specified' {
@@ -49,12 +49,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                     @{ NodeName = 'VM3'; Media = 'WIN81_x64_Enterprise_EN_Eval' }
                 )
             }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData -MediaId 'WIN81_x64_Enterprise_EN_Eval';
 
-            Assert-MockCalled InvokeLabMediaImageDownload -Exactly 1 -Scope It;
+            Assert-MockCalled Invoke-LabMediaImageDownload -Exactly 1 -Scope It;
         }
 
         It 'Downloads all required hotfixes' {
@@ -76,13 +76,13 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                                         Uri = 'http://download.microsoft.com/download/6/F/C/6FC4B3F3-1103-452F-929D-A9FCABF1AD2B/Windows8.1-KB2894029-x86.msu';
                                     } ) }
                         ) } } }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
             Mock InvokeResourceDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData -MediaId $testMediaId;
 
-            Assert-MockCalled InvokeLabMediaHotfixDownload -Exactly 2 -Scope It;
+            Assert-MockCalled Invoke-LabMediaDownload -Exactly 2 -Scope It;
         }
 
         It 'Downloads all resources when "ResourceId" parameter is not specified' {
@@ -94,8 +94,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                             @{ Id = 'Resource2.iso'; Uri = 'http://test-resource.com/resource2.iso'; }
                             @{ Id = 'Resource3.zip'; Uri = 'http://test-resource.com/resource1.zip'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
             Mock InvokeResourceDownload -MockWith { }
             Mock Get-Item -ParameterFilter { $Path -match 'Resource\d\.' } -MockWith { }
 
@@ -113,8 +113,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                             @{ Id = 'Resource2.iso'; Uri = 'http://test-resource.com/resource2.iso'; }
                             @{ Id = 'Resource3.zip'; Uri = 'http://test-resource.com/resource1.zip'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
             Mock InvokeResourceDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData -ResourceId 'Resource1.exe';
@@ -129,8 +129,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         DSCResource = @(
                             @{ Name = 'TestResource'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload;
-            Mock InvokeLabMediaHotfixDownload;
+            Mock Invoke-LabMediaImageDownload;
+            Mock Invoke-LabMediaDownload;
             Mock InvokeModuleCacheDownload;
             Mock InvokeResourceDownload;
 
@@ -148,8 +148,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                             @{ Name = 'TestResource2'; }
                             @{ Name = 'TestResource3'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload;
-            Mock InvokeLabMediaHotfixDownload;
+            Mock Invoke-LabMediaImageDownload;
+            Mock Invoke-LabMediaDownload;
             Mock InvokeModuleCacheDownload;
             Mock InvokeResourceDownload;
 
@@ -165,8 +165,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         Module = @(
                             @{ Name = 'TestModule'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload;
-            Mock InvokeLabMediaHotfixDownload;
+            Mock Invoke-LabMediaImageDownload;
+            Mock Invoke-LabMediaDownload;
             Mock InvokeModuleCacheDownload;
             Mock InvokeResourceDownload;
 
@@ -183,8 +183,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                             @{ Name = 'TestModule1'; }
                             @{ Name = 'TestModule3'; }
                         ) } } }
-            Mock InvokeLabMediaImageDownload;
-            Mock InvokeLabMediaHotfixDownload;
+            Mock Invoke-LabMediaImageDownload;
+            Mock Invoke-LabMediaDownload;
             Mock InvokeModuleCacheDownload;
             Mock InvokeResourceDownload;
 
@@ -208,8 +208,8 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             $testResourceDestinationFilename = "$testHostResourcePath\$testResourceFilename";
             $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeLabMediaImageDownload -MockWith { }
-            Mock InvokeLabMediaHotfixDownload -MockWith { }
+            Mock Invoke-LabMediaImageDownload -MockWith { }
+            Mock Invoke-LabMediaDownload -MockWith { }
             Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -MockWith { }
             Mock Get-Item -ParameterFilter { $Path -match 'Custom Resource Filename.test' } -MockWith { }
 

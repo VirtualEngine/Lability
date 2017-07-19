@@ -23,7 +23,7 @@ Describe 'Unit\Src\Private\Test-LabVirtualMachine' {
         }
 
         ## Guard mocks
-        Mock ResolveLabMedia -MockWith { }
+        Mock Resolve-LabMedia -MockWith { }
         Mock ImportDscResource -MockWith { }
         Mock Get-LabImage -MockWith { return @{ Generation = 'VHDX';}; }
 

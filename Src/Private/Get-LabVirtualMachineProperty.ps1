@@ -50,12 +50,12 @@ function Get-LabVirtualMachineProperty {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
 
-            $labMedia = ResolveLabMedia -Id $Media -ConfigurationData $ConfigurationData;
+            $labMedia = Resolve-LabMedia -Id $Media -ConfigurationData $ConfigurationData;
             $labImage = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
         else {
 
-            $labMedia = ResolveLabMedia -Id $Media;
+            $labMedia = Resolve-LabMedia -Id $Media;
             $labImage = Get-LabImage -Id $Media;
         }
         if (-not $labImage) {

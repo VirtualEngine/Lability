@@ -363,12 +363,12 @@ function AddDiskImageHotfix {
 
             $resolveLabMediaParams['ConfigurationData'] = $ConfigurationData;
         }
-        $media = ResolveLabMedia @resolveLabMediaParams;
+        $media = Resolve-LabMedia @resolveLabMediaParams;
 
         foreach ($hotfix in $media.Hotfixes) {
 
             if ($hotfix.Id -and $hotfix.Uri) {
-                $hotfixFileInfo = InvokeLabMediaHotfixDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+                $hotfixFileInfo = Invoke-LabMediaDownload -Id $hotfix.Id -Uri $hotfix.Uri;
                 $packageName = [System.IO.Path]::GetFileNameWithoutExtension($hotfixFileInfo.FullName);
 
                 AddDiskImagePackage -Name $packageName -Path $hotfixFileInfo.FullName -DestinationPath $vhdDriveLetter;

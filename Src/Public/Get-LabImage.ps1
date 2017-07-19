@@ -41,7 +41,7 @@ function Get-LabImage {
             ## We have an Id. so resolve that
             try {
 
-                $labMedia = ResolveLabMedia @PSBoundParameters;
+                $labMedia = Resolve-LabMedia @PSBoundParameters;
             }
             catch {
 

@@ -10,7 +10,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
     InModuleScope -ModuleName $moduleName {
 
         ## Guard mocks
-        Mock ResolveLabMedia -MockWith { return $Id; }
+        Mock Resolve-LabMedia -MockWith { return $Id; }
         Mock Checkpoint-VM -MockWith { }
         Mock Reset-LabVMDisk -MockWith { }
         Mock Set-LabVirtualMachine -MockWith { }
@@ -162,7 +162,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         It 'Does not inject resources when "OperatingSystem" is "Linux"' {
             $testVMName = 'TestVM';
             $configurationData = @{ AllNodes = @( @{ NodeName = $testVMName; } ) }
-            Mock ResolveLabMedia -MockWith { return @{ Id = $Id; OperatingSystem = 'Linux'; } }
+            Mock Resolve-LabMedia -MockWith { return @{ Id = $Id; OperatingSystem = 'Linux'; } }
 
             $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
@@ -176,7 +176,7 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                     @{ NodeName = $testVMName; Resource = 'TestResource'; }
                 )
             }
-            Mock ResolveLabMedia -MockWith { return $Id; }
+            Mock Resolve-LabMedia -MockWith { return $Id; }
 
             $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
@@ -191,9 +191,9 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
                     @{ NodeName = $testVMName; Resource = 'TestResource'; }
                 )
             }
-            Mock ResolveLabMedia -MockWith { return @{ Id = $Id; CustomData = @{ ProductKey = $testProductKey } } }
+            Mock Resolve-LabMedia -MockWith { return @{ Id = $Id; CustomData = @{ ProductKey = $testProductKey } } }
 
-            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
 
             Assert-MockCalled Set-LabVMDiskFile -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
         }
