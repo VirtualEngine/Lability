@@ -92,10 +92,11 @@ written some comprehensive guides to compliment the built-in documentation – a
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
 * [Using Lability, DSC and ARM to define and deploy multi-VM environments](https://blogs.blackmarble.co.uk/blogs/rhepworth/post/2017/03/02/Define-Once-Deploy-Everywhere-(Sort-of…)) via @rikhepworth
+* [Building Hyper-V lab environments based on PowerShell DSC](http://www.powershell.no/hyper-v,/powershell/dsc/2017/07/19/lability.html) via @JanEgilRing
 
 ## Versions
 
-### Unreleased
+### v0.12.0
 
 * Adds support for setting VM processor options, e.g. nested virtualisation extensions
   * See Examples\NanoComputeExample.psd1 for an example (#81)
