@@ -11,132 +11,132 @@ Describe 'Unit\Src\Public\Test-LabVM' {
 
         ## Guard mocks
         Mock Test-LabImage -MockWith { }
-        Mock TestLabSwitch -MockWith { }
-        Mock TestLabVMDisk -MockWith { }
+        Mock Test-LabSwitch -MockWith { }
+        Mock Test-LabVMDisk -MockWith { }
         Mock Test-LabVirtualMachine -MockWith { }
 
         It 'Returns a "System.Boolean" object type' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
-
-                $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
-
-                $vm -is [System.Boolean] | Should Be $true;
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
 
-            It 'Returns a result for each VM when "Name" is not specified' {
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = 'VM1'; }
-                        @{ NodeName = 'VM2'; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $false; }
+            $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
 
-                $vms = Test-LabVM -ConfigurationData $configurationData;
-                $vms.Count | Should Be $configurationData.AllNodes.Count;
+            $vm -is [System.Boolean] | Should Be $true;
+        }
+
+        It 'Returns a result for each VM when "Name" is not specified' {
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = 'VM1'; }
+                    @{ NodeName = 'VM2'; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $false; }
 
-            It 'Passes when VM is configured correctly' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
+            $vms = Test-LabVM -ConfigurationData $configurationData;
+            $vms.Count | Should Be $configurationData.AllNodes.Count;
+        }
 
-                Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $true;
+        It 'Passes when VM is configured correctly' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
 
-            It 'Fails when image is invalid' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $false; }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
+            Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $true;
+        }
 
-                Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        It 'Fails when image is invalid' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
 
-            It 'Fails when switch configuration is incorrect' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock TestLabSwitch -MockWith { return $false; }
-                Mock TestLabVMDisk -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
+            Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        }
 
-                Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        It 'Fails when switch configuration is incorrect' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $false; }
+            Mock Test-LabVMDisk -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
 
-            It 'Fails when VM disk configuration is invalid' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -MockWith { return $false; }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
+            Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        }
 
-                Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        It 'Fails when VM disk configuration is invalid' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -MockWith { return $false; }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
 
-            It 'Fails when VM configuration is incorrect' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock Test-LabImage -MockWith { return $true; }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $false; }
+            Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        }
 
-                Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        It 'Fails when VM configuration is incorrect' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $false; }
 
-            It 'Calls "Test-LabImage" and "TestLabVMDisk" with "ConfigurationData" (#97)' {
-                $testVM = 'TestVM';
-                $configurationData = @{
-                    AllNodes = @(
-                        @{ NodeName = $testVM; }
-                    )
-                }
-                Mock TestLabSwitch -MockWith { return $true; }
-                Mock TestLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
-                Mock Test-LabVirtualMachine -MockWith { return $true; }
-                Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+            Test-LabVM -ConfigurationData $configurationData -Name $testVM | Should Be $false;
+        }
 
-                $vm = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
-
-                Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
-                Assert-MockCalled TestLabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+        It 'Calls "Test-LabImage" and "Test-LabVMDisk" with "ConfigurationData" (#97)' {
+            $testVM = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVM; }
+                )
             }
+            Mock Test-LabSwitch -MockWith { return $true; }
+            Mock Test-LabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+            Mock Test-LabVirtualMachine -MockWith { return $true; }
+            Mock Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return $true; }
+
+            $null = Test-LabVM -ConfigurationData $configurationData -Name $testVM;
+
+            Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            Assert-MockCalled Test-LabVMDisk -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+        }
 
     } #end InModuleScope
 

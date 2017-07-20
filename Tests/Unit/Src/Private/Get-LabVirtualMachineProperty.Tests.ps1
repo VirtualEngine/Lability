@@ -22,7 +22,7 @@ Describe 'Unit\Src\Private\Get-LabVirtualMachineProperty' {
             ProcessorCount = 1;
         }
 
-        Mock ResolveLabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
+        Mock Resolve-LabVMDiskPath -ParameterFilter { $Name -eq $testVMName } -MockWith { return "TestDrive:\$testVMName.vhdx"; }
 
         It 'Returns generation 1 VM for x86 media architecture' {
             Mock Get-LabMedia -MockWith { return [PSCustomObject] @{ Architecture = 'x86'; } }
@@ -138,12 +138,12 @@ Describe 'Unit\Src\Private\Get-LabVirtualMachineProperty' {
             $vmProperties.EnableGuestService | Should Be $true;
         }
 
-        It 'Calls "ResolveLabMedia" with "ConfigurationData" when specified (#97)' {
-            Mock ResolveLabMedia -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
+        It 'Calls "Resolve-LabMedia" with "ConfigurationData" when specified (#97)' {
+            Mock Resolve-LabMedia -ParameterFilter { $null -ne $ConfigurationData } -MockWith { }
 
-            $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams -ConfigurationData @{};;
+            $null = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams -ConfigurationData @{};;
 
-            Assert-MockCalled ResolveLabMedia -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+            Assert-MockCalled Resolve-LabMedia -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {

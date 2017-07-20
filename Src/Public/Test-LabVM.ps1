@@ -41,7 +41,7 @@ function Test-LabVM {
                 WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
                 foreach ($switchName in $node.SwitchName) {
 
-                    if (-not (TestLabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
+                    if (-not (Test-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
 
                         $isNodeCompliant = $false;
                     }
@@ -53,7 +53,7 @@ function Test-LabVM {
                     Media = $node.Media;
                     ConfigurationData = $ConfigurationData;
                 }
-                if (-not (TestLabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
+                if (-not (Test-LabVMDisk @testLabVMDiskParams -ErrorAction SilentlyContinue)) {
 
                     $isNodeCompliant = $false;
                 }

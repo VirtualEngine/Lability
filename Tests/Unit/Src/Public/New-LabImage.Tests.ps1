@@ -9,6 +9,12 @@ Describe 'Unit\Src\Public\New-LabImage' {
 
     InModuleScope -ModuleName $moduleName {
 
+        # Guard mocks
+        Mock AddDiskImageHotfix -MockWith { }
+        Mock SetDiskImageBootVolume -MockWith { }
+        Mock Dismount-VHD -MockWith { }
+        Mock Expand-LabImage -MockWith { }
+
         It 'Throws if image already exists' {
             $testImageId = '42';
 
@@ -45,11 +51,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $testMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $testMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
             Mock Expand-LabImage -ParameterFilter { $WimPath -eq $testCustomWimPath } -MockWith { }
 
@@ -85,13 +88,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
             Mock NewDiskImage -MockWith { Write-Error 'DOH!'; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
 
             New-LabImage -Id $testImageId -ErrorAction SilentlyContinue -WarningAction SilentlyContinue;
 
@@ -114,20 +113,16 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $true; }
             Mock Get-LabImage -MockWith { return $fakeLabImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
 
             New-LabImage -Id $testImageId -Force;
 
             Test-Path -Path $testImagePath | Should Be $false;
         }
 
-        It 'Calls "InvokeLabMediaImageDownload" to download ISO media (if not present)' {
+        It 'Calls "Invoke-LabMediaImageDownload" to download ISO media (if not present)' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
             $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
@@ -142,17 +137,13 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -MockWith { return $fakeISOFileInfo; }
+            Mock Invoke-LabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -MockWith { return $fakeISOFileInfo; }
 
             New-LabImage -Id $testImageId
 
-            Assert-MockCalled InvokeLabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -Scope It;
+            Assert-MockCalled Invoke-LabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -Scope It;
         }
 
         It 'Calls "NewDiskImage" with -PassThru to leave VHDX mounted' {
@@ -171,12 +162,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
             New-LabImage -Id $testImageId
@@ -199,12 +186,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
             New-LabImage -Id $testImageId
@@ -227,12 +210,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
             New-LabImage -Id $testImageId
@@ -261,12 +240,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
 
             New-LabImage -Id $testImageId
@@ -289,11 +264,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
             Mock Expand-LabImage -ParameterFilter { $WimImageName -eq $testWimImageName } -MockWith { }
 
@@ -318,11 +290,8 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
             Mock Expand-LabImage -MockWith { }
 
@@ -352,13 +321,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -387,13 +352,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -422,13 +383,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -450,13 +407,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -478,13 +431,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock Dismount-VHD -MockWith { }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -506,13 +455,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
 
             New-LabImage -Id $testImageId
 
@@ -534,13 +479,9 @@ Describe 'Unit\Src\Public\New-LabImage' {
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
-            Mock ResolveLabMedia -MockWith { return $fakeMedia; }
-            Mock InvokeLabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
             Mock NewDiskImage -MockWith { return $fakeVhdImage; }
-            Mock Expand-LabImage -MockWith { }
-            Mock AddDiskImageHotfix -MockWith { }
-            Mock SetDiskImageBootVolume -MockWith { }
-            Mock Dismount-VHD -MockWith { }
             Mock Test-LabImage -MockWith { return $true; }
             Mock Get-LabImage -MockWith { return $fakeLabImage; }
 

@@ -50,18 +50,18 @@ function Get-LabVirtualMachineProperty {
         ## Resolve the media to determine whether we require a Generation 1 or 2 VM..
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
 
-            $labMedia = ResolveLabMedia -Id $Media -ConfigurationData $ConfigurationData;
+            $labMedia = Resolve-LabMedia -Id $Media -ConfigurationData $ConfigurationData;
             $labImage = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
         }
         else {
 
-            $labMedia = ResolveLabMedia -Id $Media;
+            $labMedia = Resolve-LabMedia -Id $Media;
             $labImage = Get-LabImage -Id $Media;
         }
         if (-not $labImage) {
 
             ## Should only trigger during a Reset-VM where parent image is not available?!
-            ## It will be downloaded during any NewLabVM calls..
+            ## It will be downloaded during any New-LabVirtualMachine calls..
             $labImage = @{ Generation = 'VHDX'; }
         }
         $labMediaArchitecture = $labMedia.Architecture;
@@ -111,7 +111,7 @@ function Get-LabVirtualMachineProperty {
             [ref] $null = $PSBoundParameters.Remove('GuestIntegrationServices');
         }
 
-        $vhdPath = ResolveLabVMDiskPath -Name $Name -Generation $labImage.Generation;
+        $vhdPath = Resolve-LabVMDiskPath -Name $Name -Generation $labImage.Generation;
 
         [ref] $null = $PSBoundParameters.Remove('Media');
         [ref] $null = $PSBoundParameters.Remove('ConfigurationData');

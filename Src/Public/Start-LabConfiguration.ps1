@@ -176,7 +176,15 @@ function Start-LabConfiguration {
                 $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-VM', $node.Name;
                 $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
                 if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
-                    NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+
+                    $newLabVirtualMachineParams = @{
+                        Name = $node.Name;
+                        ConfigurationData = $ConfigurationData;
+                        Path = $Path;
+                        NoSnapshot = $NoSnapshot;
+                        Credential = $Credential;
+                    }
+                    New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
             }
             elseif ($node.IsConfigured) {
@@ -191,7 +199,14 @@ function Start-LabConfiguration {
                 $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
                 if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
-                    NewLabVM -Name $node.Name -ConfigurationData $ConfigurationData -Path $Path -NoSnapshot:$NoSnapshot -Credential $Credential;
+                    $newLabVirtualMachineParams = @{
+                        Name = $node.Name;
+                        ConfigurationData = $ConfigurationData;
+                        Path = $Path;
+                        NoSnapshot = $NoSnapshot;
+                        Credential = $Credential;
+                    }
+                    New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
             }
 

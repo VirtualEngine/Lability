@@ -111,6 +111,7 @@ function TestResourceDownload {
     )
     process {
 
+        [ref] $null = $PSBoundParameters.Remove('ThrowOnError');
         $resource = GetResourceDownload @PSBoundParameters;
         $isCompliant = $true;
 

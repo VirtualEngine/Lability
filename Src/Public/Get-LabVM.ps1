@@ -32,7 +32,7 @@ function Get-LabVM {
             $node = Resolve-NodePropertyValue -NodeName $nodeName -ConfigurationData $ConfigurationData;
             $xVMParams = @{
                 Name = $node.NodeDisplayName;
-                VhdPath = ResolveLabVMDiskPath -Name $node.NodeDisplayName;;
+                VhdPath = Resolve-LabVMDiskPath -Name $node.NodeDisplayName;;
             }
 
             try {

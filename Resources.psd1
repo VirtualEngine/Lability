@@ -123,7 +123,7 @@ ConvertFrom-StringData -StringData @'
     ModuleFoundInPath                = Found module in '{0}'.
     CreatingQuickVM                  = Creating quick VM '{0}' using media '{1}'.
     CreatingVM                       = Creating VM '{0}'.
-    CreatingVMGeneration             = Creating generation '{0}' VM.
+    CreatingVMGeneration             = Creating Gen {0} virtual machine.
     RemovingVM                       = Removing VM '{0}'.
     ResettingVM                      = Resetting VM '{0}'.
     CreatingInternalVirtualSwitch    = Creating Internal '{0}' virtual switch.
@@ -169,6 +169,9 @@ ConvertFrom-StringData -StringData @'
     CompletedCompilationProcessing   = Completed processing in '{0}'.
     LoadingConfiguration             = Loading configuration '{0}'.
     TestingNodeStatus                = Node '{0}' reported status '{1}'; expecting 'Idle'.
+    CreatingAdditionalVhdFile        = Creating additional VHD/X '{0}'.
+    AddingAdditionalVhdFile          = Attaching VHD/X '{0}' to controller location '{1}'.
+    RemovingVhdFile                  = Removing VHD/X '{0}'.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -236,5 +239,9 @@ ConvertFrom-StringData -StringData @'
     CannotResolveMediaIdError        = Cannot resolve node '{0}' source media Id.
     WaitLabDeploymentTimeoutError    = Waiting for lab deployment has timed out after '{0}'.
     NoConfigurationToCompileError    = No configurations to compile.
-    ResourceChecksumMismatchError   = Resource download '{0}' checksum does not match '{1}'.
+    ResourceChecksumMismatchError    = Resource download '{0}' checksum does not match '{1}'.
+    CannotLocateVhdError             = Cannot locate VHD/X file '{0}'.
+    CannotResoleVhdParameterError    = Cannot resolve VHD/X parameters. You cannot specify 'VhdPath' in combination with either 'Type' or 'MaximumSizeBytes'.
+    InvalidVhdTypeError              = Vhd type '{0}' is not supported with generation {1} virtual machines.
+    InvalidVhdSizeError              = Invalid VHD/X size '{0}' specified. Specify a size between 3145728 and 2190433320960 bytes.
 '@

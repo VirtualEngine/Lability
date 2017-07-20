@@ -188,7 +188,7 @@ function New-LabVM {
                 Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
 
                 $configurationData = @{ AllNodes = @( $configurationNode ) };
-                NewLabVM -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+                New-LabVirtualMachine -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
             }
 
         } #end foreach name
@@ -200,4 +200,3 @@ function New-LabVM {
 
     } #end process
 } #end function New-LabVM
-

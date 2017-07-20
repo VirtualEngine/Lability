@@ -92,13 +92,29 @@ written some comprehensive guides to compliment the built-in documentation – a
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
 * [Using Lability, DSC and ARM to define and deploy multi-VM environments](https://blogs.blackmarble.co.uk/blogs/rhepworth/post/2017/03/02/Define-Once-Deploy-Everywhere-(Sort-of…)) via @rikhepworth
+* [Building Hyper-V lab environments based on PowerShell DSC](http://www.powershell.no/hyper-v,/powershell/dsc/2017/07/19/lability.html) via @JanEgilRing
 
 ## Versions
+
+### v0.12.0
+
+* Adds support for setting VM processor options, e.g. nested virtualisation extensions
+  * See Examples\NanoComputeExample.psd1 for an example (#81)
+* Adds support for mounting ISO images
+  * See Examples\CustomMedia.psd1 for an example (#99, #135)
+* Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
+  * See Examples\MultipleDiskExample.psd1 for an example
+* Fixes bug checking downloaded resource checksums (#219)
+* Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
+* Fixes bug creating images with an empty hotfix array/object (#165, #221)
+* Fixes bug in Install-LabModule deploying modules to the AllUsers scope (#224)
+* Removes deprecated/plural cmdlets: Reset-LabVMDefaults, Set-LabVMDefaults, Get-LabVMDefaults, Reset-LabHostDefaults, Get-LabHostDefaults, Set-LabHostDefaults
 
 ### v0.11.0
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
+* Updates bundled xHyper-V DSC resource module to include experimental xVMProcessor, xVMHost and xVMHardDiskDrive resources
 * Adds Continuous Integration (CI) cmdlets
   * Get-LabStatus - Retrieves DSC configuration deployment status
   * Test-LabStatus - Tests DSC configuration deployment status has completed
@@ -123,7 +139,6 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds -RepositoryUri parameter to Set-LabHostDefault to support internal repositories (partially implements #195)
 * Changes default PowerShell gallery URI to HTTPS
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
-* Updates bundled xHyper-V DSC resource module to 3.7.0.0
 * Adds setting the default shell via media 'CustomData\DefaultShell' setting
 
 ### v0.10.2
