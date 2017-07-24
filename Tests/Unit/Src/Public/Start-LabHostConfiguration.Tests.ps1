@@ -12,7 +12,7 @@ Describe 'Unit\Src\Public\Start-LabHostConfiguration' {
         # Guard mocks
         Mock ImportDscResource -MockWith { }
         Mock InvokeDscResource -MockWith { }
-        Mock NewDirectory -MockWith { }
+        Mock New-Directory -MockWith { }
 
         It 'Does not attempt to create an empty path' {
             $fakeHostDefaults = '{ "APath": "" }' | ConvertFrom-Json;
@@ -21,17 +21,17 @@ Describe 'Unit\Src\Public\Start-LabHostConfiguration' {
 
             Start-LabHostConfiguration;
 
-            Assert-MockCalled NewDirectory -Exactly 0 -Scope It;
+            Assert-MockCalled New-Directory -Exactly 0 -Scope It;
         }
 
-        It 'Calls "NewDirectory" for each path' {
+        It 'Calls "New-Directory" for each path' {
             $fakeHostDefaults = '{ "APath": "TestDrive:\\", "BPath": "C:\\" }' | ConvertFrom-Json;
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
             Mock Get-LabHostSetupConfiguration -MockWith { }
 
             Start-LabHostConfiguration;
 
-            Assert-MockCalled NewDirectory -Exactly ($fakeHostDefaults.PSObject.Properties | Measure | Select -ExpandProperty Count) -Scope It;
+            Assert-MockCalled New-Directory -Exactly ($fakeHostDefaults.PSObject.Properties | Measure | Select -ExpandProperty Count) -Scope It;
         }
 
         It 'Calls "InvokeDscResource" for each host configuration item' {

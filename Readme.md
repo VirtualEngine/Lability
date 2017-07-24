@@ -96,6 +96,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### Unreleased
+
+* Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
+
 ### v0.12.0
 
 * Adds support for setting VM processor options, e.g. nested virtualisation extensions

@@ -417,7 +417,7 @@ function AddDiskImagePackage {
     process {
 
         $logPath = '{0}:\Windows\Logs\{1}' -f $DestinationPath, $labDefaults.ModuleName;
-        [ref] $null = NewDirectory -Path $logPath -Verbose:$false;
+        [ref] $null = New-Directory -Path $logPath -Verbose:$false;
 
         WriteVerbose ($localized.AddingImagePackage -f $Name, $DestinationPath);
         $addWindowsPackageParams = @{

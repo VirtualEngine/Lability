@@ -145,7 +145,7 @@ function SetSetupCompleteCmd {
     )
     process {
 
-        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
+        [ref] $null = New-Directory -Path $Path -Confirm:$false;
         $setupCompletePath = Join-Path -Path $Path -ChildPath 'SetupComplete.cmd';
         if ($CoreCLR) {
 
@@ -206,7 +206,7 @@ function SetBootStrap {
             $bootStrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $CustomBootStrap;
         }
 
-        [ref] $null = NewDirectory -Path $Path -Confirm:$false;
+        [ref] $null = New-Directory -Path $Path -Confirm:$false;
         $bootStrapPath = Join-Path -Path $Path -ChildPath 'BootStrap.ps1';
         Set-Content -Path $bootStrapPath -Value $bootStrap -Encoding UTF8 -Force -Confirm:$false;
 

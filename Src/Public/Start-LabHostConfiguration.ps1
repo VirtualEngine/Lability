@@ -29,7 +29,7 @@ function Start-LabHostConfiguration {
                 ## DismPath is not a folder and should be ignored (#159)
                 if ($property.Name -ne 'DismPath') {
 
-                    [ref] $null = NewDirectory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
+                    [ref] $null = New-Directory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
                 }
             }
         }

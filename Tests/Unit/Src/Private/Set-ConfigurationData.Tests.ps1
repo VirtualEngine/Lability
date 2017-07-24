@@ -13,7 +13,7 @@ Describe 'Unit\Src\Private\Set-ConfigurationData' {
 #            $testConfigurationFilename = 'TestConfiguration.json';
 #            $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }' | ConvertFrom-Json;
 #            Mock Resolve-ConfigurationDataPath -MockWith { return ('%SYSTEMROOT%\{0}' -f $testConfigurationFilename); }
-#            Mock NewDirectory -MockWith { }
+#            Mock New-Directory -MockWith { }
 #            Mock Set-Content -ParameterFilter { $Path -eq "$env:SystemRoot\$testConfigurationFilename" } -MockWith { return $fakeConfiguration; }
 #
 #            Set-ConfigurationData -Configuration Host -InputObject $fakeConfiguration;

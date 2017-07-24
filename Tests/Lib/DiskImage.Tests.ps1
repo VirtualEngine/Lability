@@ -326,7 +326,7 @@ Describe 'Lib\DiskImage' {
                         Mock GetDiskImageDriveLetter -MockWith { return 'Z'; }
                         Mock Get-LabMedia -MockWith { return [PSCustomObject] $fakeMedia; }
                         Mock Invoke-LabMediaDownload -MockWith { return New-Item -Path "TestDrive:\$Id" -Force -ItemType File }
-                        Mock NewDirectory -MockWith { }
+                        Mock New-Directory -MockWith { }
                         Mock Add-WindowsPackage -MockWith { }
 
                         AddDiskImageHotfix $fakeMedia.Id -Vhd $vhdImage -PartitionStyle $partitionStyle;

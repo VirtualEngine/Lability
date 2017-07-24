@@ -76,7 +76,7 @@ function ExpandGitHubZipArchive {
 
         $DestinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
         WriteVerbose ($localized.ResolvedDestinationPath -f $DestinationPath);
-        [Ref] $null = NewDirectory -Path $DestinationPath;
+        [ref] $null = New-Directory -Path $DestinationPath;
 
         foreach ($pathItem in $Path) {
 
@@ -144,7 +144,7 @@ function ExpandGitHubZipArchiveItem {
         # Reference to Zip archive item.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'InputObject')]
         [ValidateNotNullOrEmpty()]
-        [System.IO.Compression.ZipArchiveEntry[]] [Ref] $InputObject,
+        [System.IO.Compression.ZipArchiveEntry[]] [ref] $InputObject,
 
         # Destination file path to extract the Zip Archive item to.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 1)]
@@ -212,7 +212,7 @@ function ExpandGitHubZipArchiveItem {
 
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
-                    [ref] $null = NewDirectory -Path $directoryPath;
+                    [ref] $null = New-Directory -Path $directoryPath;
 
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 } # end if
@@ -239,7 +239,7 @@ function ExpandGitHubZipArchiveItem {
 
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
-                    [ref] $null = NewDirectory -Path $directoryPath;
+                    [ref] $null = New-Directory -Path $directoryPath;
 
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 }
