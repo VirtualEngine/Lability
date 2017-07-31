@@ -279,6 +279,8 @@ function SetUnattendXml {
 
         [ref] $null = $PSBoundParameters.Remove('Path');
         $unattendXml = NewUnattendXml @PSBoundParameters;
+        ## Ensure the parent Sysprep directory exists (#232)
+        [ref] $null = New-Directory -Path (Split-Path -Path $Path -Parent);
         $resolvedPath = ResolvePathEx -Path $Path;
         return $unattendXml.Save($resolvedPath);
 

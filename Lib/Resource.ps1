@@ -172,7 +172,7 @@ function SetResourceDownload {
     begin {
 
         $parentDestinationPath = Split-Path -Path $DestinationPath -Parent;
-        [ref] $null = NewDirectory -Path $parentDestinationPath;
+        [ref] $null = New-Directory -Path $parentDestinationPath;
 
     }
     process {
