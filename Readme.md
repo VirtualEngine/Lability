@@ -96,9 +96,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
-### v0.12.0
+### Unreleased
 
 * Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
+* Fixes bug resolving mounted disk image drive letter (#233)
 
 ### v0.12.0
 

@@ -9,6 +9,18 @@ Describe 'Src\Private\Expand-LabImage' {
 
     InModuleScope $moduleName {
 
+        function Get-Volume {
+        <#
+            Suppress Error:
+            Cannot process argument transformation on parameter 'DiskImage'. Cannot convert the
+            "@{DriveLetter=Z}" value of type "System.Management.Automation.PSCustomObject" to type
+            "Microsoft.Management.Infrastructure.CimInstance"
+        #>
+            param (
+                [PSCustomObject] $DiskImage
+            )
+        }
+
         It 'Mounts ISO image' {
             $testIsoPath = 'TestDrive:\TestIsoImage.iso';
             [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
