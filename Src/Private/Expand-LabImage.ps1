@@ -100,7 +100,7 @@ function Expand-LabImage {
 
                 $partitionType = 'Basic';
             }
-            $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
+            $vhdDriveLetter = Get-DiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
 
             $logName = '{0}.log' -f [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
             $logPath = Join-Path -Path $env:TEMP -ChildPath $logName;

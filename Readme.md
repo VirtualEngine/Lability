@@ -101,8 +101,9 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
 * Fixes bug resolving mounted disk image drive letter (#233)
 * Adds -DisableSwitchEnvironmentName parameter to Set-LabHostDefault (#236)
-  * New installations/deployments will default to False - applying defined prefixes/suffixes to virtual switches.
-  * Existing installations will default to True (at least until Set-LabHostDefault or Reset-LabHostDefault are called).
+  * New installations/deployments will default to False - applying defined prefixes/suffixes to virtual switches
+  * Existing installations will default to True (at least until Set-LabHostDefault or Reset-LabHostDefault are called)
+* Does not copy local DSC resource modules when an empty array is defined at 'NonNodeData\Lability\DSCResource' (#211)
 
 ### v0.12.0
 

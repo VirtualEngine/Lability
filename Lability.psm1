@@ -50,4 +50,4 @@ $credentialCheckScriptBlock = {
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
 
 ## Ensure we load the required DISM module version
-ImportDismModule;
+Import-DismModule;

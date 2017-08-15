@@ -117,6 +117,41 @@ Describe 'Unit\Src\Private\Resolve-LabModule' {
             $result.Count | Should Be $testParams.ConfigurationData.AllNodes[0].DscResource.Count;
         }
 
+        It 'Does not return installed modules when empty array is defined at node DSCResource (#211)' {
+
+            $testParams = @{
+                NodeName = $testNode;
+                ConfigurationData = @{
+                    AllNodes = @( @{ NodeName = $testNode; DscResource = @(); } )
+                    NonNodeData = @{
+                        Lability = @{ }
+                    }
+                }
+            }
+            $result = Resolve-LabModule @testParams -ModuleType DscResource -Verbose;
+
+            $result.Count | Should Be 0;
+        }
+
+        It 'Does not return installed modules when empty array is defined at NonNodeData\Lability\DSCResource (#211)' {
+
+            $testParams = @{
+                NodeName = $testNode;
+                ConfigurationData = @{
+                    AllNodes = @( @{ NodeName = $testNode; } )
+                    NonNodeData = @{
+                        Lability = @{
+                            DscResource = @( )
+                        }
+                    }
+                }
+            }
+            $result = Resolve-LabModule @testParams -ModuleType DscResource -Verbose;
+
+            $result.Count | Should Be 0;
+        }
+
+
     } #end InModuleScope
 
 } #end describe

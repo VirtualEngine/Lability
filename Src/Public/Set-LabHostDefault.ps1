@@ -120,7 +120,7 @@ function Set-LabHostDefault {
         }
         if ($PSBoundParameters.ContainsKey('DismPath')) {
 
-            $hostDefaults.DismPath = ResolveDismPath -Path $DismPath;
+            $hostDefaults.DismPath = Resolve-DismPath -Path $DismPath;
             WriteWarning -Message ($localized.DismSessionRestartWarning);
         }
         if ($PSBoundParameters.ContainsKey('RepositoryUri')) {
@@ -133,7 +133,7 @@ function Set-LabHostDefault {
         }
 
         Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;
-        ImportDismModule;
+        Import-DismModule;
 
         return $hostDefaults;
 
