@@ -62,7 +62,17 @@ function New-LabImage {
             throw ($localized.ImageAlreadyExistsError -f $Id);
         }
 
+        ## Check Dism requirement (if present) #167
         $media = Resolve-LabMedia @PSBoundParameters;
+        if ($null -ne $media.CustomData.MinimumDismVersion) {
+
+            $minimumDismVersion = $media.CustomData.MinimumDismVersion;
+            if ($labDefaults.Version -lt $minimumDismVersion) {
+
+                throw ($localized.DismVersionMismatchError -f $Id, $minimumDismVersion.ToString());
+            }
+        }
+
         $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
         $hostDefaults = Get-ConfigurationData -Configuration Host;
 
