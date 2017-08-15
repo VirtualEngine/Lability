@@ -129,7 +129,7 @@ function Set-LabHostDefault {
         }
         if ($PSBoundParameters.ContainsKey('DisableSwitchEnvironmentName')) {
 
-            $hostDefaults.ApplySwitchEnvironmentName = $DisableSwitchEnvironmentName.ToBoolean;
+            $hostDefaults.DisableSwitchEnvironmentName = $DisableSwitchEnvironmentName.ToBool();
         }
 
         Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;
@@ -138,4 +138,4 @@ function Set-LabHostDefault {
         return $hostDefaults;
 
     } #end process
-} #end function Set-LabHostDefault
+} #end function
