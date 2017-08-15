@@ -100,11 +100,17 @@ function New-LabVirtualMachine {
         $environmentSwitchNames = @();
         foreach ($switchName in $node.SwitchName) {
 
-            ## Create prefixed switch names for VM creation
-            $environmentSwitchName = Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
-            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $environmentSwitchName);
-            $environmentSwitchNames += $environmentSwitchName;
-            Set-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
+            ## Retrieve prefixed switch names for VM creation (if necessary)
+            $resolveLabSwitchParams = @{
+                Name = $switchName;
+                ConfigurationData = $ConfigurationData;
+                WarningAction = 'SilentlyContinue';
+            }
+            $networkSwitch = Resolve-LabSwitch @resolveLabSwitchParams;
+
+            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $networkSwitch.Name);
+            $environmentSwitchNames += $networkSwitch.Name;
+            Set-LabSwitch -Name $networkSwitch.Name -ConfigurationData $ConfigurationData;
         }
 
         if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {

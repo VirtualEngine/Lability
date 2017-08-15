@@ -267,6 +267,59 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             Assert-MockCalled Set-LabVirtualMachine -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }
 
+
+
+
+        It 'Resolves switch environment name prefix when DisableSwitchEnvironmentName is disabled' {
+
+            $fakeHostConfiguration = [PSCustomObject] @{ DisableSwitchEnvironmentName = $false; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } { return $fakeHostConfiguration }
+            Mock Get-VMSwitch { }
+            $testVMName = 'TestVM';
+            $testMedia = 'Test-Media';
+            $testVMSwitch = 'Test Switch';
+            $testEnvironmentPrefix = 'Prefix';
+            $configurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
+                )
+                NonNodeData = @{
+                    Lability = @{
+                        EnvironmentPrefix = $testEnvironmentPrefix;
+                    }
+                }
+            }
+
+            $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+            Assert-MockCalled Set-LabSwitch -ParameterFilter { $Name -eq "$testEnvironmentPrefix$testVMSwitch" } -Scope It;
+        }
+
+        It 'Does not resolve switch environment name prefix when DisableSwitchEnvironmentName is enabled' {
+
+                        $fakeHostConfiguration = [PSCustomObject] @{ DisableSwitchEnvironmentName = $true; }
+                        Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } { return $fakeHostConfiguration }
+                        Mock Get-VMSwitch { }
+                        $testVMName = 'TestVM';
+                        $testMedia = 'Test-Media';
+                        $testVMSwitch = 'Test Switch';
+                        $testEnvironmentPrefix = 'Prefix';
+                        $configurationData = @{
+                            AllNodes = @(
+                                @{ NodeName = $testVMName; Media = $testMedia; SwitchName = $testVMSwitch; }
+                            )
+                            NonNodeData = @{
+                                Lability = @{
+                                    EnvironmentPrefix = $testEnvironmentPrefix;
+                                }
+                            }
+                        }
+
+                        $null = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+                        Assert-MockCalled Set-LabSwitch -ParameterFilter { $Name -eq "$testEnvironmentPrefix$testVMSwitch" } -Scope It -Exactly 0;
+                    }
+
         It 'Warns when no client or root certificate is used' {
             <# NOTE: Must come last in the test suite as once we mock ResolveLabVMProperties, we're in trouble! #>
             $testVMName = 'TestVM';

@@ -14,20 +14,17 @@ function Resolve-LabSwitch {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData,
-
-        ## Add environment prefix/suffix to environment name
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $ApplyEnvironmentName
+        $ConfigurationData
     )
     process {
 
         $hostDefaults = Get-ConfigurationData -Configuration Host;
-        ## Prefix/suffix switch name
         if ($hostDefaults.DisableSwitchEnvironmentName -eq $false) {
 
+            ## Prefix/suffix switch name
             $Name = Resolve-LabEnvironmentName -Name $Name -ConfigurationData $ConfigurationData;
         }
+
         $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
 
         if ($networkSwitch) {

@@ -99,6 +99,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 ### Unreleased
 
 * Adds DISM version check to Windows 10 and Server 2016 media images (#167)
+* Fixes bug disabling DisableSwitchEnvironmentName in VM creation
 
 ### v0.12.2
 
