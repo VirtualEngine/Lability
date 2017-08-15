@@ -9,6 +9,19 @@ Describe 'Src\Private\Expand-LabImage' {
 
     InModuleScope $moduleName {
 
+        function Get-Volume {
+        <#
+            Suppress Error:
+            Cannot process argument transformation on parameter 'DiskImage'. Cannot convert the
+            "@{DriveLetter=Z}" value of type "System.Management.Automation.PSCustomObject" to type
+            "Microsoft.Management.Infrastructure.CimInstance"
+        #>
+            [CmdletBinding()]
+            param (
+                [PSCustomObject] $DiskImage
+            )
+        }
+
         It 'Mounts ISO image' {
             $testIsoPath = 'TestDrive:\TestIsoImage.iso';
             [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
@@ -22,7 +35,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
 
-            Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
+            Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT -Verbose;
 
             Assert-MockCalled Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
         }

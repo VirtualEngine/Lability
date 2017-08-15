@@ -61,14 +61,18 @@ function Set-LabHostDefault {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $EnableCallStackLogging,
 
-        ## Custom DISM/ADK path
+        ## Custom DISM/ADK path.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $DismPath,
 
         ## Specifies an custom/internal PS repository Uri. Use the full Uri without any package
         ## name(s). '/{PackageName}/{PackageVersion}' will automatically be appended as needed.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $RepositoryUri
+        [System.String] $RepositoryUri,
+
+        ## Specifies whether environment name prefixes/suffixes are applied to virtual switches.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $DisableSwitchEnvironmentName
     )
     process {
 
@@ -122,6 +126,10 @@ function Set-LabHostDefault {
         if ($PSBoundParameters.ContainsKey('RepositoryUri')) {
 
             $hostDefaults.RepositoryUri = $RepositoryUri.TrimEnd('/');
+        }
+        if ($PSBoundParameters.ContainsKey('DisableSwitchEnvironmentName')) {
+
+            $hostDefaults.ApplySwitchEnvironmentName = $DisableSwitchEnvironmentName.ToBoolean;
         }
 
         Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;

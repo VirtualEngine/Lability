@@ -11,15 +11,23 @@ function Resolve-LabSwitch {
         [System.String] $Name,
 
         ## PowerShell DSC configuration document (.psd1) containing lab metadata.
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
-        $ConfigurationData
+        $ConfigurationData,
+
+        ## Add environment prefix/suffix to environment name
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $ApplyEnvironmentName
     )
     process {
 
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         ## Prefix/suffix switch name
-        $Name = Resolve-LabEnvironmentName -Name $Name -ConfigurationData $ConfigurationData;
+        if ($hostDefaults.DisableSwitchEnvironmentName -eq $false) {
+
+            $Name = Resolve-LabEnvironmentName -Name $Name -ConfigurationData $ConfigurationData;
+        }
         $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
 
         if ($networkSwitch) {
