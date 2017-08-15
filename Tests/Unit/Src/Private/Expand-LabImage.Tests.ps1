@@ -16,6 +16,7 @@ Describe 'Src\Private\Expand-LabImage' {
             "@{DriveLetter=Z}" value of type "System.Management.Automation.PSCustomObject" to type
             "Microsoft.Management.Infrastructure.CimInstance"
         #>
+            [CmdletBinding()]
             param (
                 [PSCustomObject] $DiskImage
             )
@@ -34,7 +35,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
 
-            Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
+            Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT -Verbose;
 
             Assert-MockCalled Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
         }
