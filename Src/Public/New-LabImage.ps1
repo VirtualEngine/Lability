@@ -128,7 +128,7 @@ function New-LabImage {
                     Force = $true;
                     ErrorAction = 'Stop';
                 }
-                $image = NewDiskImage @newDiskImageParams;
+                $image = New-DiskImage @newDiskImageParams;
                 [ref] $null = Get-PSDrive;
 
                 $expandLabImageParams['Vhd'] = $image;
@@ -160,7 +160,7 @@ function New-LabImage {
 
                 Expand-LabImage @expandLabImageParams;
 
-                ## Apply hotfixes (AddDiskImageHotfix)
+                ## Apply hotfixes (Add-DiskImageHotfix)
                 $addDiskImageHotfixParams = @{
                     Id = $Id;
                     Vhd = $image;
@@ -170,10 +170,10 @@ function New-LabImage {
 
                     $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData;
                 }
-                AddDiskImageHotfix @addDiskImageHotfixParams;
+                Add-DiskImageHotfix @addDiskImageHotfixParams;
 
-                ## Configure boot volume (SetDiskImageBootVolume)
-                SetDiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
+                ## Configure boot volume (Set-DiskImageBootVolume)
+                Set-DiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
 
             }
             catch {
