@@ -82,6 +82,13 @@ function Get-ConfigurationData {
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'RepositoryUri' -Value $labDefaults.RepositoryUri;
                     }
 
+                    ## This property may not be present in the original machine configuration file. Defaults to false for existing
+                    ## deployments, but will is enabled in the default HostDefaults.json to enable for new deployments.
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'DisableSwitchEnvironmentName') {
+
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'DisableSwitchEnvironmentName' -Value $true;
+                    }
+
                     ## Remove deprecated UpdatePath, if present (Issue #77)
                     $configurationData.PSObject.Properties.Remove('UpdatePath');
                 }

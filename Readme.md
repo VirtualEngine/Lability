@@ -100,6 +100,9 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 * Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
 * Fixes bug resolving mounted disk image drive letter (#233)
+* Adds -DisableSwitchEnvironmentName parameter to Set-LabHostDefault (#236)
+  * New installations/deployments will default to False - applying defined prefixes/suffixes to virtual switches.
+  * Existing installations will default to True (at least until Set-LabHostDefault or Reset-LabHostDefault are called).
 
 ### v0.12.0
 
@@ -110,7 +113,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds __experimental__ support for attaching multiple VHD files to VMs (#99)
   * See Examples\MultipleDiskExample.psd1 for an example
 * Fixes bug checking downloaded resource checksums (#219)
-* Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
+* __BREAKING CHANGE:__ Prefixes/suffixes switch names with the environment prefix and/or suffix when defined
 * Fixes bug creating images with an empty hotfix array/object (#165, #221)
 * Fixes bug in Install-LabModule deploying modules to the AllUsers scope (#224)
 * Removes deprecated/plural cmdlets: Reset-LabVMDefaults, Set-LabVMDefaults, Get-LabVMDefaults, Reset-LabHostDefaults, Get-LabHostDefaults, Set-LabHostDefaults

@@ -103,6 +103,33 @@ Describe 'Unit\Src\Private\Resolve-LabSwitch' {
             $labSwitch.IsExisting | Should BeNullOrEmpty;
         }
 
+        It 'Does not return a prefixed switch name when DisableSwitchEnvironmentName is enabled' {
+            $testSwitchName = 'Test Switch';
+            $testPrefix = 'Prefix';
+            $defaultSwitchName = 'DefaultInternalSwitch';
+            $configurationData = @{
+                NonNodeData = @{
+                    $labDefaults.ModuleName = @{
+                        EnvironmentPrefix = $testPrefix;
+                     }
+                }
+            }
+            $defaultVMConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
+            $defaultHostConfigurationData = [PSCustomObject] @{ DisableSwitchEnvironmentName = $true; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $defaultVMConfigurationData; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $defaultHostConfigurationData; }
+            Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { }
+
+            $resolveLabSwitchParams = @{
+                ConfigurationData = $configurationData;
+                Name = $testSwitchName;
+                WarningAction = 'SilentlyContinue';
+            }
+            $labSwitch = Resolve-LabSwitch @resolveLabSwitchParams;
+
+            $labSwitch.Name | Should Be $testSwitchName;
+        }
+
         It 'Returns a prefixed switch name when an environment prefix is defined' {
             $testSwitchName = 'Test Switch';
             $testPrefix = 'Prefix';
@@ -115,10 +142,17 @@ Describe 'Unit\Src\Private\Resolve-LabSwitch' {
                 }
             }
             $defaultVMConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
+            $defaultHostConfigurationData = [PSCustomObject] @{ DisableSwitchEnvironmentName = $false; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $defaultVMConfigurationData; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $defaultHostConfigurationData; }
             Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { }
 
-            $labSwitch = Resolve-LabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;
+            $resolveLabSwitchParams = @{
+                ConfigurationData = $configurationData;
+                Name = $testSwitchName;
+                WarningAction = 'SilentlyContinue';
+            }
+            $labSwitch = Resolve-LabSwitch @resolveLabSwitchParams;
 
             $labSwitch.Name | Should Be ('{0}{1}' -f $testPrefix, $testSwitchName);
         }
@@ -135,10 +169,17 @@ Describe 'Unit\Src\Private\Resolve-LabSwitch' {
                 }
             }
             $defaultVMConfigurationData = [PSCustomObject] @{ SwitchName = $defaultSwitchName; }
+            $defaultHostConfigurationData = [PSCustomObject] @{ DisableSwitchEnvironmentName = $false; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $defaultVMConfigurationData; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $defaultHostConfigurationData; }
             Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { }
 
-            $labSwitch = Resolve-LabSwitch -ConfigurationData $configurationData -Name $testSwitchName -WarningAction SilentlyContinue;
+            $resolveLabSwitchParams = @{
+                ConfigurationData = $configurationData;
+                Name = $testSwitchName;
+                WarningAction = 'SilentlyContinue';
+            }
+            $labSwitch = Resolve-LabSwitch @resolveLabSwitchParams;
 
             $labSwitch.Name | Should Be ('{0}{1}' -f $testSwitchName,$testSuffix);
         }

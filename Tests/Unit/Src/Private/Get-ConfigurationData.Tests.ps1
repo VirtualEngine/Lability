@@ -101,6 +101,19 @@ Describe 'Unit\Src\Private\Get-ConfigurationData' {
             $hostConfiguration.PSObject.Properties.Name.Contains('UpdatePath') | Should Be $false;
         }
 
+        It 'Adds missing "DisableSwitchEnvironmentName" property to Host configuration' {
+            $testConfigurationFilename = 'TestMediaConfiguration.json';
+            $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+            $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+            [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+            Mock Resolve-ConfigurationDataPath -MockWith { return $testConfigurationPath }
+            Mock Get-Content -MockWith { return $fakeConfiguration; }
+
+            $customMediaConfiguration = Get-ConfigurationData -Configuration Host;
+
+            $customMediaConfiguration.DisableSwitchEnvironmentName | Should Be $true;
+        }
+
     } #end InModuleScope
 
 } #end Describe
