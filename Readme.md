@@ -96,6 +96,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### v0.12.2
+
+* Fixes bug disabling DisableSwitchEnvironmentName
+
 ### v0.12.1
 
 * Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
