@@ -14,23 +14,23 @@ Describe 'Unit\Src\Private\Set-LabVMDiskModule' {
             @{ Name = 'DscResourceModule'; }
         )
 
-        It 'Calls "InvokeModuleCacheDownload" with "Force" when specified' {
-            Mock InvokeModuleCacheDownload -MockWith { }
-            Mock ExpandModuleCache -MockWith { }
+        It 'Calls "Invoke-LabModuleCacheDownload" with "Force" when specified' {
+            Mock Invoke-LabModuleCacheDownload -MockWith { }
+            Mock Expand-LabModuleCache -MockWith { }
 
             Set-LabVMDiskModule -Module $testModules -DestinationPath ".\" -Force
 
-            Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Force -eq $true } -Scope It;
+            Assert-MockCalled Invoke-LabModuleCacheDownload -ParameterFilter { $Force -eq $true } -Scope It;
 
         }
 
-        It 'Calls "ExpandModuleCache" with "Clean" when specified' {
-            Mock InvokeModuleCacheDownload -MockWith { }
-            Mock ExpandModuleCache -MockWith { }
+        It 'Calls "Expand-LabModuleCache" with "Clean" when specified' {
+            Mock Invoke-LabModuleCacheDownload -MockWith { }
+            Mock Expand-LabModuleCache -MockWith { }
 
             Set-LabVMDiskModule -Module $testModules -DestinationPath ".\" -Clean
 
-            Assert-MockCalled ExpandModuleCache -ParameterFilter { $Clean -eq $true } -Scope It;
+            Assert-MockCalled Expand-LabModuleCache -ParameterFilter { $Clean -eq $true } -Scope It;
 
         }
 

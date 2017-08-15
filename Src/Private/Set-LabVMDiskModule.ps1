@@ -26,9 +26,9 @@ function Set-LabVMDiskModule {
     process {
 
         ## Invokes the module download if not cached, and returns the source
-        [ref] $null = InvokeModuleCacheDownload -Module $Module -Force:$Force
+        [ref] $null = Invoke-LabModuleCacheDownload -Module $Module -Force:$Force
         ## Expand the modules into the VHDX file
-        [ref] $null = ExpandModuleCache -Module $Module -DestinationPath $DestinationPath -Clean:$Clean;
+        [ref] $null = Expand-LabModuleCache -Module $Module -DestinationPath $DestinationPath -Clean:$Clean;
 
     } #end process
 } #end function

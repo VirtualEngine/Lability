@@ -16,7 +16,7 @@ Describe 'Unit\Src\Public\Set-LabHostDefault' {
 
         Mock Get-ConfigurationData -MockWith { return $fakeConfigurationDataObject; }
         Mock Set-ConfigurationData -MockWith { }
-        Mock ImportDismModule -MockWith { }
+        Mock Import-DismModule -MockWith { }
 
         It 'Resolves path containing an environment variable' {
             $testEnvironmentPath = '%SYSTEMROOT%';

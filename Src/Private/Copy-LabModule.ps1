@@ -53,7 +53,7 @@ function Copy-LabModule {
                 Write-Verbose -Message ($localized.CopyingPowerShellModules -f $DestinationPath);
                 if ($PSCmdlet.ShouldProcess($DestinationPath, $localized.InstallModulesConfirmation)) {
 
-                    ExpandModuleCache -Module $powerShellModules -DestinationPath $DestinationPath;
+                    Expand-LabModuleCache -Module $powerShellModules -DestinationPath $DestinationPath;
                 }
             }
 
@@ -81,7 +81,7 @@ function Copy-LabModule {
                 Write-Verbose -Message ($localized.CopyingDscResourceModules -f $DestinationPath);
                 if ($PSCmdlet.ShouldProcess($DestinationPath, $localized.InstallDscResourcesConfirmation)) {
 
-                    ExpandModuleCache -Module $dscResourceModules -DestinationPath $DestinationPath;
+                    Expand-LabModuleCache -Module $dscResourceModules -DestinationPath $DestinationPath;
                 }
             }
 

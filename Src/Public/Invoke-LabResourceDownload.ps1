@@ -176,7 +176,7 @@ function Invoke-LabResourceDownload {
 
                 ## Invokes download of DSC resource modules into the module cache
                 WriteVerbose ($Localized.DownloadingAllDSCResources);
-                InvokeModuleCacheDownload -Module $dscResourceDefinitions -Force:$Force;
+                Invoke-LabModuleCacheDownload -Module $dscResourceDefinitions -Force:$Force;
             }
             else {
                 WriteVerbose ($localized.NoDSCResourcesDefined);
@@ -190,7 +190,7 @@ function Invoke-LabResourceDownload {
 
                 ## Invokes download of PowerShell modules into the module cache
                 WriteVerbose ($Localized.DownloadingAllPowerShellModules);
-                InvokeModuleCacheDownload -Module $moduleDefinitions -Force:$Force;
+                Invoke-LabModuleCacheDownload -Module $moduleDefinitions -Force:$Force;
             }
             else {
                 WriteVerbose ($localized.NoPowerShellModulesDefined);
