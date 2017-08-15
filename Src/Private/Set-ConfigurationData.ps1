@@ -17,7 +17,7 @@ function Set-ConfigurationData {
     process {
 
         $configurationPath = Resolve-ConfigurationDataPath -Configuration $Configuration;
-        [ref] $null = NewDirectory -Path (Split-Path -Path $configurationPath -Parent) -Verbose:$false;
+        [ref] $null = New-Directory -Path (Split-Path -Path $configurationPath -Parent) -Verbose:$false;
         Set-Content -Path $configurationPath -Value (ConvertTo-Json -InputObject $InputObject -Depth 5) -Force -Confirm:$false;
 
     } #end process

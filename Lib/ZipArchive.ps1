@@ -40,7 +40,7 @@ function ExpandZipArchive {
 
         $DestinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
         WriteVerbose -Message ($localized.ResolvedDestinationPath -f $DestinationPath);
-        [ref] $null = NewDirectory -Path $DestinationPath;
+        [ref] $null = New-Directory -Path $DestinationPath;
 
         foreach ($pathItem in $Path) {
             foreach ($resolvedPath in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pathItem)) {
@@ -159,7 +159,7 @@ function ExpandZipArchiveItem {
 
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
-                    [ref] $null = NewDirectory -Path $directoryPath;
+                    [ref] $null = New-Directory -Path $directoryPath;
 
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 } # end if
@@ -182,7 +182,7 @@ function ExpandZipArchiveItem {
 
                     ## Create the destination directory path, joining the relative directory name
                     $directoryPath = Join-Path -Path $DestinationPath -ChildPath $relativePath;
-                    [ref] $null = NewDirectory -Path $directoryPath;
+                    [ref] $null = New-Directory -Path $directoryPath;
 
                     $fullDestinationFilePath = Join-Path -Path $directoryPath -ChildPath $zipArchiveEntry.Name;
                 }

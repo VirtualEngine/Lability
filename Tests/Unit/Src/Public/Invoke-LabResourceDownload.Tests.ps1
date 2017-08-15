@@ -131,12 +131,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
-            Mock InvokeModuleCacheDownload;
+            Mock Invoke-LabModuleCacheDownload;
             Mock InvokeResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 1 } -Scope It;
+            Assert-MockCalled Invoke-LabModuleCacheDownload -ParameterFilter { $Module.Count -eq 1 } -Scope It;
         }
 
         It 'Downloads multiple DSC resource modules' {
@@ -150,12 +150,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
-            Mock InvokeModuleCacheDownload;
+            Mock Invoke-LabModuleCacheDownload;
             Mock InvokeResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 3 } -Scope It;
+            Assert-MockCalled Invoke-LabModuleCacheDownload -ParameterFilter { $Module.Count -eq 3 } -Scope It;
         }
 
         It 'Downloads a single PowerShell module' {
@@ -167,12 +167,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
-            Mock InvokeModuleCacheDownload;
+            Mock Invoke-LabModuleCacheDownload;
             Mock InvokeResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeModuleCacheDownload -Scope It;
+            Assert-MockCalled Invoke-LabModuleCacheDownload -Scope It;
         }
 
         It 'Downloads multiple PowerShell modules' {
@@ -185,12 +185,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
-            Mock InvokeModuleCacheDownload;
+            Mock Invoke-LabModuleCacheDownload;
             Mock InvokeResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeModuleCacheDownload -ParameterFilter { $Module.Count -eq 2 } -Scope It;
+            Assert-MockCalled Invoke-LabModuleCacheDownload -ParameterFilter { $Module.Count -eq 2 } -Scope It;
         }
 
         It 'Uses resource "Filename" property if specified' {

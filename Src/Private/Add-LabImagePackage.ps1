@@ -37,7 +37,7 @@ function Add-LabImageWindowsPackage {
             WriteVerbose ($localized.AddingWindowsPackage -f $packagename, $DestinationPath);
             $packageFilename = '{0}.cab' -f $packageName;
             $packageFilePath = Join-Path -Path $PackagePath -ChildPath $packageFilename;
-            AddDiskImagePackage -Name $packageName -Path $packageFilePath -DestinationPath $DestinationPath;
+            Add-DiskImagePackage -Name $packageName -Path $packageFilePath -DestinationPath $DestinationPath;
 
             ## Check for language-specific package (Change from Server 2016 TP releases and Server 2016 Nano RTM)
             if ($PSBoundParameters.ContainsKey('PackageLocale')) {
@@ -54,7 +54,7 @@ function Add-LabImageWindowsPackage {
                         Path = $localizedPackagePath;
                         DestinationPath = $DestinationPath;
                     }
-                    AddDiskImagePackage @addDiskImagePackageParams;
+                    Add-DiskImagePackage @addDiskImagePackageParams;
                 }
             }
 

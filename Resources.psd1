@@ -172,6 +172,7 @@ ConvertFrom-StringData -StringData @'
     CreatingAdditionalVhdFile        = Creating additional VHD/X '{0}'.
     AddingAdditionalVhdFile          = Attaching VHD/X '{0}' to controller location '{1}'.
     RemovingVhdFile                  = Removing VHD/X '{0}'.
+    LoadedModuleVersion              = Loaded {0} module version '{1}'.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.

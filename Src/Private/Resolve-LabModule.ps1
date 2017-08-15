@@ -50,12 +50,16 @@ function Resolve-LabModule {
             $resolveModuleParams['Name'] = $nodeProperties[$ModuleType];
         }
 
-        $modules = ResolveModule @resolveModuleParams;
+        $modules = Resolve-LabConfigurationModule @resolveModuleParams;
 
-        ## This is a temporary measure as this is a change in behaviour
-        if (($ModuleType -eq 'DscResource') -and ($null -eq $modules)) {
+        ## Only copy all existing DSC resources if there is no node or configuration DscResource
+        ## defined. This allows suppressing local DSC resource module deploys
+        if (($ModuleType -eq 'DscResource') -and
+            (-not $nodeProperties.ContainsKey('DscResource')) -and
+            ($null -eq $ConfigurationData.NonNodeData.($labDefaults.ModuleName).DscResource)) {
             <#
-                There is no DSCResource = @() node defined. Therefore, we need
+                There is no DSCResource = @() node defined either at the node or the configuration
+                level. Therefore, we need
                 to copy all the existing DSC resources on from the host by
                 returning a load of FileSystem provider resources..
             #>

@@ -9,28 +9,28 @@ Describe 'Lib\Resource' {
 
     InModuleScope $moduleName {
 
-        Context 'Validates "NewDirectory" method' {
+        Context 'Validates "New-Directory" method' {
 
             ## Need to resolve actual filesystem path for System.IO.DirectoryInfo calls
-            $testDirectoryPath = "$((Get-PSdrive -Name TestDrive).Root)\NewDirectory";
+            $testDirectoryPath = "$((Get-PSdrive -Name TestDrive).Root)\New-Directory";
 
             BeforeEach {
-                Remove-Item -Path 'TestDrive:\NewDirectory' -Force -ErrorAction SilentlyContinue;
+                Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
             }
 
 	        It 'Returns a "System.IO.DirectoryInfo" object if target "Path" already exists' {
                 $testDirectoryPath = "$env:SystemRoot";
                 Test-Path -Path $testDirectoryPath | Should Be $true;
-		        (NewDirectory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
+		        (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
 	        }
 
             It 'Returns a "System.IO.DirectoryInfo" object if target "Path" does not exist' {
-                (NewDirectory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
+                (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
             }
 
             It 'Creates target "Path" if it does not exist' {
                 Test-Path -Path $testDirectoryPath | Should Be $false;
-                NewDirectory -Path $testDirectoryPath;
+                New-Directory -Path $testDirectoryPath;
                 Test-Path -Path $testDirectoryPath | Should Be $true;
             }
 
@@ -38,24 +38,24 @@ Describe 'Lib\Resource' {
                 $testDirectoryPath = "$env:SystemRoot";
                 Test-Path -Path $testDirectoryPath | Should Be $true;
                 $directoryInfo = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList $testDirectoryPath;
-		        ($directoryInfo | NewDirectory ) -is [System.IO.DirectoryInfo] | Should Be $true;
+		        ($directoryInfo | New-Directory ) -is [System.IO.DirectoryInfo] | Should Be $true;
 	        }
 
             It 'Returns a "System.IO.DirectoryInfo" object if target "DirectoryInfo" does not exist' {
                 Test-Path -Path $testDirectoryPath | Should Be $false;
-                NewDirectory -Path $testDirectoryPath;
+                New-Directory -Path $testDirectoryPath;
                 Test-Path -Path $testDirectoryPath | Should Be $true;
-                (NewDirectory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
+                (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
             }
 
             It 'Creates target "DirectoryInfo" if it does not exist' {
                 Test-Path -Path $testDirectoryPath | Should Be $false;
                 $directoryInfo = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList $testDirectoryPath;
-                $directoryInfo | NewDirectory;
+                $directoryInfo | New-Directory;
                 Test-Path -Path $testDirectoryPath | Should Be $true;
             }
 
-        } #end context Validates "NewDirectory" method
+        } #end context Validates "New-Directory" method
 
         Context 'Validates "GetResourceDownload" method' {
 

@@ -32,7 +32,7 @@ Get-ChildItem -Path $moduleLibPath,$moduleSrcPath -Include *.ps1 -Exclude '*.Tes
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
-[ref] $null = NewDirectory -Path $allUsersConfigPath;
+[ref] $null = New-Directory -Path $allUsersConfigPath;
 Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | ForEach-Object {
     Write-Verbose -Message ('Updating certificate ''{0}''.' -f $_.FullName);
     Copy-Item -Path $_ -Destination $allUsersConfigPath;
@@ -50,4 +50,4 @@ $credentialCheckScriptBlock = {
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
 
 ## Ensure we load the required DISM module version
-ImportDismModule;
+Import-DismModule;

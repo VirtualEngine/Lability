@@ -9,6 +9,18 @@ Describe 'Src\Private\Expand-LabImage' {
 
     InModuleScope $moduleName {
 
+        function Get-Volume {
+        <#
+            Suppress Error:
+            Cannot process argument transformation on parameter 'DiskImage'. Cannot convert the
+            "@{DriveLetter=Z}" value of type "System.Management.Automation.PSCustomObject" to type
+            "Microsoft.Management.Infrastructure.CimInstance"
+        #>
+            param (
+                [PSCustomObject] $DiskImage
+            )
+        }
+
         It 'Mounts ISO image' {
             $testIsoPath = 'TestDrive:\TestIsoImage.iso';
             [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
@@ -17,7 +29,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageIndex = 42;
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
@@ -33,7 +45,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testVhdPath = 'TestDrive:\TestImage.vhdx';
             $testVhdImage = @{ Path = $testVhdPath };
             $testWimImageIndex = 42;
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { }
 
@@ -50,7 +62,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageName = 'TestWimImage';
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
@@ -69,7 +81,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageIndex = 42;
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { }
@@ -88,7 +100,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimPath = '\custom.wim';
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { }
@@ -106,7 +118,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageIndex = 42;
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
@@ -122,7 +134,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testVhdPath = 'TestDrive:\TestImage.vhdx';
             $testVhdImage = @{ Path = $testVhdPath };
             $testWimImageIndex = 42;
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Dismount-DiskImage { }
 
@@ -139,7 +151,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageName = 'TestWimImage';
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
@@ -165,7 +177,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testVhdImage = @{ Path = $testVhdPath };
             $testWimImageName = 'TestWimImage';
             $testSourcePath = '\CustomSourcePath';
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Get-WindowsImageByIndex { return 42; }
             Mock Add-LabImageWindowsOptionalFeature -MockWith { }
@@ -192,7 +204,7 @@ Describe 'Src\Private\Expand-LabImage' {
             $testWimImageIndex = 42;
             Mock Get-DiskImage -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
-            Mock GetDiskImageDriveLetter -MockWith { return 'Z' }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { Write-Error 'Should Dismount ISO' }

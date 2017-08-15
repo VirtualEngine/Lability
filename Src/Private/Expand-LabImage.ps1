@@ -80,7 +80,7 @@ function Expand-LabImage {
                 }
                 $iso = Mount-DiskImage @mountDiskImageParams;
                 $iso = Get-DiskImage -ImagePath $iso.ImagePath;
-                $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+                $isoDriveLetter = Get-Volume -DiskImage $iso | Select-Object -ExpandProperty DriveLetter;
 
                 ## Update the media path to point to the mounted ISO
                 $windowsImagePath = '{0}:{1}' -f $isoDriveLetter, $WimPath;
@@ -100,7 +100,7 @@ function Expand-LabImage {
 
                 $partitionType = 'Basic';
             }
-            $vhdDriveLetter = GetDiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
+            $vhdDriveLetter = Get-DiskImageDriveLetter -DiskImage $Vhd -PartitionType $partitionType;
 
             $logName = '{0}.log' -f [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
             $logPath = Join-Path -Path $env:TEMP -ChildPath $logName;

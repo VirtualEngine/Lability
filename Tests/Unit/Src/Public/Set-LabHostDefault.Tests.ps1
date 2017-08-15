@@ -16,7 +16,7 @@ Describe 'Unit\Src\Public\Set-LabHostDefault' {
 
         Mock Get-ConfigurationData -MockWith { return $fakeConfigurationDataObject; }
         Mock Set-ConfigurationData -MockWith { }
-        Mock ImportDismModule -MockWith { }
+        Mock Import-DismModule -MockWith { }
 
         It 'Resolves path containing an environment variable' {
             $testEnvironmentPath = '%SYSTEMROOT%';
@@ -27,7 +27,7 @@ Describe 'Unit\Src\Public\Set-LabHostDefault' {
             Assert-MockCalled Set-ConfigurationData -ParameterFilter { $InputObject.IsoPath -eq $testResolvedPath } -Scope It;
         }
 
-        foreach($parameter in ($fakeConfigurationDataObject.PSObject.Properties | Where Name -like '*Path').Name) {
+        foreach ($parameter in ($fakeConfigurationDataObject.PSObject.Properties | Where-Object Name -like '*Path').Name) {
 
             It "Calls 'Set-LabDefaults' with passed '$parameter' parameter" {
                 $testPath = '{0}\{1}\' -f (Get-PSDrive -Name TestDrive).Root, $parameter; #- "TestDrive:\$parameter\";
