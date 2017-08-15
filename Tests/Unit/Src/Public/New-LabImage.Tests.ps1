@@ -466,7 +466,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
 
         It 'Calls "Test-LabImage" and "Get-LabImage" with "ConfigurationData" when specified (#97)' {
             $testImageId = 'NewLabImage';
-            $testParentImagePath = 'TestDrive:'
+            $testParentImagePath = 'TestDrive:';
             $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
@@ -489,6 +489,20 @@ Describe 'Unit\Src\Public\New-LabImage' {
 
             Assert-MockCalled Test-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
             Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
+        }
+
+        It 'Throws when Media minimum DISM version definition is not met' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:';
+            $testArchitecture = 'x64';
+            $testWimImageName = 'Fake windows image';
+            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; CustomData = @{ MinimumDismVersion = '99.99.99.99' } }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Test-LabImage -MockWith { return $false; }
+
+            { New-LabImage -Id $testImageId -ConfigurationData @{} } | Should Throw 'requires DISM version'
         }
 
     } #end InModuleScope

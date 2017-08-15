@@ -96,6 +96,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### Unreleased
+
+* Adds DISM version check to Windows 10 and Server 2016 media images (#167)
+
 ### v0.12.2
 
 * Fixes bug disabling DisableSwitchEnvironmentName

@@ -245,4 +245,5 @@ ConvertFrom-StringData -StringData @'
     CannotResoleVhdParameterError    = Cannot resolve VHD/X parameters. You cannot specify 'VhdPath' in combination with either 'Type' or 'MaximumSizeBytes'.
     InvalidVhdTypeError              = Vhd type '{0}' is not supported with generation {1} virtual machines.
     InvalidVhdSizeError              = Invalid VHD/X size '{0}' specified. Specify a size between 3145728 and 2190433320960 bytes.
+    DismVersionMismatchError         = Media '{0}' requires DISM version '{1}' or later installed to create the image.
 '@
