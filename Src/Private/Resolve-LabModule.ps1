@@ -65,7 +65,7 @@ function Resolve-LabModule {
             #>
             WriteWarning -Message ($localized.DscResourcesNotDefinedWarning);
 
-            $modules = GetDscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules" |
+            $modules = Get-DscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules" |
                 ForEach-Object {
                     ## Create a new hashtable
                     Write-Output -InputObject @{
