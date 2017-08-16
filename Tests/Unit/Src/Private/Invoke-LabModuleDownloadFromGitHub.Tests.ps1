@@ -19,7 +19,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
             ModuleVersion = $testModuleVersion;
         }
         Mock Get-LabModuleCacheManifest -MockWith { return $testModuleManifest; }
-        Mock ResolveGitHubModuleUri -MockWith { return 'http://fake.uri' }
+        Mock Resolve-GitHubModuleUri -MockWith { return 'http://fake.uri' }
         Mock SetResourceDownload -MockWith { return $testModulePath }
 
         It 'Returns a [System.IO.FileInfo] object type' {
@@ -37,7 +37,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
             $result -is [System.IO.FileInfo] | Should Be $true;
         }
 
-        It 'Calls "ResolveGitHubModuleUri" with "Owner" and "Branch"' {
+        It 'Calls "Resolve-GitHubModuleUri" with "Owner" and "Branch"' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testParams = @{
@@ -48,11 +48,11 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
             }
             Invoke-LabModuleDownloadFromGitHub @testParams;
 
-            Assert-MockCalled ResolveGitHubModuleUri -ParameterFilter { $Owner -eq $testOwner } -Scope It;
-            Assert-MockCalled ResolveGitHubModuleUri -ParameterFilter { $Branch -eq $testBranch } -Scope It;
+            Assert-MockCalled Resolve-GitHubModuleUri -ParameterFilter { $Owner -eq $testOwner } -Scope It;
+            Assert-MockCalled Resolve-GitHubModuleUri -ParameterFilter { $Branch -eq $testBranch } -Scope It;
         }
 
-        It 'Calls "ResolveGitHubModuleUri" with "OverrideRepositoryName" when specified' {
+        It 'Calls "Resolve-GitHubModuleUri" with "OverrideRepositoryName" when specified' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testRepositoryOverrideName = 'Override';
@@ -65,7 +65,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
             }
             Invoke-LabModuleDownloadFromGitHub @testParams;
 
-            Assert-MockCalled ResolveGitHubModuleUri -ParameterFilter { $OverrideRepositoryName -ne $testRepositoryOverrideName } -Scope It;
+            Assert-MockCalled Resolve-GitHubModuleUri -ParameterFilter { $OverrideRepositoryName -ne $testRepositoryOverrideName } -Scope It;
         }
 
         It 'Throws when "Owner" is not specified' {

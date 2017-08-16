@@ -75,7 +75,7 @@ function Expand-LabModuleCache {
                     $expandGitHubZipArchiveParams['OverrideRepository'] = $moduleInfo.OverrideRepository;
                 }
 
-                [ref] $null = ExpandGitHubZipArchive @expandGitHubZipArchiveParams;
+                [ref] $null = Expand-GitHubZipArchive @expandGitHubZipArchiveParams;
 
             } #end if GitHub
             elseif (($moduleInfo.ContainsKey('Provider')) -and
