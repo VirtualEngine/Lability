@@ -96,6 +96,12 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### Unreleased
+
+* Adds Lability environment variables for all paths defined in the Lability host defaults, e.g. %LabilityConfigurationPath%
+  * Permits using environment variables in Lability-specific parts of DSC .psd1 configuration files
+  * See \Examples\DvdDriveEnvironmentVariable.psd1 for an example use case
+
 ### v0.12.3
 
 * Adds DISM version check to Windows 10 and Server 2016 media images (#167)
