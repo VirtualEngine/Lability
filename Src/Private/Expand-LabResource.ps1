@@ -125,7 +125,7 @@ function Expand-LabResource {
                             DestinationPath = $resourceDestinationPath;
                             Verbose = $false;
                         }
-                        [ref] $null = ExpandZipArchive @expandZipArchiveParams;
+                        [ref] $null = Expand-ZipArchive @expandZipArchiveParams;
                     }
 
                     Default {

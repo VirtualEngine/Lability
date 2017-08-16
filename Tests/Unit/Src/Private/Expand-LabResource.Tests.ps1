@@ -142,7 +142,7 @@ Describe 'Unit\Src\Private\Expand-LabResource' {
             Assert-MockCalled Copy-Item -ParameterFilter { $Destination -eq $testResourcePath -and $Force -eq $true } -Scope It;
         }
 
-        It 'Calls "ExpandZipArchive" if "Expand" property is specified on a "ZIP" resource' {
+        It 'Calls "Expand-ZipArchive" if "Expand" property is specified on a "ZIP" resource' {
             $testVM = 'VM1';
             $testResourceId = 'Resource1.zip';
             $configurationData= @{
@@ -161,14 +161,14 @@ Describe 'Unit\Src\Private\Expand-LabResource' {
             $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
             New-Item -Path "$testHostResourcePath\$testResourceId" -ItemType File -Force -ErrorAction SilentlyContinue;
-            Mock ExpandZipArchive -MockWith { }
+            Mock Expand-ZipArchive -MockWith { }
 
             Expand-LabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
-            Assert-MockCalled ExpandZipArchive -Scope It;
+            Assert-MockCalled Expand-ZipArchive -Scope It;
         }
 
-        It 'Calls "ExpandZipArchive" to explicit target path when "Expand" is specified on a "ZIP" resource' {
+        It 'Calls "Expand-ZipArchive" to explicit target path when "Expand" is specified on a "ZIP" resource' {
             $testVM = 'VM1';
             $testResourceId = 'Resource1.zip';
             $testDestinationPath = 'MyResources';
@@ -188,11 +188,11 @@ Describe 'Unit\Src\Private\Expand-LabResource' {
             $testHostResourcePath = 'TestDrive:\Resources';
             $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
+            Mock Expand-ZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -MockWith { }
 
             Expand-LabResource -ConfigurationData $configurationData -Name $testVM -DestinationPath $testHostResourcePath;
 
-            Assert-MockCalled ExpandZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
+            Assert-MockCalled Expand-ZipArchive -ParameterFilter { $DestinationPath -eq $testResourcePath } -Scope It;
         }
 
         It 'Calls "Expand-LabIso" if "Expand" property is specified on an "ISO" resource' {

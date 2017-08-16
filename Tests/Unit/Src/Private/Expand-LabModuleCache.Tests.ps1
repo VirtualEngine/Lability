@@ -18,7 +18,7 @@ Describe 'Src\Private\Expand-LabModuleCache' {
 
         $testModuleInfo = @{ Name = $testModuleName; }
 
-        Mock ExpandZipArchive -MockWith { New-Item -Path $testModuleDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue; }
+        Mock Expand-ZipArchive -MockWith { New-Item -Path $testModuleDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue; }
         Mock Expand-GitHubZipArchive -MockWith { New-Item -Path $testModuleDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue; }
         Mock Get-LabModuleCache -MockWith { return (Get-Item -Path $testModuleSourceFilePath) }
 
@@ -50,7 +50,7 @@ Describe 'Src\Private\Expand-LabModuleCache' {
             Assert-MockCalled Remove-Item -ParameterFilter { $Path -eq $testModuleDestinationPath } -Scope It;
         }
 
-        It 'Calls "ExpandZipArchive" when "PSGallery" Provider is specified' {
+        It 'Calls "Expand-ZipArchive" when "PSGallery" Provider is specified' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModuleSourceFilePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $expandLabModuleCacheParams = @{
@@ -59,7 +59,7 @@ Describe 'Src\Private\Expand-LabModuleCache' {
             }
             $null = Expand-LabModuleCache @expandLabModuleCacheParams;
 
-            Assert-MockCalled ExpandZipArchive -Scope It;
+            Assert-MockCalled Expand-ZipArchive -Scope It;
         }
 
         It 'Calls "Expand-GitHubZipArchive" when "GitHub" Provider is specified' {
@@ -91,7 +91,7 @@ Describe 'Src\Private\Expand-LabModuleCache' {
             Assert-MockCalled Expand-GitHubZipArchive -ParameterFilter { $OverrideRepository -eq $testOverrideRepository } -Scope It;
         }
 
-        It 'Calls "ExpandZipArchive" when "FileSystem" Provider is specified and "Path" is a .zip file' {
+        It 'Calls "Expand-ZipArchive" when "FileSystem" Provider is specified and "Path" is a .zip file' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModuleSourceFilePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $expandLabModuleCacheParams = @{
@@ -104,7 +104,7 @@ Describe 'Src\Private\Expand-LabModuleCache' {
             }
             $null = Expand-LabModuleCache @expandLabModuleCacheParams;
 
-            Assert-MockCalled ExpandZipArchive -Scope It;
+            Assert-MockCalled Expand-ZipArchive -Scope It;
         }
 
         It 'Calls "Copy-Item" when "FileSystem" Provider is specified and "Path" is a directory' {
