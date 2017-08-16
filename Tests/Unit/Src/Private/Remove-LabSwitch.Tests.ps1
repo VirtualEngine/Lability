@@ -10,9 +10,9 @@ Describe 'Unit\Src\Private\Remove-LabSwitch' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock InvokeDscResource { }
+        Mock Invoke-LabDscResource { }
 
-        It 'Calls "InvokeDscResource" with "Ensure" = "Absent" when switch exists' {
+        It 'Calls "Invoke-LabDscResource" with "Ensure" = "Absent" when switch exists' {
             $testSwitchName = 'Existing Virtual Switch';
             $fakeExistingSwitch = @{
                 Name = $testSwitchName;
@@ -23,10 +23,10 @@ Describe 'Unit\Src\Private\Remove-LabSwitch' {
 
             Remove-LabSwitch -ConfigurationData @{ } -Name $testSwitchName;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
         }
 
-        It 'Does not call "InvokeDscResource" for a non-existent switch' {
+        It 'Does not call "Invoke-LabDscResource" for a non-existent switch' {
             $testSwitchName = 'Non-existent Virtual Switch';
             $fakeNonexistentSwitch = @{
                 Name = $testSwitchName;
@@ -36,7 +36,7 @@ Describe 'Unit\Src\Private\Remove-LabSwitch' {
 
             Remove-LabSwitch -ConfigurationData @{ } -Name $testSwitchName;
 
-            Assert-MockCalled InvokeDscResource -Exactly 0 -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -Exactly 0 -Scope It;
         }
 
     } #end InModuleScope

@@ -10,8 +10,8 @@ Describe 'Unit\Src\Public\Get-LabVM' {
     InModuleScope -ModuleName $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock GetDscResource -MockWith { return @{ Name = $Parameters.Name; } }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Get-LabDscResource -MockWith { return @{ Name = $Parameters.Name; } }
 
         It 'Returns a "System.Management.Automation.PSCustomObject" object type' {
             $testVM = 'VM2';
@@ -64,7 +64,7 @@ Describe 'Unit\Src\Public\Get-LabVM' {
                     @{ NodeName = $testVM; }
                 )
             }
-            Mock GetDscResource -MockWith { throw; }
+            Mock Get-LabDscResource -MockWith { throw; }
 
             { Get-LabVM -ConfigurationData $configurationData -Name $testVM -ErrorAction Stop } | Should Throw;
         }

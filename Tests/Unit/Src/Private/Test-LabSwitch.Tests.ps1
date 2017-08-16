@@ -14,8 +14,8 @@ Describe 'Unit\Src\Private\Test-LabSwitch' {
                 NonNodeData = @{
                     $labDefaults.ModuleName = @{
                         Network = @( ) } } }
-            Mock ImportDscResource -MockWith { }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $true; }
+            Mock Import-LabDscResource -MockWith { }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $true; }
 
             Test-LabSwitch -ConfigurationData $configurationData -Name 'ExistingSwitch' | Should Be $true;
         }
@@ -39,8 +39,8 @@ Describe 'Unit\Src\Private\Test-LabSwitch' {
                     $labDefaults.ModuleName = @{
                         Network = @( ) } } }
             Mock Get-VMSwitch { }
-            Mock ImportDscResource -MockWith { }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $false; }
+            Mock Import-LabDscResource -MockWith { }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $false; }
 
             Test-LabSwitch -ConfigurationData $configurationData -Name 'NonExistentSwitch' | Should Be $false;
         }

@@ -11,8 +11,8 @@ Describe 'Unit\Src\Private\Set-LabVMDiskPath' {
 
         ## Guard mocks
         Mock Get-LabImage -MockWith { }
-        Mock ImportDscResource -MockWith { }
-        Mock InvokeDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Invoke-LabDscResource -MockWith { }
 
         It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
             $testVMName = 'TestVM';
@@ -24,14 +24,14 @@ Describe 'Unit\Src\Private\Set-LabVMDiskPath' {
             Assert-MockCalled Get-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
         }
 
-        It 'Calls "InvokeDscResource" with virtual machine name' {
+        It 'Calls "Invoke-LabDscResource" with virtual machine name' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
             $vmDisk = Set-LabVMDisk -Name $testVMName -Media $testMedia;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
