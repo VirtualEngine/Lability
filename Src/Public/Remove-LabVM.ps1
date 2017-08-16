@@ -24,7 +24,7 @@ function Remove-LabVM {
         foreach ($vmName in $Name) {
 
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Remove-LabVM', $vmName;
-            $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingVM -f $vmName);
+            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.RemovingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
                 $currentNodeCount++;

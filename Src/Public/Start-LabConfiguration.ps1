@@ -174,7 +174,7 @@ function Start-LabConfiguration {
                 WriteVerbose -Message ($localized.NodeForcedConfiguration -f $node.Name);
 
                 $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-VM', $node.Name;
-                $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
+                $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingVM -f $node.Name);
                 if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
                     $newLabVirtualMachineParams = @{
@@ -196,7 +196,7 @@ function Start-LabConfiguration {
                 WriteVerbose -Message ($localized.NodeMissingOrMisconfigured -f $node.Name);
 
                 $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Start-LabConfiguration', $node.Name;
-                $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingVM -f $node.Name);
+                $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingVM -f $node.Name);
                 if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
                     $newLabVirtualMachineParams = @{

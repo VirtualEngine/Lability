@@ -28,11 +28,11 @@ Describe 'Unit\Src\Private\Resolve-ConfigurationDataPath' {
 
         It 'Resolves environment variables in resulting path' {
             Mock Test-Path -MockWith { return $true }
-            Mock ResolvePathEx -MockWith { }
+            Mock Resolve-PathEx -MockWith { }
 
             Resolve-ConfigurationDataPath -Configuration Media;
 
-            Assert-MockCalled ResolvePathEx -Scope It;
+            Assert-MockCalled Resolve-PathEx -Scope It;
         }
 
     } #end InModuleScope
