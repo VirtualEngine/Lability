@@ -23,7 +23,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
         $testDriveLetter = $env:SystemDrive.Trim(':');
         $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
 
-        It 'Calls "SetUnattendXml" to create "\Windows\System32\Sysprep\Unattend.xml" file' {
+        It 'Calls "Set-UnattendXml" to create "\Windows\System32\Sysprep\Unattend.xml" file' {
 
             $testNode = 'TestNode';
             $testConfigurationData = @{
@@ -34,7 +34,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             $testDriveLetter = $env:SystemDrive.Trim(':');
             $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
 
-            Mock SetUnattendXml -MockWith { }
+            Mock Set-UnattendXml -MockWith { }
 
             $testParams = @{
                 ConfigurationData = $testConfigurationData;
@@ -45,7 +45,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             Set-LabVMDiskFileUnattendXml @testParams;
 
             $expectedPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $testDriveLetter;
-            Assert-MockCalled SetUnattendXml -ParameterFilter { $Path -eq $expectedPath } -Scope It;
+            Assert-MockCalled Set-UnattendXml -ParameterFilter { $Path -eq $expectedPath } -Scope It;
         }
 
         It 'Passes node "ProductKey" when specified (#134)' {
@@ -63,7 +63,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             $testDriveLetter = $env:SystemDrive.Trim(':');
             $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
 
-            Mock SetUnattendXml -MockWith { }
+            Mock Set-UnattendXml -MockWith { }
 
             $testParams = @{
                 ConfigurationData = $testConfigurationData;
@@ -73,7 +73,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             }
             Set-LabVMDiskFileUnattendXml @testParams;
 
-            Assert-MockCalled SetUnattendXml -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
+            Assert-MockCalled Set-UnattendXml -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
         }
 
         It 'Passes media "ProductKey" when specified (#134)' {
@@ -90,7 +90,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             $testDriveLetter = $env:SystemDrive.Trim(':');
             $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
 
-            Mock SetUnattendXml -MockWith { }
+            Mock Set-UnattendXml -MockWith { }
 
             $testParams = @{
                 ConfigurationData = $testConfigurationData;
@@ -101,7 +101,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             }
             Set-LabVMDiskFileUnattendXml @testParams;
 
-            Assert-MockCalled SetUnattendXml -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
+            Assert-MockCalled Set-UnattendXml -ParameterFilter { $ProductKey -eq $testProductKey } -Scope It;
         }
 
         It 'Passes node "ProductKey" when node and media key specified (#134)' {
@@ -120,7 +120,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             $testDriveLetter = $env:SystemDrive.Trim(':');
             $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
 
-            Mock SetUnattendXml -MockWith { }
+            Mock Set-UnattendXml -MockWith { }
 
             $testParams = @{
                 ConfigurationData = $testConfigurationData;
@@ -131,7 +131,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             }
             Set-LabVMDiskFileUnattendXml @testParams;
 
-            Assert-MockCalled SetUnattendXml -ParameterFilter { $ProductKey -eq $testNodeProductKey } -Scope It;
+            Assert-MockCalled Set-UnattendXml -ParameterFilter { $ProductKey -eq $testNodeProductKey } -Scope It;
         }
 
     } #end InModuleScope
