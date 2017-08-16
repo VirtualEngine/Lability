@@ -9,7 +9,8 @@
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+		"WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -24,7 +25,8 @@
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -39,7 +41,8 @@
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -54,7 +57,8 @@
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -76,7 +80,8 @@
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
             "Microsoft-NanoServer-DSC-Package"
-        ]
+        ],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -98,7 +103,8 @@
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
             "Microsoft-NanoServer-DSC-Package"
-        ]
+        ],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -662,7 +668,8 @@
 			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
     "Hotfixes": []
 },
@@ -684,7 +691,8 @@
 			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
     "Hotfixes": []
 },
@@ -706,7 +714,8 @@
 			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
     "Hotfixes": []
 },
@@ -728,7 +737,8 @@
 			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "11.0.0.0"
 	},
     "Hotfixes": []
 }]
