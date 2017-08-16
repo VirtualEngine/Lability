@@ -135,6 +135,8 @@ function Set-LabHostDefault {
         Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;
         Import-DismModule;
 
+        ## Refresh the defaults to ensure environment variables are updated
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
         return $hostDefaults;
 
     } #end process

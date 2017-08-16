@@ -10,22 +10,22 @@ Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock InvokeDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Invoke-LabDscResource -MockWith { }
         Mock Get-ConfigurationData -MockWith { return @{ DifferencingVhdPath = $testDrive; } }
         Mock Test-Path { $true; }
 
-        It "Should call 'InvokeDscResource' to create VHD when 'VhdPath' is not specified" {
+        It "Should call 'Invoke-LabDscResource' to create VHD when 'VhdPath' is not specified" {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @( @{ Type = 'Vhd'; MaximumSizeBytes = 10GB; } )
 
             Set-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'Vhd' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $ResourceName -eq 'Vhd' } -Scope It;
         }
 
-        It "Should call 'InvokeDscResource' once for each additional disk" {
+        It "Should call 'Invoke-LabDscResource' once for each additional disk" {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
@@ -35,7 +35,7 @@ Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
 
             Set-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'HardDiskDrive' } -Scope It -Exactly $testHardDiskDrive.Count;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $ResourceName -eq 'HardDiskDrive' } -Scope It -Exactly $testHardDiskDrive.Count;
         }
 
     } #end InModuleScope

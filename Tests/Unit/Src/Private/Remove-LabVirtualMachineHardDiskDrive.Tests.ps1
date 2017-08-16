@@ -10,20 +10,20 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock InvokeDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Invoke-LabDscResource -MockWith { }
 
-        It "Should not call 'InvokeDscResource' when 'VhdPath' is specified" {
+        It "Should not call 'Invoke-LabDscResource' when 'VhdPath' is specified" {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @( @{ VhdPath = $testDrive; } )
 
             Remove-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
-            Assert-MockCalled InvokeDscResource -Scope It -Exactly 0;
+            Assert-MockCalled Invoke-LabDscResource -Scope It -Exactly 0;
         }
 
-        It "Should call 'InvokeDscResource' once for each additional disk" {
+        It "Should call 'Invoke-LabDscResource' once for each additional disk" {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
@@ -33,10 +33,10 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
 
             Remove-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It -Exactly $testHardDiskDrive.Count;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It -Exactly $testHardDiskDrive.Count;
         }
 
-        It "Should call 'InvokeDscResource' with 'Ensure' = 'Absent'" {
+        It "Should call 'Invoke-LabDscResource' with 'Ensure' = 'Absent'" {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
@@ -45,7 +45,7 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
 
             Remove-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $Parameters['Ensure'] -eq 'Absent' } -Scope It;
         }
 
     } #end InModuleScope

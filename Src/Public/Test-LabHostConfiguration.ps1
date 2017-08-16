@@ -49,10 +49,10 @@ function Test-LabHostConfiguration {
                 Prefix = $configuration.Prefix;
                 UseDefault = $configuration.UseDefault;
             }
-            ImportDscResource @importDscResourceParams;
+            Import-LabDscResource @importDscResourceParams;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
 
-            if (-not (TestDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
+            if (-not (Test-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
 
                 if ($configuration.Prefix -eq 'PendingReboot') {
 

@@ -393,7 +393,7 @@ function Test-ParameterValid
 
     # Does the controller exist?
     if (-not (Get-VMScsiController -VMName $VMName -ControllerNumber $ControllerNumber) `
-        -and -not (Get-VMIdeController -VMName $VMName -ControllerNumber $ControllerNumber))
+        -and -not (Get-VMIdeController -VMName $VMName -ControllerNumber $ControllerNumber -ErrorAction SilentlyContinue))
     {
         # No it does not
         New-InvalidArgumentError `

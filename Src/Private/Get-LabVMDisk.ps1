@@ -40,8 +40,8 @@ function Get-LabVMDisk {
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
         }
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-        GetDscResource -ResourceName VHD -Parameters $vhd;
+        Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+        Get-LabDscResource -ResourceName VHD -Parameters $vhd;
 
     } #end process
 } #end function

@@ -56,9 +56,9 @@ function Start-LabHostConfiguration {
         $labHostSetupConfiguation = Get-LabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
 
-            ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
+            Import-LabDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
-            [ref] $null = InvokeDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
+            [ref] $null = Invoke-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
             ## TODO: Need to check for pending reboots..
         }
         WriteVerbose $localized.FinishedHostConfiguration;
