@@ -23,7 +23,7 @@ function Set-DiskImageBootVolumeGpt {
             '/v'                                           # Enabled verbose logging.
             '/f UEFI'                                      # Specifies the firmware type of the target system partition
         )
-        InvokeExecutable -Path $bcdBootExe -Arguments $bcdBootArgs -LogName ('{0}-BootEdit.log' -f $imageName);
+        Invoke-Executable -Path $bcdBootExe -Arguments $bcdBootArgs -LogName ('{0}-BootEdit.log' -f $imageName);
         ## Clean up and remove drive access path
         Remove-PSDrive -Name $osPartitionDriveLetter -PSProvider FileSystem -ErrorAction Ignore;
         [ref] $null = Get-PSDrive;

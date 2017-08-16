@@ -11,21 +11,21 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileBootstrap' {
 
         $testDriveLetter = $env:SystemDrive.Trim(':');
 
-        It 'Calls "SetBootStrap" to inject default bootstrap' {
-            Mock SetBootStrap -MockWith { }
-            Mock SetSetupCompleteCmd -MockWith { }
+        It 'Calls "Set-LabBootStrap" to inject default bootstrap' {
+            Mock Set-LabBootStrap -MockWith { }
+            Mock Set-LabSetupCompleteCmd -MockWith { }
 
             $testParams = @{
                 VhdDriveLetter = $testDriveLetter;
             }
             Set-LabVMDiskFileBootstrap @testParams;
 
-            Assert-MockCalled SetBootStrap -ParameterFilter { $null -eq $CustomBootstrap } -Scope It;
+            Assert-MockCalled Set-LabBootStrap -ParameterFilter { $null -eq $CustomBootstrap } -Scope It;
         }
 
-        It 'Calls "SetBootStrap" to inject custom bootstrap when specified' {
-            Mock SetBootStrap -MockWith { }
-            Mock SetSetupCompleteCmd -MockWith { }
+        It 'Calls "Set-LabBootStrap" to inject custom bootstrap when specified' {
+            Mock Set-LabBootStrap -MockWith { }
+            Mock Set-LabSetupCompleteCmd -MockWith { }
 
             $testParams = @{
                 VhdDriveLetter = $testDriveLetter;
@@ -33,12 +33,12 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileBootstrap' {
             }
             Set-LabVMDiskFileBootstrap @testParams;
 
-            Assert-MockCalled SetBootStrap -ParameterFilter { $null -ne $CustomBootstrap } -Scope It;
+            Assert-MockCalled Set-LabBootStrap -ParameterFilter { $null -ne $CustomBootstrap } -Scope It;
         }
 
-        It 'Calls "SetBootStrap" with "CoreCLR" to inject CoreCLR bootstrap when specified' {
-            Mock SetBootStrap -MockWith { }
-            Mock SetSetupCompleteCmd -MockWith { }
+        It 'Calls "Set-LabBootStrap" with "CoreCLR" to inject CoreCLR bootstrap when specified' {
+            Mock Set-LabBootStrap -MockWith { }
+            Mock Set-LabSetupCompleteCmd -MockWith { }
 
             $testParams = @{
                 VhdDriveLetter = $testDriveLetter;
@@ -46,12 +46,12 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileBootstrap' {
             }
             Set-LabVMDiskFileBootstrap @testParams;
 
-            Assert-MockCalled SetBootStrap -ParameterFilter { $CoreCLR -eq $true } -Scope It;
+            Assert-MockCalled Set-LabBootStrap -ParameterFilter { $CoreCLR -eq $true } -Scope It;
         }
 
-        It 'Calls "SetSetupCompleteCmd" with "\Windows\Setup\Scripts" path' {
-            Mock SetBootStrap -MockWith { }
-            Mock SetSetupCompleteCmd -MockWith { }
+        It 'Calls "Set-LabSetupCompleteCmd" with "\Windows\Setup\Scripts" path' {
+            Mock Set-LabBootStrap -MockWith { }
+            Mock Set-LabSetupCompleteCmd -MockWith { }
 
             $testParams = @{
                 VhdDriveLetter = $testDriveLetter;
@@ -59,7 +59,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileBootstrap' {
             Set-LabVMDiskFileBootstrap @testParams;
 
             $expectedPath = '{0}:\Windows\Setup\Scripts' -f $testDriveLetter;
-            Assert-MockCalled SetSetupCompleteCmd -ParameterFilter { $Path -eq $expectedPath } -Scope It;
+            Assert-MockCalled Set-LabSetupCompleteCmd -ParameterFilter { $Path -eq $expectedPath } -Scope It;
         }
 
     } #end InModuleScope

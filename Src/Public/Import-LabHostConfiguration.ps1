@@ -77,7 +77,7 @@ function Import-LabHostConfiguration {
 
         if ($Host) {
 
-            $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Host');
+            $verboseMessage = Get-FormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Host');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Host';
             if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
 
@@ -92,7 +92,7 @@ function Import-LabHostConfiguration {
         if ($Media) {
 
             ## Restore media before VM defaults as VM defaults may reference custom media!
-            $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Media');
+            $verboseMessage = Get-FormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Media');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Media';
             if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
 
@@ -108,7 +108,7 @@ function Import-LabHostConfiguration {
 
         if ($VM) {
 
-            $verboseMessage = GetFormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'VM');
+            $verboseMessage = Get-FormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'VM');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'VM';
             if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
 

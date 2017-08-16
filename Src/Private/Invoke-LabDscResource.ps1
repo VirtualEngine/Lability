@@ -26,7 +26,7 @@ function Invoke-LabDscResource {
 
             if ($key -match 'Path') {
 
-                $resolvedParameters[$key] = ResolvePathEx -Path $Parameters[$key];
+                $resolvedParameters[$key] = Resolve-PathEx -Path $Parameters[$key];
                 if ($Parameters[$key] -ne $resolvedParameters[$key]) {
 
                     Write-Debug -Message ("Expanding path '{0}' with value '{1}'." -f $key, $Parameters[$key]);

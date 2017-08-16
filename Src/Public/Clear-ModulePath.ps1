@@ -46,7 +46,7 @@ function Clear-ModulePath {
         if (Test-Path -Path $modulePath) {
 
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Clear-ModulePath', $moduleCachePath;
-            $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
+            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
             $shouldProcessWarning = $localized.ShouldProcessWarning;
             if (($Force) -or
                 ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $shouldProcessWarning))) {

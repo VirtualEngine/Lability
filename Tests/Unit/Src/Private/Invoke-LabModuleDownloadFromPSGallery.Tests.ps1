@@ -18,7 +18,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromPSGallery' {
         }
         Mock Get-LabModuleCacheManifest -MockWith { return $testModuleManifest; }
         Mock Resolve-PSGalleryModuleUri -MockWith { return 'http://fake.uri' }
-        Mock SetResourceDownload -MockWith { return $testModulePath }
+        Mock Set-ResourceDownload -MockWith { return $testModulePath }
 
         It 'Returns a [System.IO.FileInfo] object type' {
             ## BeforeEach does not (currently) work inside InModuleScope scriptblocks https://github.com/pester/Pester/issues/236

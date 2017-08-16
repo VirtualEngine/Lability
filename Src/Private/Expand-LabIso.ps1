@@ -1,4 +1,4 @@
-function ExpandIso {
+function Expand-LabIso {
 <#
     .SYNOPSIS
         Expands an ISO disk image resource
@@ -26,4 +26,4 @@ function ExpandIso {
         Dismount-DiskImage -ImagePath $Path;
 
     } #end process
-} #end function ExpandIso
+} #end function

@@ -30,7 +30,7 @@ function Test-LabHostConfiguration {
                 if ($property.Name -ne 'DismPath') {
 
                     WriteVerbose ($localized.TestingPathExists -f $property.Value);
-                    $resolvedPath = ResolvePathEx -Path $property.Value;
+                    $resolvedPath = Resolve-PathEx -Path $property.Value;
                     if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
 
                         WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);

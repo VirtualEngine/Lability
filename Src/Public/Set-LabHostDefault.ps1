@@ -92,7 +92,7 @@ function Set-LabHostDefault {
 
             if ($PSBoundParameters.ContainsKey($path)) {
 
-                $resolvedPath = ResolvePathEx -Path $PSBoundParameters[$path];
+                $resolvedPath = Resolve-PathEx -Path $PSBoundParameters[$path];
                 if (-not ((Test-Path -Path $resolvedPath -PathType Container -IsValid) -and (Test-Path -Path (Split-Path -Path $resolvedPath -Qualifier))) ) {
 
                     throw ($localized.InvalidPathError -f $resolvedPath, $PSBoundParameters[$path]);

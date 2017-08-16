@@ -13,24 +13,24 @@ Describe 'Src\Private\Set-DiskImageBootVolumeMbr' {
             $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -ItemType File).FullName;
             $testVhdImage = @{ Path = $testVhdPath };
             Mock Get-DiskImageDriveLetter -MockWith { return 'Z'; }
-            Mock InvokeExecutable -MockWith { }
-            Mock InvokeExecutable -ParameterFilter { $Path -eq 'BCDBOOT.EXE' -and $Arguments -contains '/f BIOS' } -MockWith { }
+            Mock Invoke-Executable -MockWith { }
+            Mock Invoke-Executable -ParameterFilter { $Path -eq 'BCDBOOT.EXE' -and $Arguments -contains '/f BIOS' } -MockWith { }
 
             Set-DiskImageBootVolumeMbr -Vhd $testVhdImage;
 
-            Assert-MockCalled InvokeExecutable -ParameterFilter { $Path -eq 'BCDBOOT.EXE' -and $Arguments -contains '/f BIOS' } -Scope It -Exactly 1;
+            Assert-MockCalled Invoke-Executable -ParameterFilter { $Path -eq 'BCDBOOT.EXE' -and $Arguments -contains '/f BIOS' } -Scope It -Exactly 1;
         }
 
         It 'Calls "BCDEDIT.EXE" thrice' {
             $testVhdPath = (New-Item -Path 'TestDrive:\TestImage.vhdx' -Force -ItemType File).FullName;
             $testVhdImage = @{ Path = $testVhdPath };
             Mock Get-DiskImageDriveLetter -MockWith { return 'Z'; }
-            Mock InvokeExecutable -MockWith { }
-            Mock InvokeExecutable -ParameterFilter { $Path -eq 'BCDEDIT.EXE' } -MockWith { }
+            Mock Invoke-Executable -MockWith { }
+            Mock Invoke-Executable -ParameterFilter { $Path -eq 'BCDEDIT.EXE' } -MockWith { }
 
             Set-DiskImageBootVolumeMbr -Vhd $testVhdImage;
 
-            Assert-MockCalled InvokeExecutable -ParameterFilter { $Path -eq 'BCDEDIT.EXE' } -Scope It -Exactly 3;
+            Assert-MockCalled Invoke-Executable -ParameterFilter { $Path -eq 'BCDEDIT.EXE' } -Scope It -Exactly 3;
         }
 
     } #end InModuleScope

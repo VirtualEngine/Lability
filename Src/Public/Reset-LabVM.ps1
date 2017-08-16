@@ -70,7 +70,7 @@ function Reset-LabVM {
         foreach ($vmName in $Name) {
 
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Reset-LabVM', $vmName;
-            $verboseProcessMessage = GetFormattedMessage -Message ($localized.ResettingVM -f $vmName);
+            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.ResettingVM -f $vmName);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
                 $currentNodeCount++;
