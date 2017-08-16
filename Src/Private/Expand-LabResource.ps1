@@ -114,7 +114,7 @@ function Expand-LabResource {
 
                     '.iso' {
 
-                        ExpandIso -Path $resourceItem.FullName -DestinationPath $resourceDestinationPath;
+                        Expand-LabIso -Path $resourceItem.FullName -DestinationPath $resourceDestinationPath;
                     }
 
                     '.zip' {
