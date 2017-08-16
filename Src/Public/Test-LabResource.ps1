@@ -56,7 +56,7 @@ function Test-LabResource {
                 $testResourceDownloadParams['Checksum'] = $resource.Checksum;
             }
 
-            if (-not (TestResourceDownload @testResourceDownloadParams)) {
+            if (-not (Test-ResourceDownload @testResourceDownloadParams)) {
 
                 return $false;
             }

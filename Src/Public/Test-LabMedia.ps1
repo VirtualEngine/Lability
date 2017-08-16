@@ -27,7 +27,7 @@ function Test-LabMedia {
                     Uri = $media.Uri;
                     Checksum = $media.Checksum;
                 }
-                return TestResourceDownload @testResourceDownloadParams;
+                return Test-ResourceDownload @testResourceDownloadParams;
             }
             else {
 

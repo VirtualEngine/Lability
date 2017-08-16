@@ -18,13 +18,14 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeLabMedia = [PSCustomObject] @{ Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = $testMediaType; }
             New-Item -Path "$testHostIsoPath\$testMediaFilename" -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeConfigurationData; }
-            Mock InvokeResourceDownload -MockWith { }
+            Mock Invoke-ResourceDownload -MockWith { }
 
-            $fileInfo = Invoke-LabMediaImageDownload -Media $fakeLabMedia;;
+            $fileInfo = Invoke-LabMediaImageDownload -Media $fakeLabMedia;
+
             $fileInfo -is [System.IO.FileInfo] | Should Be $true;
         }
 
-        It 'Calls "InvokeResourceDownload" with "ParentVhdPath" if media type is "VHD"' {
+        It 'Calls "Invoke-ResourceDownload" with "ParentVhdPath" if media type is "VHD"' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.vhdx";
             $testHostIsoPath = 'TestDrive:\ISOs';
@@ -34,15 +35,15 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'VHD'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
-            Mock InvokeResourceDownload { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
+            Mock Invoke-ResourceDownload { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
         }
 
-        It 'Calls "InvokeResourceDownload" with "IsoPath" if media type is "ISO"' {
+        It 'Calls "Invoke-ResourceDownload" with "IsoPath" if media type is "ISO"' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.iso";
             $testHostIsoPath = 'TestDrive:\ISOs';
@@ -51,14 +52,14 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'ISO'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
         }
 
-        It 'Calls "InvokeResourceDownload" with "IsoPath" if media type is "WIM"' {
+        It 'Calls "Invoke-ResourceDownload" with "IsoPath" if media type is "WIM"' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = 'TestDrive:\ISOs';
@@ -67,14 +68,14 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'WIM'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -MockWith { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $DestinationPath -like $testImagePath } -Scope It;
         }
 
-        It 'Calls "InvokeResourceDownload" with "Force" parameter when specified' {
+        It 'Calls "Invoke-ResourceDownload" with "Force" parameter when specified' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.iso";
             $testHostIsoPath = 'TestDrive:\ISOs';
@@ -83,14 +84,14 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "http://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'ISO'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -ParameterFilter { $Force -eq $true } -MockWith { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $Force -eq $true } -MockWith { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia -Force;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $Force -eq $true } -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $Force -eq $true } -Scope It;
         }
 
-        It 'Calls "InvokeResourceDownload" with large "BufferSize" for file Uris' {
+        It 'Calls "Invoke-ResourceDownload" with large "BufferSize" for file Uris' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = 'TestDrive:\ISOs';
@@ -99,14 +100,14 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; ParentVhdPath = $testHostParentVhdPath; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://testmedia.com/$testMediaFilename"; Checksum = ''; MediaType = 'WIM'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -ParameterFilter { $BufferSize -gt 64KB } -MockWith { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $BufferSize -gt 64KB } -MockWith { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $BufferSize -gt 64KB } -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $BufferSize -gt 64KB } -Scope It;
         }
 
-        It 'Does not call "InvokeResourceDownload" when "DisableLocalFileCaching" is enabled' {
+        It 'Does not call "Invoke-ResourceDownload" when "DisableLocalFileCaching" is enabled' {
             $testMediaId = '2012R2_x64_Standard_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = '{0}\ISOs' -f (Get-PSDrive -Name TestDrive).Root
@@ -115,11 +116,11 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
             $fakeConfigurationData = @{ IsoPath = $testHostIsoPath; DisableLocalFileCaching = $true; }
             $fakeLabMedia = @{ Id = $testMediaId; Filename = $testMediaFilename; Uri = "file://$testImagePath"; Checksum = ''; MediaType = 'WIM'; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock InvokeResourceDownload -MockWith { }
+            Mock Invoke-ResourceDownload -MockWith { }
 
             Invoke-LabMediaImageDownload -Media $fakeLabMedia;
 
-            Assert-MockCalled InvokeResourceDownload -Scope It -Exactly 0;
+            Assert-MockCalled Invoke-ResourceDownload -Scope It -Exactly 0;
         }
 
         It 'Returns source Uri when "DisableLocalFileCaching" is enabled' {

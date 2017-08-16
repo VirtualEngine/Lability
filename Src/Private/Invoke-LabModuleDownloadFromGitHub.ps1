@@ -73,7 +73,7 @@ function Invoke-LabModuleDownloadFromGitHub {
             Uri = Resolve-GitHubModuleUri @PSBoundParameters;
             NoCheckSum = $true;
         }
-        $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
+        $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
         return (Rename-LabModuleCacheVersion -Name $Name -Path $moduleDestinationPath -Owner $Owner -Branch $Branch);
 
     } #end process

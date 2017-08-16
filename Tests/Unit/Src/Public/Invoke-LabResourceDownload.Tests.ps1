@@ -78,7 +78,7 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload -MockWith { }
             Mock Invoke-LabMediaDownload -MockWith { }
-            Mock InvokeResourceDownload -MockWith { }
+            Mock Invoke-ResourceDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData -MediaId $testMediaId;
 
@@ -96,12 +96,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload -MockWith { }
             Mock Invoke-LabMediaDownload -MockWith { }
-            Mock InvokeResourceDownload -MockWith { }
+            Mock Invoke-ResourceDownload -MockWith { }
             Mock Get-Item -ParameterFilter { $Path -match 'Resource\d\.' } -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
-            Assert-MockCalled InvokeResourceDownload -Exactly 3 -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -Exactly 3 -Scope It;
         }
 
         It 'Downloads single resource when "ResourceId" parameter is specified' {
@@ -115,11 +115,11 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
                         ) } } }
             Mock Invoke-LabMediaImageDownload -MockWith { }
             Mock Invoke-LabMediaDownload -MockWith { }
-            Mock InvokeResourceDownload -MockWith { }
+            Mock Invoke-ResourceDownload -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData -ResourceId 'Resource1.exe';
 
-            Assert-MockCalled InvokeResourceDownload -Exactly 1 -Scope It;
+            Assert-MockCalled Invoke-ResourceDownload -Exactly 1 -Scope It;
         }
 
         It 'Downloads a single DSC resource module' {
@@ -132,7 +132,7 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
             Mock Invoke-LabModuleCacheDownload;
-            Mock InvokeResourceDownload;
+            Mock Invoke-ResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
@@ -151,7 +151,7 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
             Mock Invoke-LabModuleCacheDownload;
-            Mock InvokeResourceDownload;
+            Mock Invoke-ResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
@@ -168,7 +168,7 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
             Mock Invoke-LabModuleCacheDownload;
-            Mock InvokeResourceDownload;
+            Mock Invoke-ResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
@@ -186,7 +186,7 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             Mock Invoke-LabMediaImageDownload;
             Mock Invoke-LabMediaDownload;
             Mock Invoke-LabModuleCacheDownload;
-            Mock InvokeResourceDownload;
+            Mock Invoke-ResourceDownload;
 
             Invoke-LabResourceDownload -ConfigurationData $configurationData;
 
@@ -210,12 +210,12 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
             Mock Invoke-LabMediaImageDownload -MockWith { }
             Mock Invoke-LabMediaDownload -MockWith { }
-            Mock InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -MockWith { }
+            Mock Invoke-ResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -MockWith { }
             Mock Get-Item -ParameterFilter { $Path -match 'Custom Resource Filename.test' } -MockWith { }
 
             Invoke-LabResourceDownload -ConfigurationData $filenameConfigurationData -ResourceId $testResourceId;
 
-            Assert-MockCalled InvokeResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -Scope It
+            Assert-MockCalled Invoke-ResourceDownload -ParameterFilter { $DestinationPath -eq $testResourceDestinationFilename } -Scope It
         }
 
     } #end InModuleScope

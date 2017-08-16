@@ -36,7 +36,7 @@ function Invoke-LabModuleDownloadFromPSGallery {
             Uri = Resolve-PSGalleryModuleUri @PSBoundParameters;
             NoCheckSum = $true;
         }
-        $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
+        $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
         return (Rename-LabModuleCacheVersion -Name $Name -Path $moduleDestinationPath);
 
     } #end process

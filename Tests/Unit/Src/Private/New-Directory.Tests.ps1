@@ -5,51 +5,54 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Unit\Src\Private\New-LabMedia' {
+Describe 'Unit\Src\Private\New-Directory' {
 
     InModuleScope -ModuleName $moduleName {
 
-        $newLabMediaParams = @{
-            Id = 'Test-Media';
-            Filename = 'Test-Media.iso';
-            Architecture = 'x86';
-            MediaType = 'ISO';
-            Uri = 'http://testmedia.com/test-media.iso';
-            #CustomData = @{ };
+        ## Need to resolve actual filesystem path for System.IO.DirectoryInfo calls
+        $testDirectoryPath = "$((Get-PSdrive -Name TestDrive).Root)\New-Directory";
+
+        It 'Returns a "System.IO.DirectoryInfo" object if target "Path" already exists' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            $testDirectoryPath = "$env:SystemRoot";
+            Test-Path -Path $testDirectoryPath | Should Be $true;
+            (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
         }
 
-        It 'Does not throw with valid mandatory parameters' {
-            { New-LabMedia @newLabMediaParams } | Should Not Throw;
+        It 'Returns a "System.IO.DirectoryInfo" object if target "Path" does not exist' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
         }
 
-        It 'Throws with an invalid Uri' {
-            $testLabMediaParams = $newLabMediaParams.Clone();
-            $testLabMediaParams['Uri'] = 'about:blank';
-
-            { New-LabMedia @testLabMediaParams } | Should Throw;
+        It 'Creates target "Path" if it does not exist' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            Test-Path -Path $testDirectoryPath | Should Be $false;
+            New-Directory -Path $testDirectoryPath;
+            Test-Path -Path $testDirectoryPath | Should Be $true;
         }
 
-        foreach ($parameter in @('Id','Filename','Architecture','MediaType','Uri')) {
-
-            It "Throws when ""$parameter"" parameter is missing" {
-                $testLabMediaParams = $newLabMediaParams.Clone();
-                $testLabMediaParams.Remove($parameter);
-
-                { New-LabMedia @testLabMediaParams } | Should Throw;
-            }
+        It 'Returns a "System.IO.DirectoryInfo" object if target "DirectoryInfo" already exists' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            $testDirectoryPath = "$env:SystemRoot";
+            Test-Path -Path $testDirectoryPath | Should Be $true;
+            $directoryInfo = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList $testDirectoryPath;
+            ($directoryInfo | New-Directory ) -is [System.IO.DirectoryInfo] | Should Be $true;
         }
 
-        It 'Returns "System.Management.Automation.PSCustomObject" object type' {
-            $labMedia = New-LabMedia @newLabMediaParams;
-
-            $labMedia -is [System.Management.Automation.PSCustomObject] | Should Be $true;
+        It 'Returns a "System.IO.DirectoryInfo" object if target "DirectoryInfo" does not exist' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            Test-Path -Path $testDirectoryPath | Should Be $false;
+            New-Directory -Path $testDirectoryPath;
+            Test-Path -Path $testDirectoryPath | Should Be $true;
+            (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
         }
 
-        It 'Creates ProductKey custom entry when "ProductKey" is specified' {
-            $testProductKey = 'ABCDE-12345-FGHIJ-67890-KLMNO';
-            $labMedia = New-LabMedia @newLabMediaParams -ProductKey $testProductKey;
-
-            $labMedia.CustomData.ProductKey | Should Be $testProductKey;
+        It 'Creates target "DirectoryInfo" if it does not exist' {
+            Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
+            Test-Path -Path $testDirectoryPath | Should Be $false;
+            $directoryInfo = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList $testDirectoryPath;
+            $directoryInfo | New-Directory;
+            Test-Path -Path $testDirectoryPath | Should Be $true;
         }
 
     } #end InModuleScope
