@@ -35,7 +35,7 @@ function Import-LabDscResource {
             if ($UseDefault) {
 
                 WriteVerbose ($localized.ImportingDscResource -f $ModuleName, $ResourceName);
-                $resourcePath = GetDscModule -ModuleName $ModuleName -ResourceName $ResourceName -ErrorAction Stop;
+                $resourcePath = Get-LabDscModule -ModuleName $ModuleName -ResourceName $ResourceName -ErrorAction Stop;
             }
             else {
 
