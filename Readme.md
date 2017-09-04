@@ -96,7 +96,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
-### Unreleased
+### v0.12.4
 
 * Adds Lability environment variables for all paths defined in the Lability host defaults, e.g. %LabilityConfigurationPath%
   * Permits using environment variables in Lability-specific parts of DSC .psd1 configuration files
