@@ -10,8 +10,8 @@ Describe 'Unit\Src\Private\Remove-LabVMDisk' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock InvokeDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Invoke-LabDscResource -MockWith { }
         Mock Get-LabImage -MockWith { }
 
          It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
@@ -24,7 +24,7 @@ Describe 'Unit\Src\Private\Remove-LabVMDisk' {
             Assert-MockCalled Get-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
         }
 
-        It 'Calls "InvokeDscResource" with virtual "Ensure" = "Absent"' {
+        It 'Calls "Invoke-LabDscResource" with virtual "Ensure" = "Absent"' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             $testImagePath = "TestDrive:\$testMedia.vhdx";
@@ -35,7 +35,7 @@ Describe 'Unit\Src\Private\Remove-LabVMDisk' {
 
             $vmDisk = Remove-LabVMDisk -Name $testVMName -NodeName $testVMName -Media $testMedia;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $Parameters.Ensure -eq 'Absent' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $Parameters.Ensure -eq 'Absent' } -Scope It;
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {

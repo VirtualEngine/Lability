@@ -41,8 +41,8 @@ function Set-LabVMDisk {
             Generation = $image.Generation;
         }
 
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
-        [ref] $null = InvokeDscResource -ResourceName VHD -Parameters $vhd;
+        Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
+        [ref] $null = Invoke-LabDscResource -ResourceName VHD -Parameters $vhd;
 
     } #end process
 } #end function

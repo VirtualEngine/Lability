@@ -10,8 +10,8 @@ Describe 'Unit\Src\Private\Get-LabVMDisk' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock GetDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Get-LabDscResource -MockWith { }
         Mock Get-LabImage -MockWith { }
 
         It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
@@ -19,19 +19,19 @@ Describe 'Unit\Src\Private\Get-LabVMDisk' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $Id -eq $testMedia } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia;
+            $null = Get-LabVMDisk -Name $testVMName -Media $testMedia;
 
             Assert-MockCalled Get-LabImage -ParameterFilter { $Id -eq $testMedia } -Scope It;
         }
 
-        It 'Calls "GetDscResource" with virtual machine name' {
+        It 'Calls "Get-LabDscResource" with virtual machine name' {
             $testVMName = 'TestVM';
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia;
+            $null = Get-LabVMDisk -Name $testVMName -Media $testMedia;
 
-            Assert-MockCalled GetDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Get-LabDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
@@ -39,7 +39,7 @@ Describe 'Unit\Src\Private\Get-LabVMDisk' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Get-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};
+            $null = Get-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};
 
             Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }

@@ -96,6 +96,13 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions
 
+### v0.12.4
+
+* Adds Lability environment variables for all paths defined in the Lability host defaults, e.g. %LabilityConfigurationPath%
+  * Permits using environment variables in Lability-specific parts of DSC .psd1 configuration files
+  * See \Examples\DvdDriveEnvironmentVariable.psd1 for an example use case
+* Fixes bug in DISM version check in Windows 10 images (#247)
+
 ### v0.12.3
 
 * Adds DISM version check to Windows 10 and Server 2016 media images (#167)
@@ -306,5 +313,12 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds manual node configuration:
   * Adds Test-LabNodeConfiguration cmdlet to test a node's configuration.
   * Adds Invoke-LabNodeConfiguration to install Lability certificates and download required DSC resources.
+
+## Known Issues
+
+* When running Lability via the PowerShell ISE on Windows Server 2012 R2 with Windows 10 ADK installed, a
+`powershell_ise.exe - System Error` message is displayed.
+  * Windows 10/Server 2016 images are still successfully created and the error can safely be ignored.
+  * For better results, use PowerShell.exe instead.
 
 [__Lability__ image/logo attribution credit](https://openclipart.org/image/300px/svg_to_png/22734/papapishu-Lab-icon-1.png)

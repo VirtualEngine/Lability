@@ -13,7 +13,19 @@ function Get-LabHostDefault {
     param ( )
     process {
 
-        Get-ConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host;
+
+        ## Create/update Lability environment variables
+        $env:LabilityConfigurationPath = $hostDefaults.ConfigurationPath;
+        $env:LabilityDifferencingVhdPath = $hostDefaults.DifferencingVhdPath;
+        $env:LabilityHotfixPath = $hostDefaults.HotfixPath;
+        $env:LabilityIsoPath = $hostDefaults.IsoPath;
+        $env:LabilityModuleCachePath = $hostDefaults.ModuleCachePath;
+        $env:LabilityResourcePath = $hostDefaults.ResourcePath;
+        $env:LabilityDismPath = $hostDefaults.DismPath;
+        $env:LabilityRepositoruUri = $hostDefaults.RepositoryUri;
+
+        return $hostDefaults;
 
     } #end process
-} #end function Get-LabHostDefault
+} #end function

@@ -10,12 +10,12 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
     InModuleScope -ModuleName $moduleName {
 
         # Guard mocks
-        Mock ImportDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
 
         It 'Passes when target paths exist' {
             $fakeHostDefaults = '{ "APath": "TestDrive:\\", "TestShare": "TestShare", "BPath": "C:\\" }' | ConvertFrom-Json;
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
-            Mock TestDscResource -MockWith { return $true; }
+            Mock Test-LabDscResource -MockWith { return $true; }
 
             Test-LabHostConfiguration | Should Be $true;
         }
@@ -23,7 +23,7 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
         It 'Fails when a target path does not exist' {
             $fakeHostDefaults = '{ "APath": "TestDrive:\\NonExistentFolderPath", "TestShare": "TestShare", "BPath": "C:\\" }' | ConvertFrom-Json;
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
-            Mock TestDscResource -MockWith { return $true; }
+            Mock Test-LabDscResource -MockWith { return $true; }
 
             Test-LabHostConfiguration | Should Be $false;
         }
@@ -37,8 +37,8 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
             Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
             Mock Get-LabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
             Mock Test-Path -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Fails' } -MockWith { return $false; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Fails' } -MockWith { return $false; }
 
             Test-LabHostConfiguration | Should Be $true;
         }
@@ -52,8 +52,8 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
             Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
             Mock Get-LabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
             Mock Test-Path -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Fails' } -MockWith { return $false; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Fails' } -MockWith { return $false; }
 
             Test-LabHostConfiguration | Should Be $false;
         }
@@ -67,8 +67,8 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
             Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
             Mock Get-LabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
             Mock Test-Path -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'PendingReboot' } -MockWith { return $false; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'PendingReboot' } -MockWith { return $false; }
 
             Test-LabHostConfiguration 3> $null | Should Be $false;
         }
@@ -82,8 +82,8 @@ Describe 'Unit\Src\Public\Test-LabHostConfiguration' {
             Mock Get-ConfigurationData -MockWith { return $fakeHostDefaults; }
             Mock Get-LabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
             Mock Test-Path -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
-            Mock TestDscResource -ParameterFilter { $ResourceName -eq 'PendingReboot' } -MockWith { return $false; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'Passes' } -MockWith { return $true; }
+            Mock Test-LabDscResource -ParameterFilter { $ResourceName -eq 'PendingReboot' } -MockWith { return $false; }
 
             Test-LabHostConfiguration -IgnorePendingReboot 3> $null | Should Be $true;
         }

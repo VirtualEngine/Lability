@@ -30,7 +30,7 @@ function Test-LabHostConfiguration {
                 if ($property.Name -ne 'DismPath') {
 
                     WriteVerbose ($localized.TestingPathExists -f $property.Value);
-                    $resolvedPath = ResolvePathEx -Path $property.Value;
+                    $resolvedPath = Resolve-PathEx -Path $property.Value;
                     if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
 
                         WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
@@ -49,10 +49,10 @@ function Test-LabHostConfiguration {
                 Prefix = $configuration.Prefix;
                 UseDefault = $configuration.UseDefault;
             }
-            ImportDscResource @importDscResourceParams;
+            Import-LabDscResource @importDscResourceParams;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
 
-            if (-not (TestDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
+            if (-not (Test-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
 
                 if ($configuration.Prefix -eq 'PendingReboot') {
 

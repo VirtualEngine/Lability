@@ -179,7 +179,7 @@ function New-LabVM {
             ## Update the node name before creating the VM
             $configurationNode['NodeName'] = $vmName;
             $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
-            $verboseProcessMessage = GetFormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
+            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
             if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
                 $currentNodeCount++;

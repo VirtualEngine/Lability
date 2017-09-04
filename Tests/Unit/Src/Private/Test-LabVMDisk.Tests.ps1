@@ -10,8 +10,8 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
     InModuleScope $moduleName {
 
         ## Guard mocks
-        Mock ImportDscResource -MockWith { }
-        Mock TestDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
+        Mock Test-LabDscResource -MockWith { }
         Mock Get-LabImage -MockWith { }
 
         It 'Calls "Get-LabMedia" to resolve the parent VHDX path' {
@@ -19,7 +19,7 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Test-LabVMDisk -Name $testVM -Media $testMedia;
+            $null = Test-LabVMDisk -Name $testVM -Media $testMedia;
 
             Assert-MockCalled Get-LabImage -Scope It;
         }
@@ -29,9 +29,9 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Test-LabVMDisk -Name $testVMName -Media $testMedia;
+            $null = Test-LabVMDisk -Name $testVMName -Media $testMedia;
 
-            Assert-MockCalled TestDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
+            Assert-MockCalled Test-LabDscResource -ParameterFilter { $Parameters.Name -eq $testVMName } -Scope It;
         }
 
         It 'Calls "TestDscResource" with "MaximumSize" when image is not available (#104)' {
@@ -39,9 +39,9 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testMedia = 'TestNewMedia';
             Mock Get-LabImage -MockWith { }
 
-            $vmDisk = Test-LabVMDisk -Name $testVMSize -Media $testMedia;
+            $null = Test-LabVMDisk -Name $testVMSize -Media $testMedia;
 
-            Assert-MockCalled TestDscResource -ParameterFilter { $Parameters.MaximumSize -eq 127GB } -Scope It;
+            Assert-MockCalled Test-LabDscResource -ParameterFilter { $Parameters.MaximumSize -eq 127GB } -Scope It;
         }
 
         It 'Calls "TestDscResource" with "VHDX" when image is not available (#104)' {
@@ -49,9 +49,9 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testMedia = 'TestNewMedia';
             Mock Get-LabImage -MockWith { }
 
-            $vmDisk = Test-LabVMDisk -Name $testVMGeneration -Media $testMedia;
+            $null = Test-LabVMDisk -Name $testVMGeneration -Media $testMedia;
 
-            Assert-MockCalled TestDscResource -ParameterFilter { $Parameters.Generation -eq 'VHDX' } -Scope It;
+            Assert-MockCalled Test-LabDscResource -ParameterFilter { $Parameters.Generation -eq 'VHDX' } -Scope It;
         }
 
         It 'Calls "Get-LabImage" with "ConfigurationData" when specified (#97)' {
@@ -59,7 +59,7 @@ Describe 'Unit\Src\Private\Test-LabVMDiskPath' {
             $testMedia = 'TestMedia';
             Mock Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -MockWith { return @{ ImagePath = "TestDrive:\$testMedia.vhdx"; } }
 
-            $vmDisk = Test-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};
+            $null = Test-LabVMDisk -Name $testVMName -Media $testMedia -ConfigurationData @{};
 
             Assert-MockCalled Get-LabImage -ParameterFilter { $null -ne $ConfigurationData } -Scope It;
         }

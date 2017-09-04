@@ -157,7 +157,7 @@ function Invoke-LabResourceDownload {
                             Checksum = $resource.Checksum;
                             Force = $Force;
                         }
-                        [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams;
+                        [ref] $null = Invoke-ResourceDownload @invokeResourceDownloadParams;
                         Write-Output (Get-Item -Path $resourceDestinationPath);
                     }
                 }

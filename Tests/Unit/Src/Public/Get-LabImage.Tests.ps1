@@ -10,7 +10,7 @@ Describe 'Unit\Src\Public\Get-LabImage' {
     InModuleScope -ModuleName $moduleName {
 
         It 'Returns null when there is no parent image when Id specified' {
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path 'TestDrive:\'; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeLabMediaId1 = 'IMG1';
             $fakeLabMediaId2 = 'IMG2';
@@ -30,7 +30,7 @@ Describe 'Unit\Src\Public\Get-LabImage' {
         }
 
         It 'Returns null when there is are no parent images' {
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\EmptyPath'; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path 'TestDrive:\EmptyPath'; }
             New-Item -Path 'TestDrive:\EmptyPath' -ItemType Directory -Force -ErrorAction SilentlyContinue;
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
             Mock Get-LabMedia -MockWith { return $fakeLabMedia; }
@@ -42,7 +42,7 @@ Describe 'Unit\Src\Public\Get-LabImage' {
         }
 
         It 'Returns all available parent images when no Id is specified' {
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path 'TestDrive:\'; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeLabMediaId1 = 'IMG1';
             $fakeLabMediaId2 = 'IMG2';
@@ -63,7 +63,7 @@ Describe 'Unit\Src\Public\Get-LabImage' {
         }
 
         It 'Returns a single parent image when Id specified' {
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path 'TestDrive:\'; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $ImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeLabMediaId1 = 'IMG1';
             $fakeLabMediaId2 = 'IMG2';
@@ -90,7 +90,7 @@ Describe 'Unit\Src\Public\Get-LabImage' {
                 $testImageGeneration = $generation;
                 $testDiskImageFileName = '{0}.{1}' -f $testLabMediaId, $testImageGeneration;
                 $testDiskImagePath = 'TestDrive:\{0}' -f $testDiskImageFileName;
-                $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path 'TestDrive:\'; }
+                $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path 'TestDrive:\'; }
                 $fakeLabMedia = @(
                     [PSCustomObject] @{ Id = $testLabMediaId; Filename = $testDiskImageFileName; MediaType = $testImageGeneration; }
                 )

@@ -24,21 +24,21 @@ Describe 'Unit\Src\Private\Clear-LabVirtualMachine' {
 
         ## Guard mocks
         Mock Get-LabVirtualMachineProperty -MockWith { return @{}; }
-        Mock InvokeDscResource -MockWith { }
-        Mock ImportDscResource -MockWith { }
+        Mock Invoke-LabDscResource -MockWith { }
+        Mock Import-LabDscResource -MockWith { }
 
         It 'Imports Hyper-V DSC resource' {
 
             Clear-LabVirtualMachine @clearLabVirtualMachineParams;
 
-            Assert-MockCalled ImportDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
+            Assert-MockCalled Import-LabDscResource -ParameterFilter { $ModuleName -eq 'xHyper-V' -and $ResourceName -eq 'MSFT_xVMHyperV' } -Scope It;
         }
 
         It 'Invokes Hyper-V DSC resource' {
 
             Clear-LabVirtualMachine @clearLabVirtualMachineParams;
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $ResourceName -eq 'VM' } -Scope It;
         }
 
         It 'Calls "Get-LabVirtualMachineProperty" with "ConfigurationData" when specified (#97)' {

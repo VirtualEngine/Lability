@@ -23,25 +23,25 @@ function Set-DiskImageBootVolumeMbr {
             '/v'                                         # Enable verbose logging.
             '/f BIOS'                                    # Firmware type of the target system partition
         )
-        InvokeExecutable -Path $bcdBootExe -Arguments $bcdBootArgs -LogName ('{0}-BootEdit.log' -f $imageName);
+        Invoke-Executable -Path $bcdBootExe -Arguments $bcdBootArgs -LogName ('{0}-BootEdit.log' -f $imageName);
 
         $bootmgrDeviceArgs = @(
             ('/store {0}:\boot\bcd' -f $osPartitionDriveLetter),
             '/set {bootmgr} device locate'
         );
-        InvokeExecutable -Path $bcdEditExe -Arguments $bootmgrDeviceArgs -LogName ('{0}-BootmgrDevice.log' -f $imageName);
+        Invoke-Executable -Path $bcdEditExe -Arguments $bootmgrDeviceArgs -LogName ('{0}-BootmgrDevice.log' -f $imageName);
 
         $defaultDeviceArgs = @(
             ('/store {0}:\boot\bcd' -f $osPartitionDriveLetter),
             '/set {default} device locate'
         );
-        InvokeExecutable -Path $bcdEditExe -Arguments $defaultDeviceArgs -LogName ('{0}-DefaultDevice.log' -f $imageName);
+        Invoke-Executable -Path $bcdEditExe -Arguments $defaultDeviceArgs -LogName ('{0}-DefaultDevice.log' -f $imageName);
 
         $defaultOsDeviceArgs = @(
             ('/store {0}:\boot\bcd' -f $osPartitionDriveLetter),
             '/set {default} osdevice locate'
         );
-        InvokeExecutable -Path $bcdEditExe -Arguments $defaultOsDeviceArgs -LogName ('{0}-DefaultOsDevice.log' -f $imageName);
+        Invoke-Executable -Path $bcdEditExe -Arguments $defaultOsDeviceArgs -LogName ('{0}-DefaultOsDevice.log' -f $imageName);
 
     } #end process
 } #end function

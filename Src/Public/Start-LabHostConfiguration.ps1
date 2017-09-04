@@ -29,7 +29,7 @@ function Start-LabHostConfiguration {
                 ## DismPath is not a folder and should be ignored (#159)
                 if ($property.Name -ne 'DismPath') {
 
-                    [ref] $null = New-Directory -Path $(ResolvePathEx -Path $Property.Value) -ErrorAction Stop;
+                    [ref] $null = New-Directory -Path $(Resolve-PathEx -Path $Property.Value) -ErrorAction Stop;
                 }
             }
         }
@@ -41,7 +41,7 @@ function Start-LabHostConfiguration {
             if ($property.Value.Contains('%')) {
 
                 # if the Path for host defaults contains a '%' character then resolve it
-                $resolvedPath = ResolvePathEx -Path $Property.Value;
+                $resolvedPath = Resolve-PathEx -Path $Property.Value;
                 # update the hostdefaults Object
                 $hostDefaults.($property.Name)  = $resolvedPath;
                 $hostDefaultsUpdated = $true;
@@ -56,9 +56,9 @@ function Start-LabHostConfiguration {
         $labHostSetupConfiguation = Get-LabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
 
-            ImportDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
+            Import-LabDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
-            [ref] $null = InvokeDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
+            [ref] $null = Invoke-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
             ## TODO: Need to check for pending reboots..
         }
         WriteVerbose $localized.FinishedHostConfiguration;

@@ -43,7 +43,7 @@ function Invoke-LabMediaImageDownload {
         if ($media.MediaType -eq 'VHD') {
 
             ## Always download VHDXs regardless of Uri type
-            [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
+            [ref] $null = Invoke-ResourceDownload @invokeResourceDownloadParams -Force:$Force;
         }
         elseif (($mediaUri.Scheme -eq 'File') -and ($media.MediaType -eq 'WIM') -and $hostDefaults.DisableLocalFileCaching)
         ## TODO: elseif (($mediaUri.Scheme -eq 'File') -and $hostDefaults.DisableLocalFileCaching)
@@ -56,7 +56,7 @@ function Invoke-LabMediaImageDownload {
         else {
 
             ## Caching is enabled or it's a http/https source
-            [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
+            [ref] $null = Invoke-ResourceDownload @invokeResourceDownloadParams -Force:$Force;
         }
         return (Get-Item -Path $invokeResourceDownloadParams.DestinationPath);
 

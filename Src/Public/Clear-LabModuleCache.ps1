@@ -22,7 +22,7 @@ function Clear-LabModuleCache {
 
         $moduleCachePath = (Get-ConfigurationData -Configuration 'Host').ModuleCachePath;
         $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Clear-LabModuleCache', $moduleCachePath;
-        $verboseProcessMessage = GetFormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
+        $verboseProcessMessage = Get-FormattedMessage -Message ($localized.RemovingDirectory -f $moduleCachePath);
         $shouldProcessWarning = $localized.ShouldProcessWarning;
         if (($Force) -or
             ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $shouldProcessWarning))) {

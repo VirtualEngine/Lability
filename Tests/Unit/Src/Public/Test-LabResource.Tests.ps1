@@ -91,7 +91,7 @@ Describe 'Unit\Src\Public\Test-LabResource' {
             Test-LabResource -ConfigurationData $filenameConfigurationData -ResourceId $testResourceId | Should Be $true;
         }
 
-        It 'Calls "TestResourceDownload" with "Checksum" parameter when defined' {
+        It 'Calls "Test-ResourceDownload" with "Checksum" parameter when defined' {
             $testResourceId = 'Resource4.iso';
             $testResourceChecksum = 'ABCDEF1234567890';
             $checksumConfigurationData = @{
@@ -104,11 +104,11 @@ Describe 'Unit\Src\Public\Test-LabResource' {
             $testHostResourcePath = 'TestDrive:\Resources';
             $fakeConfigurationData = @{ ResourcePath = $testHostResourcePath;}
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return [PSCustomObject] $fakeConfigurationData; }
-            Mock TestResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -MockWith { return $true; }
+            Mock Test-ResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -MockWith { return $true; }
 
             Test-LabResource -ConfigurationData $checksumConfigurationData;
 
-            Assert-MockCalled TestResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -Scope It;
+            Assert-MockCalled Test-ResourceDownload -ParameterFilter { $Checksum -eq $testResourceChecksum } -Scope It;
         }
 
     } #end InModuleScope

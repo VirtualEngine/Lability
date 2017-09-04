@@ -70,10 +70,10 @@ function Invoke-LabModuleDownloadFromGitHub {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri = ResolveGitHubModuleUri @PSBoundParameters;
+            Uri = Resolve-GitHubModuleUri @PSBoundParameters;
             NoCheckSum = $true;
         }
-        $moduleDestinationPath = SetResourceDownload @setResourceDownloadParams;
+        $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
         return (Rename-LabModuleCacheVersion -Name $Name -Path $moduleDestinationPath -Owner $Owner -Branch $Branch);
 
     } #end process

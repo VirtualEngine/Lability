@@ -66,7 +66,7 @@ function Set-LabVMDiskFileUnattendXml {
         ## TODO: We probably need to be localise the \Windows\ (%ProgramFiles% has been done) directory?
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $VhdDriveLetter;
         WriteVerbose -Message ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
-        [ref] $null = SetUnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
+        [ref] $null = Set-UnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
     } #end process
 } #end function

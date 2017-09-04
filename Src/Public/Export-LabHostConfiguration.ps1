@@ -54,7 +54,7 @@ function Export-LabHostConfiguration {
         }
         else {
 
-            $verboseMessage = GetFormattedMessage -Message ($localized.ExportingConfiguration -f $labDefaults.ModuleName, $Path);
+            $verboseMessage = Get-FormattedMessage -Message ($localized.ExportingConfiguration -f $labDefaults.ModuleName, $Path);
             $operationMessage = $localized.ShouldProcessOperation -f 'Export', $Path;
             $setContentParams = @{
                 Path = $Path;

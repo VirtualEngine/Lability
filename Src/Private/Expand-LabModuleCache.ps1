@@ -53,7 +53,7 @@ function Expand-LabModuleCache {
                     WarningAction = 'SilentlyContinue';
                     Confirm = $false;
                 }
-                [ref] $null = ExpandZipArchive @expandZipArchiveParams;
+                [ref] $null = Expand-ZipArchive @expandZipArchiveParams;
 
             } #end if PSGallery
             elseif (($moduleInfo.ContainsKey('Provider')) -and
@@ -75,7 +75,7 @@ function Expand-LabModuleCache {
                     $expandGitHubZipArchiveParams['OverrideRepository'] = $moduleInfo.OverrideRepository;
                 }
 
-                [ref] $null = ExpandGitHubZipArchive @expandGitHubZipArchiveParams;
+                [ref] $null = Expand-GitHubZipArchive @expandGitHubZipArchiveParams;
 
             } #end if GitHub
             elseif (($moduleInfo.ContainsKey('Provider')) -and
@@ -94,7 +94,7 @@ function Expand-LabModuleCache {
                             WarningAction = 'SilentlyContinue';
                             Confirm = $false;
                         }
-                        [ref] $null = ExpandZipArchive @expandZipArchiveParams;
+                        [ref] $null = Expand-ZipArchive @expandZipArchiveParams;
                     }
                     elseif ($moduleFileInfo -is [System.IO.DirectoryInfo]) {
 

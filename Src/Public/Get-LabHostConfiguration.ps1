@@ -20,8 +20,8 @@ function Get-LabHostConfiguration {
                 Prefix = $configuration.Prefix;
                 UseDefault  = $configuration.UseDefault;
             }
-            ImportDscResource @importDscResourceParams;
-            $resource = GetDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
+            Import-LabDscResource @importDscResourceParams;
+            $resource = Get-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
             $resource['Resource'] = $configuration.ResourceName;
             Write-Output -InputObject ([PSCustomObject] $resource);
 

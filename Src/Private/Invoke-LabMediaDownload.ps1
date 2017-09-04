@@ -38,7 +38,7 @@ function Invoke-LabMediaDownload {
             [ref] $null = $invokeResourceDownloadParams.Add('Checksum', $Checksum);
         }
 
-        [ref] $null = InvokeResourceDownload @invokeResourceDownloadParams -Force:$Force;
+        [ref] $null = Invoke-ResourceDownload @invokeResourceDownloadParams -Force:$Force;
         return (Get-Item -Path $destinationPath);
 
     } #end process

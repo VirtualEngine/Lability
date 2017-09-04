@@ -178,7 +178,7 @@ function New-LabVirtualMachine {
                 MediaCustomBootStrap = $media.CustomData.CustomBootstrap;
             }
 
-            $customBootstrap = ResolveCustomBootStrap @resolveCustomBootStrapParams;
+            $customBootstrap = Resolve-LabCustomBootStrap @resolveCustomBootStrapParams;
             if ($customBootstrap) {
 
                 $setLabVMDiskFileParams['CustomBootstrap'] = $customBootstrap;

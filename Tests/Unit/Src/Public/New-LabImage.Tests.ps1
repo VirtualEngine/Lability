@@ -27,7 +27,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
 
             $testImageId = '2012R2_x64_Datacenter_EN_VL';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -46,7 +46,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
 
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -76,14 +76,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Deletes parent VHDX when image creation fails' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -100,7 +100,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Deletes existing image if it already exists and -Force is specified' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -108,7 +108,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
             $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $true; }
             Mock Get-LabImage -MockWith { return $fakeLabImage; }
@@ -125,14 +125,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Invoke-LabMediaImageDownload" to download ISO media (if not present)' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -149,15 +149,15 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "NewDiskImage" with -PassThru to leave VHDX mounted' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -174,14 +174,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Uses "GPT" partition style for x64 media' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -198,14 +198,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Uses "MBR" partition style for x86 media' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x86';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -222,7 +222,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Uses custom partition style when specified' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x86';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -235,7 +235,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -252,14 +252,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Expand-LabImage" with the media WIM image name' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -277,7 +277,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Expand-LabImage" with the media WIM image index' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = '42';
             $testWimImageIndex = [System.Int32] $testWimImageName;
@@ -285,7 +285,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -303,7 +303,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Expand-LabImage" with "WindowsOptionalFeature"' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -316,7 +316,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -333,7 +333,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Expand-LabImage" with "WimPath"' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -347,7 +347,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -364,7 +364,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Expand-LabImage" with "SourcePath"' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -378,7 +378,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -395,14 +395,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Add-DiskImageHotfix" to inject hotfixes' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -419,14 +419,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Set-DiskImageBootVolume" to configure boot volume' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -443,14 +443,14 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Dismounts image' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Test-LabImage -MockWith { return $false; }
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
@@ -467,7 +467,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
         It 'Calls "Test-LabImage" and "Get-LabImage" with "ConfigurationData" when specified (#97)' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:';
-            $testImagePath = ResolvePathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
             $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
@@ -475,7 +475,7 @@ Describe 'Unit\Src\Public\New-LabImage' {
             $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
             $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
             $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
             Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
@@ -496,13 +496,37 @@ Describe 'Unit\Src\Public\New-LabImage' {
             $testParentImagePath = 'TestDrive:';
             $testArchitecture = 'x64';
             $testWimImageName = 'Fake windows image';
-            $fakeConfigurationData = @{ ParentVhdPath = ResolvePathEx -Path $testParentImagePath; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
             Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
             $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; CustomData = @{ MinimumDismVersion = '99.99.99.99' } }
             Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
             Mock Test-LabImage -MockWith { return $false; }
 
             { New-LabImage -Id $testImageId -ConfigurationData @{} } | Should Throw 'requires DISM version'
+        }
+
+        It 'Does not throw when Media minimum DISM version definition is met (#247)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:';
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x64';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; CustomData = @{ MinimumDismVersion = '1.1.1.1' } }
+            $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Get-LabImage -MockWith { return $fakeLabImage; }
+
+            { New-LabImage -Id $testImageId -Force } | Should Not Throw 'requires DISM version';
         }
 
     } #end InModuleScope

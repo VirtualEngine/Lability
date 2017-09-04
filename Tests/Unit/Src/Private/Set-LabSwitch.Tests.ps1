@@ -9,21 +9,21 @@ Describe 'Unit\Src\Private\Set-LabSwitch' {
 
     InModuleScope $moduleName {
 
-        It 'Calls "InvokeDscResource"' {
+        It 'Calls "Invoke-LabDscResource"' {
             $configurationData = @{
                 NonNodeData = @{
                     $labDefaults.ModuleName = @{
                         Network = @( ) } } }
             Mock Get-VMSwitch { }
-            Mock ImportDscResource -MockWith { }
-            Mock InvokeDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $false; }
+            Mock Import-LabDscResource -MockWith { }
+            Mock Invoke-LabDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -MockWith { return $false; }
 
             Set-LabSwitch -ConfigurationData $configurationData -Name 'Test Switch';
 
-            Assert-MockCalled InvokeDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -ParameterFilter { $ResourceName -eq 'VMSwitch' } -Scope It;
         }
 
-        It 'Does not call "InvokeDscResource" for an existing switch' {
+        It 'Does not call "Invoke-LabDscResource" for an existing switch' {
             $testSwitchName = 'Existing Virtual Switch';
             $fakeExistingSwitch = [PSCustomObject] @{
                 Name = $testSwitchName;
@@ -32,11 +32,11 @@ Describe 'Unit\Src\Private\Set-LabSwitch' {
             }
             $configurationData = @{ }
             Mock Resolve-LabSwitch -ParameterFilter { $Name -eq $testSwitchName } { return $fakeExistingSwitch; }
-            Mock InvokeDscResource { }
+            Mock Invoke-LabDscResource { }
 
             Set-LabSwitch -ConfigurationData $configurationData -Name $testSwitchName;
 
-            Assert-MockCalled InvokeDscResource -Exactly 0 -Scope It;
+            Assert-MockCalled Invoke-LabDscResource -Exactly 0 -Scope It;
         }
 
     } #end InModuleScope

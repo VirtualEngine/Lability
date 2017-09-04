@@ -26,8 +26,8 @@ function Test-LabSwitch {
             ## The existing virtual switch may be of a type not supported by the DSC resource.
             return $true;
         }
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
-        return TestDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
+        Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMSwitch -Prefix VMSwitch;
+        return Test-LabDscResource -ResourceName VMSwitch -Parameters $networkSwitch;
 
     } #end process
 } #end function

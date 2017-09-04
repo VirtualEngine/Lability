@@ -51,12 +51,12 @@ function Test-LabVirtualMachine {
     process {
 
         $vmHyperVParams = Get-LabVirtualMachineProperty @PSBoundParameters;
-        ImportDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
+        Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
 
         try {
 
             ## xVMHyperV\Test-TargetResource throws if the VHD doesn't exist?
-            return (TestDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue);
+            return (Test-LabDscResource -ResourceName VM -Parameters $vmHyperVParams -ErrorAction SilentlyContinue);
         }
         catch {
 

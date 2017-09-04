@@ -45,7 +45,7 @@ function Resolve-ConfigurationPath {
         if (-not [System.String]::IsNullOrEmpty($Path)) {
 
             ## Search the Specified path
-            $resolvedPath = ResolvePathEx -Path $Path;
+            $resolvedPath = Resolve-PathEx -Path $Path;
             if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
 
                 return $resolvedPath;
@@ -63,7 +63,7 @@ function Resolve-ConfigurationPath {
 
         ## Search the ConfigurationPath path
         $configurationPath = Get-LabHostDscConfigurationPath;
-        $resolvedPath = ResolvePathEx -Path $configurationPath;
+        $resolvedPath = Resolve-PathEx -Path $configurationPath;
         if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
 
             return $resolvedPath;
@@ -80,7 +80,7 @@ function Resolve-ConfigurationPath {
 
         ## Search the Current path
         $currentPath = (Get-Location -PSProvider FileSystem).Path;
-        $resolvedPath = ResolvePathEx -Path $currentPath;
+        $resolvedPath = Resolve-PathEx -Path $currentPath;
         if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
 
             return $resolvedPath;
@@ -100,7 +100,7 @@ function Resolve-ConfigurationPath {
             if (-not [System.String]::IsNullOrEmpty($Path)) {
 
                 ## Return the specified path
-                return (ResolvePathEx -Path $Path);
+                return (Resolve-PathEx -Path $Path);
             }
             else {
 

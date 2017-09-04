@@ -136,7 +136,7 @@ function Set-LabVMDefault {
 
         if ($PSBoundParameters.ContainsKey('Timezone')) {
 
-            $vmDefaults.Timezone = ValidateTimeZone -TimeZone $Timezone;
+            $vmDefaults.Timezone = Assert-TimeZone -TimeZone $Timezone;
         }
 
         if ($PSBoundParameters.ContainsKey('UILanguage')) {
