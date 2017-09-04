@@ -505,6 +505,30 @@ Describe 'Unit\Src\Public\New-LabImage' {
             { New-LabImage -Id $testImageId -ConfigurationData @{} } | Should Throw 'requires DISM version'
         }
 
+        It 'Does not throw when Media minimum DISM version definition is met (#247)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:';
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x64';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; CustomData = @{ MinimumDismVersion = '1.1.1.1' } }
+            $fakeLabImage = [PSCustomObject] @{ Id = $testImageId; ImagePath = $testImagePath; }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+            Mock Test-LabImage -MockWith { return $true; }
+            Mock Get-LabImage -MockWith { return $fakeLabImage; }
+
+            { New-LabImage -Id $testImageId -Force } | Should Not Throw 'requires DISM version';
+        }
+
     } #end InModuleScope
 
 } #end describe

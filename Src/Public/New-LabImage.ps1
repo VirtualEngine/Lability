@@ -67,7 +67,7 @@ function New-LabImage {
         if ($null -ne $media.CustomData.MinimumDismVersion) {
 
             $minimumDismVersion = $media.CustomData.MinimumDismVersion;
-            if ($labDefaults.Version -lt $minimumDismVersion) {
+            if ($labDefaults.DismVersion -lt $minimumDismVersion) {
 
                 throw ($localized.DismVersionMismatchError -f $Id, $minimumDismVersion.ToString());
             }
