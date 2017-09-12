@@ -110,7 +110,9 @@ function New-LabVirtualMachine {
 
             WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $networkSwitch.Name);
             $environmentSwitchNames += $networkSwitch.Name;
-            Set-LabSwitch -Name $networkSwitch.Name -ConfigurationData $ConfigurationData;
+
+            ## Set-LabSwitch also resolves/prefixes the switch name, so pass the naked name (#251)
+            Set-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
         if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
