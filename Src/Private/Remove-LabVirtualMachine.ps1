@@ -22,10 +22,11 @@ function Remove-LabVirtualMachine {
     )
     process {
 
-        $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -NoEnumerateWildcardNode -ErrorAction Stop;
-        if (-not $node.NodeName) {
+        if (-not (Test-LabNode -Name $Name -ConfigurationData $ConfigurationData)) {
+
             throw ($localized.CannotLocateNodeError -f $Name);
         }
+        $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData;
         $Name = $node.NodeDisplayName;
 
         # Revert to oldest snapshot prior to VM removal to speed things up

@@ -99,6 +99,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 ### Unreleased
 
 * Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
+* Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
 
 ### v0.12.4
 

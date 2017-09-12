@@ -19,13 +19,13 @@ function Resolve-LabSwitch {
     process {
 
         $hostDefaults = Get-ConfigurationData -Configuration Host;
+        $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
+
         if ($hostDefaults.DisableSwitchEnvironmentName -eq $false) {
 
             ## Prefix/suffix switch name
             $Name = Resolve-LabEnvironmentName -Name $Name -ConfigurationData $ConfigurationData;
         }
-
-        $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
 
         if ($networkSwitch) {
 
