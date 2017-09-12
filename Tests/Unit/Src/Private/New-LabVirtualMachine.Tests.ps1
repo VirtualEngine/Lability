@@ -268,7 +268,6 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
         }
 
         It 'Calls "Set-LabSwitch" without prefixed switch name (#251)' {
-
             $fakeHostConfiguration = [PSCustomObject] @{ DisableSwitchEnvironmentName = $false; }
             Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } { return $fakeHostConfiguration }
             Mock Get-VMSwitch { }
