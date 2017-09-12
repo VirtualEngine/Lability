@@ -1,10 +1,10 @@
-function Write-Verbose {
+function WriteVerbose {
 <#
     .SYNOPSIS
         Proxy function for Write-Verbose that adds a timestamp and/or call stack information to the output.
 #>
     [CmdletBinding()]
-    [Alias('WriteVerbose')]
+    [Alias('Write-Verbose')]
     param (
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [AllowNull()]

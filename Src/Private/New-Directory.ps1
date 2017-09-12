@@ -29,35 +29,43 @@ function New-Directory {
             'ByString' {
 
                 foreach ($directory in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)) {
+
                     Write-Debug -Message ("Testing target directory '{0}'." -f $directory);
-                    if (!(Test-Path -Path $directory -PathType Container)) {
+                    if (-not (Test-Path -Path $directory -PathType Container)) {
+
                         if ($PSCmdlet.ShouldProcess($directory, "Create directory")) {
+
                             WriteVerbose ($localized.CreatingDirectory -f $directory);
                             New-Item -Path $directory -ItemType Directory;
                         }
-                    } else {
+                    }
+                    else {
+
                         Write-Debug -Message ($localized.DirectoryExists -f $directory);
                         Get-Item -Path $directory;
                     }
                 } #end foreach directory
-
             } #end byString
 
             'ByDirectoryInfo' {
 
                  foreach ($directoryInfo in $InputObject) {
+
                     Write-Debug -Message ("Testing target directory '{0}'." -f $directoryInfo.FullName);
-                    if (!($directoryInfo.Exists)) {
+                    if (-not ($directoryInfo.Exists)) {
+
                         if ($PSCmdlet.ShouldProcess($directoryInfo.FullName, "Create directory")) {
+
                             WriteVerbose ($localized.CreatingDirectory -f $directoryInfo.FullName);
                             New-Item -Path $directoryInfo.FullName -ItemType Directory;
                         }
-                    } else {
+                    }
+                    else {
+
                         Write-Debug -Message ($localized.DirectoryExists -f $directoryInfo.FullName);
-                        $directoryInfo;
+                        Write-Output -InputObject $directoryInfo;
                     }
                 } #end foreach directoryInfo
-
             } #end byDirectoryInfo
 
         } #end switch

@@ -1,10 +1,10 @@
-function Write-Warning {
+function WriteWarning {
 <#
     .SYNOPSIS
         Proxy function for Write-Warning that adds a timestamp and/or call stack information to the output.
 #>
     [CmdletBinding()]
-    [Alias('WriteWarning')]
+    [Alias('Write-Warning')]
     param (
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [AllowNull()]
