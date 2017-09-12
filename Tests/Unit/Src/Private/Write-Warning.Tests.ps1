@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Write-Warning' {
+Describe 'Src\Private\WriteWarning' {
 
     InModuleScope $moduleName {
 
@@ -13,16 +13,16 @@ Describe 'Src\Private\Write-Warning' {
             $testMessage = 'This is a test message';
             Mock Get-FormattedMessage -ParameterFilter { $Message -match $testMessage } -MockWith { return $testMessage; }
 
-            WriteVerbose -Message $testMessage;
+            WriteWarning -Message $testMessage -WarningAction SilentlyContinue;
 
             Assert-MockCalled Get-FormattedMessage -ParameterFilter { $Message -match $testMessage } -Scope It;
         }
 
-        It 'Calls "Write-Warning" method with test message' {
+        It 'Calls "WriteWarning" method with test message' {
             $testMessage = 'This is a test message';
             Mock 'Microsoft.PowerShell.Utility\Write-Warning' -ParameterFilter { $Message -match "$testMessage`$" } -MockWith { }
 
-            Write-Warning -Message $testMessage;
+            WriteWarning -Message $testMessage;
 
             Assert-MockCalled 'Microsoft.PowerShell.Utility\Write-Warning' -ParameterFilter { $Message -match $testMessage } -Scope It;
         }
