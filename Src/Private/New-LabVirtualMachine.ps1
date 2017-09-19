@@ -79,7 +79,7 @@ function New-LabVirtualMachine {
             }
             else {
 
-                WriteWarning ($localized.NoCertificateFoundWarning -f 'Client');
+                Write-Warning -Message ($localized.NoCertificateFoundWarning -f 'Client');
             }
 
             if (-not [System.String]::IsNullOrWhitespace($node.RootCertificatePath)) {
@@ -92,7 +92,7 @@ function New-LabVirtualMachine {
             }
             else {
 
-                WriteWarning ($localized.NoCertificateFoundWarning -f 'Root');
+                Write-Warning -Message ($localized.NoCertificateFoundWarning -f 'Root');
             }
 
         } #end if not quick VM
@@ -108,7 +108,7 @@ function New-LabVirtualMachine {
             }
             $networkSwitch = Resolve-LabSwitch @resolveLabSwitchParams;
 
-            WriteVerbose ($localized.SettingVMConfiguration -f 'Virtual Switch', $networkSwitch.Name);
+            Write-Verbose -Message ($localized.SettingVMConfiguration -f 'Virtual Switch', $networkSwitch.Name);
             $environmentSwitchNames += $networkSwitch.Name;
 
             ## Set-LabSwitch also resolves/prefixes the switch name, so pass the naked name (#251)
@@ -120,7 +120,7 @@ function New-LabVirtualMachine {
             [ref] $null = New-LabImage -Id $node.Media -ConfigurationData $ConfigurationData;
         }
 
-        WriteVerbose ($localized.ResettingVMConfiguration -f 'VHDX', "$displayName.vhdx");
+        Write-Verbose -Message ($localized.ResettingVMConfiguration -f 'VHDX', "$displayName.vhdx");
         $resetLabVMDiskParams = @{
             Name = $displayName;
             NodeName = $nodeName;
@@ -129,7 +129,7 @@ function New-LabVirtualMachine {
         }
         Reset-LabVMDisk @resetLabVMDiskParams -ErrorAction Stop;
 
-        WriteVerbose ($localized.SettingVMConfiguration -f 'VM', $displayName);
+        Write-Verbose -Message ($localized.SettingVMConfiguration -f 'VM', $displayName);
         $setLabVirtualMachineParams = @{
             Name = $DisplayName;
             SwitchName = $environmentSwitchNames;
@@ -161,7 +161,7 @@ function New-LabVirtualMachine {
         }
         else {
 
-            WriteVerbose ($localized.AddingVMCustomization -f 'VM');
+            Write-Verbose -Message ($localized.AddingVMCustomization -f 'VM');
             $setLabVMDiskFileParams = @{
                 NodeName = $nodeName;
                 ConfigurationData = $ConfigurationData;
@@ -197,7 +197,7 @@ function New-LabVirtualMachine {
         if (-not $NoSnapshot) {
 
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
-            WriteVerbose ($localized.CreatingBaselineSnapshot -f $snapshotName);
+            Write-Verbose -Message ($localized.CreatingBaselineSnapshot -f $snapshotName);
             Checkpoint-VM -Name $displayName -SnapshotName $snapshotName -Confirm:$false;
         }
 
@@ -205,11 +205,11 @@ function New-LabVirtualMachine {
 
             if ($node.WarningMessage -is [System.String]) {
 
-                WriteWarning ($localized.NodeCustomMessageWarning -f $nodeName, $node.WarningMessage.Trim("`n"));
+                Write-Warning -Message ($localized.NodeCustomMessageWarning -f $nodeName, $node.WarningMessage.Trim("`n"));
             }
             else {
 
-                WriteWarning ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
+                Write-Warning -Message ($localized.IncorrectPropertyTypeError -f 'WarningMessage', '[System.String]')
             }
         }
 

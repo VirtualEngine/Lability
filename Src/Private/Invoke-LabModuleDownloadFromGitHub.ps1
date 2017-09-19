@@ -53,7 +53,7 @@ function Invoke-LabModuleDownloadFromGitHub {
             throw ($localized.MissingParameterError -f 'Owner');
         }
         if (-not $PSBoundParameters.ContainsKey('Branch')) {
-            WriteWarning -Message ($localized.NoModuleBranchSpecified -f $Name);
+            Write-Warning -Message ($localized.NoModuleBranchSpecified -f $Name);
         }
 
         ## Remove -RemainingArguments to stop it being passed on.

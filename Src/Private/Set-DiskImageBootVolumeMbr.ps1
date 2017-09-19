@@ -16,7 +16,7 @@ function Set-DiskImageBootVolumeMbr {
         $imageName = [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
 
         $osPartitionDriveLetter = Get-DiskImageDriveLetter -DiskImage $Vhd -PartitionType 'IFS';
-        WriteVerbose ($localized.RepairingBootVolume -f $osPartitionDriveLetter);
+        Write-Verbose -Message ($localized.RepairingBootVolume -f $osPartitionDriveLetter);
         $bcdBootArgs = @(
             ('{0}:\Windows' -f $osPartitionDriveLetter), # Path to source Windows boot files
             ('/s {0}:\' -f $osPartitionDriveLetter),     # Volume to create the \BOOT folder on.

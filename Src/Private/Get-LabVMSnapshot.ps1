@@ -20,7 +20,7 @@ function Get-LabVMSnapshot {
             $snapshot = Get-VMSnapshot -VMName $vmName -Name $SnapshotName -ErrorAction SilentlyContinue;
             if (-not $snapshot) {
 
-                WriteWarning -Message ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
+                Write-Warning -Message ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);
             }
             else {
 

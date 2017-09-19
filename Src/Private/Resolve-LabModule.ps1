@@ -63,7 +63,7 @@ function Resolve-LabModule {
                 to copy all the existing DSC resources on from the host by
                 returning a load of FileSystem provider resources..
             #>
-            WriteWarning -Message ($localized.DscResourcesNotDefinedWarning);
+            Write-Warning -Message ($localized.DscResourcesNotDefinedWarning);
 
             $modules = Get-DscResourceModule -Path "$env:ProgramFiles\WindowsPowershell\Modules" |
                 ForEach-Object {

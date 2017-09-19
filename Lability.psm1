@@ -29,10 +29,6 @@ Get-ChildItem -Path $moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurs
             ));
     }
 
-## PowerShell v4 compatibility
-Set-Alias -Name WriteVerbose -Value Write-Verbose -Scope Script;
-Set-Alias -Name WriteWarning -Value Write-Warning -Scope Script;
-
 ## Deploy builtin certificates to %ALLUSERSPROFILE%\PSLab
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
@@ -50,7 +46,7 @@ $credentialCheckScriptBlock = {
     }
 }
 
-## Load the call stack logging setting referenced by WriteVerbose
+## Load the call stack logging setting referenced by Write-Verbose
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
 
 ## Ensure we load the required DISM module version

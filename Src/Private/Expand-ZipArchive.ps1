@@ -38,14 +38,14 @@ function Expand-ZipArchive {
         }
 
         $DestinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($DestinationPath);
-        WriteVerbose -Message ($localized.ResolvedDestinationPath -f $DestinationPath);
+        Write-Verbose -Message ($localized.ResolvedDestinationPath -f $DestinationPath);
         [ref] $null = New-Directory -Path $DestinationPath;
 
         foreach ($pathItem in $Path) {
 
             foreach ($resolvedPath in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($pathItem)) {
 
-                WriteVerbose -Message ($localized.ResolvedSourcePath -f $resolvedPath);
+                Write-Verbose -Message ($localized.ResolvedSourcePath -f $resolvedPath);
                 $LiteralPath += $resolvedPath;
             }
         }

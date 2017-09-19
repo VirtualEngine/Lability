@@ -43,7 +43,7 @@ function Remove-LabVirtualMachine {
             $environmentSwitchNames += Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
         }
 
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VM', $Name);
+        Write-Verbose -Message ($localized.RemovingNodeConfiguration -f 'VM', $Name);
         $clearLabVirtualMachineParams = @{
             Name = $Name;
             SwitchName = $environmentSwitchNames;
@@ -58,7 +58,7 @@ function Remove-LabVirtualMachine {
         Clear-LabVirtualMachine @clearLabVirtualMachineParams;
 
         ## Remove the OS disk
-        WriteVerbose ($localized.RemovingNodeConfiguration -f 'VHD/X', "$Name.vhd/vhdx");
+        Write-Verbose -Message ($localized.RemovingNodeConfiguration -f 'VHD/X', "$Name.vhd/vhdx");
         $removeLabVMDiskParams = @{
             Name = $node.NodeDisplayName;
             NodeName = $Name;
@@ -72,7 +72,7 @@ function Remove-LabVirtualMachine {
             foreach ($switchName in $node.SwitchName) {
 
                 $environmentSwitchName = Resolve-LabEnvironmentName -Name $switchName -ConfigurationData $ConfigurationData;
-                WriteVerbose ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $environmentSwitchName);
+                Write-Verbose -Message ($localized.RemovingNodeConfiguration -f 'Virtual Switch', $environmentSwitchName);
                 Remove-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData;
             }
         }

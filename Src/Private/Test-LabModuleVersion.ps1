@@ -28,9 +28,9 @@ function Test-LabModuleVersion {
 
         try {
 
-            WriteVerbose -Message ($localized.QueryingModuleVersion -f [System.IO.Path]::GetFileNameWithoutExtension($ModulePath));
+            Write-Verbose -Message ($localized.QueryingModuleVersion -f [System.IO.Path]::GetFileNameWithoutExtension($ModulePath));
             $moduleManifest = ConvertTo-ConfigurationData -ConfigurationData $ModulePath;
-            WriteVerbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.ModuleVersion);
+            Write-Verbose -Message ($localized.ExistingModuleVersion -f $moduleManifest.ModuleVersion);
         }
         catch {
 

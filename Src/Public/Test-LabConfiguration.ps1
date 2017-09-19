@@ -27,7 +27,7 @@ function Test-LabConfiguration {
     )
     process {
 
-        WriteVerbose $localized.StartedLabConfigurationTest;
+        Write-Verbose -Message $localized.StartedLabConfigurationTest;
         $currentNodeCount = 0;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         foreach ($node in $nodes) {
@@ -45,7 +45,7 @@ function Test-LabConfiguration {
             Write-Output -InputObject $nodeResult;
         }
 
-        WriteVerbose $localized.FinishedLabConfigurationTest;
+        Write-Verbose -Message $localized.FinishedLabConfigurationTest;
 
     } #end process
 } #end function Test-LabConfiguration

@@ -16,7 +16,7 @@ function Set-DiskImageBootVolumeGpt {
 
         $systemPartitionDriveLetter = Get-DiskImageDriveLetter -DiskImage $Vhd -PartitionType 'System';
         $osPartitionDriveLetter = Get-DiskImageDriveLetter -DiskImage $Vhd -PartitionType 'Basic';
-        WriteVerbose ($localized.RepairingBootVolume -f $osPartitionDriveLetter);
+        Write-Verbose -Message ($localized.RepairingBootVolume -f $osPartitionDriveLetter);
         $bcdBootArgs = @(
             ('{0}:\Windows' -f $osPartitionDriveLetter),   # Path to source Windows boot files
             ('/s {0}:\' -f $systemPartitionDriveLetter),   # Specifies the volume letter of the drive to create the \BOOT folder on.

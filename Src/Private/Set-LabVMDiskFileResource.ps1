@@ -33,7 +33,7 @@ function Set-LabVMDiskFileResource {
             Name = $NodeName;
             DestinationPath = $resourceDestinationPath;
         }
-        WriteVerbose -Message ($localized.AddingVMResource -f 'VM');
+        Write-Verbose -Message ($localized.AddingVMResource -f 'VM');
         Expand-LabResource @expandLabResourceParams;
 
     } #end process

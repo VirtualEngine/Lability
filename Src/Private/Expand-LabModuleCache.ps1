@@ -36,14 +36,14 @@ function Expand-LabModuleCache {
             $moduleDestinationPath = Join-Path -Path $DestinationPath -ChildPath $moduleInfo.Name;
 
             if ($Clean -and (Test-Path -Path $moduleDestinationPath -PathType Container)) {
-                WriteVerbose -Message ($localized.CleaningModuleDirectory -f $moduleDestinationPath);
+                Write-Verbose -Message ($localized.CleaningModuleDirectory -f $moduleDestinationPath);
                 Remove-Item -Path $moduleDestinationPath -Recurse -Force -Confirm:$false;
             }
 
             if ((-not $moduleInfo.ContainsKey('Provider')) -or
                     ($moduleInfo.Provider -eq 'PSGallery')) {
 
-                WriteVerbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
+                Write-Verbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
                 $expandZipArchiveParams = @{
                     Path = $moduleSourcePath;
                     DestinationPath = $moduleDestinationPath;
@@ -59,7 +59,7 @@ function Expand-LabModuleCache {
             elseif (($moduleInfo.ContainsKey('Provider')) -and
                     ($moduleInfo.Provider -eq 'GitHub')) {
 
-                WriteVerbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
+                Write-Verbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
                 $expandGitHubZipArchiveParams = @{
                     Path = $moduleSourcePath;
                     ## GitHub modules include the module directory. Therefore, we need the parent root directory
@@ -84,7 +84,7 @@ function Expand-LabModuleCache {
 
                     if ($moduleFileInfo -is [System.IO.FileInfo]) {
 
-                        WriteVerbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
+                        Write-Verbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
                         $expandZipArchiveParams = @{
                             Path = $moduleSourcePath;
                             DestinationPath = $moduleDestinationPath;
@@ -98,7 +98,7 @@ function Expand-LabModuleCache {
                     }
                     elseif ($moduleFileInfo -is [System.IO.DirectoryInfo]) {
 
-                        WriteVerbose -Message ($localized.CopyingModuleDirectory -f $moduleFileInfo.Name, $moduleDestinationPath);
+                        Write-Verbose -Message ($localized.CopyingModuleDirectory -f $moduleFileInfo.Name, $moduleDestinationPath);
                         ## If the target doesn't exist create it. We may be copying a versioned
                         ## module, i.e. \xJea\0.2.16.6 to \xJea..
                         if (-not (Test-Path -Path $moduleDestinationPath -PathType Container)) {
