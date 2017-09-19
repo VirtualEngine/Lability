@@ -57,7 +57,7 @@ function Clear-ModulePath {
         }
         else {
 
-            WriteVerbose -Message ($localized.PathDoesNotExist -f $modulePath);
+            Write-Verbose -Message ($localized.PathDoesNotExist -f $modulePath);
         }
 
     } #end process

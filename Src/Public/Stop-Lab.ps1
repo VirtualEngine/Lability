@@ -56,7 +56,7 @@ function Stop-Lab {
             [System.Int32] $percentComplete = ($currentGroupCount / $bootGroups.Count) * 100;
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-            WriteVerbose ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
+            Write-Verbose -Message ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
             Stop-VM -Name $nodeDisplayNames -Force;
         } #end foreach boot group
 

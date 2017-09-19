@@ -52,12 +52,12 @@ function Test-LabResourceIsLocal {
 
         if ($isPresent) {
 
-            WriteVerbose -Message ($localized.ResourceFound -f $resourcePath);
+            Write-Verbose -Message ($localized.ResourceFound -f $resourcePath);
             return $true;
         }
         else {
 
-            WriteVerbose -Message ($localized.ResourceNotFound -f $resourcePath);
+            Write-Verbose -Message ($localized.ResourceNotFound -f $resourcePath);
             return $false;
         }
 

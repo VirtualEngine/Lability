@@ -122,7 +122,7 @@ function Register-LabMedia {
 
             if ($existingCustomMedia[$i].Id -eq $Id) {
 
-                WriteVerbose ($localized.OverwritingCustomMediaEntry -f $Id);
+                Write-Verbose -Message ($localized.OverwritingCustomMediaEntry -f $Id);
                 $hasExistingMediaEntry = $true;
                 $existingCustomMedia[$i] = $customMedia;
             }
@@ -131,11 +131,11 @@ function Register-LabMedia {
         if (-not $hasExistingMediaEntry) {
 
             ## Add it to the array
-            WriteVerbose ($localized.AddingCustomMediaEntry -f $Id);
+            Write-Verbose -Message ($localized.AddingCustomMediaEntry -f $Id);
             $existingCustomMedia += $customMedia;
         }
 
-        WriteVerbose ($localized.SavingConfiguration -f $Id);
+        Write-Verbose -Message ($localized.SavingConfiguration -f $Id);
         Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
         return $customMedia;
 

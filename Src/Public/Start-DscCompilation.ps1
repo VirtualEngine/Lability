@@ -97,7 +97,7 @@ function Start-DscCompilation {
                 ($ConfigurationParameters.ContainsKey('OutputPath'))) {
 
                 ## OutputPath was explicitly passed and is also defined in ConfigurationParameters
-                WriteWarning -Message ($localized.ExplicitOutputPathWarning -f $OutputPath);
+                Write-Warning -Message ($localized.ExplicitOutputPathWarning -f $OutputPath);
                 $ConfigurationParameters['OutputPath'] = $OutputPath;
             }
             elseif (-not ($ConfigurationParameters.ContainsKey('OutputPath'))) {
@@ -109,7 +109,7 @@ function Start-DscCompilation {
                 ($PSBoundParameters.ContainsKey('ConfigurationData'))) {
 
                 ## ConfigurationData was explicitly passed and is also defined in ConfigurationParameters
-                WriteWarning -Message ($localized.ExplicitConfigurationDataWarning -f $ConfigurationData);
+                Write-Warning -Message ($localized.ExplicitConfigurationDataWarning -f $ConfigurationData);
                 $ConfigurationParameters['ConfigurationData'] = $ConfigurationData;
             }
             elseif (-not ($ConfigurationParameters.ContainsKey('ConfigurationData')) -and
@@ -130,7 +130,7 @@ function Start-DscCompilation {
 
             foreach ($object in $InputObject) {
 
-                WriteVerbose -Message ($localized.AddingConfiguration -f $object.FullName);
+                Write-Verbose -Message ($localized.AddingConfiguration -f $object.FullName);
                 if (Test-Path -Path $object.FullName) {
 
                     $filePaths += $object.FullName;
@@ -162,7 +162,7 @@ function Start-DscCompilation {
             foreach ($node in $nodeName) {
 
                 $nodePath = Join-Path -Path $Path -ChildPath "$node.ps1";
-                WriteVerbose -Message ($localized.AddingConfiguration -f $nodePath);
+                Write-Verbose -Message ($localized.AddingConfiguration -f $nodePath);
                 if (Test-Path -Path $nodePath) {
 
                     $filePaths += $nodePath;
@@ -182,7 +182,7 @@ function Start-DscCompilation {
                     $resolvedFilePath = Resolve-Path -Path $filePath -ErrorAction Stop;
                     if (Test-Path -Path $resolvedFilePath) {
 
-                        WriteVerbose -Message ($localized.AddingConfiguration -f $resolvedFilePath);
+                        Write-Verbose -Message ($localized.AddingConfiguration -f $resolvedFilePath);
                         $filePaths += $resolvedFilePath;
                     }
                     else {
@@ -221,7 +221,7 @@ function Start-DscCompilation {
 
                 $invokeDscConfigurationCompilationParams['ConfigurationParameters'] = $ConfigurationParameters;
             }
-            WriteVerbose -Message ($localized.AddingCompilationJob -f $filePath);
+            Write-Verbose -Message ($localized.AddingCompilationJob -f $filePath);
             $jobs += Start-DscConfigurationCompilation @invokeDscConfigurationCompilationParams;
 
         }
@@ -278,7 +278,7 @@ function Start-DscCompilation {
 
                             $elapsedTime = $stopwatch.Elapsed.ToString('hh\:mm\:ss\.ff');
                             $compilationStatus = $localized.ProcessedComilationStatus;
-                            WriteVerbose -Message ("{0} '{1}' in '{2}'." -f $compilationStatus, $job.Name, $elapsedTime);
+                            Write-Verbose -Message ("{0} '{1}' in '{2}'." -f $compilationStatus, $job.Name, $elapsedTime);
                             Write-Progress -Id $job.Id -ParentId $pid -Activity $job.Name -Completed;
                             $completedJobs += $job;
                         }
@@ -291,7 +291,7 @@ function Start-DscCompilation {
             } #end while active job(s)
 
             $elapsedTime = $stopwatch.Elapsed.ToString('hh\:mm\:ss\.ff');
-            WriteVerbose -Message ($localized.CompletedCompilationProcessing -f $elapsedTime);
+            Write-Verbose -Message ($localized.CompletedCompilationProcessing -f $elapsedTime);
             Write-Progress -Id $pid -Activity $activity -Completed;
             $stopwatch = $null;
 

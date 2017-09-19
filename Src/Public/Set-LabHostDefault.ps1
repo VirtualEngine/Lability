@@ -114,14 +114,14 @@ function Set-LabHostDefault {
         }
         if ($PSBoundParameters.ContainsKey('EnableCallStackLogging')) {
 
-            ## Set the global script variable read by WriteVerbose
+            ## Set the global script variable read by Write-Verbose
             $script:labDefaults.CallStackLogging = $EnableCallStackLogging;
             $hostDefaults.EnableCallStackLogging = $EnableCallStackLogging.ToBool();
         }
         if ($PSBoundParameters.ContainsKey('DismPath')) {
 
             $hostDefaults.DismPath = Resolve-DismPath -Path $DismPath;
-            WriteWarning -Message ($localized.DismSessionRestartWarning);
+            Write-Warning -Message ($localized.DismSessionRestartWarning);
         }
         if ($PSBoundParameters.ContainsKey('RepositoryUri')) {
 

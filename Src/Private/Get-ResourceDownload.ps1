@@ -27,7 +27,7 @@ function Get-ResourceDownload {
         $checksumPath = '{0}.checksum' -f $DestinationPath;
         if (-not (Test-Path -Path $DestinationPath)) {
 
-            WriteVerbose ($localized.MissingResourceFile -f $DestinationPath);
+            Write-Verbose -Message ($localized.MissingResourceFile -f $DestinationPath);
         }
         elseif (-not (Test-Path -Path $checksumPath)) {
 

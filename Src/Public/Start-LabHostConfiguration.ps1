@@ -19,7 +19,7 @@ function Start-LabHostConfiguration {
     )
     process {
 
-        WriteVerbose $localized.StartedHostConfiguration;
+        Write-Verbose -Message $localized.StartedHostConfiguration;
         ## Create required directory structure
         $hostDefaults = Get-ConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
@@ -57,11 +57,11 @@ function Start-LabHostConfiguration {
         foreach ($configuration in $labHostSetupConfiguation) {
 
             Import-LabDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
-            WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
+            Write-Verbose -Message ($localized.TestingNodeConfiguration -f $Configuration.Description);
             [ref] $null = Invoke-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
             ## TODO: Need to check for pending reboots..
         }
-        WriteVerbose $localized.FinishedHostConfiguration;
+        Write-Verbose -Message $localized.FinishedHostConfiguration;
 
     } #end process
 } #end function

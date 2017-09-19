@@ -27,7 +27,7 @@ function Add-LabImageWindowsOptionalFeature {
     )
     process {
 
-        WriteVerbose ($localized.AddingWindowsFeature -f ($WindowsOptionalFeature -join ','), $DestinationPath);
+        Write-Verbose -Message ($localized.AddingWindowsFeature -f ($WindowsOptionalFeature -join ','), $DestinationPath);
         $enableWindowsOptionalFeatureParams = @{
             Source = $ImagePath;
             Path = $DestinationPath;

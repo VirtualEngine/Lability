@@ -48,7 +48,7 @@ function Expand-LabResource {
         $node = Resolve-NodePropertyValue -NodeName $Name -ConfigurationData $ConfigurationData -ErrorAction Stop;
         foreach ($resourceId in $node.Resource) {
 
-            WriteVerbose ($localized.AddingResource -f $resourceId);
+            Write-Verbose -Message ($localized.AddingResource -f $resourceId);
             $resource = Resolve-LabResource -ConfigurationData $ConfigurationData -ResourceId $resourceId;
 
             ## Default to resource.Id unless there is a filename property defined!
@@ -119,7 +119,7 @@ function Expand-LabResource {
 
                     '.zip' {
 
-                        WriteVerbose ($localized.ExpandingZipResource -f $resourceItem.FullName);
+                        Write-Verbose -Message ($localized.ExpandingZipResource -f $resourceItem.FullName);
                         $expandZipArchiveParams = @{
                             Path = $resourceItem.FullName;
                             DestinationPath = $resourceDestinationPath;
@@ -137,7 +137,7 @@ function Expand-LabResource {
             }
             else {
 
-                WriteVerbose ($localized.CopyingFileResource -f $resourceDestinationPath);
+                Write-Verbose -Message ($localized.CopyingFileResource -f $resourceDestinationPath);
                 $copyItemParams = @{
                     Path = "$($resourceItem.FullName)";
                     Destination = "$resourceDestinationPath";
