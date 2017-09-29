@@ -8,7 +8,7 @@ function Set-LabHostDefault {
         Get-LabHostDefault
         Reset-LabHostDefault
 #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, PositionalBinding = $false)]
     [OutputType([System.Management.Automation.PSCustomObject])]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (

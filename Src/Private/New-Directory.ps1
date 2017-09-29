@@ -35,7 +35,7 @@ function New-Directory {
 
                         if ($PSCmdlet.ShouldProcess($directory, "Create directory")) {
 
-                            Write-Verbose ($localized.CreatingDirectory -f $directory);
+                            Write-Verbose -Message ($localized.CreatingDirectory -f $directory);
                             New-Item -Path $directory -ItemType Directory;
                         }
                     }
@@ -56,7 +56,7 @@ function New-Directory {
 
                         if ($PSCmdlet.ShouldProcess($directoryInfo.FullName, "Create directory")) {
 
-                            Write-Verbose ($localized.CreatingDirectory -f $directoryInfo.FullName);
+                            Write-Verbose -Message ($localized.CreatingDirectory -f $directoryInfo.FullName);
                             New-Item -Path $directoryInfo.FullName -ItemType Directory;
                         }
                     }

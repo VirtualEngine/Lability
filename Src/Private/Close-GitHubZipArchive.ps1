@@ -7,7 +7,7 @@ function Close-GitHubZipArchive {
     param ()
     process {
 
-        Write-Verbose ($localized.ClosingZipArchive -f $Path);
+        Write-Verbose -Message ($localized.ClosingZipArchive -f $Path);
 
         if ($null -ne $zipArchive) {
 
