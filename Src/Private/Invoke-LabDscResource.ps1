@@ -47,7 +47,7 @@ function Invoke-LabDscResource {
         else {
 
             $setTargetResourceCommand = 'Set-{0}TargetResource' -f $ResourceName;
-            WriteVerbose ($localized.SkippingCommand -f $setTargetResourceCommand);
+            Write-Verbose -Message ($localized.SkippingCommand -f $setTargetResourceCommand);
         }
 
     } #end process

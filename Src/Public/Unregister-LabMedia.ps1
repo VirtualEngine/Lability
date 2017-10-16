@@ -24,7 +24,7 @@ function Unregister-LabMedia {
         if (-not $customMedia) {
 
             ## We don't have anything defined
-            WriteWarning ($localized.NoCustomMediaFoundWarning -f $Id);
+            Write-Warning -Message ($localized.NoCustomMediaFoundWarning -f $Id);
             return;
         }
         else {
@@ -33,7 +33,7 @@ function Unregister-LabMedia {
             $media = $customMedia | Where-Object { $_.Id -eq $Id };
             if (-not $media) {
                 ## We don't have a custom matching Id registered
-                WriteWarning ($localized.NoCustomMediaFoundWarning -f $Id);
+                Write-Warning -Message ($localized.NoCustomMediaFoundWarning -f $Id);
                 return;
             }
         }
@@ -43,7 +43,7 @@ function Unregister-LabMedia {
         if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
 
             $customMedia = $customMedia | Where-Object { $_.Id -ne $Id };
-            WriteVerbose ($localized.SavingConfiguration -f $Id);
+            Write-Verbose -Message ($localized.SavingConfiguration -f $Id);
             Set-ConfigurationData -Configuration CustomMedia -InputObject @($customMedia);
             return $media;
         }

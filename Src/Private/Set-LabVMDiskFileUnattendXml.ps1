@@ -51,7 +51,7 @@ function Set-LabVMDiskFileUnattendXml {
             RegisteredOwner = $node.RegisteredOwner;
             RegisteredOrganization = $node.RegisteredOrganization;
         }
-        WriteVerbose -Message $localized.SettingAdministratorPassword;
+        Write-Verbose -Message $localized.SettingAdministratorPassword;
 
         ## Node defined Product Key takes preference over key defined in the media definition
         if ($node.CustomData.ProductKey) {
@@ -65,7 +65,7 @@ function Set-LabVMDiskFileUnattendXml {
 
         ## TODO: We probably need to be localise the \Windows\ (%ProgramFiles% has been done) directory?
         $unattendXmlPath = '{0}:\Windows\System32\Sysprep\Unattend.xml' -f $VhdDriveLetter;
-        WriteVerbose -Message ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
+        Write-Verbose -Message ($localized.AddingUnattendXmlFile -f $unattendXmlPath);
         [ref] $null = Set-UnattendXml @newUnattendXmlParams -Path $unattendXmlPath;
 
     } #end process

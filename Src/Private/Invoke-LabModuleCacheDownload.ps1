@@ -115,20 +115,20 @@ function Invoke-LabModuleCacheDownload {
                 if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
 
                     if ($moduleInfo.ContainsKey('RequiredVersion')) {
-                        WriteVerbose -Message ($localized.ModuleVersionNotCached -f $moduleInfo.Name, $moduleInfo.RequiredVersion);
+                        Write-Verbose -Message ($localized.ModuleVersionNotCached -f $moduleInfo.Name, $moduleInfo.RequiredVersion);
                     }
                     elseif ($moduleInfo.ContainsKey('MinimumVersion')) {
-                        WriteVerbose -Message ($localized.ModuleMinmumVersionNotCached -f $moduleInfo.Name, $moduleInfo.MinimumVersion);
+                        Write-Verbose -Message ($localized.ModuleMinmumVersionNotCached -f $moduleInfo.Name, $moduleInfo.MinimumVersion);
                     }
                     else {
-                        WriteVerbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
+                        Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
                     }
 
                     Invoke-LabModuleDownloadFromPSGallery @moduleInfo;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'GitHub') {
 
-                    WriteVerbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
+                    Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
                     Invoke-LabModuleDownloadFromGitHub @moduleInfo;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'FileSystem') {

@@ -69,7 +69,7 @@ function Expand-LabImage {
             if ($mediaFileInfo.Extension -eq '.ISO') {
 
                 ## Mount ISO
-                WriteVerbose ($localized.MountingDiskImage -f $MediaPath);
+                Write-Verbose -Message ($localized.MountingDiskImage -f $MediaPath);
                 $mountDiskImageParams = @{
                     ImagePath = $MediaPath;
                     StorageType = 'ISO';
@@ -104,7 +104,7 @@ function Expand-LabImage {
 
             $logName = '{0}.log' -f [System.IO.Path]::GetFileNameWithoutExtension($Vhd.Path);
             $logPath = Join-Path -Path $env:TEMP -ChildPath $logName;
-            WriteVerbose ($localized.ApplyingWindowsImage -f $wimImageIndex, $Vhd.Path);
+            Write-Verbose -Message ($localized.ApplyingWindowsImage -f $wimImageIndex, $Vhd.Path);
 
             $expandWindowsImageParams = @{
                 ImagePath = $windowsImagePath;
@@ -169,7 +169,7 @@ function Expand-LabImage {
             if ($mediaFileInfo.Extension -eq '.ISO') {
 
                 ## Always dismount ISO (#166)
-                WriteVerbose ($localized.DismountingDiskImage -f $MediaPath);
+                Write-Verbose -Message ($localized.DismountingDiskImage -f $MediaPath);
                 Dismount-DiskImage -ImagePath $MediaPath;
             }
 

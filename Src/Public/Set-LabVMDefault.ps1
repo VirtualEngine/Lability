@@ -3,7 +3,7 @@ function Set-LabVMDefault {
     .SYNOPSIS
         Sets the lab virtual machine default settings.
 #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, PositionalBinding = $false)]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         ## Default virtual machine startup memory (bytes).

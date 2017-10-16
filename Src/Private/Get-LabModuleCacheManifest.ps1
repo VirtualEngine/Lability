@@ -42,7 +42,7 @@ function Get-LabModuleCacheManifest {
         try {
 
             ### Open the ZipArchive with read access
-            WriteVerbose -Message ($localized.OpeningArchive -f $moduleFileInfo.FullName);
+            Write-Verbose -Message ($localized.OpeningArchive -f $moduleFileInfo.FullName);
             $archive = New-Object System.IO.Compression.ZipArchive(New-Object System.IO.FileStream($moduleFileInfo.FullName, [System.IO.FileMode]::Open));
 
             ## Zip archive entries are case-sensitive, therefore, we need to search for a match and can't use ::GetEntry()
@@ -63,7 +63,7 @@ function Get-LabModuleCacheManifest {
         finally {
 
             if ($null -ne $archive) {
-                WriteVerbose -Message ($localized.ClosingArchive -f $moduleFileInfo.FullName);
+                Write-Verbose -Message ($localized.ClosingArchive -f $moduleFileInfo.FullName);
                 $archive.Dispose();
             }
             Remove-Item -Path $temporaryArchivePath -Force;

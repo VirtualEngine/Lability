@@ -28,9 +28,9 @@ function Test-LabVM {
 
             $isNodeCompliant = $true;
             $node = Resolve-NodePropertyValue -NodeName $vmName -ConfigurationData $ConfigurationData;
-            WriteVerbose ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
+            Write-Verbose -Message ($localized.TestingNodeConfiguration -f $node.NodeDisplayName);
 
-            WriteVerbose ($localized.TestingVMConfiguration -f 'Image', $node.Media);
+            Write-Verbose -Message ($localized.TestingVMConfiguration -f 'Image', $node.Media);
             if (-not (Test-LabImage -Id $node.Media -ConfigurationData $ConfigurationData)) {
 
                 $isNodeCompliant = $false;
@@ -38,7 +38,7 @@ function Test-LabVM {
             else {
 
                 ## No point testing switch, vhdx and VM if the image isn't available
-                WriteVerbose ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
+                Write-Verbose -Message ($localized.TestingVMConfiguration -f 'Virtual Switch', $node.SwitchName);
                 foreach ($switchName in $node.SwitchName) {
 
                     if (-not (Test-LabSwitch -Name $switchName -ConfigurationData $ConfigurationData)) {
@@ -47,7 +47,7 @@ function Test-LabVM {
                     }
                 }
 
-                WriteVerbose ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
+                Write-Verbose -Message ($localized.TestingVMConfiguration -f 'VHDX', $node.Media);
                 $testLabVMDiskParams = @{
                     Name = $node.NodeDisplayName;
                     Media = $node.Media;
@@ -60,7 +60,7 @@ function Test-LabVM {
                 else {
 
                     ## No point testing VM if the VHDX isn't available
-                    WriteVerbose ($localized.TestingVMConfiguration -f 'VM', $vmName);
+                    Write-Verbose -Message ($localized.TestingVMConfiguration -f 'VM', $vmName);
                     $testLabVirtualMachineParams = @{
                         Name = $node.NodeDisplayName;
                         SwitchName = $node.SwitchName;

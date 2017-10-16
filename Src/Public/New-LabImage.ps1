@@ -54,7 +54,7 @@ function New-LabImage {
         if ((Test-LabImage @PSBoundParameters) -and $Force) {
 
             $image = Get-LabImage @PSBoundParameters;
-            WriteVerbose ($localized.RemovingDiskImage -f $image.ImagePath);
+            Write-Verbose -Message ($localized.RemovingDiskImage -f $image.ImagePath);
             [ref] $null = Remove-Item -Path $image.ImagePath -Force -ErrorAction Stop;
         }
         elseif (Test-LabImage @PSBoundParameters) {
@@ -78,7 +78,7 @@ function New-LabImage {
 
         if ($media.MediaType -eq 'VHD') {
 
-            WriteVerbose ($localized.ImportingExistingDiskImage -f $media.Description);
+            Write-Verbose -Message ($localized.ImportingExistingDiskImage -f $media.Description);
             $imageName = $media.Filename;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
         } #end if VHD
@@ -100,7 +100,7 @@ function New-LabImage {
                 $partitionStyle = 'GPT';
             }
 
-            WriteVerbose ($localized.CreatingDiskImage -f $media.Description);
+            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description);
             $imageName = '{0}.vhdx' -f $Id;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
 
@@ -200,7 +200,7 @@ function New-LabImage {
 
             if ($imageCreationFailed -eq $true) {
 
-                WriteWarning ($localized.RemovingIncompleteImageWarning -f $imagePath);
+                Write-Warning -Message ($localized.RemovingIncompleteImageWarning -f $imagePath);
                 Remove-Item -Path $imagePath -Force;
             }
         } #end if ISO/WIM

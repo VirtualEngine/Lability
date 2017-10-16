@@ -51,7 +51,7 @@ function Import-LabHostConfiguration {
             return;
         }
 
-        WriteVerbose -Message ($localized.ImportingConfiguration -f $labDefaults.ModuleName, $Path);
+        Write-Verbose -Message ($localized.ImportingConfiguration -f $labDefaults.ModuleName, $Path);
         $configurationDocument = Get-Content -Path $Path -Raw -ErrorAction Stop;
         try {
 
@@ -73,7 +73,7 @@ function Import-LabHostConfiguration {
             $Media = $true;
         }
 
-        WriteVerbose -Message ($localized.ImportingConfigurationSettings -f $configuration.GenerationDate, $configuration.GenerationHost);
+        Write-Verbose -Message ($localized.ImportingConfigurationSettings -f $configuration.GenerationDate, $configuration.GenerationHost);
 
         if ($Host) {
 
@@ -85,7 +85,7 @@ function Import-LabHostConfiguration {
                 $hostDefaultObject = $configuration.HostDefaults;
                 $hostDefaults = ConvertPSObjectToHashtable -InputObject $hostDefaultObject;
                 Set-LabHostDefault @hostDefaults -Confirm:$false;
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
             }
         } #end if restore host defaults
 
@@ -102,7 +102,7 @@ function Import-LabHostConfiguration {
                     $customMedia = ConvertPSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
                     Write-Output (Register-LabMedia @customMedia -Force);
                 }
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
             }
         } #end if restore custom media
 
@@ -118,7 +118,7 @@ function Import-LabHostConfiguration {
                 ## Boot order is exposed externally
                 $vmDefaults.Remove('BootOrder');
                 Set-LabVMDefault @vmDefaults -Confirm:$false;
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
             }
         } #end if restore VM defaults
 

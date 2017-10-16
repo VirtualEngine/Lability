@@ -92,7 +92,7 @@
                 ## If not specified, the provider defaults to the PSGallery.
                 @{ Name = 'xSmbShare'; RequiredVersion = '2.0.0.0'; }
                 @{ Name = 'xNetworking'; RequiredVersion = '3.2.0.0'; }
-                @{ Name = 'xActiveDirectory'; MinimumVersion = '2.16.0.0'; }
+                @{ Name = 'xActiveDirectory'; RequiredVersion = '2.16.0.0'; }
                 @{ Name = 'xDnsServer'; RequiredVersion = '1.7.0.0'; }
                 @{ Name = 'xDhcpServer'; RequiredVersion = '1.5.0.0'; }
                 ## The 'GitHub# provider can download modules directly from a GitHub repository, for example:

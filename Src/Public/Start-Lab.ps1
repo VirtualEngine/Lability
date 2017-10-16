@@ -56,13 +56,13 @@ function Start-Lab {
             [System.Int32] $percentComplete = ($currentGroupCount / $bootGroups.Count) * 100;
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-            WriteVerbose ($localized.StartingVirtualMachine -f $nodeDisplayNamesString);
+            Write-Verbose -Message ($localized.StartingVirtualMachine -f $nodeDisplayNamesString);
             Start-VM -Name $nodeDisplayNames;
 
             $maxGroupBootDelay = $_.Group.BootDelay | Sort-Object -Descending | Select-Object -First 1;
             if (($maxGroupBootDelay -gt 0) -and ($currentGroupCount -lt $bootGroups.Count)) {
 
-                WriteVerbose ($localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString);
+                Write-Verbose -Message ($localized.WaitingForVirtualMachine -f $maxGroupBootDelay, $nodeDisplayNamesString);
                 for ($i = 1; $i -le $maxGroupBootDelay; $i++) {
 
                     [System.Int32] $waitPercentComplete = ($i / $maxGroupBootDelay) * 100;

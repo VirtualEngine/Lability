@@ -34,13 +34,13 @@ function Test-LabDscResource {
 
             ## No point writing warnings as failures will occur, i.e. "VHD not found"
             ## when a VM does not yet exist.
-            WriteWarning -Message ($localized.DscResourceFailedError -f $testTargetResourceCommand, $_);
+            Write-Warning -Message ($localized.DscResourceFailedError -f $testTargetResourceCommand, $_);
             $testDscResourceResult = $false;
         }
 
         if (-not $testDscResourceResult) {
 
-            WriteVerbose ($localized.TestFailed -f $testTargetResourceCommand);
+            Write-Verbose -Message ($localized.TestFailed -f $testTargetResourceCommand);
         }
 
         return $testDscResourceResult;

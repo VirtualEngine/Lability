@@ -128,7 +128,7 @@ function Test-LabStatus {
 
         foreach ($labStatus in $labStatuses) {
 
-            WriteVerbose -Message ($localized.TestingNodeStatus -f $labStatus.ComputerName, $labStatus.LCMState);
+            Write-Verbose -Message ($localized.TestingNodeStatus -f $labStatus.ComputerName, $labStatus.LCMState);
             if ($labStatus.Completed -eq $false) {
 
                 ## VM still applying (or has failed)

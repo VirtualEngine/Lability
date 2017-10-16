@@ -141,7 +141,7 @@ function Wait-Lab {
         $timer = New-Object System.Diagnostics.Stopwatch;
         $timer.Start();
 
-        WriteVerbose -Message ($localized.StartingWaitForLabDeployment);
+        Write-Verbose -Message ($localized.StartingWaitForLabDeployment);
         for ($iteration = 0; $iteration -le $RetryCount; $iteration++) {
 
             if (-not (Test-LabStatus @PSBoundParameters)) {
@@ -149,14 +149,14 @@ function Wait-Lab {
                 if ($iteration -lt $RetryCount) {
 
                     ## Only sleep if this isn't the last iteration
-                    WriteVerbose -Message ($localized.SleepingWaitingForLabDeployment -f $RetryIntervalSeconds)
+                    Write-Verbose -Message ($localized.SleepingWaitingForLabDeployment -f $RetryIntervalSeconds)
                     Start-Sleep -Seconds $RetryIntervalSeconds;
                 }
             }
             else {
 
                 $elapsedTime = $timer.Elapsed.ToString('hh\:mm\:ss\.ff');
-                WriteVerbose -Message ($localized.WaitForLabDeploymentComplete -f $elapsedTime);
+                Write-Verbose -Message ($localized.WaitForLabDeploymentComplete -f $elapsedTime);
                 $timer = $null;
                 return;
             }

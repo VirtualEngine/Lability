@@ -19,13 +19,13 @@ function Resolve-LabSwitch {
     process {
 
         $hostDefaults = Get-ConfigurationData -Configuration Host;
+        $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
+
         if ($hostDefaults.DisableSwitchEnvironmentName -eq $false) {
 
             ## Prefix/suffix switch name
             $Name = Resolve-LabEnvironmentName -Name $Name -ConfigurationData $ConfigurationData;
         }
-
-        $networkSwitch = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Network.Where({ $_.Name -eq $Name });
 
         if ($networkSwitch) {
 
@@ -39,7 +39,7 @@ function Resolve-LabSwitch {
         elseif (Get-VMSwitch -Name $Name -ErrorAction SilentlyContinue) {
 
             ## Use an existing virtual switch with a matching name if one exists
-            WriteWarning -Message ($localized.UsingExistingSwitchWarning -f $Name);
+            Write-Warning -Message ($localized.UsingExistingSwitchWarning -f $Name);
             $existingSwitch = Get-VMSwitch -Name $Name;
             $networkSwitch = @{
                 Name = $existingSwitch.Name;

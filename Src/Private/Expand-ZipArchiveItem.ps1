@@ -55,7 +55,7 @@ function Expand-ZipArchiveItem {
 
                 ## Exclude the .nuspec specific files
                 if ($ExcludeNuSpecFiles -and ($zipArchiveEntry.FullName -match '(_rels\/)|(\[Content_Types\]\.xml)|(\w+\.nuspec)')) {
-                    WriteVerbose -Message ($localized.IgnoringNuspecZipArchiveEntry -f $zipArchiveEntry.FullName);
+                    Write-Verbose -Message ($localized.IgnoringNuspecZipArchiveEntry -f $zipArchiveEntry.FullName);
                     continue;
                 }
 
@@ -106,13 +106,13 @@ function Expand-ZipArchiveItem {
                 elseif (-not $Force -and (Test-Path -Path $fullDestinationFilePath -PathType Leaf)) {
 
                     ## Are we overwriting existing files (-Force)?
-                    WriteWarning -Message ($localized.TargetFileExistsWarning -f $fullDestinationFilePath);
+                    Write-Warning -Message ($localized.TargetFileExistsWarning -f $fullDestinationFilePath);
                 }
                 else {
 
                     ## Just overwrite any existing file
                     if ($Force -or $PSCmdlet.ShouldProcess($fullDestinationFilePath, 'Expand')) {
-                        WriteVerbose -Message ($localized.ExtractingZipArchiveEntry -f $fullDestinationFilePath);
+                        Write-Verbose -Message ($localized.ExtractingZipArchiveEntry -f $fullDestinationFilePath);
                         [System.IO.Compression.ZipFileExtensions]::ExtractToFile($zipArchiveEntry, $fullDestinationFilePath, $true);
                         ## Return a FileInfo object to the pipline
                         Write-Output -InputObject (Get-Item -Path $fullDestinationFilePath);

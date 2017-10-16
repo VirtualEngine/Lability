@@ -4,7 +4,6 @@ function Write-Warning {
         Proxy function for Write-Warning that adds a timestamp and/or call stack information to the output.
 #>
     [CmdletBinding()]
-    [Alias('WriteWarning')]
     param (
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [AllowNull()]

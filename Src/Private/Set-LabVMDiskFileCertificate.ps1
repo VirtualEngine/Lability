@@ -34,7 +34,7 @@ function Set-LabVMDiskFileCertificate {
             [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabClient.pfx' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabClient.pfx';
             $expandedClientCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.ClientCertificatePath);
-            WriteVerbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
+            Write-Verbose -Message ($localized.AddingCertificate -f 'Client', $destinationCertificatePath);
             Copy-Item -Path $expandedClientCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
@@ -43,7 +43,7 @@ function Set-LabVMDiskFileCertificate {
             [ref] $null = New-Item -Path $bootStrapPath -ItemType File -Name 'LabRoot.cer' -Force;
             $destinationCertificatePath = Join-Path -Path $bootStrapPath -ChildPath 'LabRoot.cer';
             $expandedRootCertificatePath = [System.Environment]::ExpandEnvironmentVariables($node.RootCertificatePath);
-            WriteVerbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
+            Write-Verbose -Message ($localized.AddingCertificate -f 'Root', $destinationCertificatePath);
             Copy-Item -Path $expandedRootCertificatePath -Destination $destinationCertificatePath -Force -Confirm:$false;
         }
 
