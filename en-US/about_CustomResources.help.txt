@@ -70,7 +70,7 @@ LONG DESCRIPTION
 RESOURCE DOWNLOAD
 
         When a lab configuration is started, Lability will automatically download all missing media and custom
-        resources. In some scenarios you many need to download all required resources in advance, e.g. where internet
+        resources. In some scenarios you may need to download all required resources in advance, e.g. where internet
         access is not readily available or permitted. The `Invoke-LabResourceDownload` cmdlet can be used to manually
         download all required resources.
 
