@@ -24,7 +24,7 @@ Configuration NanoComputeExample {
 
                 IPAddress      = $node.IPAddress;
                 InterfaceAlias = $node.InterfaceAlias;
-                PrefixLength   = $node.PrefixLength;
+                #PrefixLength   = $node.PrefixLength;
                 AddressFamily  = $node.AddressFamily;
             }
 
