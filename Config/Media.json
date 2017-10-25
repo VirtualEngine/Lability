@@ -3,11 +3,11 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARD",
+    "ImageName":  "2",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
 		"WindowsOptionalFeature":  ["NetFx3"],
 		"MinimumDismVersion": "10.0.0.0"
@@ -19,11 +19,11 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARDCORE",
+    "ImageName":  "1",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "WindowsOptionalFeature":  ["NetFx3"],
 		"MinimumDismVersion": "10.0.0.0"
@@ -35,11 +35,11 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTER",
+    "ImageName":  "4",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "WindowsOptionalFeature":  ["NetFx3"],
 		"MinimumDismVersion": "10.0.0.0"
@@ -51,11 +51,11 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTERCORE",
+    "ImageName":  "3",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "WindowsOptionalFeature":  ["NetFx3"],
 		"MinimumDismVersion": "10.0.0.0"
@@ -70,8 +70,8 @@
     "ImageName":  "Windows Server 2016 SERVERSTANDARDNANO",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
@@ -93,8 +93,8 @@
     "ImageName":  "Windows Server 2016 SERVERDATACENTERNANO",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
@@ -109,7 +109,7 @@
     "Hotfixes":  []
 },
 {
-	"Id": "2012R2_x64_Standard_EN_Eval",
+    "Id": "2012R2_x64_Standard_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation",
     "Architecture": "x64",
@@ -173,7 +173,7 @@
 	]
 },
 {
-	"Id": "2012R2_x64_Standard_EN_V5_1_Eval",
+    "Id": "2012R2_x64_Standard_EN_V5_1_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation with WMF 5.1",
     "Architecture": "x64",
