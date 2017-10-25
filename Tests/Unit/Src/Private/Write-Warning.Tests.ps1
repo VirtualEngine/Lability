@@ -13,7 +13,7 @@ Describe 'Src\Private\Write-Warning' {
             $testMessage = 'This is a test message';
             Mock Get-FormattedMessage -ParameterFilter { $Message -match $testMessage } -MockWith { return $testMessage; }
 
-            WriteVerbose -Message $testMessage;
+            Write-Warning -Message $testMessage -WarningAction SilentlyContinue;
 
             Assert-MockCalled Get-FormattedMessage -ParameterFilter { $Message -match $testMessage } -Scope It;
         }

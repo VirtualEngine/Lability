@@ -11,7 +11,7 @@ function Import-DismModule {
         Remove-Module -Name 'Microsoft.Dism.PowerShell' -ErrorAction SilentlyContinue;
         $dismModule = Import-Module -Name $dismPath -Force -Scope Global -PassThru -Verbose:$false;
         $labDefaults.DismVersion = $dismModule.Version;
-        WriteVerbose -Message ($localized.LoadedModuleVersion -f 'Dism', $dismModule.Version);
+        Write-Verbose -Message ($localized.LoadedModuleVersion -f 'Dism', $dismModule.Version);
 
     } #end process
 } #end function

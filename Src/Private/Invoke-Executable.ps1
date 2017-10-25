@@ -34,16 +34,16 @@ function Invoke-Executable {
         }
         Write-Debug -Message ($localized.RedirectingOutput -f 'StdOut', $processArgs.RedirectStandardOutput);
         Write-Debug -Message ($localized.RedirectingOutput -f 'StdErr', $processArgs.RedirectStandardError);
-        WriteVerbose ($localized.StartingProcess -f $Path, [System.String]::Join(' ', $Arguments));
+        Write-Verbose -Message ($localized.StartingProcess -f $Path, [System.String]::Join(' ', $Arguments));
         $process = Start-Process @processArgs;
 
         if ($process.ExitCode -ne 0) {
 
-            WriteWarning ($localized.ProcessExitCode -f $Path, $process.ExitCode)
+            Write-Warning -Message ($localized.ProcessExitCode -f $Path, $process.ExitCode)
         }
         else {
 
-            WriteVerbose ($localized.ProcessExitCode -f $Path, $process.ExitCode);
+            Write-Verbose -Message ($localized.ProcessExitCode -f $Path, $process.ExitCode);
         }
         ##TODO: Should this actually return the exit code?!
 

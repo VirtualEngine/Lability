@@ -31,7 +31,7 @@ function Set-LabVMDiskFileBootstrap {
     process {
 
         $bootStrapPath = '{0}:\BootStrap' -f $VhdDriveLetter;
-        WriteVerbose -Message ($localized.AddingBootStrapFile -f $bootStrapPath);
+        Write-Verbose -Message ($localized.AddingBootStrapFile -f $bootStrapPath);
         $setBootStrapParams = @{
             Path = $bootStrapPath;
             CoreCLR = $CoreCLR;
@@ -42,13 +42,13 @@ function Set-LabVMDiskFileBootstrap {
         }
         if ($PSBoundParameters.ContainsKey('DefaultShell')) {
 
-            WriteVerbose -Message ($localized.SettingCustomShell -f $DefaultShell);
+            Write-Verbose -Message ($localized.SettingCustomShell -f $DefaultShell);
             $setBootStrapParams['DefaultShell'] = $DefaultShell;
         }
         Set-LabBootStrap @setBootStrapParams;
 
         $setupCompleteCmdPath = '{0}:\Windows\Setup\Scripts' -f $vhdDriveLetter;
-        WriteVerbose -Message ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
+        Write-Verbose -Message ($localized.AddingSetupCompleteCmdFile -f $setupCompleteCmdPath);
         Set-LabSetupCompleteCmd -Path $setupCompleteCmdPath -CoreCLR:$CoreCLR;
 
     } #end process

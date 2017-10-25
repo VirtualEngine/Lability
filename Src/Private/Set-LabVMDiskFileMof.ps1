@@ -29,12 +29,12 @@ function Set-LabVMDiskFileMof {
 
         if (-not (Test-Path -Path $mofPath)) {
 
-            WriteWarning -Message ($localized.CannotLocateMofFileError -f $mofPath);
+            Write-Warning -Message ($localized.CannotLocateMofFileError -f $mofPath);
         }
         else {
 
             $destinationMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.mof';
-            WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMofPath);
+            Write-Verbose -Message ($localized.AddingDscConfiguration -f $destinationMofPath);
             Copy-Item -Path $mofPath -Destination $destinationMofPath -Force -ErrorAction Stop -Confirm:$false;
         }
 
@@ -42,7 +42,7 @@ function Set-LabVMDiskFileMof {
         if (Test-Path -Path $metaMofPath -PathType Leaf) {
 
             $destinationMetaMofPath = Join-Path -Path $bootStrapPath -ChildPath 'localhost.meta.mof';
-            WriteVerbose -Message ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
+            Write-Verbose -Message ($localized.AddingDscConfiguration -f $destinationMetaMofPath);
             Copy-Item -Path $metaMofPath -Destination $destinationMetaMofPath -Force -Confirm:$false;
         }
 

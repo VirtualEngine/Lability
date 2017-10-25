@@ -7,7 +7,7 @@ function Close-ZipArchive {
     param ()
     process {
 
-        WriteVerbose -Message ($localized.ClosingZipArchive -f $Path);
+        Write-Verbose -Message ($localized.ClosingZipArchive -f $Path);
 
         if ($null -ne $zipArchive) {
 

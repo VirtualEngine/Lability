@@ -31,7 +31,7 @@ function Resolve-ConfigurationPath {
     )
     process {
 
-        WriteVerbose -Message ($localized.SearchingConfigurationPaths);
+        Write-Verbose -Message ($localized.SearchingConfigurationPaths);
         try {
 
             ## Do we have an environment name?

@@ -40,17 +40,17 @@ function Test-ResourceDownload {
         }
         elseif ([System.String]::IsNullOrEmpty($Checksum)) {
 
-            WriteVerbose ($localized.ResourceChecksumNotSpecified -f $DestinationPath);
+            Write-Verbose -Message ($localized.ResourceChecksumNotSpecified -f $DestinationPath);
             $isCompliant = $true;
         }
         elseif ($Checksum -eq $resource.Checksum) {
 
-            WriteVerbose ($localized.ResourceChecksumMatch -f $DestinationPath, $Checksum);
+            Write-Verbose -Message ($localized.ResourceChecksumMatch -f $DestinationPath, $Checksum);
             $isCompliant = $true;
         }
         else {
 
-            WriteVerbose ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
+            Write-Verbose -Message ($localized.ResourceChecksumMismatch  -f $DestinationPath, $Checksum);
             $isCompliant = $false;
         }
 

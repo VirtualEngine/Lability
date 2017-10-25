@@ -99,7 +99,7 @@ function Invoke-LabResourceDownload {
 
             if (-not $MediaId) {
 
-                WriteVerbose ($Localized.DownloadingAllRequiredMedia);
+                Write-Verbose -Message ($Localized.DownloadingAllRequiredMedia);
                 $uniqueMediaIds = @();
                 $ConfigurationData.AllNodes.Where({ $_.NodeName -ne '*' }) | ForEach-Object {
                     $id = (Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData).Media;
@@ -115,20 +115,20 @@ function Invoke-LabResourceDownload {
                     $labMedia = Resolve-LabMedia -ConfigurationData $ConfigurationData -Id $id;
                     Invoke-LabMediaImageDownload -Media $labMedia -Force:$Force;
 
-                    WriteVerbose $Localized.DownloadingAllRequiredHotfixes;
+                    Write-Verbose -Message $Localized.DownloadingAllRequiredHotfixes;
                     if ($labMedia.Hotfixes.Count -gt 0) {
                         foreach ($hotfix in $labMedia.Hotfixes) {
                             Invoke-LabMediaDownload -Id $hotfix.Id -Uri $hotfix.Uri;
                         }
                     }
                     else {
-                        WriteVerbose ($localized.NoHotfixesSpecified);
+                        Write-Verbose -Message ($localized.NoHotfixesSpecified);
                     }
                 }
 
             }
             else {
-                WriteVerbose ($localized.NoMediaDefined);
+                Write-Verbose -Message ($localized.NoMediaDefined);
             }
 
         } #end if MediaId or MediaOnly
@@ -137,7 +137,7 @@ function Invoke-LabResourceDownload {
 
             if (-not $ResourceId) {
 
-                WriteVerbose ($Localized.DownloadingAllDefinedResources);
+                Write-Verbose -Message ($Localized.DownloadingAllDefinedResources);
                 $ResourceId = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Resource.Id;
             }
 
@@ -164,7 +164,7 @@ function Invoke-LabResourceDownload {
             }
             else {
 
-                WriteVerbose ($localized.NoResourcesDefined);
+                Write-Verbose -Message ($localized.NoResourcesDefined);
             }
 
         } #end if ResourceId or ResourceOnly
@@ -175,11 +175,11 @@ function Invoke-LabResourceDownload {
             if (($null -ne $dscResourceDefinitions) -and ($dscResourceDefinitions.Count -gt 0)) {
 
                 ## Invokes download of DSC resource modules into the module cache
-                WriteVerbose ($Localized.DownloadingAllDSCResources);
+                Write-Verbose -Message ($Localized.DownloadingAllDSCResources);
                 Invoke-LabModuleCacheDownload -Module $dscResourceDefinitions -Force:$Force;
             }
             else {
-                WriteVerbose ($localized.NoDSCResourcesDefined);
+                Write-Verbose -Message ($localized.NoDSCResourcesDefined);
             }
         } #end if DSC resource
 
@@ -189,11 +189,11 @@ function Invoke-LabResourceDownload {
             if (($null -ne $moduleDefinitions) -and ($moduleDefinitions.Count -gt 0)) {
 
                 ## Invokes download of PowerShell modules into the module cache
-                WriteVerbose ($Localized.DownloadingAllPowerShellModules);
+                Write-Verbose -Message ($Localized.DownloadingAllPowerShellModules);
                 Invoke-LabModuleCacheDownload -Module $moduleDefinitions -Force:$Force;
             }
             else {
-                WriteVerbose ($localized.NoPowerShellModulesDefined);
+                Write-Verbose -Message ($localized.NoPowerShellModulesDefined);
             }
 
         } #end PowerShell module

@@ -18,7 +18,7 @@ Describe 'Src\Private\New-LabBootStrap' {
         It 'Includes custom BootStrap injection point' {
             $bootstrap = New-LabBootStrap;
 
-            $bootstrap.ToString() -match "<#CustomBootStrapInjectionPoint#>`r`n" | Should Be $true;
+            $bootstrap -match "<#CustomBootStrapInjectionPoint#>`r?`n" | Should Be $true;
         }
 
     } #end InModuleScope

@@ -42,7 +42,7 @@ function Set-LabVMDiskFileModule {
         }
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
 
-            WriteVerbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
+            Write-Verbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
             Set-LabVMDiskModule @setLabVMDiskDscModuleParams;
         }
 
@@ -58,7 +58,7 @@ function Set-LabVMDiskFileModule {
         }
         if ($null -ne $setLabVMDiskPowerShellModuleParams['Module']) {
 
-            WriteVerbose -Message ($localized.AddingPowerShellModules -f $programFilesPath);
+            Write-Verbose -Message ($localized.AddingPowerShellModules -f $programFilesPath);
             Set-LabVMDiskModule @setLabVMDiskPowerShellModuleParams;
         }
 

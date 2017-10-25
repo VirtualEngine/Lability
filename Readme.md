@@ -5,7 +5,7 @@
 The __Lability__ module enables simple provisioning of Windows Hyper-V development and testing
 environments. It uses a declarative document for machine configuration. However, rather than
 defining configurations in an external custom domain-specific language (DSL) document, __Lability__
-extends existing PowerShell Desired State Configuration (DSC) configuration .psd1 documents with
+extends existing PowerShell Desired State Configuration (DSC) configuration (.psd1) documents with
 metadata that can be interpreted by the module.
 
 By using this approach, it allows the use of a single configuration document to describe all
@@ -95,6 +95,11 @@ written some comprehensive guides to compliment the built-in documentation – a
 * [Building Hyper-V lab environments based on PowerShell DSC](http://www.powershell.no/hyper-v,/powershell/dsc/2017/07/19/lability.html) via @JanEgilRing
 
 ## Versions
+
+### Unreleased
+
+* Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
+* Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
 
 ### v0.12.4
 

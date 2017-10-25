@@ -17,7 +17,7 @@ $labDefaults = @{
 ## Import localisation strings
 Import-LocalizedData -BindingVariable localized -FileName Resources.psd1;
 
-## Import the \Lib files. This permits loading of the module's functions for unit testing, without having to unload/load the module.
+## Import the \Src files. This permits loading of the module's functions for unit testing, without having to unload/load the module.
 $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
 $moduleSrcPath = Join-Path -Path $moduleRoot -ChildPath 'Src';
 Get-ChildItem -Path $moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurse |
@@ -46,7 +46,7 @@ $credentialCheckScriptBlock = {
     }
 }
 
-## Load the call stack logging setting referenced by WriteVerbose
+## Load the call stack logging setting referenced by Write-Verbose
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
 
 ## Ensure we load the required DISM module version

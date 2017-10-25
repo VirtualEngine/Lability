@@ -18,7 +18,7 @@ function Get-WindowsImageByName {
     )
     process {
 
-        WriteVerbose ($localized.LocatingWimImageName -f $ImageIndex);
+        Write-Verbose -Message ($localized.LocatingWimImageName -f $ImageIndex);
         Get-WindowsImage -ImagePath $ImagePath -Verbose:$false |
             Where-Object ImageIndex -eq $ImageIndex |
                 Select-Object -ExpandProperty ImageName;
