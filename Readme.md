@@ -101,6 +101,8 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 * Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
 * Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
+* Updates built-in Windows Server 2016 evaluation media with refresh ISOs
+* Updates built-in Windows 10 Enterprise evaluation media with the 1709 'Fall Creators Update' ISOs
 
 ### v0.12.4 ###
 
