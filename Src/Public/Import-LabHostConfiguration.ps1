@@ -83,7 +83,7 @@ function Import-LabHostConfiguration {
 
                 [ref] $null = Reset-LabHostDefault -Confirm:$false;
                 $hostDefaultObject = $configuration.HostDefaults;
-                $hostDefaults = ConvertPSObjectToHashtable -InputObject $hostDefaultObject;
+                $hostDefaults = Convert-PSObjectToHashtable -InputObject $hostDefaultObject;
                 Set-LabHostDefault @hostDefaults -Confirm:$false;
                 Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
             }
@@ -99,7 +99,7 @@ function Import-LabHostConfiguration {
                 [ref] $null = Reset-LabMedia -Confirm:$false;
                 foreach ($mediaObject in $configuration.CustomMedia) {
 
-                    $customMedia = ConvertPSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
+                    $customMedia = Convert-PSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
                     Write-Output (Register-LabMedia @customMedia -Force);
                 }
                 Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
@@ -114,7 +114,7 @@ function Import-LabHostConfiguration {
 
                 [ref] $null = Reset-LabVMDefault -Confirm:$false;
                 $vmDefaultObject = $configuration.VMDefaults;
-                $vmDefaults = ConvertPSObjectToHashtable -InputObject $vmDefaultObject;
+                $vmDefaults = Convert-PSObjectToHashtable -InputObject $vmDefaultObject;
                 ## Boot order is exposed externally
                 $vmDefaults.Remove('BootOrder');
                 Set-LabVMDefault @vmDefaults -Confirm:$false;

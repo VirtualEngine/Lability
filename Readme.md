@@ -103,6 +103,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
 * Updates built-in Windows Server 2016 evaluation media with refresh ISOs
 * Updates built-in Windows 10 Enterprise evaluation media with the 1709 'Fall Creators Update' ISOs
+* Fixes bug importing configuration containing custom media with hotfix definitions (#262)
 
 ### v0.12.4 ###
 
