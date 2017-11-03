@@ -56,5 +56,15 @@ Describe 'Src\Private\Convert-PSObjectToHashtable' {
             $result.Hotfixes[-1] -is [System.Collections.Hashtable] | Should Be $true;
         }
 
+        It 'Converts nested array of "String" types to an array' {
+            $testObject = [PSCustomObject] @{
+                WindowsOptionalFeature = @('NetFx3');
+            }
+
+            $result = Convert-PSObjectToHashtable -InputObject $testObject -IgnoreNullValues -Verbose;
+
+            $result.WindowsOptionalFeature[-1] -is [System.String] | Should Be $true;
+        }
+
     } #end InModuleScope
 } #end Describe

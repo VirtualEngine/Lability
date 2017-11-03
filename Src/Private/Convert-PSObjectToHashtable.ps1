@@ -40,7 +40,16 @@ function Convert-PSObjectToHashtable {
                     $nestedCollection = @();
                     foreach ($object in $property.Value) {
 
-                        $nestedCollection += Convert-PSObjectToHashtable -InputObject $object -IgnoreNullValues:$IgnoreNullValues;
+                        if ($object -is 'System.Management.Automation.PSCustomObject') {
+
+                            $nestedCollection += Convert-PSObjectToHashtable -InputObject $object -IgnoreNullValues:$IgnoreNullValues;
+                        }
+                        else {
+
+                            ## We have an array of primitive types, e.g. strings
+                            $nestedCollection += $object;
+                        }
+
                     }
                     $hashtable[$property.Name] = $nestedCollection;
                 }
