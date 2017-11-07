@@ -42,9 +42,9 @@ Describe 'Unit\Src\Private\New-Directory' {
         It 'Returns a "System.IO.DirectoryInfo" object if target "DirectoryInfo" does not exist' {
             Remove-Item -Path 'TestDrive:\New-Directory' -Force -ErrorAction SilentlyContinue;
             Test-Path -Path $testDirectoryPath | Should Be $false;
-            New-Directory -Path $testDirectoryPath;
+            $output = New-Directory -Path $testDirectoryPath;
             Test-Path -Path $testDirectoryPath | Should Be $true;
-            (New-Directory -Path $testDirectoryPath) -is [System.IO.DirectoryInfo] | Should Be $true;
+            $output -is [System.IO.DirectoryInfo] | Should Be $true;
         }
 
         It 'Creates target "DirectoryInfo" if it does not exist' {
