@@ -28,7 +28,8 @@ function New-Directory {
 
             'ByString' {
 
-                foreach ($directory in $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)) {
+                foreach ($directory in $Path) {
+                    $directory = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($directory);
 
                     Write-Debug -Message ("Testing target directory '{0}'." -f $directory);
                     if (-not (Test-Path -Path $directory -PathType Container)) {
