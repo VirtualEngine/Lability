@@ -173,6 +173,7 @@ ConvertFrom-StringData -StringData @'
     AddingAdditionalVhdFile          = Attaching VHD/X '{0}' to controller location '{1}'.
     RemovingVhdFile                  = Removing VHD/X '{0}'.
     LoadedModuleVersion              = Loaded {0} module version '{1}'.
+    ProcessingMofFile                = Processing DSC node configuration file '{0}'.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -194,6 +195,12 @@ ConvertFrom-StringData -StringData @'
     ComputerNotReachableWarning      = Computer '{0}' is not reachable.
     ExplicitOutputPathWarning        = Parameter 'OutputPath' was explicitly passed and is also defined in the 'ConfigurationParameters' hashtable. Using OutputPath '{0}'.
     ExplicitConfigurationDataWarning = Parameter 'ConfigurationData' was explicitly passed and is also defined in the 'ConfigurationParameters' hashtable. Using ConfigurationData '{0}'.
+    SkippingMetaConfigurationWarning = Skipping meta configuration file '{0}'.
+    CannotResolveMofModuleWarning    = Cannot resolve MOF module name and/or version of the instance defined at line {0}.
+    ModuleUsingMinimumVersionWarning = Module '{0}' definition is configured with the 'MinimumVersion' property. It is recommended to use the 'RequiredVersion' property instead.
+    ModuleMissingRequiredVerWarning  = Module '{0}' definition is missing 'RequiredVersion' property. It recommended to use the 'RequiredVersion' property.
+    MofModuleVersionMismatchWarning  = Module '{0}' version mismatch. The version '{1}' defined in the .mof file does not match the version '{2}' defined in the Lability configuration file.
+    ModuleMissingDefinitionWarning   = Missing resource '{0}' definition. The resource module '{0}' is defined in the node .mof but is not included in the lab configuration document.
 
     InvalidPathError                 = {0} path '{1}' is invalid.
     InvalidDestinationPathError      = Invalid destination path '{0}' specified.
