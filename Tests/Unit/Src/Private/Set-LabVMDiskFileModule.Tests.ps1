@@ -28,6 +28,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileModule' {
                 ConfigurationData = $testConfigurationData;
                 NodeName = $testNode;
                 VhdDriveLetter = $testDriveLetter;
+                Path = '.\';
             }
             Set-LabVMDiskFileModule @testParams;
 
@@ -41,6 +42,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileModule' {
                 ConfigurationData = $testConfigurationData;
                 NodeName = $testNode;
                 VhdDriveLetter = $testDriveLetter;
+                Path = '.\';
             }
             Set-LabVMDiskFileModule @testParams;
 
@@ -54,6 +56,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileModule' {
                 ConfigurationData = $testConfigurationData;
                 NodeName = $testNode;
                 VhdDriveLetter = $testDriveLetter;
+                Path = '.\';
             }
             Set-LabVMDiskFileModule @testParams;
 
