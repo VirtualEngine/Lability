@@ -57,6 +57,20 @@ function Start-LabHostConfiguration {
         foreach ($configuration in $labHostSetupConfiguation) {
 
             Import-LabDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
+            
+            ## Pending reboot switch being ignored. Fixed with this clause
+            if ( $IgnorePendingReboot ) {
+
+                if ( $configuration.Prefix -eq "PendingReboot" ) {
+                    WriteVerbose (
+                        "IgnorePendingReboot switch specified. Skipping DscResource: {0}" -f
+                        $configuration.Prefix
+                    )
+                    Continue
+                }
+            }
+            ### end custom code
+            
             WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
             [ref] $null = Invoke-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;
             ## TODO: Need to check for pending reboots..
