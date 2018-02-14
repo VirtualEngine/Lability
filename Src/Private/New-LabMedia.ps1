@@ -29,7 +29,7 @@ function New-LabMedia {
         [System.String] $ImageName = '',
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateSet('ISO','VHD')]
+        [ValidateSet('ISO','VHD','WIM')]
         [System.String] $MediaType = $(throw ($localized.MissingParameterError -f 'MediaType')),
 
         [Parameter(ValueFromPipelineByPropertyName)]
