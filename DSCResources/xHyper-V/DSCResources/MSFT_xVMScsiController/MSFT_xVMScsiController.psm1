@@ -16,15 +16,23 @@ else
 }
 #endregion
 
+# Import the common HyperV functions
+Import-Module -Name ( Join-Path `
+    -Path (Split-Path -Path $PSScriptRoot -Parent) `
+    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+
 <#
     .SYNOPSIS
     Returns the current status of the VM SCSI controller.
+
     .PARAMETER VMName
     Specifies the name of the virtual machine whose SCSI controller status is to be fetched.
+
     .PARAMETER ControllerNumber
-    Specifies the number of the SCSI controller whose status is to be fetched. 
+    Specifies the number of the controller to which the hard disk drive is to be set.
+    If not specified, the controller number defaults to 0.
 #>
-function Get-TargetResource 
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -35,39 +43,47 @@ function Get-TargetResource
         $VMName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet(0,1,2,3)]
-        [System.Int32]
+        [ValidateSet(0, 1, 2, 3)]
+        [System.UInt32]
         $ControllerNumber
     )
 
-    $controller = Get-VMScsiController -VMName $VMName -ControllerNumber $ControllerNumber
-    Write-Verbose "the result of the get is: $controller"
+    Assert-Module -Name 'Hyper-V'
 
+    $controller = Get-VMScsiController -VMName $VMName -ControllerNumber $ControllerNumber
     if ($null -eq $controller)
     {
+        Write-Verbose -Message ($localizedData.ControllerNotFound -f $ControllerNumber, $VMName)
         $ensure = 'Absent'
     }
     else
     {
+        Write-Verbose -Message ($localizedData.ControllerFound -f $ControllerNumber, $VMName)
         $ensure = 'Present'
     }
 
-    $returnValue = @{
-        VMName = $Controller.VMName
+    return @{
+        VMName           = $Controller.VMName
         ControllerNumber = $Controller.ControllerNumber
-        Ensure = $ensure
+        RestartIfNeeded  = $false
+        Ensure           = $ensure
     }
-
-    return $returnValue
 }
 
 <#
     .SYNOPSIS
     Tests the state of a VM SCSI controller.
+
     .PARAMETER VMName
     Specifies the name of the virtual machine whose SCSI controller is to be tested.
+
     .PARAMETER ControllerNumber
-    Specifies the number of the SCSI controller to be tested. 
+    Specifies the number of the controller to which the hard disk drive is to be set.
+    If not specified, the controller number defaults to 0.
+
+    .PARAMETER RestartIfNeeded
+    Specifies if the VM should be restarted if needed for property changes.
+
     .PARAMETER Ensure
     Specifies if the SCSI controller should exist or not. Default to Present.
 #>
@@ -78,45 +94,53 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $VMName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet(0,1,2,3)]
-        [System.Int32]
+        [ValidateSet(0, 1, 2, 3)]
+        [System.UInt32]
         $ControllerNumber,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [System.Boolean]
+        $RestartIfNeeded,
+
+        [Parameter()]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )
 
-    $null = $PSBoundParameters.Remove('Ensure')
-    $resource = Get-TargetResource @PSBoundParameters
+    $null = $PSBoundParameters.Remove('RestartIfNeeded')
+    $resource = Get-TargetResource -VMName $VMName -ControllerNumber $ControllerNumber
 
-    $result = $true
+    $isCompliant = $true
     foreach ($key in $resource.Keys)
     {
-        Write-Verbose ($localizedData.ComparingDesiredActual -f $key,
-                                                                $PSBoundParameters[$key],
-                                                                $resource[$key])
-        $result = $result -and ($PSBoundParameters[$key] -eq $resource[$key])
+        Write-Verbose -Message ($localizedData.ComparingParameter -f $key,
+                                                                    $PSBoundParameters[$key],
+                                                                    $resource[$key])
+        $isCompliant = $isCompliant -and ($PSBoundParameters[$key] -eq $resource[$key])
     }
 
-    return $result
+    return $isCompliant
 }
 
 <#
     .SYNOPSIS
     Manipulates the state of a VM SCSI controller.
+
     .PARAMETER VMName
     Specifies the name of the virtual machine whose SCSI controller is to be manipulated.
+
     .PARAMETER ControllerNumber
-    Specifies the number of the SCSI controller to be manipulated. 
-    If not specified, the first available location is used.
-    If specified, all intermediate controllers will also be created.
+    Specifies the number of the controller to which the hard disk drive is to be set.
+    If not specified, the controller number defaults to 0.
+
+    .PARAMETER RestartIfNeeded
+    Specifies if the VM should be restarted if needed for property changes.
+
     .PARAMETER Ensure
     Specifies if the SCSI controller should exist or not. Defaults to Present.
 #>
@@ -126,70 +150,85 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $VMName,
-        
+
         [Parameter(Mandatory = $true)]
-        [ValidateSet(0,1,2,3)]
-        [System.Int32]
+        [ValidateSet(0, 1, 2, 3)]
+        [System.UInt32]
         $ControllerNumber,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [System.Boolean]
+        $RestartIfNeeded,
+
+        [Parameter()]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )
 
-    # Getting the state of the VM and stop it, if it is running
-    Write-Verbose $localizedData.CheckingIfVmIsRunning
-    $isRunning = (Get-VM -Name $VmName).state -eq 'Running'
-    if ($isRunning)
-    {
-        Write-Verbose $localizedData.StoppingTheVM
-        Stop-VM -Name $VMName
-    }    
+    Assert-Module -Name 'Hyper-V'
 
-    # Add or remove the controller(s)
-    if ($Ensure -eq "Present") 
+    # Getting the state of the VM so we can restore it later
+    $existingVmState = (Get-VMHyperV -VMName $VMName).State
+
+    if ((-not $RestartIfNeeded) -and ($existingVmState -ne 'Off'))
     {
-        if ($PSBoundParameters.ContainsKey('ControllerNumber')) 
-        {
-            Write-Verbose $localizedData.ControllerNumberWasProvided
-            $scsiControllerCount = (Get-VMScsiController -VMName $VMName).count
-            while ($scsiControllerCount -le $ControllerNumber)
-            {
-                Write-Verbose ($localizedData.AddingAdditionalController -f $scsiControllerCount)
-                Add-VMScsiController -VMName $VMName
-                $scsiControllerCount++
-            } 
-        }
-        else 
-        {
-            Write-Verbose ($localizedData.AddingAdditionalController -f $scsiControllerCount)
-            Add-VMScsiController -VMName $VMName
-        }
+        $errorMessage = $localizedData.CannotUpdateVmOnlineError -f $VMName
+        New-InvalidOperationError -ErrorId InvalidState -ErrorMessage $errorMessage
     }
-    else #Absent
+
+    [System.Int32] $scsiControllerCount = @(Get-VMScsiController -VMName $VMName).Count
+    if ($Ensure -eq 'Present')
     {
-        Write-Verbose ($localizedData.CheckingIfDrivesRemainOnController -f $ControllerNumber)
+        if ($scsiControllerCount -lt $ControllerNumber)
+        {
+            <#
+            All intermediate controllers should be present on the system as we cannot create
+            a controller at a particular location. For example, we cannot explicitly create
+            controller #2 - it will only be controller #2 if controllers #0 and #1 are already
+            added/present in the VM.
+            #>
+            $errorMessage = $localizedData.CannotAddScsiControllerError -f $ControllerNumber
+            New-InvalidArgumentError -ErrorId InvalidController -ErrorMessage $errorMessage
+        }
+
+        Set-VMState -Name $VMName -State 'Off'
+        Write-Verbose -Message ($localizedData.AddingController -f $scsiControllerCount)
+        Add-VMScsiController -VMName $VMName
+    }
+    else
+    {
+        if ($scsiControllerCount -ne ($ControllerNumber +1))
+        {
+            <#
+                All intermediate controllers should be present on the system. Whilst we can remove
+                a controller at a particular location, all remaining controller numbers may be
+                reordered. For example, if we remove controller at position #1, then a controller
+                that was at position #2 will become controller number #1.
+            #>
+            $errorMessage = $localizedData.CannotRemoveScsiControllerError -f $ControllerNumber
+            New-InvalidArgumentError -ErrorId InvalidController -ErrorMessage $errorMessage
+        }
+
+        Set-VMState -Name $VMName -State 'Off'
+        Write-Verbose -Message ($localizedData.CheckingExistingDisks -f $ControllerNumber)
         $controller = Get-VMScsiController -VMName $VmName -ControllerNumber $ControllerNumber
+
         foreach ($drive in $controller.Drives)
         {
-            Write-Warning ($localizedData.RemovingDriveFromController -f $drive.Path)
+            $warningMessage = $localizedData.RemovingDiskWarning -f $drive.Path, $ControllerNumber
+            Write-Warning -Message $warningMessage
             Remove-VMHardDiskDrive -VMHardDiskDrive $drive
         }
 
-        Write-Verbose ($localizedData.RemovingController -f $ControllerNumber)
+        Write-Verbose -Message ($localizedData.RemovingController -f $ControllerNumber, $VMName)
         Remove-VMScsiController -VMScsiController $controller
     }
 
-    # Restarting the VM if it was Running
-    if ($isRunning) 
-    {
-        Write-Verbose $localizedData.RestartingVM
-        Start-VM -Name $VmName
-    } 
+    # Restore the previous state
+    Set-VMState -Name $VMName -State $existingVmState
 }
 
 Export-ModuleMember -Function *-TargetResource

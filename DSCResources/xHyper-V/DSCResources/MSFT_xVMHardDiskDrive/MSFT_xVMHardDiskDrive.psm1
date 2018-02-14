@@ -1,4 +1,4 @@
-#region localizedData
+#region localizeddata
 if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 {
     Import-LocalizedData `
@@ -16,6 +16,11 @@ else
 }
 #endregion
 
+# Import the common HyperV functions
+Import-Module -Name ( Join-Path `
+    -Path (Split-Path -Path $PSScriptRoot -Parent) `
+    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+
 <#
     .SYNOPSIS
     Returns the current status of the VM hard disk drive.
@@ -24,46 +29,45 @@ else
     .PARAMETER Path
     Specifies the full path of the VHD file linked to the hard disk drive.
 #>
-function Get-TargetResource 
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $VMName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path
     )
 
+    Assert-Module -Name 'Hyper-V'
+
     $hardDiskDrive = Get-VMHardDiskDrive -VMName $VMName -ErrorAction Stop |
-                        Where-Object { $_.Path -eq $Path } 
-    Write-Verbose "the result of the get is: $hardDiskDrive"
+                        Where-Object -FilterScript { $_.Path -eq $Path }
 
     if ($null -eq $hardDiskDrive)
     {
+        Write-Verbose -Message ($localizedData.DiskNotFound -f $Path, $VMName)
         $ensure = 'Absent'
     }
     else
     {
+        Write-Verbose -Message ($localizedData.DiskFound -f $Path, $VMName)
         $ensure = 'Present'
     }
 
-    $returnValue = @{
-        VMName = $VMName
-        Path = $hardDiskDrive.Path
-        ControllerType = $hardDiskDrive.ControllerType
-        ControllerNumber = $hardDiskDrive.ControllerNumber
+    return @{
+        VMName             = $VMName
+        Path               = $hardDiskDrive.Path
+        ControllerType     = $hardDiskDrive.ControllerType
+        ControllerNumber   = $hardDiskDrive.ControllerNumber
         ControllerLocation = $hardDiskDrive.ControllerLocation
-        Ensure = $ensure
+        Ensure             = $ensure
     }
-
-    return $returnValue
 }
 
 <#
@@ -77,13 +81,11 @@ function Get-TargetResource
     Specifies the type of controller to which the the hard disk drive is to be set (IDE/SCSI).
     Default to SCSI.
     .PARAMETER ControllerNumber
-    Specifies the number of the controller to which the hard disk drive is to be set. 
-    If not specified, this parameter assumes the value of the first available controller at the
-    location specified in the ControllerLocation parameter.
+    Specifies the number of the controller to which the hard disk drive is to be set.
+    If not specified, the controller number defaults to 0.
     .PARAMETER ControllerLocation
     Specifies the number of the location on the controller at which the hard disk drive is to be
-    set. If not specified, the first available location in the controller specified with the
-    ControllerNumber parameter is used.
+    set. If not specified, the controller location defaults to 0.
     .PARAMETER Ensure
     Specifies if the hard disk drive should exist or not. Defaults to Present.
 #>
@@ -94,54 +96,56 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $VMName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path,
 
         [Parameter()]
-        [ValidateSet("IDE","SCSI")]
+        [ValidateSet('IDE', 'SCSI')]
         [System.String]
-        $ControllerType = "SCSI",
+        $ControllerType = 'SCSI',
 
         [Parameter()]
-        [ValidateSet(0,1,2,3)]
+        [ValidateSet(0, 1, 2, 3)]
         [System.UInt32]
         $ControllerNumber,
 
         [Parameter()]
-        [ValidateRange(0,63)]
+        [ValidateRange(0, 63)]
         [System.UInt32]
         $ControllerLocation,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )
 
     $resource = Get-TargetResource -VMName $VMName -Path $Path
 
-    # Throw exception when the ControllerNumber or the ControllerLocation are out of bounds for IDE
+    # Throw exception when the ControllerNumber or ControllerLocation are out of bounds for IDE
     if ($ControllerType -eq 'IDE' -and ($ControllerNumber -gt 1 -or $ControllerLocation -gt 1))
     {
-       throw ($localizedData.NumberOrLocationOutOfBounds -f $ControllerNumber, $ControllerLocation) 
+        $errorMessage = $localizedData.IdeLocationError -f $ControllerNumber, $ControllerLocation
+        New-InvalidOperationError -ErrorId 'InvalidLocation' -ErrorMessage $errorMessage
     }
 
-    $result = $true
-    foreach ($key in $resource.Keys)
+    $isCompliant = $true
+    foreach ($key in $PSBoundParameters.Keys)
     {
-        Write-Verbose ($localizedData.ComparingDesiredActual -f $key,
-                                                                $PSBoundParameters[$key],
-                                                                $resource[$key])
-        $result = $result -and ($PSBoundParameters[$key] -eq $resource[$key])
+        # Only check passed parameter values
+        if ($resource.ContainsKey($key))
+        {
+            Write-Verbose -Message ($localizedData.ComparingParameter -f $key,
+                                                                    $PSBoundParameters[$key],
+                                                                    $resource[$key])
+            $isCompliant = $isCompliant -and ($PSBoundParameters[$key] -eq $resource[$key])
+        }
     }
-
-    return $result    
+    return $isCompliant
 }
 
 <#
@@ -155,13 +159,11 @@ function Test-TargetResource
     Specifies the type of controller to which the the hard disk drive is to be set (IDE/SCSI).
     Default to SCSI.
     .PARAMETER ControllerNumber
-    Specifies the number of the controller to which the hard disk drive is to be set. 
-    If not specified, this parameter assumes the value of the first available controller at the
-    location specified in the ControllerLocation parameter.
+    Specifies the number of the controller to which the hard disk drive is to be set.
+    If not specified, the controller number defaults to 0.
     .PARAMETER ControllerLocation
     Specifies the number of the location on the controller at which the hard disk drive is to be
-    set. If not specified, the first available location in the controller specified with the
-    ControllerNumber parameter is used.
+    set. If not specified, the controller location defaults to 0.
     .PARAMETER Ensure
     Specifies if the hard disk drive should exist or not. Defaults to Present.
 #>
@@ -171,99 +173,99 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $VMName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $Path,
 
         [Parameter()]
-        [ValidateSet("IDE","SCSI")]
+        [ValidateSet('IDE', 'SCSI')]
         [System.String]
-        $ControllerType = "SCSI",
+        $ControllerType = 'SCSI',
 
         [Parameter()]
-        [ValidateSet(0,1,2,3)]
+        [ValidateSet(0, 1, 2, 3)]
         [System.UInt32]
         $ControllerNumber,
 
         [Parameter()]
-        [ValidateRange(0,63)]
+        [ValidateRange(0, 63)]
         [System.UInt32]
         $ControllerLocation,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )
 
-    $hardDiskDrive = Get-VMHardDiskDrive -VMName $VMName | Where-Object { $_.Path -eq $Path } 
+    Assert-Module -Name 'Hyper-V'
 
-    if ($Ensure -eq "Present") 
+    $hardDiskDrive = Get-VMHardDiskDrive -VMName $VMName |
+                        Where-Object -FilterScript { $_.Path -eq $Path }
+
+    if ($Ensure -eq 'Present')
     {
         $null = $PSBoundParameters.Remove('Ensure')
 
-        Write-Verbose ($localizedData.CheckingIfTheDiskIsAlreadyAttachedToTheVM)
-        if ($hardDiskDrive) 
+        Write-Verbose -Message ($localizedData.CheckingDiskIsAttached)
+        if ($hardDiskDrive)
         {
-            Write-Verbose ($localizedData.FoundDiskButWithWrongSettings)
+            Write-Verbose -Message ($localizedData.DiskFound -f $Path, $VMName)
             $null = $PSBoundParameters.Remove('VMName')
             $null = $PSBoundParameters.Remove('Path')
-            # As the operation is a move, we must use ToController... instead of Controller...
-            if ($PSBoundParameters.ContainsKey('ControllerType')) 
+            # As the operation is a move, we must use ToController instead of Controller
+            if ($PSBoundParameters.ContainsKey('ControllerType'))
             {
-                $null = $PSBoundParameters.remove('ControllerType')
+                $null = $PSBoundParameters.Remove('ControllerType')
                 $null = $PSBoundParameters.Add('ToControllerType', $ControllerType)
             }
-            if ($PSBoundParameters.ContainsKey('ControllerNumber')) 
+            if ($PSBoundParameters.ContainsKey('ControllerNumber'))
             {
                 $null = $PSBoundParameters.Remove('ControllerNumber')
                 $null = $PSBoundParameters.Add('ToControllerNumber', $ControllerNumber)
             }
-            if ($PSBoundParameters.ContainsKey('ControllerLocation')) 
+            if ($PSBoundParameters.ContainsKey('ControllerLocation'))
             {
                 $null = $PSBoundParameters.Remove('ControllerLocation')
                 $null = $PSBoundParameters.Add('ToControllerLocation', $ControllerLocation)
             }
             $null = $hardDiskDrive | Set-VMHardDiskDrive @PSBoundParameters
-            return
         }
-        
-        Write-Verbose ($localizedData.CheckingIfThereIsAnotherDiskOnThisLocation)
-        $splatGetHardDiskDrive = @{
-            VMName = $VMName 
-            ControllerType = $ControllerType 
-            ControllerNumber = $ControllerNumber 
-            ControllerLocation = $ControllerLocation
-        }
-        $hardDiskDrive = Get-VMHardDiskDrive @splatGetHardDiskDrive
-        if ($PSBoundParameters.ContainsKey('ControllerType') -and
-            $PSBoundParameters.ContainsKey('ControllerNumber') -and
-            $PSBoundParameters.ContainsKey('ControllerLocation') -and
-            $null -ne $hardDiskDrive)
+        else
         {
-            Write-Warning ($localizedData.ThereIsAnotherDiskOnThisLocation -f $hardDiskDrive.Path)
-            $null = $hardDiskDrive | Set-VMHardDiskDrive @PSBoundParameters -Path $Path 
-            return
-        }
+            Write-Verbose -Message ($localizedData.CheckingExistingDiskLocation)
+            $getVMHardDiskDriveParams = @{
+                VMName             = $VMName
+                ControllerType     = $ControllerType
+                ControllerNumber   = $ControllerNumber
+                ControllerLocation = $ControllerLocation
+            }
+            $existingHardDiskDrive = Get-VMHardDiskDrive @getVMHardDiskDriveParams
+            if ($null -ne $existingHardDiskDrive)
+            {
+                $errorMessage = $localizedData.DiskPresentError -f $ControllerNumber, `
+                                                                    $ControllerLocation
+                New-InvalidOperationError -ErrorId 'ControllerNotEmpty' -ErrorMessage $errorMessage
+            }
 
-        Write-Verbose ($localizedData.AddingTheDiskToTheFreeLocation)
-        $null = Add-VMHardDiskDrive @PSBoundParameters 
-    } 
-    else # We must ensure that the disk is absent
-    {
-        if ($hardDiskDrive) 
-        {
-            Write-Verbose ($localizedData.RemovingVHDFromVM -f $Path)
-            $null = $hardDiskDrive | Remove-VMHardDiskDrive 
+            Write-Verbose -Message ($localizedData.AddingDisk -f $Path, $VMName)
+            $null = Add-VMHardDiskDrive @PSBoundParameters
         }
-        else 
+    }
+    else
+    {
+        # We must ensure that the disk is absent
+        if ($hardDiskDrive)
         {
-            Write-Warning $localizedData.CouldNotFindDiskToRemove
+            Write-Verbose -Message ($localizedData.RemovingDisk -f $Path, $VMName)
+            $null = $hardDiskDrive | Remove-VMHardDiskDrive
+        }
+        else
+        {
+            Write-Warning -Message ($localizedData.DiskNotFound -f $Path, $VMName)
         }
     }
 }

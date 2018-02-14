@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '3.7.2.0'
+ModuleVersion = '3.11.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'f5a5f169-7026-4053-932a-19a7c37b1ca5'
@@ -12,7 +12,7 @@ Author = 'Microsoft Corporation'
 CompanyName = 'Microsoft Corporation'
 
 # Copyright statement for this module
-Copyright = '(c) 2013 Microsoft Corporation. All rights reserved.'
+Copyright = '(c) 2017 Microsoft Corporation. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Module with DSC Resources for Hyper-V area'
@@ -47,8 +47,11 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Adding a new resource
-    * MSFT_xVMNetworkAdapter: Attaches a new VM network adapter to the management OS or VM.
+        ReleaseNotes = '* Added the following resources:
+  * MSFT_xVMHardDiskDrive to manage additional attached VHD/Xs.
+  * MSFT_xVMScsiController to manage virtual machine SCSI controllers.
+* MSFT_xVMSwitch:
+  * Added parameter ot specify the Load Balancing Algorithm of a vSwitch with Switch Embedded Teaming (SET)
 
 '
 
@@ -56,6 +59,10 @@ PrivateData = @{
 
 } # End of PrivateData hashtable
 }
+
+
+
+
 
 
 

@@ -106,6 +106,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug importing configuration containing custom media with hotfix definitions (#262)
 * Scans .mof files and displays potential configuration data (.psd1) warning and missing resource messages
 * Fixes unattend.xml timezone bug on non-English systems
+* Updates bundled xHyper-V DSC resource module to v3.11.0.0 release
 
 ### v0.12.4 ###
 

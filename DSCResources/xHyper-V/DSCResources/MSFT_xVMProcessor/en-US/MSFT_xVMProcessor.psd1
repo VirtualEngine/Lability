@@ -3,7 +3,7 @@ ConvertFrom-StringData @'
     PropertyMismatch             = Property '{0}' mismatch; expected value '{1}', but was '{2}'.
     VMProcessorInDesiredState    = VM '{0}' processor(s) in desired state.
     VMProcessorNotInDesiredState = VM '{0}' processor(s) not in desired state.
-    UpdatingVMProperties         = Updating VM '{0}' properties..
+    UpdatingVMProperties         = Updating VM '{0}' properties.
     VMPropertiesUpdated          = VM '{0}' properties have been updated.
 
     VMNotFoundError              = VM '{0}' was not found.

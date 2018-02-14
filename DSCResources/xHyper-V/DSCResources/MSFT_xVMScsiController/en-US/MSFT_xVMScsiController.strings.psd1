@@ -1,11 +1,14 @@
 ConvertFrom-StringData @'
-    CheckingIfVmIsRunning = Checking if the VM is running, so that we can restore it's state after adding/removing controllers.
-    StoppingTheVM = Stopping the VM so that we can manipulate the controller(s).
-    ControllerNumberWasProvided = A controller number was provided. Looking if intermediate controllers must also be created.
-    AddingAdditionalController = Adding controller number {0}.
-    CheckingIfDrivesRemainOnController = Checking if there are still drives connected to controller {0}.
-    RemovingDriveFromController = Removing drive {0} from the controller.
-    RemovingController = Removing the controller {0} from the VM.
-    RestartingVM = Restarting the VM as it was shutdown to manipulate the controller.
-    ComparingDesiredActual = Comparing the actual to the desired value for {0}: {1} vs {2}
+    ControllerFound                 = Found controller '{0}' attached to VM '{1}'.
+    ControllerNotFound              = Controller '{0}' missing from VM '{1}'
+    ComparingParameter              = Comparing '{0}'; expected '{1}', actual '{2}'.
+    AddingController                = Adding controller number '{0}'.
+    CheckingExistingDisks           = Checking for existing disks on controller '{0}'.
+    RemovingController              = Removing controller '{0}' from VM '{1}'.
+
+    RemovingDiskWarning             = Removing disk '{0}' from the controller '{1}'.
+
+    CannotUpdateVmOnlineError       = Cannot update a running VM unless 'RestartIfNeeded' is set to true.
+    CannotAddScsiControllerError    = Cannot add controller number '{0}'. Ensure that all intermediate controllers are present on the system.
+    CannotRemoveScsiControllerError = Cannot remove controller number '{0}'. Ensure that you are removing the last controller to ensure that controller numbers are not reordered.
 '@

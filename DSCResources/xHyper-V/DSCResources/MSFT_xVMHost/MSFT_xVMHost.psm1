@@ -43,28 +43,28 @@ function Get-TargetResource
 
     # Convert the current TimeSpan into minutes
     $convertFromTimeSpanParams = @{
-        TimeSpan = $vmHost.ResourceMeteringSaveInterval;
-        TimeSpanType = 'Minutes';
+        TimeSpan = $vmHost.ResourceMeteringSaveInterval
+        TimeSpanType = 'Minutes'
     }
     $resourceMeteringSaveInterval = ConvertFrom-TimeSpan @convertFromTimeSpanParams
 
     $configuration = @{
-        IsSingleInstance = $IsSingleInstance;
-        EnableEnhancedSessionMode = $vmHost.EnableEnhancedSessionMode;
-        FibreChannelWwnn = $vmHost.FibreChannelWwnn;
-        FibreChannelWwpnMaximum = $vmHost.FibreChannelWwpnMaximum;
-        FibreChannelWwpnMinimum = $vmHost.FibreChannelWwpnMinimum;
-        MacAddressMaximum = $vmHost.MacAddressMaximum;
-        MacAddressMinimum = $vmHost.MacAddressMinimum;
-        MaximumStorageMigrations = $vmHost.MaximumStorageMigrations;
-        MaximumVirtualMachineMigrations = $vmHost.MaximumVirtualMachineMigrations;
-        NumaSpanningEnabled = $vmHost.NumaSpanningEnabled;
-        ResourceMeteringSaveIntervalMinute = $resourceMeteringSaveInterval;
-        UseAnyNetworkForMigration = $vmHost.UseAnyNetworkForMigration;
-        VirtualHardDiskPath = $vmHost.VirtualHardDiskPath;
-        VirtualMachineMigrationAuthenticationType = $vmHost.VirtualMachineMigrationAuthenticationType;
-        VirtualMachineMigrationPerformanceOption = $vmHost.VirtualMachineMigrationPerformanceOption;
-        VirtualMachinePath = $vmHost.VirtualMachinePath;
+        IsSingleInstance = $IsSingleInstance
+        EnableEnhancedSessionMode = $vmHost.EnableEnhancedSessionMode
+        FibreChannelWwnn = $vmHost.FibreChannelWwnn
+        FibreChannelWwpnMaximum = $vmHost.FibreChannelWwpnMaximum
+        FibreChannelWwpnMinimum = $vmHost.FibreChannelWwpnMinimum
+        MacAddressMaximum = $vmHost.MacAddressMaximum
+        MacAddressMinimum = $vmHost.MacAddressMinimum
+        MaximumStorageMigrations = $vmHost.MaximumStorageMigrations
+        MaximumVirtualMachineMigrations = $vmHost.MaximumVirtualMachineMigrations
+        NumaSpanningEnabled = $vmHost.NumaSpanningEnabled
+        ResourceMeteringSaveIntervalMinute = $resourceMeteringSaveInterval
+        UseAnyNetworkForMigration = $vmHost.UseAnyNetworkForMigration
+        VirtualHardDiskPath = $vmHost.VirtualHardDiskPath
+        VirtualMachineMigrationAuthenticationType = $vmHost.VirtualMachineMigrationAuthenticationType
+        VirtualMachineMigrationPerformanceOption = $vmHost.VirtualMachineMigrationPerformanceOption
+        VirtualMachinePath = $vmHost.VirtualMachinePath
     }
 
     return $configuration
@@ -393,8 +393,8 @@ function Set-TargetResource
     {
         # Need to convert the specified minutes into a TimeSpan object first
         $convertToTimeSpanParams = @{
-            TimeInterval = $PSBoundParameters['ResourceMeteringSaveIntervalMinute'];
-            TimeIntervalType = 'Minutes';
+            TimeInterval = $PSBoundParameters['ResourceMeteringSaveIntervalMinute']
+            TimeIntervalType = 'Minutes'
         }
         $resourceMeteringSaveInterval = ConvertTo-TimeSpan @convertToTimeSpanParams
 
