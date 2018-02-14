@@ -98,7 +98,7 @@ function New-InvalidArgumentError
     The collection of cmdlet parameter names and values to pass to the command.
 
     .PARAMETER WaitForIP
-    Waits for the virtual machine to be report an IP address when transitioning
+    Waits for the virtual machine to report an IP address when transitioning
     into a running state.
 
     .PARAMETER RestartIfNeeded
@@ -191,7 +191,6 @@ function Set-VMProperty
         $errorMessage = $localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmOriginalState
         New-InvalidOperationError -ErrorId RestartRequired -ErrorMessage $errorMessage
     }
-
 } #end function
 
 <#
@@ -236,7 +235,7 @@ function Set-VMState
     {
         'Running' {
             $vmCurrentState = (Get-VM -Name $Name).State
-            if ($vmCurrentState -eq "Paused")
+            if ($vmCurrentState -eq 'Paused')
             {
                 # If VM is in paused state, use resume-vm to make it running
                 Write-Verbose -Message ($localizedData.ResumingVM -f $Name)
@@ -313,7 +312,68 @@ function Wait-VMIPAddress
 
 <#
     .SYNOPSIS
-    Converts a System.TimeSpan into the number of seconds, mintutes, hours or days.
+    Ensures that the specified PowerShell module(s) are installed.
+
+    .PARAMETER Name
+    Name of the PowerShell module to check is installed.
+#>
+function Assert-Module
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $Name
+    )
+
+    if (-not (Get-Module -Name $Name -ListAvailable ))
+    {
+        $errorMessage = $localizedData.RoleMissingError -f $Name
+        New-InvalidOperationError -ErrorId MissingRole -ErrorMessage $errorMessage
+    }
+} #end function
+
+<#
+    .SYNOPSIS
+    Converts a number of seconds, minutes, hours or days into a System.TimeSpan object.
+
+    .PARAMETER TimeInterval
+    The total number of seconds, minutes, hours or days to convert.
+
+    .PARAMETER TimeSpanType
+    Convert using specified interval type.
+#>
+function ConvertTo-TimeSpan
+{
+    [CmdletBinding()]
+    [OutputType([System.TimeSpan])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.UInt32]
+        $TimeInterval,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Seconds','Minutes','Hours','Days')]
+        [System.String]
+        $TimeIntervalType
+    )
+
+    $newTimeSpanParams = @{ }
+    switch ($TimeIntervalType)
+    {
+        'Seconds' { $newTimeSpanParams['Seconds'] = $TimeInterval }
+        'Minutes' { $newTimeSpanParams['Minutes'] = $TimeInterval }
+        'Hours' { $newTimeSpanParams['Hours'] = $TimeInterval }
+        'Days' { $newTimeSpanParams['Days'] = $TimeInterval }
+    }
+    return (New-TimeSpan @newTimeSpanParams)
+} #end function ConvertTo-TimeSpan
+
+<#
+    .SYNOPSIS
+    Converts a System.TimeSpan into the number of seconds, minutes, hours or days.
 
     .PARAMETER TimeSpan
     TimeSpan to convert into an integer
@@ -344,67 +404,33 @@ function ConvertFrom-TimeSpan
         'Hours' { return $TimeSpan.TotalHours -as [System.UInt32] }
         'Days' { return $TimeSpan.TotalDays -as [System.UInt32] }
     }
-
 } #end function ConvertFrom-TimeSpan
 
 <#
     .SYNOPSIS
-    Converts a number of seconds, mintutes, hours or days into a System.TimeSpan object.
+    Helper function for retrieving a virtual machine, ensuring only one VM is resolved
 
-    .PARAMETER TimeInterval
-    The total number of seconds, mintues, hours or days to convert.
-
-    .PARAMETER TimeSpanType
-    Convert using specified interval type.
+    .PARAMETER VMName
+    Name of the Hyper-V virtual machine to return
 #>
-function ConvertTo-TimeSpan
+function Get-VMHyperV
 {
     [CmdletBinding()]
-    [OutputType([System.TimeSpan])]
     param
     (
         [Parameter(Mandatory = $true)]
-        [System.UInt32]
-        $TimeInterval,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Seconds','Minutes','Hours','Days')]
         [System.String]
-        $TimeIntervalType
+        $VMName
     )
 
-    $newTimeSpanParams = @{ }
-    switch ($TimeIntervalType)
+    $vm = Get-VM -Name $VMName -ErrorAction SilentlyContinue
+
+    # Check if 1 or 0 VM with name = $name exist
+    if ($vm.count -gt 1)
     {
-        'Seconds' { $newTimeSpanParams['Seconds'] = $TimeInterval }
-        'Minutes' { $newTimeSpanParams['Minutes'] = $TimeInterval }
-        'Hours' { $newTimeSpanParams['Hours'] = $TimeInterval }
-        'Days' { $newTimeSpanParams['Days'] = $TimeInterval }
+        $errorMessage = $localizedData.MoreThanOneVMExistsError -f $VMName
+        New-InvalidArgumentError -ErrorId 'MultipleVMsFound' -ErrorMessage $errorMessage
     }
-    return (New-TimeSpan @newTimeSpanParams)
 
-} #end function ConvertTo-TimeSpan
-
-<#
-    .SYNOPSIS
-    Ensures that the specified PowerShell module(s) are installed.
-
-    .PARAMETER Name
-    Name of the PowerShell module to check is installed.
-#>
-function Assert-Module
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $Name
-    )
-
-    if (-not (Get-Module -Name $Name -ListAvailable ))
-    {
-        $errorMessage = $localizedData.RoleMissingError -f $Name
-        New-InvalidOperationError -ErrorId MissingRole -ErrorMessage $errorMessage
-    }
-} #end function
+    return $vm
+} #end function Get-VMHyperV

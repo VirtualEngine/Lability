@@ -8,7 +8,7 @@ class MSFT_xVHD : OMI_BaseResource
     [Write, Description("Virtual disk format - Vhd or Vhdx"), ValueMap{"Vhd","Vhdx"}, Values{"Vhd","Vhdx"}] String Generation;
     [Write, Description("Should the VHD be created or deleted"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Read, Description("Virtual Disk Identifier")] String ID;
-    [Read, Description("Type of Vhd - Dynamic, Fixed, Differencing")] String Type;
+    [Write, Description("Type of Vhd - Dynamic, Fixed, Differencing"), ValueMap{"Dynamic","Fixed","Differencing"}, Values{"Dynamic","Fixed","Differencing"}] String Type;
     [Read, Description("Current size of the VHD")] Uint64 FileSizeBytes;
     [Read, Description("Is the VHD attached to a VM or not")] Boolean IsAttached;
 };
