@@ -97,6 +97,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
+### Unreleased ###
+
+* Adds WIM support to inline media definitions (#273)
+
 ### v0.13.0 ###
 
 * Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
