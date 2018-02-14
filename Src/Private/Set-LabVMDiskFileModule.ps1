@@ -21,6 +21,10 @@ function Set-LabVMDiskFileModule {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $VhdDriveLetter,
 
+        ## Node DSC .mof and .meta.mof configuration file path
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [System.String] $Path,
+
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
@@ -40,9 +44,24 @@ function Set-LabVMDiskFileModule {
             Module = Resolve-LabModule @resolveLabModuleParams;
             DestinationPath = $programFilesPath;
         }
+
+        ## Check that we have cache copies of all modules used in the .mof file.
+        $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $NodeName);
+        if (Test-Path -Path $mofPath -PathType Leaf) {
+
+            $testLabMofModuleParams = @{
+                Module = $setLabVMDiskDscModuleParams.Module;
+                MofModule = Get-LabMofModule -Path $mofPath;
+            }
+
+            ## TODO: Add automatic download of missing resources from the PSGallery.
+            [ref] $null = Test-LabMofModule @testLabMofModuleParams;
+
+        }
+
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
 
-            WriteVerbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
+            Write-Verbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
             Set-LabVMDiskModule @setLabVMDiskDscModuleParams;
         }
 
@@ -58,7 +77,7 @@ function Set-LabVMDiskFileModule {
         }
         if ($null -ne $setLabVMDiskPowerShellModuleParams['Module']) {
 
-            WriteVerbose -Message ($localized.AddingPowerShellModules -f $programFilesPath);
+            Write-Verbose -Message ($localized.AddingPowerShellModules -f $programFilesPath);
             Set-LabVMDiskModule @setLabVMDiskPowerShellModuleParams;
         }
 

@@ -50,13 +50,13 @@ function Set-LabVirtualMachineHardDiskDrive {
 
                 $vhdFilename = '{0}.{1}' -f $vhdName, $diskDrive.Type.ToLower();
                 $vhdPath = Join-Path -Path $vmHardDiskPath -ChildPath $vhdFilename;
-                WriteVerbose -Message ($localized.CreatingAdditionalVhdFile -f $vhdPath);
+                Write-Verbose -Message ($localized.CreatingAdditionalVhdFile -f $vhdPath);
                 Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVhd -Prefix Vhd;
                 Invoke-LabDscResource -ResourceName Vhd -Parameters $vhdParams;
             }
 
             ## Now add the VHD
-            WriteVerbose -Message ($localized.AddingAdditionalVhdFile -f $vhdPath, "0:$controllerLocation");
+            Write-Verbose -Message ($localized.AddingAdditionalVhdFile -f $vhdPath, "0:$controllerLocation");
             $vmHardDiskDriveParams = @{
                 VMName = $NodeName;
                 ControllerLocation = $controllerLocation;

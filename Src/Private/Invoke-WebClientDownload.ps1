@@ -33,7 +33,7 @@ function Invoke-WebClientDownload {
             if (-not $webClient.Proxy.IsBypassed($Uri)) {
 
                 $proxyInfo = $webClient.Proxy.GetProxy($Uri);
-                WriteVerbose ($localized.UsingProxyServer -f $proxyInfo.AbsoluteUri);
+                Write-Verbose -Message ($localized.UsingProxyServer -f $proxyInfo.AbsoluteUri);
             }
 
             if ($Credential) {

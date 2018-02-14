@@ -51,7 +51,7 @@ function Import-LabHostConfiguration {
             return;
         }
 
-        WriteVerbose -Message ($localized.ImportingConfiguration -f $labDefaults.ModuleName, $Path);
+        Write-Verbose -Message ($localized.ImportingConfiguration -f $labDefaults.ModuleName, $Path);
         $configurationDocument = Get-Content -Path $Path -Raw -ErrorAction Stop;
         try {
 
@@ -73,7 +73,7 @@ function Import-LabHostConfiguration {
             $Media = $true;
         }
 
-        WriteVerbose -Message ($localized.ImportingConfigurationSettings -f $configuration.GenerationDate, $configuration.GenerationHost);
+        Write-Verbose -Message ($localized.ImportingConfigurationSettings -f $configuration.GenerationDate, $configuration.GenerationHost);
 
         if ($Host) {
 
@@ -83,9 +83,9 @@ function Import-LabHostConfiguration {
 
                 [ref] $null = Reset-LabHostDefault -Confirm:$false;
                 $hostDefaultObject = $configuration.HostDefaults;
-                $hostDefaults = ConvertPSObjectToHashtable -InputObject $hostDefaultObject;
+                $hostDefaults = Convert-PSObjectToHashtable -InputObject $hostDefaultObject;
                 Set-LabHostDefault @hostDefaults -Confirm:$false;
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
             }
         } #end if restore host defaults
 
@@ -99,10 +99,10 @@ function Import-LabHostConfiguration {
                 [ref] $null = Reset-LabMedia -Confirm:$false;
                 foreach ($mediaObject in $configuration.CustomMedia) {
 
-                    $customMedia = ConvertPSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
+                    $customMedia = Convert-PSObjectToHashtable -InputObject $mediaObject -IgnoreNullValues;
                     Write-Output (Register-LabMedia @customMedia -Force);
                 }
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Media');
             }
         } #end if restore custom media
 
@@ -114,11 +114,11 @@ function Import-LabHostConfiguration {
 
                 [ref] $null = Reset-LabVMDefault -Confirm:$false;
                 $vmDefaultObject = $configuration.VMDefaults;
-                $vmDefaults = ConvertPSObjectToHashtable -InputObject $vmDefaultObject;
+                $vmDefaults = Convert-PSObjectToHashtable -InputObject $vmDefaultObject;
                 ## Boot order is exposed externally
                 $vmDefaults.Remove('BootOrder');
                 Set-LabVMDefault @vmDefaults -Confirm:$false;
-                WriteVerbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
+                Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'VM');
             }
         } #end if restore VM defaults
 

@@ -44,7 +44,7 @@ function Remove-LabVirtualMachineHardDiskDrive {
 
                 $vhdFilename = '{0}.{1}' -f $vhdName, $diskDrive.Type.ToLower();
                 $vhdPath = Join-Path -Path $vmHardDiskPath -ChildPath $vhdFilename;
-                WriteVerbose -Message ($localized.RemovingVhdFile -f $vhdPath);
+                Write-Verbose -Message ($localized.RemovingVhdFile -f $vhdPath);
                 Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVhd -Prefix Vhd;
                 Invoke-LabDscResource -ResourceName Vhd -Parameters $vhdParams;
 

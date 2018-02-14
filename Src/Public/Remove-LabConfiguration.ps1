@@ -35,7 +35,7 @@ function Remove-LabConfiguration {
     )
     process {
 
-        WriteVerbose $localized.StartedLabConfiguration;
+        Write-Verbose -Message $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
         $currentNodeCount = 0;
         foreach ($node in $nodes) {
@@ -57,7 +57,7 @@ function Remove-LabConfiguration {
         } #end foreach node
 
         Write-Progress -Id 42 -Activity $activity -Completed;
-        WriteVerbose $localized.FinishedLabConfiguration;
+        Write-Verbose -Message $localized.FinishedLabConfiguration;
 
     } #end process
 } #end function Remove-LabConfiguration

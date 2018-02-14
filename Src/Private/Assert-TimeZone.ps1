@@ -14,7 +14,7 @@ function Assert-TimeZone {
         try {
 
             $TZ = [TimeZoneInfo]::FindSystemTimeZoneById($TimeZone)
-            return $TZ.StandardName;
+            return $TZ.Id;
         }
         catch [System.TimeZoneNotFoundException] {
 

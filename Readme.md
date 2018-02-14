@@ -5,7 +5,7 @@
 The __Lability__ module enables simple provisioning of Windows Hyper-V development and testing
 environments. It uses a declarative document for machine configuration. However, rather than
 defining configurations in an external custom domain-specific language (DSL) document, __Lability__
-extends existing PowerShell Desired State Configuration (DSC) configuration .psd1 documents with
+extends existing PowerShell Desired State Configuration (DSC) configuration (.psd1) documents with
 metadata that can be interpreted by the module.
 
 By using this approach, it allows the use of a single configuration document to describe all
@@ -30,7 +30,7 @@ configuration document and automagically provision the following resources:
   * Invoke the Local Configuration Manager (LCM) after Sysprep
 
 
-## Examples
+## Examples ##
 
 An example DSC configuration document might look the following. __Note:__ this is a standard DSC
 .psd1 configuration document, but has been extended with specific properties which the __Lability__
@@ -64,6 +64,7 @@ module can interpret.
     } #end NonNodeData
 }
 ```
+
 When `Start-LabConfiguration` is invoked with the above configuration document, it will:
 
 * Create an internal Hyper-V virtual switch named 'CORPNET'
@@ -81,7 +82,7 @@ When `Start-LabConfiguration` is invoked with the above configuration document, 
 More examples can be found in the [.\Examples](https://github.com/VirtualEngine/Lability/tree/master/Examples) folder
 of the module's root directory.
 
-## Community Resources
+## Community Resources ##
 
 A brief introduction to the __VirtualEngineLab__ module presented at the European PowerShell Summit 2015 can be found
 __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__. Other generous members of the community have
@@ -94,25 +95,36 @@ written some comprehensive guides to compliment the built-in documentation – a
 * [Using Lability, DSC and ARM to define and deploy multi-VM environments](https://blogs.blackmarble.co.uk/blogs/rhepworth/post/2017/03/02/Define-Once-Deploy-Everywhere-(Sort-of…)) via @rikhepworth
 * [Building Hyper-V lab environments based on PowerShell DSC](http://www.powershell.no/hyper-v,/powershell/dsc/2017/07/19/lability.html) via @JanEgilRing
 
-## Versions
+## Versions ##
 
-### v0.12.4
+### v0.13.0 ###
+
+* Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
+* Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
+* Updates built-in Windows Server 2016 evaluation media with refresh ISOs
+* Updates built-in Windows 10 Enterprise evaluation media with the 1709 'Fall Creators Update' ISOs
+* Fixes bug importing configuration containing custom media with hotfix definitions (#262)
+* Scans .mof files and displays potential configuration data (.psd1) warning and missing resource messages
+* Fixes unattend.xml timezone bug on non-English systems
+* Updates bundled xHyper-V DSC resource module to v3.11.0.0 release
+
+### v0.12.4 ###
 
 * Adds Lability environment variables for all paths defined in the Lability host defaults, e.g. %LabilityConfigurationPath%
   * Permits using environment variables in Lability-specific parts of DSC .psd1 configuration files
   * See \Examples\DvdDriveEnvironmentVariable.psd1 for an example use case
 * Fixes bug in DISM version check in Windows 10 images (#247)
 
-### v0.12.3
+### v0.12.3 ###
 
 * Adds DISM version check to Windows 10 and Server 2016 media images (#167)
 * Fixes bug disabling DisableSwitchEnvironmentName when creating VMs
 
-### v0.12.2
+### v0.12.2 ###
 
 * Fixes bug disabling DisableSwitchEnvironmentName
 
-### v0.12.1
+### v0.12.1 ###
 
 * Fixes bug adding 'unattend.xml' when the parent '\Windows\System32\Sysprep\' folder does not exist (#232)
 * Fixes bug resolving mounted disk image drive letter (#233)
@@ -121,7 +133,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Existing installations will default to True (at least until Set-LabHostDefault or Reset-LabHostDefault are called)
 * Does not copy local DSC resource modules when an empty array is defined at 'NonNodeData\Lability\DSCResource' (#211)
 
-### v0.12.0
+### v0.12.0 ###
 
 * Adds support for setting VM processor options, e.g. nested virtualisation extensions
   * See Examples\NanoComputeExample.psd1 for an example (#81)
@@ -135,7 +147,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug in Install-LabModule deploying modules to the AllUsers scope (#224)
 * Removes deprecated/plural cmdlets: Reset-LabVMDefaults, Set-LabVMDefaults, Get-LabVMDefaults, Reset-LabHostDefaults, Get-LabHostDefaults, Set-LabHostDefaults
 
-### v0.11.0
+### v0.11.0 ###
 
 * Throws error when downloaded resource checksum is incorrect (#205)
 * Updates built-in Windows 10 evaluation and LTSB media with the 1703 'Creators Update' ISOs
@@ -151,7 +163,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Clear-ModulePath - Clear user's module path
   * Clear-LabModuleCache - Empties Lability module cache
 
-### v0.10.3
+### v0.10.3 ###
 
 * Adds -Confirm/-WhatIf support to:
   * Start-LabConfiguration, Remove-LabConfiguration
@@ -166,7 +178,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Removes mounted ISOs when parent VHD/X image creation fails (#166)
 * Adds setting the default shell via media 'CustomData\DefaultShell' setting
 
-### v0.10.2
+### v0.10.2 ###
 
 * Updates bundled xHyper-V DSC resource module to 3.5.0.0
 * Updates bundled xPendingReboot DSC resource module to 0.3.0.0
@@ -177,7 +189,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds Windows Management Framework 5.1 evaluation media
 * Updates examples with xNetworking v3.0.0.0 breaking change (#172)
 
-### v0.10.1
+### v0.10.1 ###
 
 * Removes local Administrator password from verbose output (#140)
 * Reinstates the xDhcpServerOption 'Router' parameter in example TestLabGuide.ps1
@@ -190,11 +202,11 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug where media ProductKey entry was not specified in the generated unattend.xml (#134)
 * Adds Windows ADK support to enable Win 10 and Server 2016 deployments on Win 8.1 and 2012 R2 hosts (#139)
 
-### v0.10.0
+### v0.10.0 ###
 
 * Updates Windows 10 media to build 14393 (1607).
 * Adds `WIN10_x64_Enterprise_LTSB_EN_Eval` and `WIN10_x86_Enterprise_LTSB_EN_Eval` media.
- * Adds July 2016 CU hotfix (KB3163912) to Windows 10 x86 and x64 LTSB media.
+  * Adds July 2016 CU hotfix (KB3163912) to Windows 10 x86 and x64 LTSB media.
 * Adds June 2016 CU hotfix (KB3172982) to WS2016 TP5 default lab media registrations.
 * Replaces Get-LabVMDefaults, Set-LabVMDefaults aliases with proxy functions with deprecation warning.
 * Replaces Get-LabHostDefaults, Set-LabHostDefaults aliases with proxy functions with deprecation warning.
@@ -207,7 +219,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * As 'IsLocal' resource flag to support local-only resources, i.e. stored in version control.
 * Fixes bug in VM test when multiple switches are specified on a node.
 
-### v0.9.11
+### v0.9.11 ###
 
 * Fixes bug in custom media enumeration in Start-LabConfiguration (#97).
 * Removes importing module warnings when enumerating local module availability.
@@ -218,11 +230,11 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes hard-coded '\Program Files\' directory when enumerating modules to resolve localisation issues.
 * Tests computer name for validity before creating a virtual machine (#109).
 
-### v0.9.10
+### v0.9.10 ###
 
 * Fixes bug where xHyperVM\Test-TargetResource throws if a VM's VHD has not been created.
 
-### v0.9.9
+### v0.9.9 ###
 
 * Removes boot delay in Stop-Lab.
 * Adds GuestIntegrationServices support.
@@ -236,7 +248,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds optional -ConfigurationData switch to Remove-LabVM to support prefixed configurations.
 * Deprecates ConvertToConfigurationData function in favour of the native [ArgumentToConfigurationDataTransformationAttribute()].
 
-### v0.9.8
+### v0.9.8 ###
 
 * Fixes BandwidthReservationMode bug where duplicate 'Internal' virtual switches are created.
 * Moves examples into the \Examples directory.
@@ -248,10 +260,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Fixes bug in Quick VM switch creation always creating the switch using the default switch name.
 * Adds Write-Progress output to -Lab and -LabConfiguration cmdlets.
 
-### v0.9.7
+### v0.9.7 ###
 
 * Adds backup and restore of the Lability host's settings:
- * New Export-LabHostConfiguration and Import-LabHostConfiguration cmdlets added.
+  * New Export-LabHostConfiguration and Import-LabHostConfiguration cmdlets added.
 * Adds environment prefix and suffix tagging:
   * Adds NonNodeData\Lability\EnvironmentPrefix and EnvironmentSuffix directives.
   * VM display names and VHD(X) files are named accordingly.
@@ -266,7 +278,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Adds Generation property to LabMedia to ensure that VHD files result in Generation 1 VMs.
   * Documentation updates.
 
-### v0.9.6
+### v0.9.6 ###
 
 * Updates bundled DSC resources from PSGallery:
   * xHyper-V updated to v3.3.0.0.
@@ -276,7 +288,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Suppresses SCCM client warning output in Get-LabHostConfiguration.
   * Changes Get-LabHostConfiguration output to PSObjects to improve readability.
 
-### v0.9.5
+### v0.9.5 ###
 
 * Minor updates/fixes:
   * Removes existing DSC resources in VM before copying local DSC resources.
@@ -284,7 +296,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Fixes bug creating VMs from custom VHD media.
   * Updates bootstrap to remove existing DSC configurations and restart WMI.
 
-### v0.9.4
+### v0.9.4 ###
 
 * Adds DestinationPath directive to custom resources:
   * Permits specifying an alternative relative location than the default \Resources directory.
@@ -292,12 +304,12 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Minor updates/fixes:
   * Fixes bug expanding environment variables.
 
-### v0.9.2
+### v0.9.2 ###
 
 * Minor updates/fixes:
   * Fixes image enumeration with custom VHD media.
 
-### v0.9.1
+### v0.9.1 ###
 
 * Adds support for existing virtual switches:
   * Switches no longer need to be defined in the NonNodeData\Lability\Network configuration document.
@@ -305,7 +317,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * If there is no local virtual switch, an internal one is automatically created.
 * Adds mutliple MAC address support.
 
-### v0.9.0
+### v0.9.0 ###
 
 * Renames module to Lability (#42).
 * Adds NonNodeData\Lability\DSCResource directive:
@@ -314,10 +326,9 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Adds Test-LabNodeConfiguration cmdlet to test a node's configuration.
   * Adds Invoke-LabNodeConfiguration to install Lability certificates and download required DSC resources.
 
-## Known Issues
+## Known Issues ##
 
-* When running Lability via the PowerShell ISE on Windows Server 2012 R2 with Windows 10 ADK installed, a
-`powershell_ise.exe - System Error` message is displayed.
+* When running Lability via the PowerShell ISE on Windows Server 2012 R2 with Windows 10 ADK installed, a `powershell_ise.exe - System Error` message is displayed.
   * Windows 10/Server 2016 images are still successfully created and the error can safely be ignored.
   * For better results, use PowerShell.exe instead.
 

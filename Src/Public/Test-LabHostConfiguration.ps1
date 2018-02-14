@@ -19,7 +19,7 @@ function Test-LabHostConfiguration {
     )
     process {
 
-        WriteVerbose $localized.StartedHostConfigurationTest;
+        Write-Verbose -Message $localized.StartedHostConfigurationTest;
         ## Test folders/directories
         $hostDefaults = Get-ConfigurationData -Configuration Host;
         foreach ($property in $hostDefaults.PSObject.Properties) {
@@ -29,11 +29,11 @@ function Test-LabHostConfiguration {
                 ## DismPath is not a folder and should be ignored (#159)
                 if ($property.Name -ne 'DismPath') {
 
-                    WriteVerbose ($localized.TestingPathExists -f $property.Value);
+                    Write-Verbose -Message ($localized.TestingPathExists -f $property.Value);
                     $resolvedPath = Resolve-PathEx -Path $property.Value;
                     if (-not (Test-Path -Path $resolvedPath -PathType Container)) {
 
-                        WriteVerbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
+                        Write-Verbose -Message ($localized.PathDoesNotExist -f $resolvedPath);
                         return $false;
                     }
                 }
@@ -50,13 +50,13 @@ function Test-LabHostConfiguration {
                 UseDefault = $configuration.UseDefault;
             }
             Import-LabDscResource @importDscResourceParams;
-            WriteVerbose ($localized.TestingNodeConfiguration -f $Configuration.Description);
+            Write-Verbose -Message ($localized.TestingNodeConfiguration -f $Configuration.Description);
 
             if (-not (Test-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters)) {
 
                 if ($configuration.Prefix -eq 'PendingReboot') {
 
-                    WriteWarning $localized.PendingRebootWarning;
+                    Write-Warning -Message $localized.PendingRebootWarning;
                     if (-not $IgnorePendingReboot) {
 
                         return $false;
@@ -69,7 +69,7 @@ function Test-LabHostConfiguration {
             }
         } #end foreach labHostSetupConfiguration
 
-        WriteVerbose $localized.FinishedHostConfigurationTest;
+        Write-Verbose -Message $localized.FinishedHostConfigurationTest;
         return $true;
 
     } #end process

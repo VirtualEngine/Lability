@@ -40,7 +40,7 @@ function Resolve-LabConfigurationModule {
                     }
                     else {
 
-                        WriteWarning -Message ($localized.CannotResolveModuleNameError -f $ModuleType, $moduleName);
+                        Write-Warning -Message ($localized.CannotResolveModuleNameError -f $ModuleType, $moduleName);
                     }
                 }
             }

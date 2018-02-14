@@ -21,7 +21,7 @@ function Remove-LabVMSnapshot {
                 Where-Object Name -like $SnapshotName |
                     Sort-Object -Property CreationTime -Descending |
                         ForEach-Object {
-                            WriteVerbose -Message ($localized.RemovingSnapshot -f $vmName, $_.Name);
+                            Write-Verbose -Message ($localized.RemovingSnapshot -f $vmName, $_.Name);
                             Remove-VMSnapshot -VMName $_.VMName -Name $_.Name -Confirm:$false;
                         }
 

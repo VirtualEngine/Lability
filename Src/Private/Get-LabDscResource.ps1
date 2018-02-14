@@ -34,7 +34,7 @@ function Get-LabDscResource {
         }
         catch {
 
-            WriteWarning -Message ($localized.DscResourceFailedError -f $getTargetResourceCommand, $_);
+            Write-Warning -Message ($localized.DscResourceFailedError -f $getTargetResourceCommand, $_);
         }
 
         return $getDscResourceResult;

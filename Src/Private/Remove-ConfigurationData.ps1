@@ -14,7 +14,7 @@ function Remove-ConfigurationData {
 
         $configurationPath = Resolve-ConfigurationDataPath -Configuration $Configuration;
         if (Test-Path -Path $configurationPath) {
-            WriteVerbose ($localized.ResettingConfigurationDefaults -f $Configuration);
+            Write-Verbose -Message ($localized.ResettingConfigurationDefaults -f $Configuration);
             Remove-Item -Path $configurationPath -Force;
         }
 

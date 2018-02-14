@@ -21,7 +21,7 @@ function Set-LabSetupCompleteCmd {
         $setupCompletePath = Join-Path -Path $Path -ChildPath 'SetupComplete.cmd';
         if ($CoreCLR) {
 
-            WriteVerbose -Message $localized.UsingCoreCLRSetupComplete;
+            Write-Verbose -Message $localized.UsingCoreCLRSetupComplete;
             $setupCompleteCmd = @"
 schtasks /create /tn "BootStrap" /tr "cmd.exe /c """Powershell.exe -Command %SYSTEMDRIVE%\BootStrap\BootStrap.ps1""" > %SYSTEMDRIVE%\BootStrap\BootStrap.log" /sc "Once" /sd "01/01/2099" /st "00:00" /ru "System"
 schtasks /run /tn "BootStrap"
@@ -29,7 +29,7 @@ schtasks /run /tn "BootStrap"
         }
         else {
 
-            WriteVerbose -Message $localized.UsingDefaultSetupComplete;
+            Write-Verbose -Message $localized.UsingDefaultSetupComplete;
             $setupCompleteCmd = 'Powershell.exe -NoProfile -ExecutionPolicy Bypass -NonInteractive -File "%SYSTEMDRIVE%\BootStrap\BootStrap.ps1"';
         }
 

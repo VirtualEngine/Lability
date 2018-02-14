@@ -35,18 +35,18 @@ function New-DiskImage {
         elseif ((Test-Path -Path $Path -PathType Leaf) -and ($Force)) {
 
             Dismount-VHD -Path $Path -ErrorAction Stop;
-            WriteVerbose ($localized.RemovingDiskImage -f $Path);
+            Write-Verbose -Message ($localized.RemovingDiskImage -f $Path);
             Remove-Item -Path $Path -Force -ErrorAction Stop;
         }
 
     } #end begin
     process {
 
-        WriteVerbose ($localized.CreatingDiskImage -f $Path);
+        Write-Verbose -Message ($localized.CreatingDiskImage -f $Path);
         [ref] $null = New-Vhd -Path $Path -Dynamic -SizeBytes $Size;
-        WriteVerbose ($localized.MountingDiskImage -f $Path);
+        Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
         $vhdMount = Mount-VHD -Path $Path -Passthru;
-        WriteVerbose ($localized.InitializingDiskImage -f $Path);
+        Write-Verbose -Message ($localized.InitializingDiskImage -f $Path);
         [ref] $null = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
 
         switch ($PartitionStyle) {

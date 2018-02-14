@@ -155,13 +155,13 @@ function Get-LabStatus {
 
             if (-not $session) {
 
-                WriteVerbose -Message ($localized.TestingWinRMConnection -f $computer);
+                Write-Verbose -Message ($localized.TestingWinRMConnection -f $computer);
                 try {
 
                    if (Test-WSMan -ComputerName $computer -ErrorAction Stop @PSBoundParameters) {
 
                         ## WSMan is up so we should be able to connect, if not throw..
-                        WriteVerbose -Message ($localized.ConnectingRemoteSession -f $computer);
+                        Write-Verbose -Message ($localized.ConnectingRemoteSession -f $computer);
                         $activeSessions += New-PSSession -ComputerName $computer -ErrorAction Stop @PSBoundParameters;
                     }
                 }
@@ -174,7 +174,7 @@ function Get-LabStatus {
             }
             else {
 
-                WriteVerbose ($localized.ReusingExistingRemoteSession -f $computer);
+                Write-Verbose -Message ($localized.ReusingExistingRemoteSession -f $computer);
                 $activeSessions += $session
             }
 
@@ -182,7 +182,7 @@ function Get-LabStatus {
 
         if ($activeSessions.Count -gt 0) {
 
-            WriteVerbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
+            Write-Verbose -Message ($localized.QueryingActiveSessions -f ($activeSessions.ComputerName -join "','"));
             $results = Invoke-Command -Session $activeSessions -ScriptBlock {
                             Get-DscLocalConfigurationManager |
                                 Select-Object -Property LCMVersion, LCMState;

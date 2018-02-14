@@ -34,7 +34,7 @@ function Add-LabImageWindowsPackage {
 
         foreach ($packageName in $Package) {
 
-            WriteVerbose ($localized.AddingWindowsPackage -f $packagename, $DestinationPath);
+            Write-Verbose -Message ($localized.AddingWindowsPackage -f $packagename, $DestinationPath);
             $packageFilename = '{0}.cab' -f $packageName;
             $packageFilePath = Join-Path -Path $PackagePath -ChildPath $packageFilename;
             Add-DiskImagePackage -Name $packageName -Path $packageFilePath -DestinationPath $DestinationPath;
@@ -48,7 +48,7 @@ function Add-LabImageWindowsPackage {
                 $localizedPackagePath = Join-Path -Path $localizedPackageDirectoryPath -ChildPath $localizedPackageFilename;
                 if (Test-Path -Path $localizedPackagePath -PathType Leaf) {
 
-                    WriteVerbose ($localized.AddingLocalizedWindowsPackage -f $localizedPackageName, $DestinationPath);
+                    Write-Verbose -Message ($localized.AddingLocalizedWindowsPackage -f $localizedPackageName, $DestinationPath);
                     $addDiskImagePackageParams = @{
                         Name = $localizedPackageName;
                         Path = $localizedPackagePath;

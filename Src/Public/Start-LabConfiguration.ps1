@@ -139,7 +139,7 @@ function Start-LabConfiguration {
     }
     process {
 
-        WriteVerbose $localized.StartedLabConfiguration;
+        Write-Verbose -Message $localized.StartedLabConfiguration;
         $nodes = $ConfigurationData.AllNodes | Where-Object { $_.NodeName -ne '*' };
 
         ## There is an assumption here is all .mofs are in the same folder
@@ -171,7 +171,7 @@ function Start-LabConfiguration {
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             if ($node.IsConfigured -and $Force) {
 
-                WriteVerbose -Message ($localized.NodeForcedConfiguration -f $node.Name);
+                Write-Verbose -Message ($localized.NodeForcedConfiguration -f $node.Name);
 
                 $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-VM', $node.Name;
                 $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingVM -f $node.Name);
@@ -189,11 +189,11 @@ function Start-LabConfiguration {
             }
             elseif ($node.IsConfigured) {
 
-                WriteVerbose ($localized.NodeAlreadyConfigured -f $node.Name);
+                Write-Verbose -Message ($localized.NodeAlreadyConfigured -f $node.Name);
             }
             else {
 
-                WriteVerbose -Message ($localized.NodeMissingOrMisconfigured -f $node.Name);
+                Write-Verbose -Message ($localized.NodeMissingOrMisconfigured -f $node.Name);
 
                 $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'Start-LabConfiguration', $node.Name;
                 $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingVM -f $node.Name);
@@ -213,7 +213,7 @@ function Start-LabConfiguration {
         } #end foreach node
 
         Write-Progress -Id 42 -Activity $activity -Completed;
-        WriteVerbose $localized.FinishedLabConfiguration;
+        Write-Verbose -Message $localized.FinishedLabConfiguration;
 
     } #end process
 } #end function Start-LabConfiguration

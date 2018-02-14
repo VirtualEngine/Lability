@@ -51,6 +51,7 @@ function Get-TargetResource
         ResourcePoolName = $vmProcessor.ResourcePoolName
         CompatibilityForMigrationEnabled = $vmProcessor.CompatibilityForMigrationEnabled
         CompatibilityForOlderOperatingSystemsEnabled = $vmProcessor.CompatibilityForOlderOperatingSystemsEnabled
+        RestartIfNeeded = $false
     }
     return $configuration
 }
@@ -133,6 +134,7 @@ function Test-TargetResource
         $HwThreadCountPerCore,
 
         [Parameter()]
+        [ValidateRange(0,100)]
         [System.UInt64]
         $Maximum,
 
@@ -145,10 +147,12 @@ function Test-TargetResource
         $MaximumCountPerNumaSocket,
 
         [Parameter()]
+        [ValidateRange(0,10000)]
         [System.UInt32]
         $RelativeWeight,
 
         [Parameter()]
+        [ValidateRange(0,100)]
         [System.UInt64]
         $Reserve,
 
@@ -173,11 +177,13 @@ function Test-TargetResource
     Assert-TargetResourceParameter @PSBoundParameters
 
     $targetResource = Get-TargetResource -VMName $VMName
+    $excludedTestParameters = @('RestartIfNeeded')
     $isTargetResourceCompliant = $true
 
     foreach ($parameter in $PSBoundParameters.GetEnumerator())
     {
         if (($targetResource.ContainsKey($parameter.Key)) -and
+            ($parameter.Key -notin $excludedTestParameters) -and
             ($parameter.Value -ne $targetResource[$parameter.Key]))
         {
             $isTargetResourceCompliant = $false
@@ -196,7 +202,6 @@ function Test-TargetResource
     }
 
     return $isTargetResourceCompliant
-
 } #end function
 
 <#
@@ -276,6 +281,7 @@ function Set-TargetResource
         $HwThreadCountPerCore,
 
         [Parameter()]
+        [ValidateRange(0,100)]
         [System.UInt64]
         $Maximum,
 
@@ -288,10 +294,12 @@ function Set-TargetResource
         $MaximumCountPerNumaSocket,
 
         [Parameter()]
+        [ValidateRange(0,10000)]
         [System.UInt32]
         $RelativeWeight,
 
         [Parameter()]
+        [ValidateRange(0,100)]
         [System.UInt64]
         $Reserve,
 
@@ -362,11 +370,11 @@ function Set-TargetResource
     {
         # Restart is required and that requires turning VM off
         $setVMPropertyParameters = @{
-            VMName = $VMName;
-            VMCommand = 'Set-VMProcessor';
-            ChangeProperty = $PSBoundParameters;
-            RestartIfNeeded = $true;
-            Verbose = $Verbose;
+            VMName = $VMName
+            VMCommand = 'Set-VMProcessor'
+            ChangeProperty = $PSBoundParameters
+            RestartIfNeeded = $true
+            Verbose = $Verbose
         }
         Set-VMProperty @setVMPropertyParameters
     }
