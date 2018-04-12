@@ -43,6 +43,9 @@ function Clear-LabVirtualMachine {
         [Parameter()]
         [System.Boolean] $GuestIntegrationServices,
 
+        [Parameter()]
+        [System.Boolean] $AutomaticCheckpoints,
+
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]

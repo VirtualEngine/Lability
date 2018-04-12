@@ -39,6 +39,9 @@ function Get-LabVirtualMachineProperty {
         [Parameter()]
         [System.Boolean] $GuestIntegrationServices,
 
+        [Parameter()]
+        [System.Boolean] $AutomaticCheckpoints,
+
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
@@ -111,6 +114,20 @@ function Get-LabVirtualMachineProperty {
             [ref] $null = $PSBoundParameters.Remove('GuestIntegrationServices');
         }
 
+        if ($PSBoundParameters.ContainsKey('AutomaticCheckpoints')) {
+
+            ## Automatic checkpoints were only introduced in 1709 (and later) builds.
+            if (Test-WindowsBuildNumber -MinimumVersion 16299) {
+
+                [ref] $null = $PSBoundParameters.Add('AutomaticCheckpointsEnabled', $AutomaticCheckpoints);
+                [ref] $null = $PSBoundParameters.Remove('AutomaticCheckpoints');
+            }
+            else {
+
+                Write-Debug -Message ($localized.AutomaticCheckPointsNotSupported);
+            }
+        }
+
         $vhdPath = Resolve-LabVMDiskPath -Name $Name -Generation $labImage.Generation;
 
         [ref] $null = $PSBoundParameters.Remove('Media');
@@ -121,4 +138,4 @@ function Get-LabVirtualMachineProperty {
         return $PSBoundParameters;
 
     } #end process
-} #end function Get-LabVirtualMachineProperty
+} #end function

@@ -42,6 +42,9 @@ function Test-LabVirtualMachine {
         [Parameter()]
         [System.Boolean] $GuestIntegrationServices,
 
+        [Parameter()]
+        [System.Boolean] $AutomaticCheckpoints,
+
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
@@ -64,4 +67,4 @@ function Test-LabVirtualMachine {
         }
 
     } #end process
-} #end function Test-LabVirtualMachine
+} #end function

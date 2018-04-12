@@ -141,6 +141,7 @@ function New-LabVirtualMachine {
             MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
             GuestIntegrationServices = $node.GuestIntegrationServices;
+            AutomaticCheckPoints = $node.AutomaticCheckpoints;
             ConfigurationData = $ConfigurationData;
         }
 

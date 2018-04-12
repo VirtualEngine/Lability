@@ -174,6 +174,7 @@ ConvertFrom-StringData -StringData @'
     RemovingVhdFile                  = Removing VHD/X '{0}'.
     LoadedModuleVersion              = Loaded {0} module version '{1}'.
     ProcessingMofFile                = Processing DSC node configuration file '{0}'.
+    AutomaticCheckPointsNotSupported = Automatic checkpoints are only supported in Windows 10 "Fall Creators" update (1709 and later) builds.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
