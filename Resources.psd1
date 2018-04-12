@@ -202,6 +202,7 @@ ConvertFrom-StringData -StringData @'
     ModuleMissingRequiredVerWarning  = Module '{0}' definition is missing 'RequiredVersion' property. It recommended to use the 'RequiredVersion' property.
     MofModuleVersionMismatchWarning  = Module '{0}' version mismatch. The version '{1}' defined in the .mof file does not match the version '{2}' defined in the Lability configuration file.
     ModuleMissingDefinitionWarning   = Missing resource '{0}' definition. The resource module '{0}' is defined in the node .mof but is not included in the lab configuration document.
+    IgnorePendingRebootWarning       = Skipping Dsc resource '{0}' as 'IgnorePendingReboot' switch specified.
 
     InvalidPathError                 = {0} path '{1}' is invalid.
     InvalidDestinationPathError      = Invalid destination path '{0}' specified.

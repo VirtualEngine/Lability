@@ -104,6 +104,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Automatic checkpoints are disabled by default
   * Use `Set-LabVMDefault -AutomaticCheckpoints $true` to enable automatic checkpoints
 * Adds node (computer) name length validation (#109)
+* Fixes `-IgnorePendingReboot` bug in `Start-LabHostConfiguration` (#278)
 
 ### v0.13.0 ###
 
