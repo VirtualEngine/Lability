@@ -1,4 +1,4 @@
-function TestComputerName {
+function Test-ComputerName {
 <#
     .SYNOPSIS
         Validates a computer name is valid.
@@ -6,8 +6,8 @@ function TestComputerName {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        ## Source directory path
         [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateLength(1, 15)]
         [System.String] $ComputerName
     )
     process {

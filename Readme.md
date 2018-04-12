@@ -103,6 +103,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds automatic checkpoints support (#266)
   * Automatic checkpoints are disabled by default
   * Use `Set-LabVMDefault -AutomaticCheckpoints $true` to enable automatic checkpoints
+* Adds node (computer) name length validation (#109)
 
 ### v0.13.0 ###
 
