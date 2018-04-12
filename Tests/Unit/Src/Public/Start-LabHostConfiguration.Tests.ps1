@@ -49,6 +49,21 @@ Describe 'Unit\Src\Public\Start-LabHostConfiguration' {
             Assert-MockCalled Invoke-LabDscResource -Exactly $fakeConfiguration.Count -Scope It;
         }
 
+        It 'Does not call "Invoke-LabDscResource" on "xPendingReboot" when "IgnorePendingReboot" is specified (#278)' {
+
+            $fakeHostDefaults = '{ "APath": "TestDrive:\\", "BPath": "C:\\" }' | ConvertFrom-Json;
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'Host' } -MockWith { return $fakeHostDefaults; }
+
+            $fakeConfiguration = @(
+                @{ ModuleName = 'xPendingReboot'; ResourceName = 'MSFT_xPendingReboot'; Prefix = 'PendingReboot'; Parameters = @{ P1 = 1; } }
+            )
+            Mock Get-LabHostSetupConfiguration -MockWith { return $fakeConfiguration; }
+
+            Start-LabHostConfiguration -IgnorePendingReboot -WarningAction SilentlyContinue;
+
+            Assert-MockCalled Invoke-LabDscResource -Exactly 0 -Scope It;
+        }
+
     } #end InModuleScope
 
 } #end describe
