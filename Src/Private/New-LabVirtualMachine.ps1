@@ -60,7 +60,7 @@ function New-LabVirtualMachine {
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
 
-        if (-not (TestComputerName -ComputerName $displayName)) {
+        if (-not (Test-ComputerName -ComputerName $displayName)) {
 
             throw ($localized.InvalidComputerNameError -f $displayName);
         }
@@ -141,6 +141,7 @@ function New-LabVirtualMachine {
             MACAddress = $node.MACAddress;
             SecureBoot = $node.SecureBoot;
             GuestIntegrationServices = $node.GuestIntegrationServices;
+            AutomaticCheckPoints = $node.AutomaticCheckpoints;
             ConfigurationData = $ConfigurationData;
         }
 

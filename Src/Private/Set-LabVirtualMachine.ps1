@@ -42,6 +42,9 @@ function Set-LabVirtualMachine {
         [Parameter()]
         [System.Boolean] $GuestIntegrationServices,
 
+        [Parameter()]
+        [System.Boolean] $AutomaticCheckpoints,
+
         ## xVMProcessor options
         [Parameter()]
         [System.Collections.Hashtable] $ProcessorOption,
@@ -105,4 +108,4 @@ function Set-LabVirtualMachine {
         }
 
     } #end process
-} #end function Set-LabVirtualMachine
+} #end function

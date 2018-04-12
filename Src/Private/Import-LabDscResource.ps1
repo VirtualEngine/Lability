@@ -48,7 +48,7 @@ function Import-LabDscResource {
             if ($resourcePath) {
 
                 ## Import the DSC module into the module's global scope to improve performance
-                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Verbose:$false -Scope Global;
+                Import-Module -Name $resourcePath -Prefix $Prefix -Force -Scope Global | Write-Verbose -Verbose:$false;
             }
 
         }
