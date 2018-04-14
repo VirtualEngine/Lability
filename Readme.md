@@ -101,10 +101,11 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 * Adds WIM support to inline media definitions (#273)
 * Adds automatic checkpoints support (#266)
-  * Automatic checkpoints are disabled by default
+  * __NOTE: Automatic checkpoints are disabled by default__
   * Use `Set-LabVMDefault -AutomaticCheckpoints $true` to enable automatic checkpoints
 * Adds node (computer) name length validation (#109)
 * Fixes `-IgnorePendingReboot` bug in `Start-LabHostConfiguration` (#278)
+* Fixes bug in virtual switch enumeration when network interface has as description (#280)
 
 ### v0.13.0 ###
 
