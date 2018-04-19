@@ -16,7 +16,7 @@ Describe 'Unit\Src\Private\Assert-VirtualMachineHardDiskDriveParameter' {
 
         It 'Should throw if VHD type and VHD path are specified' {
 
-            { Assert-VirtualMachineHardDiskDriveParameter -Type 'Vhd' -VhdPath $testDrive } | Should Throw 'Cannot resolve';
+            { Assert-VirtualMachineHardDiskDriveParameter -Generation 'Vhd' -VhdPath $testDrive } | Should Throw 'Cannot resolve';
         }
 
         It 'Should throw if VHD size and VHD path are specified' {
@@ -26,12 +26,12 @@ Describe 'Unit\Src\Private\Assert-VirtualMachineHardDiskDriveParameter' {
 
         It 'Should throw if VHD size is less than 3MB' {
 
-            { Assert-VirtualMachineHardDiskDriveParameter -Type 'Vhd' -MaximumSizeBytes 2MB } | Should Throw 'size';
+            { Assert-VirtualMachineHardDiskDriveParameter -Generation 'Vhd' -MaximumSizeBytes 2MB } | Should Throw 'size';
         }
 
         It 'Should throw if VHD size is greater than 2040GB' {
 
-            { Assert-VirtualMachineHardDiskDriveParameter -Type 'Vhd' -MaximumSizeBytes 2041GB } | Should Throw 'size';
+            { Assert-VirtualMachineHardDiskDriveParameter -Generation 'Vhd' -MaximumSizeBytes 2041GB } | Should Throw 'size';
         }
 
         It 'Should throw if VHD path is a directory path' {
@@ -41,12 +41,12 @@ Describe 'Unit\Src\Private\Assert-VirtualMachineHardDiskDriveParameter' {
 
         It 'Should throw if VHD type is VHD and virtual machine is generation 2' {
 
-            { Assert-VirtualMachineHardDiskDriveParameter -Type 'Vhd' -MaximumSizeBytes 127GB -VMGeneration 2 } | Should Throw 'not supported';
+            { Assert-VirtualMachineHardDiskDriveParameter -Generation 'Vhd' -MaximumSizeBytes 127GB -VMGeneration 2 } | Should Throw 'not supported';
         }
 
         It 'Should not throw if VHD type is VHDX and virtual machine is generation 2' {
 
-            { Assert-VirtualMachineHardDiskDriveParameter -Type 'Vhdx' -MaximumSizeBytes 127GB -VMGeneration 2 } | Should Not Throw;
+            { Assert-VirtualMachineHardDiskDriveParameter -Generation 'Vhdx' -MaximumSizeBytes 127GB -VMGeneration 2 } | Should Not Throw;
         }
 
     } #end InModuleScope

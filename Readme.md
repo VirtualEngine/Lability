@@ -97,6 +97,13 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
+### Unreleased ###
+
+* Removes experimental support for attaching multiple VHD files to VMs (#218)
+  * See Examples\MultipleDiskExample.psd1
+* Adds support for creating fixed and dynamic VHD files (#99)
+  * See Examples\CustomDiskSize.psd1 for examples
+
 ### v0.14.0 ###
 
 * Adds WIM support to inline media definitions (#273)

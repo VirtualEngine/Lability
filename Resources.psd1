@@ -38,6 +38,7 @@ ConvertFrom-StringData -StringData @'
     RemovingDiskImage                = Removing disk image '{0}'.
     ImportingExistingDiskImage       = Importing existing VHD(X) image '{0}'.
     CreatingDiskImage                = Creating disk image '{0}'.
+    CreatingDiskImageType            = Creating {0} disk image '{1}' of {2} MB.
     InitializingDiskImage            = Initializing disk image '{0}'.
     CreatingDiskPartition            = Creating '{0}' disk partition.
     FormattingDiskPartition          = Formatting '{0}' disk partition.

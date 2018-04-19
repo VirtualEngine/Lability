@@ -43,6 +43,8 @@ SUPPORTED MEDIA PROPERTIES
         ImageName  [string] ( supports [int32] for image numbers )
         OperatingSystem  [string] { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
+            DiskType  [string] { Dynamic | Fixed }
+            DiskSize  [int]
             PartitionStyle  [string] { MBR | GPT }
             WimPath  [string]
             SourcePath  [string]
