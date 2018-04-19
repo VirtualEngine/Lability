@@ -44,11 +44,11 @@ function Set-LabVirtualMachineHardDiskDrive {
                     Name = $vhdName;
                     Path = $vmHardDiskPath;
                     MaximumSizeBytes = $diskDrive.MaximumSizeBytes;
-                    Generation = $diskDrive.Type;
+                    Generation = $diskDrive.Generation;
                     Ensure = 'Present';
                 }
 
-                $vhdFilename = '{0}.{1}' -f $vhdName, $diskDrive.Type.ToLower();
+                $vhdFilename = '{0}.{1}' -f $vhdName, $diskDrive.Generation.ToLower();
                 $vhdPath = Join-Path -Path $vmHardDiskPath -ChildPath $vhdFilename;
                 Write-Verbose -Message ($localized.CreatingAdditionalVhdFile -f $vhdPath);
                 Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVhd -Prefix Vhd;

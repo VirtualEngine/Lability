@@ -5,12 +5,13 @@ function Assert-VirtualMachineHardDiskDriveParameter {
 #>
     [CmdletBinding()]
     param (
-        ## Virtual hard disk type
+        ## Virtual hard disk generation
         [Parameter()]
-        [System.String] $Type,
+        [System.String] $Generation,
 
-        ## Dynamic Vhd size. Minimum 3MB and maximum 2,040GB
+        ## Vhd size. Minimum 3MB and maximum 2,040GB
         [Parameter()]
+        [Alias('Size')]
         [System.UInt64] $MaximumSizeBytes,
 
         [Parameter()]
@@ -23,7 +24,7 @@ function Assert-VirtualMachineHardDiskDriveParameter {
 
         if ($PSBoundParameters.ContainsKey('VhdPath')) {
 
-            if (($PSBoundParameters.Keys -contains 'Type') -or
+            if (($PSBoundParameters.Keys -contains 'Generation') -or
                 ($PSBoundParameters.Keys -contains 'MaximumSizeBytes')) {
 
                 throw ($localized.CannotResoleVhdParameterError);
@@ -34,10 +35,10 @@ function Assert-VirtualMachineHardDiskDriveParameter {
                 throw ($localized.CannotLocateVhdError -f $VhdPath);
             }
         }
-        elseif ($PSBoundParameters.ContainsKey('Type')) {
+        elseif ($PSBoundParameters.ContainsKey('Generation')) {
 
             ## A Generation 2 virtual machine can only utilize VHDX.
-            if (($VMGeneration -eq 2) -and ($Type -eq 'VHD')) {
+            if (($VMGeneration -eq 2) -and ($Generation -eq 'VHD')) {
 
                 throw ($localized.InvalidVhdTypeError -f 'VHD', 2);
             }
@@ -50,7 +51,7 @@ function Assert-VirtualMachineHardDiskDriveParameter {
         else {
 
             ## Nothing has been specified
-            throw ($localized.CannotProcessCommandError -f '"Type, MaximumSizeBytes, VhdPath');
+            throw ($localized.CannotProcessCommandError -f '"Generation, MaximumSizeBytes, VhdPath');
         }
 
     } #end process

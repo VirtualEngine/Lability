@@ -27,8 +27,8 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
-                @{ Type = 'Vhd'; MaximumSizeBytes = 10GB; }
-                @{ Type = 'Vhd'; MaximumSizeBytes = 15GB; }
+                @{ Generation = 'Vhd'; MaximumSizeBytes = 10GB; }
+                @{ Generation = 'Vhd'; MaximumSizeBytes = 15GB; }
             )
 
             Remove-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
@@ -40,7 +40,7 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachineHardDiskDrive' {
 
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
-                @{ Type = 'Vhd'; MaximumSizeBytes = 10GB; }
+                @{ Generation = 'Vhd'; MaximumSizeBytes = 10GB; }
             )
 
             Remove-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
