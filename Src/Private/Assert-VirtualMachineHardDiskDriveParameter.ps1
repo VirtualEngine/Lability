@@ -17,6 +17,11 @@ function Assert-VirtualMachineHardDiskDriveParameter {
         [Parameter()]
         [System.String] $VhdPath,
 
+        ## Virtual hard disk type
+        [Parameter()]
+        [ValidateSet('Dynamic','Fixed')]
+        [System.String] $Type,
+
         [Parameter()]
         [System.UInt32] $VMGeneration
     )

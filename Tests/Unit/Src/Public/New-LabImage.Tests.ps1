@@ -249,6 +249,126 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Assert-MockCalled New-DiskImage -ParameterFilter { $PartitionStyle -eq 'GPT' } -Scope It;
         }
 
+        It 'Uses dynamc disk by default (#99)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x86';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{
+                Id = $testImageId;
+                Description = 'Fake media';
+                Architecture = $testArchitecture;
+                ImageName = $testWimImageName;
+            }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+
+            New-LabImage -Id $testImageId
+
+            Assert-MockCalled New-DiskImage -ParameterFilter { $PSBoundParameters.ContainsKey('Type') -eq $false } -Scope It;
+        }
+
+        It 'Uses dynamc disk when specified (#99)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x86';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{
+                Id = $testImageId;
+                Description = 'Fake media';
+                Architecture = $testArchitecture;
+                ImageName = $testWimImageName;
+                CustomData = @{ DiskType = 'Dynamic' }
+            }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+
+            New-LabImage -Id $testImageId
+
+            Assert-MockCalled New-DiskImage -ParameterFilter { $Type -eq 'Dynamic' } -Scope It;
+        }
+
+        It 'Uses fixed disk when specified (#99)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x86';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{
+                Id = $testImageId;
+                Description = 'Fake media';
+                Architecture = $testArchitecture;
+                ImageName = $testWimImageName;
+                CustomData = @{ DiskType = 'Fixed' }
+            }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+
+            New-LabImage -Id $testImageId
+
+            Assert-MockCalled New-DiskImage -ParameterFilter { $Type -eq 'Fixed' } -Scope It;
+        }
+
+        It 'Creates a custom disk size when specified (#99)' {
+            $testDiskSize = 80GB;
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x86';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{
+                Id = $testImageId;
+                Description = 'Fake media';
+                Architecture = $testArchitecture;
+                ImageName = $testWimImageName;
+                CustomData = @{ DiskSize = $testDiskSize }
+            }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -MockWith { return $fakeISOFileInfo; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+
+            New-LabImage -Id $testImageId
+
+            Assert-MockCalled New-DiskImage -ParameterFilter { $Size -eq $testDiskSize } -Scope It;
+        }
+
         It 'Calls "Expand-LabImage" with the media WIM image name' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'

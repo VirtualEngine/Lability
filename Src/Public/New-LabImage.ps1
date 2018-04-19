@@ -101,6 +101,7 @@ function New-LabImage {
             }
 
             Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description);
+
             $imageName = '{0}.vhdx' -f $Id;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
 
@@ -138,6 +139,17 @@ function New-LabImage {
                     Force = $true;
                     ErrorAction = 'Stop';
                 }
+
+                if ($media.CustomData.DiskType) {
+
+                    $newDiskImageParams['Type'] = $media.CustomData.DiskType;
+                }
+
+                if ($media.CustomData.DiskSize) {
+
+                    $newDiskImageParams['Size'] = $media.CustomData.DiskSize;
+                }
+
                 $image = New-DiskImage @newDiskImageParams;
                 [ref] $null = Get-PSDrive;
 

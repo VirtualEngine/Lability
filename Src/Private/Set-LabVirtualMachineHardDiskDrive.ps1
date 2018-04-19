@@ -48,6 +48,11 @@ function Set-LabVirtualMachineHardDiskDrive {
                     Ensure = 'Present';
                 }
 
+                if ($null -ne $diskDrive.Type) {
+
+                    $vhdParams['Type'] = $diskDrive.Type;
+                }
+
                 $vhdFilename = '{0}.{1}' -f $vhdName, $diskDrive.Generation.ToLower();
                 $vhdPath = Join-Path -Path $vmHardDiskPath -ChildPath $vhdFilename;
                 Write-Verbose -Message ($localized.CreatingAdditionalVhdFile -f $vhdPath);
