@@ -97,7 +97,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
-### Unreleased ###
+### v0.14.0 ###
 
 * Adds WIM support to inline media definitions (#273)
 * Adds automatic checkpoints support (#266)
