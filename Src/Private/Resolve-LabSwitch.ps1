@@ -47,9 +47,10 @@ function Resolve-LabSwitch {
                 AllowManagementOS = $existingSwitch.AllowManagementOS;
                 IsExisting = $true;
             }
-            if ($existingSwitch.NetAdapterInterfaceDescription) {
+            if (($existingSwitch.NetAdapterInterfaceDescription).Name) {
 
-                $networkSwitch['NetAdapterName'] = (Get-NetAdapter -InterfaceDescription $existingSwitch.NetAdapterInterfaceDescription).Name;
+                $existingSwitchAdapter = Get-NetAdapter -InterfaceDescription $existingSwitch.NetAdapterInterfaceDescription;
+                $networkSwitch['NetAdapterName'] = $existingSwitchAdapter.Name;
             }
         }
         else {

@@ -12,7 +12,7 @@ Describe 'Src\Private\Test-ComputerName' {
         $baseComputerName = 'TestComputer-1';
 
         It "Passes when computer name does not contain invalid characters" {
-            TestComputerName -ComputerName $baseComputerName | Should Be $true;
+            Test-ComputerName -ComputerName $baseComputerName | Should Be $true;
         }
 
         $invalidChars = @('~','!','@','#','$','%','^','&','*','(',')','=','+','_','[',']',
@@ -22,7 +22,7 @@ Describe 'Src\Private\Test-ComputerName' {
 
             It "Fails when computer name contains invalid '$invalidChar' character" {
                 $testComputerName = '{0}{1}' -f $baseComputerName, $invalidChar;
-                TestComputerName -ComputerName $testComputerName | Should Be $false;
+                Test-ComputerName -ComputerName $testComputerName | Should Be $false;
             }
 
         } #end foreach invalid character
