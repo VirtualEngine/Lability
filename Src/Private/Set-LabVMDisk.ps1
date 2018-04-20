@@ -39,6 +39,7 @@ function Set-LabVMDisk {
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
+            Type = 'Differencing';
         }
 
         Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;
