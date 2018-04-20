@@ -103,6 +103,8 @@ written some comprehensive guides to compliment the built-in documentation – a
   * See Examples\MultipleDiskExample.psd1
 * Adds support for creating fixed and dynamic VHD files (#99)
   * See Examples\CustomDiskSize.psd1 for examples
+* Adds support for creating empty/blank media (#135)
+  * See Examples\BlankMediaExample.psd1
 
 ### v0.14.0 ###
 

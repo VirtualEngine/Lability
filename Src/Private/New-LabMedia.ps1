@@ -29,7 +29,7 @@ function New-LabMedia {
         [System.String] $ImageName = '',
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [ValidateSet('ISO','VHD','WIM')]
+        [ValidateSet('ISO','VHD','WIM','NULL')]
         [System.String] $MediaType = $(throw ($localized.MissingParameterError -f 'MediaType')),
 
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -59,9 +59,12 @@ function New-LabMedia {
         ## Confirm we have a valid Uri
         try {
 
-            $resolvedUri = New-Object -TypeName 'System.Uri' -ArgumentList $Uri;
-            if ($resolvedUri.Scheme -notin 'http','https','file') {
-                throw ($localized.UnsupportedUriSchemeError -f $resolvedUri.Scheme);
+            if ($MediaType -ne 'NULL') {
+
+                $resolvedUri = New-Object -TypeName 'System.Uri' -ArgumentList $Uri;
+                if ($resolvedUri.Scheme -notin 'http','https','file') {
+                    throw ($localized.UnsupportedUriSchemeError -f $resolvedUri.Scheme);
+                }
             }
         }
         catch {

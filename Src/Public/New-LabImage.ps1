@@ -73,7 +73,6 @@ function New-LabImage {
             }
         }
 
-        $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
         $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         if ($media.MediaType -eq 'VHD') {
@@ -81,10 +80,39 @@ function New-LabImage {
             Write-Verbose -Message ($localized.ImportingExistingDiskImage -f $media.Description);
             $imageName = $media.Filename;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+
         } #end if VHD
+        elseif ($media.MediaType -eq 'NULL') {
+
+            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description);
+            $imageName = '{0}.vhdx' -f $Id;
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+
+            ## Create disk image and refresh PSDrives
+            $newEmptyDiskImageParams = @{
+                Path = $imagePath;
+                Force = $true;
+                ErrorAction = 'Stop';
+            }
+
+            if ($media.CustomData.DiskType) {
+
+                $newEmptyDiskImageParams['Type'] = $media.CustomData.DiskType;
+            }
+
+            if ($media.CustomData.DiskSize) {
+
+                $newEmptyDiskImageParams['Size'] = $media.CustomData.DiskSize;
+            }
+
+            $image = New-EmptyDiskImage @newEmptyDiskImageParams;
+
+        }
         else {
 
             ## Create VHDX
+            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
+
             if ($media.CustomData.PartitionStyle) {
 
                 ## Custom partition style has been defined so use that

@@ -369,6 +369,31 @@ Describe 'Unit\Src\Public\New-LabImage' {
             Assert-MockCalled New-DiskImage -ParameterFilter { $Size -eq $testDiskSize } -Scope It;
         }
 
+        It 'Calls "New-EmptyDiskImage" when the media type is "NULL"' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhdx";
+            $testArchitecture = 'x64';
+            $testWimImageName = 'Fake windows image';
+            $fakeISOFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.iso'; }
+            $fakeMedia = [PSCustomObject] @{ Id = $testImageId; MediaType = 'NULL'; } #Description = 'Fake media'; Architecture = $testArchitecture; ImageName = $testWimImageName; }
+            $fakeDiskImage = [PSCustomObject] @{ Attached = $true; BaseName = 'x'; ImagePath = $testImagePath; LogicalSectorSize = 42; BlockSize = 42; Size = 42; }
+            $fakeVhdImage = [PSCustomObject] @{ Path = $testImagePath };
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-DiskImage -MockWith { return $fakeDiskImage; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock New-DiskImage -MockWith { return $fakeVhdImage; }
+            Mock Invoke-LabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -MockWith { return $fakeISOFileInfo; }
+            Mock New-EmptyDiskImage -MockWith { }
+
+            New-LabImage -Id $testImageId -Force;
+
+            Assert-MockCalled New-EmptyDiskImage -Scope It;
+        }
+
         It 'Calls "Expand-LabImage" with the media WIM image name' {
             $testImageId = 'NewLabImage';
             $testParentImagePath = 'TestDrive:'
