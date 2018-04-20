@@ -105,6 +105,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * See Examples\CustomDiskSize.psd1 for examples
 * Adds support for creating empty/blank media (#135)
   * See Examples\BlankMediaExample.psd1
+* Removes errant "Specify MaximumSizeBytes property" errors
 
 ### v0.14.0 ###
 

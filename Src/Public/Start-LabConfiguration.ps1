@@ -206,7 +206,7 @@ function Start-LabConfiguration {
                         NoSnapshot = $NoSnapshot;
                         Credential = $Credential;
                     }
-                    New-LabVirtualMachine @newLabVirtualMachineParams;
+                    [ref] $null = New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
             }
 
