@@ -35,6 +35,7 @@ Describe 'Unit\Src\Public\Set-LabVMDefault' {
             @{ BootDelay = 42; }
             @{ CustomBootstrapOrder = 'Disabled'; }
             @{ GuestIntegrationServices = $true; }
+            @{ MaxEnvelopeSizeKb = 2048; }
         )
         foreach ($property in $testProperties) {
 

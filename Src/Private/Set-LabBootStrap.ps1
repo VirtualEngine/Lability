@@ -20,12 +20,17 @@ function Set-LabBootStrap {
 
         ## Custom shell
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $DefaultShell
+        [System.String] $DefaultShell,
+
+        ## WSMan maximum envelope size
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Int32] $MaxEnvelopeSizeKb = 1024
     )
     process {
 
         $newBootStrapParams = @{
             CoreCLR = $CoreCLR;
+            MaxEnvelopeSizeKb = $MaxEnvelopeSizeKb;
         }
         if (-not [System.String]::IsNullOrEmpty($DefaultShell)) {
 

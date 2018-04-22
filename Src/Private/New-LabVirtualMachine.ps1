@@ -170,6 +170,7 @@ function New-LabVirtualMachine {
                 Path = $Path;
                 Credential = $Credential;
                 CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+                MaxEnvelopeSizeKb = $node.MaxEnvelopeSizeKb;
             }
             if (-not [System.String]::IsNullOrEmpty($media.CustomData.DefaultShell)) {
 

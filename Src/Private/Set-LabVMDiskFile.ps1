@@ -43,6 +43,10 @@ function Set-LabVMDiskFile {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $DefaultShell,
 
+        ## WSMan maximum envelope size
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Int32] $MaxEnvelopeSizeKb = 1024,
+
         ## Media-defined product key
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.String] $ProductKey
