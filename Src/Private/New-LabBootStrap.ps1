@@ -124,7 +124,7 @@ Stop-Transcript;
             $bootstrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString;
         }
 
-        $bootstrap = $bootstrap -replace  '<#MaxEnvelopeSizeKb#>', $MaxEnvelopeSizeKb);
+        $bootstrap = $bootstrap -replace  '<#MaxEnvelopeSizeKb#>', $MaxEnvelopeSizeKb;
         return $bootstrap;
 
     } #end process
