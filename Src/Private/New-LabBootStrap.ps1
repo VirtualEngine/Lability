@@ -11,7 +11,11 @@ function New-LabBootStrap {
 
         ## Custom default shell
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $DefaultShell
+        [System.String] $DefaultShell,
+
+        ## WSMan maximum envelope size
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Int32] $MaxEnvelopeSizeKb = 1024
     )
     process {
 
@@ -48,8 +52,8 @@ certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
 
 <#CustomBootStrapInjectionPoint#>
 
-## Account for large configurations being "pushed" and increase the default from 500KB to 1024KB (1MB)
-Set-Item -Path WSMan:\localhost\MaxEnvelopeSizekb -Value 1024 -Force -Verbose;
+## Account for large configurations being "pushed" and increase the default from 500KB to <#MaxEnvelopeSizeKb#>KB
+Set-Item -Path WSMan:\localhost\MaxEnvelopeSizekb -Value <#MaxEnvelopeSizeKb#> -Force -Verbose;
 
 if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.meta.mof") {
     Set-DscLocalConfigurationManager -Path "$env:SystemDrive\BootStrap\" -Verbose;
@@ -120,6 +124,7 @@ Stop-Transcript;
             $bootstrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString;
         }
 
+        $bootstrap = $bootstrap -replace  '<#MaxEnvelopeSizeKb#>', $MaxEnvelopeSizeKb);
         return $bootstrap;
 
     } #end process

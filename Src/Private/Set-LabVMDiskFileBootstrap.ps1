@@ -24,6 +24,10 @@ function Set-LabVMDiskFileBootstrap {
         [ValidateNotNullOrEmpty()]
         [System.String] $DefaultShell,
 
+        ## WSMan maximum envelope size
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Int32] $MaxEnvelopeSizeKb = 1024,
+
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
@@ -35,6 +39,7 @@ function Set-LabVMDiskFileBootstrap {
         $setBootStrapParams = @{
             Path = $bootStrapPath;
             CoreCLR = $CoreCLR;
+            MaxEnvelopeSizeKb = $MaxEnvelopeSizeKb;
         }
         if ($CustomBootStrap) {
 

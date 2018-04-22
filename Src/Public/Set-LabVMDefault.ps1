@@ -100,7 +100,11 @@ function Set-LabVMDefault {
 
         ## Enable Automatic Checkpoints (Windows 10 build 1709 and later)
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Boolean] $AutomaticCheckpoints
+        [System.Boolean] $AutomaticCheckpoints,
+
+        ## WSMan maximum envelope size
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Int32] $MaxEnvelopeSizeKb
     )
     process {
 
@@ -222,6 +226,11 @@ function Set-LabVMDefault {
         if ($PSBoundParameters.ContainsKey('AutomaticCheckpoints')) {
 
             $vmDefaults.AutomaticCheckpoints = $AutomaticCheckpoints;
+        }
+
+        if ($PSBoundParameters.ContainsKey('MaxEnvelopeSizeKb')) {
+
+            $vmDefaults.MaxEnvelopeSizeKb = $MaxEnvelopeSizeKb;
         }
 
         if ($vmDefaults.StartupMemory -lt $vmDefaults.MinimumMemory) {

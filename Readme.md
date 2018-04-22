@@ -106,6 +106,9 @@ written some comprehensive guides to compliment the built-in documentation – a
 * Adds support for creating empty/blank media (#135)
   * See Examples\BlankMediaExample.psd1
 * Removes errant "Specify MaximumSizeBytes property" errors
+* Adds support for configuring the WSMan MaxEnvelopeSizeKb setting (#282)
+  * Use `Set-LabVMDefault -MaxEnvelopeSizeKb 2048` to set a new 2MB default value
+  * Use `Lability_MaxEnvelopeSizeKb` in configuration data to override a single node's value
 
 ### v0.14.0 ###
 
