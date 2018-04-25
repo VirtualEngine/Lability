@@ -52,6 +52,7 @@ function Remove-LabVMDisk {
                     Path = $hostDefaults.DifferencingVhdPath;
                     ParentPath = $image.ImagePath;
                     Generation = $image.Generation;
+                    Type = 'Differencing';
                     Ensure = 'Absent';
                 }
                 Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;

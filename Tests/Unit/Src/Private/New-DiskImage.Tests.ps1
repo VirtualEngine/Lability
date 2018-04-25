@@ -78,5 +78,54 @@ Describe 'Src\Private\New-DiskImage' {
             Assert-MockCalled Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -Scope It -Exactly 0;
         }
 
+        It 'Creates a dynamic disk when no "Type" is defined (#99)' {
+            $testVhdPath = "TestDrive:\TestImage.vhdx";
+            $testDiskNumber = 10;
+            $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
+            Mock Dismount-VHD -MockWith { }
+            Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
+            Mock New-DiskImageGpt -MockWith { }
+            Mock Remove-Item -MockWith { };
+            Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
+            Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+
+            New-DiskImage @newDiskImageParams;
+
+            Assert-MockCalled New-Vhd -ParameterFilter { $PSBoundParameters.ContainsKey('Dynamic') -eq $true } -Scope It;
+        }
+
+        It 'Creates a fixed disk when "Type" is defined (#99)' {
+            $testVhdPath = "TestDrive:\TestImage.vhdx";
+            $testDiskNumber = 10;
+            $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
+            Mock Dismount-VHD -MockWith { }
+            Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
+            Mock New-DiskImageGpt -MockWith { }
+            Mock Remove-Item -MockWith { };
+            Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
+            Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+
+            New-DiskImage @newDiskImageParams -Type 'Fixed'
+
+            Assert-MockCalled New-Vhd -ParameterFilter { $PSBoundParameters.ContainsKey('Fixed') -eq $true } -Scope It;
+        }
+
+        It 'Creates a custom size disk when "Size" is defined (#99)' {
+            $testDiskSize = 80GB;
+            $testVhdPath = "TestDrive:\TestImage.vhdx";
+            $testDiskNumber = 10;
+            $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
+            Mock Dismount-VHD -MockWith { }
+            Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
+            Mock New-DiskImageGpt -MockWith { }
+            Mock Remove-Item -MockWith { };
+            Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
+            Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+
+            New-DiskImage @newDiskImageParams -Size $testDiskSize;
+
+            Assert-MockCalled New-Vhd -ParameterFilter { $SizeBytes -eq $testDiskSize } -Scope It;
+        }
+
     } #end InModuleScope
 } #end Describe

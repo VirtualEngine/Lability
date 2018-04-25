@@ -99,12 +99,37 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ### Unreleased ###
 
+* Removes experimental support for attaching multiple VHD files to VMs (#218)
+  * See Examples\MultipleDiskExample.psd1
+* Adds support for creating fixed and dynamic VHD files (#99)
+  * See Examples\CustomDiskSize.psd1 for examples
+* Adds support for creating empty/blank media (#135)
+  * See Examples\BlankMediaExample.psd1
+* Removes errant "Specify MaximumSizeBytes property" errors
+* Adds support for configuring the WSMan MaxEnvelopeSizeKb setting (#282)
+  * Use `Set-LabVMDefault -MaxEnvelopeSizeKb 2048` to set a new 2MB default value
+  * Use `Lability_MaxEnvelopeSizeKb` in configuration data to override a single node's value
+
+### v0.14.0 ###
+
+* Adds WIM support to inline media definitions (#273)
+* Adds automatic checkpoints support (#266)
+  * __NOTE: Automatic checkpoints are disabled by default__
+  * Use `Set-LabVMDefault -AutomaticCheckpoints $true` to enable automatic checkpoints
+* Adds node (computer) name length validation (#109)
+* Fixes `-IgnorePendingReboot` bug in `Start-LabHostConfiguration` (#278)
+* Fixes bug in virtual switch enumeration when network interface has as description (#280)
+
+### v0.13.0 ###
+
 * Fixes bug where virtual switch name prefixes are duplicated if an environment prefix is defined (#251)
 * Fixes bug in Remove-LabConfiguration removing switches with an environment prefix configured
 * Updates built-in Windows Server 2016 evaluation media with refresh ISOs
 * Updates built-in Windows 10 Enterprise evaluation media with the 1709 'Fall Creators Update' ISOs
 * Fixes bug importing configuration containing custom media with hotfix definitions (#262)
 * Scans .mof files and displays potential configuration data (.psd1) warning and missing resource messages
+* Fixes unattend.xml timezone bug on non-English systems
+* Updates bundled xHyper-V DSC resource module to v3.11.0.0 release
 
 ### v0.12.4 ###
 

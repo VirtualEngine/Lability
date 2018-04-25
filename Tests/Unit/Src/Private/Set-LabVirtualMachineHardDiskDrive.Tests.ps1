@@ -18,7 +18,7 @@ Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
         It "Should call 'Invoke-LabDscResource' to create VHD when 'VhdPath' is not specified" {
 
             $testNodeName = 'TestVM';
-            $testHardDiskDrive = @( @{ Type = 'Vhd'; MaximumSizeBytes = 10GB; } )
+            $testHardDiskDrive = @( @{ Generation = 'Vhd'; MaximumSizeBytes = 10GB; } )
 
             Set-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;
 
@@ -30,7 +30,7 @@ Describe 'Unit\Src\Private\Set-LabVirtualMachineHardDiskDrive' {
             $testNodeName = 'TestVM';
             $testHardDiskDrive = @(
                 @{ VhdPath = $testDrive; }
-                @{ Type = 'Vhd'; MaximumSizeBytes = 10GB; }
+                @{ Generation = 'Vhd'; MaximumSizeBytes = 10GB; }
             )
 
             Set-LabVirtualMachineHardDiskDrive -NodeName $testNodeName -HardDiskDrive $testHardDiskDrive;

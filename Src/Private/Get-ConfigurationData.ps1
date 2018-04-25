@@ -37,6 +37,18 @@ function Get-ConfigurationData {
 
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'GuestIntegrationServices' -Value $false;
                     }
+
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'AutomaticCheckpoints') {
+
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'AutomaticCheckpoints' -Value $false;
+                    }
+
+                    ## This property may not be present in the original VM default file TODO: Could be deprecated in the future
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'MaxEnvelopeSizeKb') {
+
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'MaxEnvelopeSizeKb' -Value 1024;
+                    }
                 }
                 'CustomMedia' {
 
@@ -105,4 +117,4 @@ function Get-ConfigurationData {
         }
 
     } #end process
-} #end function Get-ConfigurationData
+} #end function

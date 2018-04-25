@@ -56,6 +56,12 @@ function Start-LabHostConfiguration {
         $labHostSetupConfiguation = Get-LabHostSetupConfiguration;
         foreach ($configuration in $labHostSetupConfiguation) {
 
+            if ($IgnorePendingReboot -and ($configuration.ModuleName -eq 'xPendingReboot')) {
+
+                Write-Warning -Message ($localized.IgnorePendingRebootWarning -f $configuration.Prefix);
+                continue;
+            }
+
             Import-LabDscResource -ModuleName $configuration.ModuleName -ResourceName $configuration.ResourceName -Prefix $configuration.Prefix -UseDefault:$configuration.UseDefault;
             Write-Verbose -Message ($localized.TestingNodeConfiguration -f $Configuration.Description);
             [ref] $null = Invoke-LabDscResource -ResourceName $configuration.Prefix -Parameters $configuration.Parameters;

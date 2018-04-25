@@ -21,7 +21,7 @@ function Register-LabMedia {
 
         ## Specifies the media's type.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateSet('VHD','ISO','WIM')]
+        [ValidateSet('VHD','ISO','WIM','NULL')]
         [System.String] $MediaType,
 
         ## Specifies the source Uri (http/https/file) of the media.
@@ -74,8 +74,8 @@ function Register-LabMedia {
     )
     process {
 
-        ## Validate Linux VM media type is VHD
-        if (($OperatingSystem -eq 'Linux') -and ($MediaType -ne 'VHD')) {
+        ## Validate Linux VM media type is VHD or NULL
+        if (($OperatingSystem -eq 'Linux') -and ($MediaType -notin 'VHD','NULL')) {
 
             throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
         }

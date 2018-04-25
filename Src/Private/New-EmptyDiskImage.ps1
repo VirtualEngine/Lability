@@ -1,18 +1,13 @@
-function New-DiskImage {
+function New-EmptyDiskImage {
 <#
     .SYNOPSIS
-        Create a new formatted disk image.
+        Create an empty disk image.
 #>
     [CmdletBinding()]
     param (
         ## VHD/x file path
         [Parameter(Mandatory)]
         [System.String] $Path,
-
-        ## Disk image partition scheme
-        [Parameter(Mandatory)]
-        [ValidateSet('MBR','GPT')]
-        [System.String] $PartitionStyle,
 
         ## Disk image size in bytes
         [Parameter()]
@@ -25,11 +20,7 @@ function New-DiskImage {
 
         ## Overwrite/recreate existing disk image
         [Parameter()]
-        [System.Management.Automation.SwitchParameter] $Force,
-
-        ## Do not dismount the VHD/x and return a reference
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter] $Passthru
+        [System.Management.Automation.SwitchParameter] $Force
     )
     begin {
 
@@ -55,30 +46,6 @@ function New-DiskImage {
 
         Write-Verbose -Message ($localized.CreatingDiskImageType -f $Type.ToLower(), $Path, ($Size/1MB));
         [ref] $null = New-Vhd @newVhdParams;
-
-        Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
-        $vhdMount = Mount-VHD -Path $Path -Passthru;
-
-        Write-Verbose -Message ($localized.InitializingDiskImage -f $Path);
-        [ref] $null = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
-
-        switch ($PartitionStyle) {
-            'MBR' {
-                New-DiskImageMbr -Vhd $vhdMount;
-            }
-            'GPT' {
-                New-DiskImageGpt -Vhd $vhdMount;
-            }
-        }
-
-        if ($Passthru) {
-
-            return $vhdMount;
-        }
-        else {
-
-            Dismount-VHD -Path $Path;
-        }
 
     } #end process
 } #end function

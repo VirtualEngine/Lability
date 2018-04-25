@@ -38,6 +38,7 @@ ConvertFrom-StringData -StringData @'
     RemovingDiskImage                = Removing disk image '{0}'.
     ImportingExistingDiskImage       = Importing existing VHD(X) image '{0}'.
     CreatingDiskImage                = Creating disk image '{0}'.
+    CreatingDiskImageType            = Creating {0} disk image '{1}' of {2} MB.
     InitializingDiskImage            = Initializing disk image '{0}'.
     CreatingDiskPartition            = Creating '{0}' disk partition.
     FormattingDiskPartition          = Formatting '{0}' disk partition.
@@ -174,6 +175,7 @@ ConvertFrom-StringData -StringData @'
     RemovingVhdFile                  = Removing VHD/X '{0}'.
     LoadedModuleVersion              = Loaded {0} module version '{1}'.
     ProcessingMofFile                = Processing DSC node configuration file '{0}'.
+    AutomaticCheckPointsNotSupported = Automatic checkpoints are only supported in Windows 10 "Fall Creators" update (1709 and later) builds.
 
     NoCertificateFoundWarning        = No '{0}' certificate was found.
     CannotLocateLcmFileWarning       = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -201,6 +203,7 @@ ConvertFrom-StringData -StringData @'
     ModuleMissingRequiredVerWarning  = Module '{0}' definition is missing 'RequiredVersion' property. It recommended to use the 'RequiredVersion' property.
     MofModuleVersionMismatchWarning  = Module '{0}' version mismatch. The version '{1}' defined in the .mof file does not match the version '{2}' defined in the Lability configuration file.
     ModuleMissingDefinitionWarning   = Missing resource '{0}' definition. The resource module '{0}' is defined in the node .mof but is not included in the lab configuration document.
+    IgnorePendingRebootWarning       = Skipping Dsc resource '{0}' as 'IgnorePendingReboot' switch specified.
 
     InvalidPathError                 = {0} path '{1}' is invalid.
     InvalidDestinationPathError      = Invalid destination path '{0}' specified.

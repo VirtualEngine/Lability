@@ -22,6 +22,7 @@ LONG DESCRIPTION
             * VHD
             * WIM
             * ISO
+            * NULL
 
         This media can be downloaded from a web server or from an accessible file server as long as it is contactable
         from the host machine. It is possible to manually download media on to the host machine.
@@ -39,10 +40,12 @@ SUPPORTED MEDIA PROPERTIES
         Architecture  [string] { x86 | x64 }
         Uri  [string]
         Checksum  [string]
-        MediaType  [string] { VHD | ISO | WIM }
+        MediaType  [string] { VHD | ISO | WIM | NULL }
         ImageName  [string] ( supports [int32] for image numbers )
         OperatingSystem  [string] { Windows | Linux } ( defaults to Windows if not specified )
         CustomData = @{
+            DiskType  [string] { Dynamic | Fixed }
+            DiskSize  [int]
             PartitionStyle  [string] { MBR | GPT }
             WimPath  [string]
             SourcePath  [string]
