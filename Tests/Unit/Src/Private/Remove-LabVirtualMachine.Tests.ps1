@@ -119,5 +119,22 @@ Describe 'Unit\Src\Private\Remove-LabVirtualMachine' {
             Assert-MockCalled Remove-LabVMDisk -ParameterFilter { $null -ne $configurationData } -Scope It;
         }
 
+        It 'Calls "Remove-LabVMDisk" without environment prefix (#292)' {
+            $testVMName = 'TestVM';
+            $configurationData = @{
+                AllNodes = @(
+                    @{
+                        NodeName = $testVMName;
+                        Lability_HardDiskDrive = @( @{ Generation = 'VHDX'; MaximumSizeBytes = 10GB; } )
+                    }
+                )
+                NonNodeData = @{ Lability = @{ EnvironmentPrefix = 'TEST-'; } }
+            }
+
+            Remove-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName;
+
+            Assert-MockCalled Remove-LabVMDisk -ParameterFilter { $NodeName -eq $testVMName } -Scope It;
+        }
+
     } #end InModuleScope
 } #end Describe
