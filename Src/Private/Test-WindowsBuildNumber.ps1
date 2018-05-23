@@ -20,7 +20,7 @@ function Test-WindowsBuildNumber {
     process {
 
         $buildNumber = $PSVersionTable.BuildVersion.Build;
-        return $MinimumVersion -gt $buildNumber;
+        return $buildNumber -ge $MinimumVersion;
 
     } #end process
 } #end function
