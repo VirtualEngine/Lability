@@ -163,5 +163,14 @@ Describe 'Unit\Src\Private\Get-LabVirtualMachineProperty' {
             $vmProperties.ContainsKey('ConfigurationData') | Should Be $false;
         }
 
+        It 'Does not return "AutomaticCheckpoints" property when "Test-WindowsBuildNumber" fails (#294)' {
+            Mock Test-WindowsBuildNumber { return $false; }
+            $getLabVirtualMachinePropertyParams['AutomaticCheckpoints'] = $false;
+
+            $vmProperties = Get-LabVirtualMachineProperty @getLabVirtualMachinePropertyParams;
+
+            $vmProperties.ContainsKey('AutomaticCheckpoints') | Should Be $false;
+        }
+
     } #end InModuleScope
 } #end Describe

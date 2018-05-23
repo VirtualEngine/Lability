@@ -111,6 +111,7 @@ written some comprehensive guides to compliment the built-in documentation – a
   * Use `Lability_MaxEnvelopeSizeKb` in configuration data to override a single node's value
 * Updates built-in Windows 10 Enterprise evaluation media with the 1803 'April 2018 Update' ISOs
 * Fixes removal of additional disks/VHDs when using an environment prefix (#292)
+* Fixes bug in automatic checkpoint detection on Windows 10 build 1703 (and earlier) (#294)
 
 ### v0.14.0 ###
 
