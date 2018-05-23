@@ -99,19 +99,21 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ### Unreleased ###
 
-* Removes experimental support for attaching multiple VHD files to VMs (#218)
+* Removes "experimental" tag from attaching multiple VHD files to VMs (#218)
   * See Examples\MultipleDiskExample.psd1
-* Adds support for creating fixed and dynamic VHD files (#99)
+* Adds support for creating both fixed and dynamic VHD files (#99)
   * See Examples\CustomDiskSize.psd1 for examples
 * Adds support for creating empty/blank media (#135)
   * See Examples\BlankMediaExample.psd1
-* Removes errant "Specify MaximumSizeBytes property" errors
+* Removes errant "Specify MaximumSizeBytes property" xVHD errors
 * Adds support for configuring the WSMan MaxEnvelopeSizeKb setting (#282)
   * Use `Set-LabVMDefault -MaxEnvelopeSizeKb 2048` to set a new 2MB default value
   * Use `Lability_MaxEnvelopeSizeKb` in configuration data to override a single node's value
 * Updates built-in Windows 10 Enterprise evaluation media with the 1803 'April 2018 Update' ISOs
 * Fixes removal of additional disks/VHDs when using an environment prefix (#292)
 * Fixes bug in automatic checkpoint detection on Windows 10 build 1703 (and earlier) (#294)
+* Changes the default internal virtual switch name from 'Internal vSwitch' to 'Default Switch'
+  * Use `Set-LabVMDefault -SwitchName 'Internal vSwitch'` to revert to the previous value
 
 ### v0.14.0 ###
 
