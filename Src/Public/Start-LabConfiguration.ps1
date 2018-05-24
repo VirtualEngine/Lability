@@ -163,7 +163,8 @@ function Start-LabConfiguration {
         } #end foreach node
 
         $currentNodeCount = 0;
-        foreach ($node in (Test-LabConfiguration -ConfigurationData $ConfigurationData)) {
+        foreach ($node in (Test-LabConfiguration -ConfigurationData $ConfigurationData -WarningAction SilentlyContinue)) {
+            ## Ignore Lability warnings during the test phase, e.g. existing switches and .mof files
 
             $currentNodeCount++;
             [System.Int16] $percentComplete = (($currentNodeCount / $nodes.Count) * 100) - 1;
