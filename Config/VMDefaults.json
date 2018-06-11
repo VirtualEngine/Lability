@@ -3,7 +3,7 @@
 	"MinimumMemory": 536870912,
 	"MaximumMemory": 1099511627776,
 	"ProcessorCount": 1,
-    "SwitchName": "Internal vSwitch",
+    "SwitchName": "Default Switch",
 	"Media": "2012R2_x64_Standard_EN_Eval",
     "TimeZone": "UTC",
     "UILanguage": "en-US",

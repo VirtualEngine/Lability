@@ -169,6 +169,16 @@ Describe 'Unit\Src\Private\New-LabVirtualMachine' {
             Assert-MockCalled Set-LabVMDiskFile -Scope It -Exactly 0;
         }
 
+        It 'Does not inject resources when "MediaType" is "NULL"' {
+            $testVMName = 'TestVM';
+            $configurationData = @{ AllNodes = @( @{ NodeName = $testVMName; } ) }
+            Mock Resolve-LabMedia -MockWith { return @{ Id = $Id; MediaType = 'NULL'; } }
+
+            $labVM = New-LabVirtualMachine -ConfigurationData $configurationData -Name $testVMName -Path 'TestDrive:\' -Credential $testPassword;
+
+            Assert-MockCalled Set-LabVMDiskFile -Scope It -Exactly 0;
+        }
+
         It 'Injects VM resources' {
             $testVMName = 'TestVM';
             $configurationData = @{

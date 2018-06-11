@@ -157,7 +157,8 @@ function New-LabVirtualMachine {
         Set-LabVirtualMachine @setLabVirtualMachineParams;
 
         $media = Resolve-LabMedia -Id $node.Media -ConfigurationData $ConfigurationData;
-        if ($media.OperatingSystem -eq 'Linux') {
+        if (($media.OperatingSystem -eq 'Linux') -or
+            ($media.MediaType -eq 'NULL')) {
             ## Skip injecting files for Linux VMs..
         }
         else {
@@ -169,6 +170,7 @@ function New-LabVirtualMachine {
                 Path = $Path;
                 Credential = $Credential;
                 CoreCLR = $media.CustomData.SetupComplete -eq 'CoreCLR';
+                MaxEnvelopeSizeKb = $node.MaxEnvelopeSizeKb;
             }
             if (-not [System.String]::IsNullOrEmpty($media.CustomData.DefaultShell)) {
 

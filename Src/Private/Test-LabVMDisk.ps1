@@ -42,6 +42,7 @@ function Test-LabVMDisk {
             Path = $hostDefaults.DifferencingVhdPath;
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
+            Type = 'Differencing';
         }
 
         if (-not $image) {

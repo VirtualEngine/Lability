@@ -116,11 +116,13 @@ function Get-LabVirtualMachineProperty {
 
         if ($PSBoundParameters.ContainsKey('AutomaticCheckpoints')) {
 
+            ## Always remove 'AutomaticCheckpoints' property (#294)
+            [ref] $null = $PSBoundParameters.Remove('AutomaticCheckpoints');
+
             ## Automatic checkpoints were only introduced in 1709 (and later) builds.
             if (Test-WindowsBuildNumber -MinimumVersion 16299) {
 
                 [ref] $null = $PSBoundParameters.Add('AutomaticCheckpointsEnabled', $AutomaticCheckpoints);
-                [ref] $null = $PSBoundParameters.Remove('AutomaticCheckpoints');
             }
             else {
 

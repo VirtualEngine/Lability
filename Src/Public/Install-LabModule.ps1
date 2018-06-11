@@ -48,7 +48,7 @@ function Install-LabModule {
 
             $systemDrive = (Resolve-Path -Path $env:SystemDrive).Drive;
             $localizedProgramFiles = Resolve-ProgramFilesFolder -Drive $systemDrive;
-            $DestinationPath = Join-Path -Path $localizedProgramFiles -ChildPath $moduleRelativePath;
+            $DestinationPath = Join-Path -Path $localizedProgramFiles.FullName -ChildPath $moduleRelativePath;
         }
         elseif ($Scope -eq 'CurrentUser') {
 

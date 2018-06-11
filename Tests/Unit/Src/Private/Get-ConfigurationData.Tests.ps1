@@ -114,6 +114,19 @@ Describe 'Unit\Src\Private\Get-ConfigurationData' {
             $customMediaConfiguration.DisableSwitchEnvironmentName | Should Be $true;
         }
 
+        It 'Adds missing "MaxEnvelopeSizeKb" property to VM configuration' {
+            $testConfigurationFilename = 'TestVMConfiguration.json';
+            $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+            $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+            [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+            Mock Resolve-ConfigurationDataPath -MockWith { return $testConfigurationPath }
+            Mock Get-Content -MockWith { return $fakeConfiguration; }
+
+            $vmConfiguration = Get-ConfigurationData -Configuration VM;
+
+            $vmConfiguration.MaxEnvelopeSizeKb | Should Be 1024;
+        }
+
     } #end InModuleScope
 
 } #end Describe
