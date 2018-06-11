@@ -97,7 +97,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
-### Unreleased ###
+### v0.15.0 ###
 
 * Removes "experimental" tag from attaching multiple VHD files to VMs (#218)
   * See Examples\MultipleDiskExample.psd1
