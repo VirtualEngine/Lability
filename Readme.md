@@ -97,6 +97,10 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
+### Unreleased ###
+
+* Fixes incorrect WIN10_x86_Enterprise_EN_Eval RS4 ISO checksum (#305)
+
 ### v0.15.0 ###
 
 * Removes "experimental" tag from attaching multiple VHD files to VMs (#218)
