@@ -52,8 +52,8 @@ certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
 
 <#CustomBootStrapInjectionPoint#>
 
-## Account for large configurations being "pushed" and increase the default from 500KB to <#MaxEnvelopeSizeKb#>KB
-Set-Item -Path WSMan:\localhost\MaxEnvelopeSizekb -Value <#MaxEnvelopeSizeKb#> -Force -Verbose;
+## Account for large configurations being "pushed" and increase the default from 500KB to <#MaxEnvelopeSizeKb#>KB (#306)
+Set-ItemProperty -LiteralPath HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN\Client -Name maxEnvelopeSize -Value <#MaxEnvelopeSizeKb#> -Force -Verbose
 
 if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.meta.mof") {
     Set-DscLocalConfigurationManager -Path "$env:SystemDrive\BootStrap\" -Verbose;

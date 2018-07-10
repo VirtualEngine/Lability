@@ -24,13 +24,13 @@ Describe 'Src\Private\New-LabBootStrap' {
         It 'Defaults "MaxEnvelopeSizeKb" size to 1024' {
             $bootstrap = New-LabBootStrap;
 
-            $bootstrap -match 'WSMan:\\localhost\\MaxEnvelopeSizekb -Value 1024' | Should Be $true;
+            $bootstrap -match '-Name maxEnvelopeSize -Value 1024 -Force' | Should Be $true;
         }
 
         It 'Sets "MaxEnvelopeSizeKb" size to "2048" when specified' {
             $bootstrap = New-LabBootStrap -MaxEnvelopeSizeKb 2048;
 
-            $bootstrap -match 'WSMan:\\localhost\\MaxEnvelopeSizekb -Value 2048' | Should Be $true;
+            $bootstrap -match '-Name maxEnvelopeSize -Value 2048 -Force' | Should Be $true;
         }
 
     } #end InModuleScope

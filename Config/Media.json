@@ -459,7 +459,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -510,7 +510,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -537,7 +537,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -564,7 +564,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -611,7 +611,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -638,7 +638,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -665,7 +665,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		],
@@ -682,13 +682,13 @@
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
 	"Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-	"Checksum": "F4F85D77516721D9A19CA866172A5ECB",
+	"Checksum": "767141F88C9C6FE5220F093C36568A39",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		],
@@ -711,7 +711,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		],
@@ -734,7 +734,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		],
