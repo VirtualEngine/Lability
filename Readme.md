@@ -97,7 +97,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 
 ## Versions ##
 
-### Unreleased ###
+### v0.15.1 ###
 
 * Fixes incorrect WIN10_x86_Enterprise_EN_Eval RS4 ISO checksum (#305)
 * Fixes MaxEnvelopeSizekb bootstrap network profile error on newer Windows 10 releases (#306)
