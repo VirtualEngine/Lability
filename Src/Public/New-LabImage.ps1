@@ -77,6 +77,7 @@ function New-LabImage {
 
         if ($media.MediaType -eq 'VHD') {
 
+            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
             Write-Verbose -Message ($localized.ImportingExistingDiskImage -f $media.Description);
             $imageName = $media.Filename;
             $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
