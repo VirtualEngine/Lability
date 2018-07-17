@@ -54,7 +54,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Assert-MockCalled Mount-DiskImage -Scope It -Exactly 0;
         }
 
-        It 'Calls "Get-WindowsImageByIndex" method when passing "WimImageName"' {
+        It 'Calls "Get-WindowsImageByName" method when passing "WimImageName"' {
             $testIsoPath = 'TestDrive:\TestIsoImage.iso';
             [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testVhdPath = 'TestDrive:\TestImage.vhdx';
@@ -66,11 +66,11 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
-            Mock Get-WindowsImageByIndex -MockWith { return 42; }
+            Mock Get-WindowsImageByName -MockWith { }
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageName $testWimImageName -Vhd $testVhdImage -PartitionStyle GPT;
 
-            Assert-MockCalled Get-WindowsImageByIndex -ParameterFilter { $ImageName -eq $testWimImageName } -Scope It;
+            Assert-MockCalled Get-WindowsImageByName -ParameterFilter { $ImageName -eq $testWimImageName } -Scope It;
         }
 
         It 'Calls "Expand-WindowsImage" with specified "WimImageIndex"' {
