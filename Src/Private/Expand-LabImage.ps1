@@ -89,7 +89,7 @@ function Expand-LabImage {
             if ($PSCmdlet.ParameterSetName -eq 'Name') {
 
                 ## Locate the image index
-                $wimImageIndex = Get-WindowsImageByIndex -ImagePath $windowsImagePath -ImageName $WimImageName;
+                $wimImageIndex = Get-WindowsImageByName -ImagePath $windowsImagePath -ImageName $WimImageName;
             }
 
             if ($PartitionStyle -eq 'MBR') {
