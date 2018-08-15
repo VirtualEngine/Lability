@@ -12,11 +12,11 @@
 
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>Arch.</Label>
+                        <Label>Arch</Label>
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>Media.</Label>
+                        <Label>Media</Label>
                         <Alignment>right</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>

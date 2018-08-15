@@ -60,9 +60,9 @@ function New-LabVirtualMachine {
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
 
-        if (-not (Test-ComputerName -ComputerName $displayName)) {
+        if (-not (Test-ComputerName -ComputerName $node.NodeName)) {
 
-            throw ($localized.InvalidComputerNameError -f $displayName);
+            throw ($localized.InvalidComputerNameError -f $node.NodeName);
         }
 
         ## Don't attempt to check certificates for 'Quick VMs'
