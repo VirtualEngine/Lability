@@ -7,6 +7,7 @@
 * Fixes bug downloading external VHD media (#309)
 * Fixes incorrectly named Get-WindowsImageByName and Get-WindowsImageByIndex functions
 * Fixes bug testing computer name length with environment prefixes/suffixes (#314)
+* Fixes bug with no external DSC resource dependencies (#316)
 
 ### v0.15.1 ###
 
