@@ -63,6 +63,27 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileModule' {
             Assert-MockCalled Set-LabVMDiskModule -Scope It -Exactly 2;
         }
 
+        Context 'No .mof modules' {
+
+            It 'Does not call "Test-LabMofModule" when no external module dependencies are found (#316)' {
+                Mock Test-LabMofModule -MockWith { }
+                Mock Resolve-LabModule -MockWith { return $testModules; }
+                Mock Test-Path { return $true; }
+                Mock Get-LabMofModule -MockWith { }
+
+                $testParams = @{
+                    ConfigurationData = $testConfigurationData;
+                    NodeName = $testNode;
+                    VhdDriveLetter = $testDriveLetter;
+                    Path = '.\';
+                }
+                Set-LabVMDiskFileModule @testParams;
+
+                Assert-MockCalled Test-LabMofModule -Exactly 0 -Scope It;
+            }
+
+        }
+
     } #end InModuleScope
 
 } #end describe
