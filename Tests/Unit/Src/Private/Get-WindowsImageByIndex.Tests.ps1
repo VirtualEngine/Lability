@@ -5,11 +5,11 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Get-WindowsImageByIndex' {
+Describe 'Src\Private\Get-WindowsImageByName' {
 
     InModuleScope $moduleName {
 
-        It 'Returns a "System.Int32" type' {
+        It 'Returns a "System.String" type' {
             $testWimPath = 'TestDrive:\TestIsoImage.wim';
             [ref] $null = New-Item -Path $testWimPath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testImageName = 'Test Image';
@@ -18,14 +18,14 @@ Describe 'Src\Private\Get-WindowsImageByIndex' {
                 [PSCustomObject] @{ ImageName = $testImageName; ImageIndex = $testImageIndex; }
                 [PSCustomObject] @{ ImageName = 'A random Image'; ImageIndex = $testImageIndex + 1; }
             )
-            Mock Get-WindowsImage -MockWith { return $fakeWindowsImages; }
+            Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
-            $imageIndex = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageName $testImageName;
+            $imageName = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageIndex $testImageIndex;
 
-            $imageIndex -is [System.Int32] | Should Be $true;
+            $imageName -is [System.String] | Should Be $true;
         }
 
-        It 'Returns the matching image index if found' {
+        It 'Returns the matching image name' {
             $testWimPath = 'TestDrive:\TestIsoImage.wim';
             [ref] $null = New-Item -Path $testWimPath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testImageName = 'Test Image';
@@ -34,14 +34,14 @@ Describe 'Src\Private\Get-WindowsImageByIndex' {
                 [PSCustomObject] @{ ImageName = $testImageName; ImageIndex = $testImageIndex; }
                 [PSCustomObject] @{ ImageName = 'A random Image'; ImageIndex = $testImageIndex + 1; }
             )
-            Mock Get-WindowsImage -MockWith { return $fakeWindowsImages; }
+            Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
-            $imageIndex = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageName $testImageName;
+            $imageName = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageIndex $testImageIndex;
 
-            $imageIndex | Should Be $testImageIndex;
+            $imageName | Should Be $testImageName;
         }
 
-        It 'Returns nothing when image index is not found' {
+        It 'Returns nothing when image name is not found' {
             $testWimPath = 'TestDrive:\TestIsoImage.wim';
             [ref] $null = New-Item -Path $testWimPath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testImageName = 'Test Image';
@@ -50,11 +50,11 @@ Describe 'Src\Private\Get-WindowsImageByIndex' {
                 [PSCustomObject] @{ ImageName = $testImageName; ImageIndex = $testImageIndex; }
                 [PSCustomObject] @{ ImageName = 'A random Image'; ImageIndex = $testImageIndex + 1; }
             )
-            Mock Get-WindowsImage -MockWith { return $fakeWindowsImages; }
+            Mock Get-WindowsImage -ParameterFilter { $ImagePath -eq $testWimPath } -MockWith { return $fakeWindowsImages; }
 
-            $imageIndex = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageName 'This should not exist';
+            $imageName = Get-WindowsImageByIndex -ImagePath $testWimPath -ImageIndex 99;
 
-            $imageIndex | Should BeNullOrEmpty;
+            $imageName | Should BeNullOrEmpty;
         }
 
     } #end InModuleScope

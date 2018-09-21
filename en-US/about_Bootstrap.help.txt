@@ -114,7 +114,7 @@ NODE BOOTSTRAP
             AllNodes = @(
                 NodeName       = 'CLIENT1';
                 Media          = 'Win81_x64_Enterprise_EN_Eval';
-                CutomBootStrap = @'
+                CustomBootStrap = @'
                     ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
                     NET USER Administrator /active:yes;
                     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;

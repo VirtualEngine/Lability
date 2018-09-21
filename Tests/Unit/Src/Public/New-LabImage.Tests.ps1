@@ -674,6 +674,25 @@ Describe 'Unit\Src\Public\New-LabImage' {
             { New-LabImage -Id $testImageId -Force } | Should Not Throw 'requires DISM version';
         }
 
+        It 'Calls "Invoke-LabMediaImageDownload" to download VHD media (if not present) (#309)' {
+            $testImageId = 'NewLabImage';
+            $testParentImagePath = 'TestDrive:'
+            $testImagePath = Resolve-PathEx -Path "$testParentImagePath\$testImageId.vhd";
+            $testArchitecture = 'x64';
+            $fakeVHDFileInfo = [PSCustomObject] @{ FullName = 'TestDrive:\TestIso.vhd'; }
+            $fakeMedia = [PSCustomObject] @{ Id = $testImageId; Description = 'Fake media'; Architecture = $testArchitecture; MediaType = 'VHD'; }
+            $fakeConfigurationData = @{ ParentVhdPath = Resolve-PathEx -Path $testParentImagePath; }
+            New-Item -Path $testImagePath -ItemType File -Force -ErrorAction SilentlyContinue;
+            Mock Test-LabImage -MockWith { return $false; }
+            Mock Get-ConfigurationData -MockWith { return $fakeConfigurationData; }
+            Mock Resolve-LabMedia -MockWith { return $fakeMedia; }
+            Mock Invoke-LabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -MockWith { return $fakeVHDFileInfo; }
+
+            New-LabImage -Id $testImageId
+
+            Assert-MockCalled Invoke-LabMediaImageDownload -ParameterFilter { $Media.Id -eq $testImageId } -Scope It;
+        }
+
     } #end InModuleScope
 
 } #end describe

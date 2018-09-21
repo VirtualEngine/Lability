@@ -1,29 +1,27 @@
 function Get-WindowsImageByIndex {
 <#
     .SYNOPSIS
-        Locates the specified WIM image index by its name, i.e. SERVERSTANDARD or SERVERDATACENTERSTANDARD
-    .OUTPUTS
-        The WIM image index.
+        Locates the specified WIM image name by its index.
 #>
     [CmdletBinding()]
-    [OutputType([System.Int32])]
+    [OutputType([System.String])]
     param (
         # WIM image path
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [System.String] $ImagePath,
 
-        # Windows image name
+        # Windows image index
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.String] $ImageName
+        [System.Int32] $ImageIndex
     )
     process {
 
-        Write-Verbose -Message ($localized.LocatingWimImageIndex -f $ImageName);
+        Write-Verbose -Message ($localized.LocatingWimImageName -f $ImageIndex);
         Get-WindowsImage -ImagePath $ImagePath -Verbose:$false |
-            Where-Object ImageName -eq $ImageName |
-                Select-Object -ExpandProperty ImageIndex;
+            Where-Object ImageIndex -eq $ImageIndex |
+                Select-Object -ExpandProperty ImageName;
 
     } #end process
 } #end function Get-WindowsImageByIndex

@@ -35,7 +35,7 @@ function Set-LabVMDiskFileModule {
         $programFilesPath = '{0}\WindowsPowershell\Modules' -f (Resolve-ProgramFilesFolder -Drive $VhdDriveLetter).FullName
 
         ## Add the DSC resource modules
-        $resolveLabModuleParams =@{
+        $resolveLabModuleParams = @{
             ConfigurationData = $ConfigurationData;
             NodeName = $NodeName;
             ModuleType = 'DscResource';
@@ -45,21 +45,23 @@ function Set-LabVMDiskFileModule {
             DestinationPath = $programFilesPath;
         }
 
-        ## Check that we have cache copies of all modules used in the .mof file.
-        $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $NodeName);
-        if (Test-Path -Path $mofPath -PathType Leaf) {
-
-            $testLabMofModuleParams = @{
-                Module = $setLabVMDiskDscModuleParams.Module;
-                MofModule = Get-LabMofModule -Path $mofPath;
-            }
-
-            ## TODO: Add automatic download of missing resources from the PSGallery.
-            [ref] $null = Test-LabMofModule @testLabMofModuleParams;
-
-        }
-
         if ($null -ne $setLabVMDiskDscModuleParams['Module']) {
+
+            ## Check that we have cache copies of all modules used in the .mof file.
+            $mofPath = Join-Path -Path $Path -ChildPath ('{0}.mof' -f $NodeName);
+            if (Test-Path -Path $mofPath -PathType Leaf) {
+
+                $testLabMofModuleParams = @{
+                    Module = $setLabVMDiskDscModuleParams.Module;
+                    MofModule = Get-LabMofModule -Path $mofPath;
+                }
+
+                if ($null -ne $testLabMofModuleParams['MofModule']) {
+
+                    ## TODO: Add automatic download of missing resources from the PSGallery.
+                    [ref] $null = Test-LabMofModule @testLabMofModuleParams;
+                }
+            }
 
             Write-Verbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
             Set-LabVMDiskModule @setLabVMDiskDscModuleParams;
