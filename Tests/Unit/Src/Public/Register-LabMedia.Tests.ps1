@@ -57,6 +57,30 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
             { Register-LabMedia @testMediaParams -MediaType VHD -Force -WarningAction SilentlyContinue } | Should Not Throw;
         }
 
+        It 'Converts custom media from a JSON file/Uri' {
+            $customMediaPath = "$TestDrive\CustomMedia.json";
+            $customMedia = @'
+                {
+                    "Id": "LabilityCustomMediaTest",
+                    "Filename": "WIN10_x64_ENT_RS4_EN_Eval.iso",
+                    "Description": "Windows 10 64bit Enterprise 1804 English Evaluation",
+                    "Architecture": "x64",
+                    "ImageName": "Windows 10 Enterprise Evaluation",
+                    "MediaType": "ISO",
+                    "OperatingSystem": "Windows",
+                    "Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+                    "Checksum": "89F6B3079B3669560D29F3C4BE9CC74D"
+                }
+'@
+            Set-Content -Path $customMediaPath -Value $customMedia -Force;
+            Mock Resolve-LabMedia { }
+            Mock Set-ConfigurationData { }
+
+            $media = Register-LabMedia -FromUri $customMediaPath;
+
+            $media.Id | Should Be 'LabilityCustomMediaTest';
+        }
+
     } #end InModuleScope
 
 } #end describe

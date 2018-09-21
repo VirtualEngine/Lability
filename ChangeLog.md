@@ -8,6 +8,7 @@
 * Fixes incorrectly named Get-WindowsImageByName and Get-WindowsImageByIndex functions
 * Fixes bug testing computer name length with environment prefixes/suffixes (#314)
 * Fixes bug with no external DSC resource dependencies (#316)
+* Adds support for registering custom media from a .json file
 
 ### v0.15.1 ###
 
