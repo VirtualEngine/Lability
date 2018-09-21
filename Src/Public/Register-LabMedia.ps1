@@ -12,61 +12,65 @@ function Register-LabMedia {
         Get-LabMedia
         Unregister-LabMedia
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     param (
         ## Specifies the media Id to register. You can override the built-in media if required.
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [System.String] $Id,
 
         ## Specifies the media's type.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateSet('VHD','ISO','WIM','NULL')]
         [System.String] $MediaType,
 
         ## Specifies the source Uri (http/https/file) of the media.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [System.Uri] $Uri,
 
         ## Specifies the architecture of the media.
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateSet('x64','x86')]
         [System.String] $Architecture,
 
         ## Specifies a description of the media.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNullOrEmpty()]
         [System.String] $Description,
 
         ## Specifies the image name containing the target WIM image. You can specify integer values.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNullOrEmpty()]
         [System.String] $ImageName,
 
         ## Specifies the local filename of the locally cached resource file.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNullOrEmpty()]
         [System.String] $Filename,
 
         ## Specifies the MD5 checksum of the resource file.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNullOrEmpty()]
         [System.String] $Checksum,
 
         ## Specifies custom data for the media.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNull()]
         [System.Collections.Hashtable] $CustomData,
 
         ## Specifies additional Windows hotfixes to install post deployment.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateNotNull()]
         [System.Collections.Hashtable[]] $Hotfixes,
 
         ## Specifies the media type. Linux VHD(X)s do not inject resources.
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [ValidateSet('Windows','Linux')]
         [System.String] $OperatingSystem = 'Windows',
+
+        ## Registers media via a JSON file hosted externally
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'FromUri')]
+        [System.String] $FromUri,
 
         ## Specifies that an exiting media entry should be overwritten.
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -74,70 +78,87 @@ function Register-LabMedia {
     )
     process {
 
-        ## Validate Linux VM media type is VHD or NULL
-        if (($OperatingSystem -eq 'Linux') -and ($MediaType -notin 'VHD','NULL')) {
+        switch ($PSCmdlet.ParameterSetName) {
 
-            throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
-        }
+            'FromUri' {
 
-        ## Validate ImageName when media type is ISO/WIM
-        if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
+                ## Download the json content and convert into a hashtable
+                $customMedia = Invoke-RestMethod -Uri $FromUri | Convert-PSObjectToHashtable;
 
-            if (-not $PSBoundParameters.ContainsKey('ImageName')) {
+                ## Recursively call Register-LabMedia and splat the properties
+                return (Register-LabMedia @customMedia -Force:$Force);
 
-                throw ($localized.ImageNameRequiredError -f '-ImageName');
             }
-        }
 
-        ## Resolve the media Id to see if it's already been used
-        $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue;
-        if ($media -and (-not $Force)) {
+            default {
 
-            throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');
-        }
+                ## Validate Linux VM media type is VHD or NULL
+                if (($OperatingSystem -eq 'Linux') -and ($MediaType -notin 'VHD','NULL')) {
 
-        ## Get the custom media list (not the built in media)
-        $existingCustomMedia = @(Get-ConfigurationData -Configuration CustomMedia);
-        if (-not $existingCustomMedia) {
+                    throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
+                }
 
-            $existingCustomMedia = @();
-        }
+                ## Validate ImageName when media type is ISO/WIM
+                if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
 
-        $customMedia = [PSCustomObject] @{
-            Id = $Id;
-            Filename = $Filename;
-            Description = $Description;
-            Architecture = $Architecture;
-            ImageName = $ImageName;
-            MediaType = $MediaType;
-            OperatingSystem = $OperatingSystem;
-            Uri = $Uri;
-            Checksum = $Checksum;
-            CustomData = $CustomData;
-            Hotfixes = $Hotfixes;
-        }
+                    if (-not $PSBoundParameters.ContainsKey('ImageName')) {
 
-        $hasExistingMediaEntry = $false;
-        for ($i = 0; $i -lt $existingCustomMedia.Count; $i++) {
+                        throw ($localized.ImageNameRequiredError -f '-ImageName');
+                    }
+                }
 
-            if ($existingCustomMedia[$i].Id -eq $Id) {
+                ## Resolve the media Id to see if it's already been used
+                $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue;
+                if ($media -and (-not $Force)) {
 
-                Write-Verbose -Message ($localized.OverwritingCustomMediaEntry -f $Id);
-                $hasExistingMediaEntry = $true;
-                $existingCustomMedia[$i] = $customMedia;
-            }
-        }
+                    throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');
+                }
 
-        if (-not $hasExistingMediaEntry) {
+                ## Get the custom media list (not the built in media)
+                $existingCustomMedia = @(Get-ConfigurationData -Configuration CustomMedia);
+                if (-not $existingCustomMedia) {
 
-            ## Add it to the array
-            Write-Verbose -Message ($localized.AddingCustomMediaEntry -f $Id);
-            $existingCustomMedia += $customMedia;
-        }
+                    $existingCustomMedia = @();
+                }
 
-        Write-Verbose -Message ($localized.SavingConfiguration -f $Id);
-        Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
-        return $customMedia;
+                $customMedia = [PSCustomObject] @{
+                    Id = $Id;
+                    Filename = $Filename;
+                    Description = $Description;
+                    Architecture = $Architecture;
+                    ImageName = $ImageName;
+                    MediaType = $MediaType;
+                    OperatingSystem = $OperatingSystem;
+                    Uri = $Uri;
+                    Checksum = $Checksum;
+                    CustomData = $CustomData;
+                    Hotfixes = $Hotfixes;
+                }
+
+                $hasExistingMediaEntry = $false;
+                for ($i = 0; $i -lt $existingCustomMedia.Count; $i++) {
+
+                    if ($existingCustomMedia[$i].Id -eq $Id) {
+
+                        Write-Verbose -Message ($localized.OverwritingCustomMediaEntry -f $Id);
+                        $hasExistingMediaEntry = $true;
+                        $existingCustomMedia[$i] = $customMedia;
+                    }
+                }
+
+                if (-not $hasExistingMediaEntry) {
+
+                    ## Add it to the array
+                    Write-Verbose -Message ($localized.AddingCustomMediaEntry -f $Id);
+                    $existingCustomMedia += $customMedia;
+                }
+
+                Write-Verbose -Message ($localized.SavingConfiguration -f $Id);
+                Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
+                return $customMedia;
+
+            } #end default
+        } #end switch
 
     } #end process
 } #end function

@@ -14,14 +14,14 @@ Describe 'Unit\Src\Private\Resolve-ConfigurationDataPath' {
             It "Resolves '$config' to module path when custom configuration does not exist" {
                 Mock Test-Path -MockWith { return $false }
                 $configurationPath = Resolve-ConfigurationDataPath -Configuration $config -IncludeDefaultPath;
-                $configurationPath -match $repoRoot | Should Be $true;
+                $configurationPath -like "$repoRoot*" | Should Be $true;
             }
 
             It "Resolves '$config' to %ALLUSERSPROFILE% path when custom configuration does exist" {
                 Mock Test-Path -MockWith { return $true }
                 $configurationPath = Resolve-ConfigurationDataPath -Configuration $config;
                 $allUsersProfile = ("$env:AllUsersProfile\$moduleName").Replace('\','\\');
-                $configurationPath -match $allUsersProfile | Should Be $true;
+                $configurationPath | Should Match $allUsersProfile;
             }
 
         } #end foreach $config
