@@ -2,7 +2,7 @@
 
 ## Versions ##
 
-### Unreleased ###
+### v0.16.0 ###
 
 * Fixes bug downloading external VHD media (#309)
 * Fixes incorrectly named Get-WindowsImageByName and Get-WindowsImageByIndex functions
