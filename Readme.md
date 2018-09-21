@@ -68,6 +68,7 @@ module can interpret.
 When `Start-LabConfiguration` is invoked with the above configuration document, it will:
 
 * Create an internal Hyper-V virtual switch named 'CORPNET'
+  * If no network is defined, a default internal virtual switch will automatically be created
 * Download required Server 2012 R2 Standard Edition evaluation media
   * Create a Sysprep'd Server 2012 R2 Standard Edition parent VHDX
   * Install required/recommended DSC hotfixes
