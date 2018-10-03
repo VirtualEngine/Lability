@@ -3,13 +3,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARD",
+    "ImageName":  "2",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+		"WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -18,13 +19,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARDCORE",
+    "ImageName":  "1",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -33,13 +35,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTER",
+    "ImageName":  "4",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -48,13 +51,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTERCORE",
+    "ImageName":  "3",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -66,8 +70,8 @@
     "ImageName":  "Windows Server 2016 SERVERSTANDARDNANO",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
@@ -76,7 +80,8 @@
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
             "Microsoft-NanoServer-DSC-Package"
-        ]
+        ],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -88,8 +93,8 @@
     "ImageName":  "Windows Server 2016 SERVERDATACENTERNANO",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
-    "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
-    "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
+    "Uri":  "http://download.microsoft.com/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO",
+    "Checksum":  "70721288BBCDFE3239D8F8C0FAE55F1F",
     "CustomData":  {
         "SetupComplete":  "CoreCLR",
         "PackagePath":  "\\NanoServer\\Packages",
@@ -98,12 +103,13 @@
         "Package":  [
             "Microsoft-NanoServer-Guest-Package",
             "Microsoft-NanoServer-DSC-Package"
-        ]
+        ],
+		"MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
 {
-	"Id": "2012R2_x64_Standard_EN_Eval",
+    "Id": "2012R2_x64_Standard_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation",
     "Architecture": "x64",
@@ -163,6 +169,26 @@
 		{
 			"Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+		}
+	]
+},
+{
+    "Id": "2012R2_x64_Standard_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Standard 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+    "ImageName": "Windows Server 2012 R2 SERVERSTANDARD",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
 		}
 	]
 },
@@ -231,6 +257,26 @@
 	]
 },
 {
+	"Id": "2012R2_x64_Standard_Core_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Standard Core 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+    "ImageName": "Windows Server 2012 R2 SERVERSTANDARDCORE",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
+		}
+	]
+},
+{
 	"Id": "2012R2_x64_Datacenter_EN_Eval",
     "Filename": "2012R2_x64_EN_Eval.iso",
     "Description": "Windows Server 2012 R2 Datacenter 64bit English Evaluation",
@@ -291,6 +337,26 @@
 		{
 			"Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+		}
+	]
+},
+{
+	"Id": "2012R2_x64_Datacenter_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+	"ImageName": "Windows Server 2012 R2 SERVERDATACENTER",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
 		}
 	]
 },
@@ -359,6 +425,26 @@
 	]
 },
 {
+	"Id": "2012R2_x64_Datacenter_Core_EN_V5_1_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter Core 64bit English Evaluation with WMF 5.1",
+    "Architecture": "x64",
+	"ImageName": "Windows Server 2012 R2 SERVERDATACENTERCORE",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+	"CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
+		}
+	]
+},
+{
 	"Id": "WIN81_x64_Enterprise_EN_Eval",
     "Filename": "WIN81_x64_ENT_EN_Eval.iso",
     "Description": "Windows 8.1 64bit Enterprise English Evaluation",
@@ -373,7 +459,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -424,7 +510,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -433,6 +519,33 @@
 		{
 			"Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
 			"Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+		}
+	]
+},
+{
+	"Id": "WIN81_x64_Enterprise_EN_V5_1_Eval",
+    "Filename": "WIN81_x64_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 64bit Enterprise English Evaluation with WMF 5.1",
+	"Architecture": "x64",
+	"ImageName": "Windows 8.1 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X64FREE_EN-US_DV9.ISO",
+	"Checksum": "EE63618E3BE220D86B993C1ABBCF32EB",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		]
+	},
+    "Hotfixes": [
+		{
+			"Id": "Win8.1AndW2K12R2-KB3191564-x64.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
 		}
 	]
 },
@@ -451,7 +564,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -498,7 +611,7 @@
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
@@ -511,110 +624,121 @@
 	]
 },
 {
-	"Id": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_EN_RS1_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 1607 English Evaluation",
-	"Architecture": "x64",
-	"ImageName": "Windows 10 Enterprise Evaluation",
+	"Id": "WIN81_x86_Enterprise_EN_V5_1_Eval",
+    "Filename": "WIN81_x86_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 32bit Enterprise English Evaluation with WMF 5.1",
+	"Architecture": "x86",
+	"ImageName": "Windows 8.1 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
-	"Checksum": "482B970A9892CDC1D0E69372A9E430D7",
+	"Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X86FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X86FREE_EN-US_DV9.ISO",
+	"Checksum": "B2ACCD5F135C3EEDE256D398856AEEAD",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
 		]
 	},
     "Hotfixes": [
 		{
-			"Id": "windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu",
-			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x64_a344b21f039bfc4c4c145af471da86005fa4288f.msu"
+			"Id": "Win8.1-KB3191564-x86.msu",
+			"Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1-KB3191564-x86.msu"
 		}
 	]
+},
+{
+	"Id": "WIN10_x64_Enterprise_EN_Eval",
+    "Filename": "WIN10_x64_ENT_RS4_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 1804 English Evaluation",
+	"Architecture": "x64",
+	"ImageName": "Windows 10 Enterprise Evaluation",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "89F6B3079B3669560D29F3C4BE9CC74D",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		],
+		"MinimumDismVersion": "10.0.0.0"
+	},
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_RS1_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 1607 English Evaluation",
+    "Filename": "WIN10_x86_ENT_RS4_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 1804 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/2/5/4/254230E8-AEA5-43C5-94F6-88CE222A5846/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
-	"Checksum": "50978CE784D0BC5921D0E89AF00C9361",
+	"Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "767141F88C9C6FE5220F093C36568A39",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
-    "Hotfixes": [
-		{
-			"Id": "windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu",
-			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176495-x86_53681ca9d2e5efe55370591ba5fa5f3ff973219d.msu"
-		}
-	]
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x64_ENT_LTSB_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise LTSB English Evaluation",
+    "Filename": "WIN10_x64_ENT_LTSB_2016_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise LTSB 2016 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
-	"Checksum": "6CD2F47F2C32FAA7BE85F1DC81AF3220",
+	"Uri": "http://download.microsoft.com/download/1/B/F/1BFE5194-5951-452C-B62C-B2F667F9B86D/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISE_S_EVAL_X64FRE_EN-US.ISO",
+	"Checksum": "4D4828CB40554278D376F86CBAED0E03",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
-    "Hotfixes": [
- 		{
- 			"Id": "windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu",
- 			"Uri": "http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x64_ec5bb377bb4509739664c17d094362c5cb41ef9b.msu"
- 		}
- 	]
+    "Hotfixes": []
 },
 {
 	"Id": "WIN10_x86_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x86_ENT_LTSB_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise LTSB English Evaluation",
+    "Filename": "WIN10_x86_ENT_LTSB_2016_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSB 2016 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "http://download.microsoft.com/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X86FRE_EN-US.ISO",
-	"Checksum": "5531E6EE40A69E22A7386864A9087CDD",
+	"Uri": "http://download.microsoft.com/download/1/B/F/1BFE5194-5951-452C-B62C-B2F667F9B86D/14393.0.160715-1616.RS1_RELEASE_CLIENTENTERPRISE_S_EVAL_X86FRE_EN-US.ISO",
+	"Checksum": "D057D6229343CF875D66334A2C06A010",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
 			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
 			"NET USER Administrator /active:yes;",
-			"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
 			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
 			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
-		]
+		],
+		"MinimumDismVersion": "10.0.0.0"
 	},
-    "Hotfixes": [
- 		{
- 			"Id": "windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu",
- 			"Uri": "http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/08/windows10.0-kb3176492-x86_56d8fdac3036f4db96471c208fc3d9b8876760e3.msu"
- 		}
- 	]
+    "Hotfixes": []
 }]

@@ -1,0 +1,8 @@
+[ClassVersion("1.0.0"), FriendlyName("xVMScsiController")]
+class MSFT_xVMScsiController : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the virtual machine whose SCSI controller status is to be controlled")] String VMName;
+    [Key, Description("Specifies the number of the SCSI controller whose status is to be controlled. If not specified, it defaults to 0."), ValueMap{"0","1","2","3"}, Values{"0","1","2","3"}] Uint32 ControllerNumber;
+    [Write, Description("Specifies if the SCSI controller should exist or not. If not specified, it defaults to Present."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Specifies if the VM should be restarted if needed for property changes. If not specified, it defaults to False.")] Boolean RestartIfNeeded;
+};

@@ -49,7 +49,7 @@ LONG DESCRIPTION
                     $mof -replace '^\sName=.*;$|^\sConfigurationName\s=.*;$' | Set-Content -Path $localhostMofPath -Encoding Ascii -Force;
                 }
                 while ($true) {
-                    ## Replay the configuration until the LCM bloody-well takes it!
+                    ## Replay the configuration until the LCM bloody-well takes it! This is only really an issue in v4.
                     try {
                         if (Test-Path -Path "$env:SystemRoot\System32\Configuration\Pending.mof") {
                             Start-DscConfiguration -UseExisting -Force -Wait -Verbose -ErrorAction Stop;
@@ -114,7 +114,7 @@ NODE BOOTSTRAP
             AllNodes = @(
                 NodeName       = 'CLIENT1';
                 Media          = 'Win81_x64_Enterprise_EN_Eval';
-                CutomBootStrap = @'
+                CustomBootStrap = @'
                     ## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes
                     NET USER Administrator /active:yes;
                     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;

@@ -18,6 +18,7 @@ class MSFT_xVMHyperV : OMI_BaseResource
     [Write, Description("Notes about the VM.")] String Notes;
     [Write, Description("Enable secure boot for Generation 2 VMs.")] Boolean SecureBoot;
     [Write, Description("Enable Guest Service Interface for the VM.")] Boolean EnableGuestService;
+    [Write, Description("Enable AutomaticCheckpoints for the VM.")] Boolean AutomaticCheckpointsEnabled;
     [Read, Description("VM unique ID")] String ID;
     [Read, Description("Status of the VM")] String Status;
     [Read, Description("CPU Usage of the VM")] Uint32 CPUUsage;

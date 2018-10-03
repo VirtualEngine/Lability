@@ -1,0 +1,10 @@
+[ClassVersion("1.0.0"), FriendlyName("xVMHardDiskDrive")]
+class MSFT_xVMHardDiskDrive : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the virtual machine whose hard disk drive is to be manipulated.")] String VMName;
+    [Key, Description("Specifies the full path to the location of the VHD that represents the hard disk drive.")] String Path;
+    [Write, Description("Specifies the controller type - IDE/SCSI where the disk is attached. If not specified, it defaults to SCSI."), ValueMap{"IDE","SCSI"}, Values{"IDE","SCSI"}] String ControllerType;
+    [Write, Description("Specifies the number of the controller where the disk is attached. If not specified, it defaults to 0."), ValueMap{"0","1","2","3"}, Values{"0","1","2","3"}] Uint32 ControllerNumber;
+    [Write, Description("Specifies the number of the location on the controller where the disk is attached. If not specified, it defaults to 0.")] Uint32 ControllerLocation;
+    [Write, Description("Specifies if the hard disk drive must be present or absent. If not specified, it defaults to Present."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
