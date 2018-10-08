@@ -93,7 +93,7 @@ written some comprehensive guides to compliment the built-in documentation – a
 * [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
-* [Using Lability, DSC and ARM to define and deploy multi-VM environments](https://blogs.blackmarble.co.uk/rhepworth/2017/03/02/define-once-deploy-everywhere-sort-of/) via @rikhepworth
+* [Using Lability, DSC and ARM to define and deploy multi-VM environments] (https://blogs.blackmarble.co.uk/rhepworth/2017/03/02/define-once-deploy-everywhere-sort-of/) via @rikhepworth
 * [Building Hyper-V lab environments based on PowerShell DSC](http://www.powershell.no/hyper-v,/powershell/dsc/2017/07/19/lability.html) via @JanEgilRing
 
 [__Lability__ image/logo attribution credit](https://openclipart.org/image/300px/svg_to_png/22734/papapishu-Lab-icon-1.png)
