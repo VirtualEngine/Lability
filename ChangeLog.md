@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Adds checksum support for media hotfixes (#329)
+
 ### v0.16.0 ###
 
 * Fixes bug downloading external VHD media (#309)
