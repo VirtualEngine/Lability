@@ -72,7 +72,7 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
                     "Checksum": "89F6B3079B3669560D29F3C4BE9CC74D"
                 }
 '@
-            Set-Content -Path $customMediaPath -Value $customMedia -Force;
+            Add-Content -Path $customMediaPath -Value $customMedia -Force;
             Mock Resolve-LabMedia { }
             Mock Set-ConfigurationData { }
 

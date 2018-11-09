@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Adds checksum support for media hotfixes (#329)
+
 ### v0.16.0 ###
 
 * Fixes bug downloading external VHD media (#309)
@@ -23,7 +27,7 @@
 * Adds support for creating both fixed and dynamic VHD files (#99)
   * See Examples\CustomDiskSize.psd1 for examples
 * Adds support for creating empty/blank media (#135)
-  * See Examples\BlankMediaExample.psd1
+  * See Examples\BlankMedia.psd1
 * Removes errant "Specify MaximumSizeBytes property" xVHD errors
 * Adds support for configuring the WSMan MaxEnvelopeSizeKb setting (#282)
   * Use `Set-LabVMDefault -MaxEnvelopeSizeKb 2048` to set a new 2MB default value

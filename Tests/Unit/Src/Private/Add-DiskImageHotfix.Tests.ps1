@@ -49,5 +49,26 @@ Describe 'Src\Private\Add-DiskImageHotfix' {
             } #end foreach partition style
         } #end foreach fake media suite
 
+        It 'Calls "Invoke-LabMediaDownload" with checksum when defind (#329)' {
+            $vhdImage = [PSCustomObject] @{ DiskNumber = 10 };
+            $fakeMedia = @{
+                Id = 'OneHotfix';
+                TestName = 'Calls "Add-WindowsPackage" for a single hotfix';
+                Hotfixes = @(
+                    @{ Id = 'Window0.0-KB1234567.msu'; Uri = 'NonNullValue'; Checksum = 'DummyChecksum'; }
+                );
+            }
+            Mock Get-DiskImageDriveLetter -MockWith { return 'Z'; }
+            Mock Get-LabMedia -MockWith { return [PSCustomObject] $fakeMedia; }
+            Mock Invoke-LabMediaDownload -MockWith { return New-Item -Path "TestDrive:\$Id" -Force -ItemType File }
+            Mock New-Directory -MockWith { }
+            Mock Add-WindowsPackage -MockWith { }
+
+            Add-DiskImageHotfix $fakeMedia.Id -Vhd $vhdImage -PartitionStyle $partitionStyle;
+
+            Assert-MockCalled Invoke-LabMediaDownload -ParameterFilter { $null -ne $Checksum} -Scope It;
+
+        }
+
     } #end InModuleScope
 } #end Describe

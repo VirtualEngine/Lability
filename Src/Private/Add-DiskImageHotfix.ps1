@@ -47,7 +47,18 @@ function Add-DiskImageHotfix {
         foreach ($hotfix in $media.Hotfixes) {
 
             if ($hotfix.Id -and $hotfix.Uri) {
-                $hotfixFileInfo = Invoke-LabMediaDownload -Id $hotfix.Id -Uri $hotfix.Uri;
+
+                $invokeLabMediaDownloadParams = @{
+                    Id  = $hotfix.Id;
+                    Uri = $hotfix.Uri;
+                }
+
+                if ($null -ne $hotfix.Checksum) {
+
+                    $invokeLabMediaDownloadParams['Checksum'] = $hotfix.Checksum;
+                }
+
+                $hotfixFileInfo = Invoke-LabMediaDownload @invokeLabMediaDownloadParams;
                 $packageName = [System.IO.Path]::GetFileNameWithoutExtension($hotfixFileInfo.FullName);
 
                 Add-DiskImagePackage -Name $packageName -Path $hotfixFileInfo.FullName -DestinationPath $vhdDriveLetter;
