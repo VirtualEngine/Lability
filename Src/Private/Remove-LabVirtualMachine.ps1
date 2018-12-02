@@ -33,7 +33,7 @@ function Remove-LabVirtualMachine {
             Hyper-V\Get-VMSnapshot -VMName $nodeDisplayName -ErrorAction SilentlyContinue |
                 Sort-Object -Property CreationTime |
                     Select-Object -First 1 |
-                    Hyper-V\Restore-VMSnapshot -Confirm:$false;
+                        Hyper-V\Restore-VMSnapshot -Confirm:$false;
 
             Remove-LabVMSnapshot -Name $nodeDisplayName;
 
