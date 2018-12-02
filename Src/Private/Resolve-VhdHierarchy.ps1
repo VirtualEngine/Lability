@@ -37,12 +37,12 @@ function Resolve-VhdHierarchy {
     )
     process {
 
-        $vmVhdPath = Get-VHD -Path $VhdPath;
+        $vmVhdPath = Hyper-V\Get-VHD -Path $VhdPath;
         Write-Output -InputObject $vmVhdPath.Path;
         while (-not [System.String]::IsNullOrEmpty($vmVhdPath.ParentPath)) {
 
             $vmVhdPath.ParentPath;
-            $vmVhdPath = (Get-VHD -Path $vmVhdPath.ParentPath);
+            $vmVhdPath = (Hyper-V\Get-VHD -Path $vmVhdPath.ParentPath);
         }
 
     } #end process

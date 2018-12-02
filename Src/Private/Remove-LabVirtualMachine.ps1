@@ -30,10 +30,10 @@ function Remove-LabVirtualMachine {
             $nodeDisplayName = $node.NodeDisplayName;
 
             # Revert to oldest snapshot prior to VM removal to speed things up
-            Get-VMSnapshot -VMName $nodeDisplayName -ErrorAction SilentlyContinue |
+            Hyper-V\Get-VMSnapshot -VMName $nodeDisplayName -ErrorAction SilentlyContinue |
                 Sort-Object -Property CreationTime |
                     Select-Object -First 1 |
-                        Restore-VMSnapshot -Confirm:$false;
+                    Hyper-V\Restore-VMSnapshot -Confirm:$false;
 
             Remove-LabVMSnapshot -Name $nodeDisplayName;
 

@@ -57,7 +57,7 @@ function Start-Lab {
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             Write-Verbose -Message ($localized.StartingVirtualMachine -f $nodeDisplayNamesString);
-            Start-VM -Name $nodeDisplayNames;
+            Hyper-V\Start-VM -Name $nodeDisplayNames;
 
             $maxGroupBootDelay = $_.Group.BootDelay | Sort-Object -Descending | Select-Object -First 1;
             if (($maxGroupBootDelay -gt 0) -and ($currentGroupCount -lt $bootGroups.Count)) {
