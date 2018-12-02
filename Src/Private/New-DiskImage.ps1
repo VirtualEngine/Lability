@@ -60,7 +60,7 @@ function New-DiskImage {
         $vhdMount = Hyper-V\Mount-VHD -Path $Path -Passthru;
 
         Write-Verbose -Message ($localized.InitializingDiskImage -f $Path);
-        [ref] $null = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
+        [ref] $null = Storage\Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
 
         switch ($PartitionStyle) {
             'MBR' {

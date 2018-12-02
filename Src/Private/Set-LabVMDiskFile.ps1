@@ -69,7 +69,7 @@ function Set-LabVMDiskFile {
         Write-Verbose -Message ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Hyper-V\Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
+        $vhdDriveLetter = Storage\Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
                                 Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-ShellHWDetectionService;
