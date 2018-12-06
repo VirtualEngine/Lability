@@ -89,7 +89,7 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
 
             Inserting sleep to give the lock more time to clear before Pesters call to Remote-TestDrive.
             #>
-            Start-Sleep -Seconds 2
+            Start-Sleep -Seconds 30
         }
 
     } #end InModuleScope
