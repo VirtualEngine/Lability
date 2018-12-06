@@ -79,6 +79,17 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
             $media = Register-LabMedia -FromUri $customMediaPath;
 
             $media.Id | Should Be 'LabilityCustomMediaTest';
+
+            <#
+            A lock on $TestDrive\CustomMedia.json cause CI pipeline PowerShell v4 test to intermittently fail with:
+
+            [15:13:15][Step 1/1]  [-] Error occurred in test script 'C:\TeamCity\BuildAgent\work\2ab121e51b4f3d7e\Tests\Unit\Src\Public\Register-LabMedia.Tests.ps1' 21ms
+            [15:13:15][Step 1/1]    IOException: The process cannot access the file 'CustomMedia.json' because it is being used by another process.
+            [15:13:15][Step 1/1]    at Remove-TestDrive, C:\Program Files\WindowsPowerShell\Modules\Pester\Functions\TestDrive.ps1: line 84
+
+            Inserting sleep to give the lock more time to clear before Pesters call to Remote-TestDrive.
+            #>
+            Start-Sleep -Seconds 2
         }
 
     } #end InModuleScope
