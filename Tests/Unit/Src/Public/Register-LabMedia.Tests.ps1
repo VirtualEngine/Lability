@@ -87,7 +87,7 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
             [15:13:15][Step 1/1]    IOException: The process cannot access the file 'CustomMedia.json' because it is being used by another process.
             [15:13:15][Step 1/1]    at Remove-TestDrive, C:\Program Files\WindowsPowerShell\Modules\Pester\Functions\TestDrive.ps1: line 84
 
-            Inserting sleep to give the lock more time to clear before Pesters call to Remote-TestDrive.
+            Inserting sleep to give the lock more time to clear before Pesters call to Remove-TestDrive.
             #>
             Start-Sleep -Seconds 15
         }
