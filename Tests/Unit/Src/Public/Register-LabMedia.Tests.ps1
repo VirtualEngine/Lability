@@ -57,40 +57,40 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
             { Register-LabMedia @testMediaParams -MediaType VHD -Force -WarningAction SilentlyContinue } | Should Not Throw;
         }
 
-        It 'Converts custom media from a JSON file/Uri' {
-            $customMediaPath = "$TestDrive\CustomMedia.json";
-            $customMedia = @'
-                {
-                    "Id": "LabilityCustomMediaTest",
-                    "Filename": "WIN10_x64_ENT_RS4_EN_Eval.iso",
-                    "Description": "Windows 10 64bit Enterprise 1804 English Evaluation",
-                    "Architecture": "x64",
-                    "ImageName": "Windows 10 Enterprise Evaluation",
-                    "MediaType": "ISO",
-                    "OperatingSystem": "Windows",
-                    "Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-                    "Checksum": "89F6B3079B3669560D29F3C4BE9CC74D"
-                }
+        <#
+        A lock on $TestDrive\CustomMedia.json cause CI pipeline PowerShell v4 test to intermittently fail with:
+
+        [15:13:15][Step 1/1]  [-] Error occurred in test script 'C:\TeamCity\BuildAgent\work\2ab121e51b4f3d7e\Tests\Unit\Src\Public\Register-LabMedia.Tests.ps1' 21ms
+        [15:13:15][Step 1/1]    IOException: The process cannot access the file 'CustomMedia.json' because it is being used by another process.
+        [15:13:15][Step 1/1]    at Remove-TestDrive, C:\Program Files\WindowsPowerShell\Modules\Pester\Functions\TestDrive.ps1: line 84
+
+        Disabling test if on PowerShell 4
+        #>
+        if ($PSVersionTable.PSVersion.Major -ne 4) {
+
+            It 'Converts custom media from a JSON file/Uri' {
+                $customMediaPath = "$TestDrive\CustomMedia.json";
+                $customMedia = @'
+                    {
+                        "Id": "LabilityCustomMediaTest",
+                        "Filename": "WIN10_x64_ENT_RS4_EN_Eval.iso",
+                        "Description": "Windows 10 64bit Enterprise 1804 English Evaluation",
+                        "Architecture": "x64",
+                        "ImageName": "Windows 10 Enterprise Evaluation",
+                        "MediaType": "ISO",
+                        "OperatingSystem": "Windows",
+                        "Uri": "https://software-download.microsoft.com/download/pr/17134.1.180410-1804.rs4_release_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+                        "Checksum": "89F6B3079B3669560D29F3C4BE9CC74D"
+                    }
 '@
-            Add-Content -Path $customMediaPath -Value $customMedia -Force;
-            Mock Resolve-LabMedia { }
-            Mock Set-ConfigurationData { }
+                Add-Content -Path $customMediaPath -Value $customMedia -Force;
+                Mock Resolve-LabMedia { }
+                Mock Set-ConfigurationData { }
 
-            $media = Register-LabMedia -FromUri $customMediaPath;
+                $media = Register-LabMedia -FromUri $customMediaPath;
 
-            $media.Id | Should Be 'LabilityCustomMediaTest';
-
-            <#
-            A lock on $TestDrive\CustomMedia.json cause CI pipeline PowerShell v4 test to intermittently fail with:
-
-            [15:13:15][Step 1/1]  [-] Error occurred in test script 'C:\TeamCity\BuildAgent\work\2ab121e51b4f3d7e\Tests\Unit\Src\Public\Register-LabMedia.Tests.ps1' 21ms
-            [15:13:15][Step 1/1]    IOException: The process cannot access the file 'CustomMedia.json' because it is being used by another process.
-            [15:13:15][Step 1/1]    at Remove-TestDrive, C:\Program Files\WindowsPowerShell\Modules\Pester\Functions\TestDrive.ps1: line 84
-
-            Inserting sleep to give the lock more time to clear before Pesters call to Remove-TestDrive.
-            #>
-
-            Start-Sleep -Seconds 30
+                $media.Id | Should Be 'LabilityCustomMediaTest';
+            }
         }
 
     } #end InModuleScope
