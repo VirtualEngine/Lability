@@ -5,6 +5,7 @@
 ### Unreleased ###
 
 * Adds checksum support for media hotfixes (#329)
+* Updates calls to Hyper-V and Storage module commands to use module-qualified names (#333)
 
 ### v0.16.0 ###
 

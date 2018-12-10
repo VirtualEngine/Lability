@@ -78,9 +78,9 @@ function Expand-LabImage {
                     Verbose = $false;
                     ErrorAction = 'Stop';
                 }
-                $iso = Mount-DiskImage @mountDiskImageParams;
-                $iso = Get-DiskImage -ImagePath $iso.ImagePath;
-                $isoDriveLetter = Get-Volume -DiskImage $iso | Select-Object -ExpandProperty DriveLetter;
+                $iso = Storage\Mount-DiskImage @mountDiskImageParams;
+                $iso = Storage\Get-DiskImage -ImagePath $iso.ImagePath;
+                $isoDriveLetter = Storage\Get-Volume -DiskImage $iso | Select-Object -ExpandProperty DriveLetter;
 
                 ## Update the media path to point to the mounted ISO
                 $windowsImagePath = '{0}:{1}' -f $isoDriveLetter, $WimPath;
@@ -170,7 +170,7 @@ function Expand-LabImage {
 
                 ## Always dismount ISO (#166)
                 Write-Verbose -Message ($localized.DismountingDiskImage -f $MediaPath);
-                Dismount-DiskImage -ImagePath $MediaPath;
+                Storage\Dismount-DiskImage -ImagePath $MediaPath;
             }
 
         } #end finally

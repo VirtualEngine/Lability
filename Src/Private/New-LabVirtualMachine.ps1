@@ -201,7 +201,7 @@ function New-LabVirtualMachine {
 
             $snapshotName = $localized.BaselineSnapshotName -f $labDefaults.ModuleName;
             Write-Verbose -Message ($localized.CreatingBaselineSnapshot -f $snapshotName);
-            Checkpoint-VM -Name $displayName -SnapshotName $snapshotName -Confirm:$false;
+            Hyper-V\Checkpoint-VM -Name $displayName -SnapshotName $snapshotName -Confirm:$false;
         }
 
         if ($node.WarningMessage) {
@@ -216,7 +216,7 @@ function New-LabVirtualMachine {
             }
         }
 
-        Write-Output -InputObject (Get-VM -Name $displayName);
+        Write-Output -InputObject (Hyper-V\Get-VM -Name $displayName);
 
     } #end process
 } #end function

@@ -65,7 +65,7 @@ function Get-LabImage {
             if (Test-Path -Path $imagePath -PathType Leaf) {
 
                 $imageFileInfo = Get-Item -Path $imagePath;
-                $diskImage = Get-DiskImage -ImagePath $imageFileInfo.FullName;
+                $diskImage = Storage\Get-DiskImage -ImagePath $imageFileInfo.FullName;
                 $labImage = [PSCustomObject] @{
                     Id = $media.Id;
                     Attached = $diskImage.Attached;

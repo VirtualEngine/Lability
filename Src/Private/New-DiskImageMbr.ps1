@@ -18,11 +18,11 @@ function New-DiskImageMbr {
         Stop-ShellHWDetectionService;
 
         Write-Verbose -Message ($localized.CreatingDiskPartition -f 'Windows');
-        $osPartition = New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -MbrType IFS -IsActive |
-            Add-PartitionAccessPath -AssignDriveLetter -PassThru |
-                Get-Partition;
+        $osPartition = Storage\New-Partition -DiskNumber $Vhd.DiskNumber -UseMaximumSize -MbrType IFS -IsActive |
+            Storage\Add-PartitionAccessPath -AssignDriveLetter -PassThru |
+                Storage\Get-Partition;
         Write-Verbose -Message ($localized.FormattingDiskPartition -f 'Windows');
-        [ref] $null = Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
+        [ref] $null = Storage\Format-Volume -Partition $osPartition -FileSystem NTFS -Force -Confirm:$false;
 
         Start-ShellHWDetectionService;
 

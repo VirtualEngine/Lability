@@ -11,8 +11,8 @@ function Resolve-LabVMImage {
     )
     process {
 
-        Get-VM -Name $Name |
-            Get-VMHardDiskDrive |
+        Hyper-V\Get-VM -Name $Name |
+            Hyper-V\Get-VMHardDiskDrive |
                 Select-Object -First 1 -ExpandProperty $Path |
                     Resolve-LabImage;
 

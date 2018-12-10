@@ -236,7 +236,7 @@ function New-LabImage {
             finally {
 
                 ## Dismount VHDX
-                Dismount-VHD -Path $imagePath;
+                Hyper-V\Dismount-VHD -Path $imagePath;
             }
 
             if ($imageCreationFailed -eq $true) {

@@ -36,11 +36,11 @@ function Resolve-LabSwitch {
             }
             $networkSwitch = New-LabSwitch @networkHashtable;
         }
-        elseif (Get-VMSwitch -Name $Name -ErrorAction SilentlyContinue) {
+        elseif (Hyper-V\Get-VMSwitch -Name $Name -ErrorAction SilentlyContinue) {
 
             ## Use an existing virtual switch with a matching name if one exists
             Write-Warning -Message ($localized.UsingExistingSwitchWarning -f $Name);
-            $existingSwitch = Get-VMSwitch -Name $Name;
+            $existingSwitch = Hyper-V\Get-VMSwitch -Name $Name;
             $networkSwitch = @{
                 Name = $existingSwitch.Name;
                 Type = $existingSwitch.SwitchType;

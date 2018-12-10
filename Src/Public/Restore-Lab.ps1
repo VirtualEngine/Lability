@@ -53,7 +53,7 @@ function Restore-Lab {
                 };
 
         $runningNodes = $nodes |
-            ForEach-Object { Get-VM -Name $_.NodeDisplayName } |
+            ForEach-Object { Hyper-V\Get-VM -Name $_.NodeDisplayName } |
                 Where-Object { $_.State -ne 'Off' }
 
         $currentNodeCount = 0;
@@ -68,7 +68,7 @@ function Restore-Lab {
                         Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
                         Write-Verbose -Message ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName, $SnapshotName);
 
-                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
+                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Hyper-V\Restore-VMSnapshot;
                     }
         }
         elseif ($runningNodes) {
@@ -91,7 +91,7 @@ function Restore-Lab {
                         Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
                         Write-Verbose -Message ($localized.RestoringVirtualMachineSnapshot -f $_.NodeDisplayName,  $SnapshotName);
 
-                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Restore-VMSnapshot;
+                        Get-LabVMSnapshot -Name $_.NodeDisplayName -SnapshotName $SnapshotName | Hyper-V\Restore-VMSnapshot;
                     }
 
             Write-Progress -Id 42 -Activity $activity -Completed;

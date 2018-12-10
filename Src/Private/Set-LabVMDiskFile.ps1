@@ -67,9 +67,9 @@ function Set-LabVMDiskFile {
         $vhdPath = Resolve-LabVMGenerationDiskPath @resolveLabVMGenerationDiskPathParams;
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $VhdPath);
-        $vhd = Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
+        $vhd = Hyper-V\Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
         [ref] $null = Get-PSDrive;
-        $vhdDriveLetter = Get-Partition -DiskNumber $vhd.DiskNumber |
+        $vhdDriveLetter = Storage\Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
                                 Select-Object -Last 1 -ExpandProperty DriveLetter;
         Start-ShellHWDetectionService;
@@ -93,7 +93,7 @@ function Set-LabVMDiskFile {
 
             ## Ensure the VHD is dismounted (#185)
             Write-Verbose -Message ($localized.DismountingDiskImage -f $VhdPath);
-            Dismount-Vhd -Path $VhdPath -Confirm:$false;
+            Hyper-V\Dismount-Vhd -Path $VhdPath -Confirm:$false;
         }
 
     } #end process
