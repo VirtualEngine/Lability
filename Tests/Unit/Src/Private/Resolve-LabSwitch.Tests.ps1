@@ -184,6 +184,22 @@ Describe 'Unit\Src\Private\Resolve-LabSwitch' {
             $labSwitch.Name | Should Be ('{0}{1}' -f $testSwitchName,$testSuffix);
         }
 
+        It 'Throws when multiple existing switches are found (#326)' {
+            $testSwitchName = 'Test Switch';
+            $testSwitchType = 'Private';
+
+            $fakeExistingSwitch = [PSCustomObject] @{
+                Name = $testSwitchName;
+            }
+            $configurationData = @{ }
+            $defaultVMConfigurationData = [PSCustomObject] @{ SwitchName = 'DefaultInternalSwitch'; }
+            Mock Get-ConfigurationData -ParameterFilter { $Configuration -eq 'VM' } -MockWith { return $defaultVMConfigurationData; }
+            Mock Get-VMSwitch -ParameterFilter { $Name -eq $testSwitchName } { return @($fakeExistingSwitch, $fakeExistingSwitch); }
+            Mock Get-NetAdapter { return @{ Name = 'Ethernet Adapter #1';} }
+
+            { Resolve-LabSwitch -ConfigurationData $configurationData -Name $testSwitchName } | Should Throw;
+        }
+
     } #end InModuleScope
 
 } #end describe
