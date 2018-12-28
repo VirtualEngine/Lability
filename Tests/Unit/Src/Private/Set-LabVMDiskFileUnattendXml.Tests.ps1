@@ -134,6 +134,30 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFileUnattendXml' {
             Assert-MockCalled Set-UnattendXml -ParameterFilter { $ProductKey -eq $testNodeProductKey } -Scope It;
         }
 
+        It 'Passes node "NetBIOS" name when node name is a FQDN (#335)' {
+
+            $testNode = 'TestNode.lab.local';
+            $testConfigurationData = @{
+                AllNodes = @(
+                    @{ NodeName = $testNode; }
+                )
+            }
+            $testDriveLetter = $env:SystemDrive.Trim(':');
+            $testCredential = $testCredential = New-Object System.Management.Automation.PSCredential 'DummyUser', (ConvertTo-SecureString 'DummyPassword' -AsPlainText -Force);;
+
+            Mock Set-UnattendXml -MockWith { }
+
+            $testParams = @{
+                ConfigurationData = $testConfigurationData;
+                NodeName = $testNode;
+                VhdDriveLetter = $testDriveLetter;
+                Credential = $testCredential;
+            }
+            Set-LabVMDiskFileUnattendXml @testParams;
+
+            Assert-MockCalled Set-UnattendXml -ParameterFilter { $ComputerName -eq 'TestNode' } -Scope It;
+        }
+
     } #end InModuleScope
 
 } #end describe

@@ -60,7 +60,7 @@ function New-LabVirtualMachine {
         ## Display name includes any environment prefix/suffix
         $displayName = $node.NodeDisplayName;
 
-        if (-not (Test-ComputerName -ComputerName $node.NodeName)) {
+        if (-not (Test-ComputerName -ComputerName $node.NodeName.Split('.')[0])) {
 
             throw ($localized.InvalidComputerNameError -f $node.NodeName);
         }

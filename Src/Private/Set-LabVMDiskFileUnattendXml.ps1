@@ -41,7 +41,7 @@ function Set-LabVMDiskFileUnattendXml {
 
         ## Create Unattend.xml
         $newUnattendXmlParams = @{
-            ComputerName = $node.NodeName;
+            ComputerName = $node.NodeName.Split('.')[0]; # Convert any FQDN to NetBIOS (#335)
             Credential = $Credential;
             InputLocale = $node.InputLocale;
             SystemLocale = $node.SystemLocale;
