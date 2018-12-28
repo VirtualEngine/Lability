@@ -141,6 +141,19 @@ Describe 'Unit\Src\Private\Resolve-NodePropertyValue' {
             $vmProperties.NodeDisplayName | Should Be $expected;
         }
 
+        It 'Returns NetBIOS display name when FQDN defined and UseNetBIOSName = "true" (#335)' {
+            $testVMName = 'TestVM';
+            $testVMDomainName = 'lab.local';
+            $testNodeName = "$testVMName.$testVMDomainName";
+            $configurationData = @{
+                AllNodes = @( @{ NodeName = $testNodeName; UseNetBIOSName = $true; } )
+            }
+
+            $vmProperties = Resolve-NodePropertyValue -ConfigurationData $configurationData -NodeName $testNodeName;
+
+            $vmProperties.NodeDisplayName | Should Be $testVMName;
+        }
+
     } #end InModuleScope
 
 } #end describe
