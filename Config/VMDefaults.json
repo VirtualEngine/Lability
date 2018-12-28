@@ -16,5 +16,6 @@
     "RootCertificatePath": "%ALLUSERSPROFILE%\\Lability\\Certificates\\LabRoot.cer",
     "BootOrder": 99,
     "BootDelay": 0,
-	"CustomBootstrapOrder": "MediaFirst"
+    "CustomBootstrapOrder": "MediaFirst",
+    "UseNetBIOSName": false
 }

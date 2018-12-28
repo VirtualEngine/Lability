@@ -49,6 +49,12 @@ function Get-ConfigurationData {
 
                         [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'MaxEnvelopeSizeKb' -Value 1024;
                     }
+
+                    ## This property may not be present in the original VM default file. Defaults to $false
+                    if ($configurationData.PSObject.Properties.Name -notcontains 'UseNetBIOSName') {
+
+                        [ref] $null = Add-Member -InputObject $configurationData -MemberType NoteProperty -Name 'UseNetBIOSName' -Value $false;
+                    }
                 }
                 'CustomMedia' {
 
