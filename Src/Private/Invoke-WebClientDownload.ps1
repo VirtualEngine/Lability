@@ -58,19 +58,23 @@ function Invoke-WebClientDownload {
 
             do {
 
+                $iteration ++;
                 $bytesRead = $inputStream.Read($buffer, 0, $buffer.Length);
                 $totalBytes += $bytesRead;
                 $outputStream.Write($buffer, 0, $bytesRead);
                 ## Avoid divide by zero
                 if ($contentLength -gt 0) {
 
-                    [System.Byte] $percentComplete = ($totalBytes/$contentLength) * 100;
-                    $writeProgressParams = @{
-                        Activity = $writeProgessActivity;
-                        PercentComplete = $percentComplete;
-                        Status = $localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete;
+                    if ($iteration % 30 -eq 0) {
+
+                        [System.Byte] $percentComplete = ($totalBytes / $contentLength) * 100;
+                        $writeProgressParams = @{
+                            Activity = $writeProgessActivity;
+                            PercentComplete = $percentComplete;
+                            Status = $localized.DownloadStatus -f $totalBytes, $contentLength, $percentComplete;
+                        }
+                        Write-Progress @writeProgressParams;
                     }
-                    Write-Progress @writeProgressParams;
                 }
             }
             while ($bytesRead -ne 0)
