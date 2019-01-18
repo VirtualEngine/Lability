@@ -3,13 +3,14 @@
     "Filename":  "2019_x64_EN_Eval.iso",
     "Description":  "Windows Server 2019 Standard 64bit English Evaluation with Desktop Experience",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2019 Standard Evaluation (Desktop Experience)",
+    "ImageName":  "2",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
     "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },{
@@ -17,13 +18,14 @@
     "Filename":  "2019_x64_EN_Eval.iso",
     "Description":  "Windows Server 2019 Standard 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2019 Standard Evaluation",
+    "ImageName":  "1",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
     "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },{
@@ -31,13 +33,14 @@
     "Filename":  "2019_x64_EN_Eval.iso",
     "Description":  "Windows Server 2019 Datacenter 64bit English Evaluation with Desktop Experience",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2019 Datacenter Evaluation (Desktop Experience)",
+    "ImageName":  "3",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
     "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },{
@@ -45,13 +48,14 @@
     "Filename":  "2019_x64_EN_Eval.iso",
     "Description":  "Windows Server 2019 Datacenter Evaluation in Core mode",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2019 Datacenter Evaluation",
+    "ImageName":  "4",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
     "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },{
@@ -59,13 +63,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARD",
+    "ImageName":  "2",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -74,13 +79,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERSTANDARDCORE",
+    "ImageName":  "1",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -89,13 +95,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTER",
+    "ImageName":  "4",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
@@ -104,13 +111,14 @@
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Datacenter Core 64bit English Evaluation",
     "Architecture":  "x64",
-    "ImageName":  "Windows Server 2016 SERVERDATACENTERCORE",
+    "ImageName":  "3",
     "MediaType":  "ISO",
     "OperatingSystem":  "Windows",
     "Uri":  "http://download.microsoft.com/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO",
     "Checksum":  "18A4F00A675B0338F3C7C93C4F131BEB",
     "CustomData":  {
-        "WindowsOptionalFeature":  ["NetFx3"]
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
     },
     "Hotfixes":  []
 },
