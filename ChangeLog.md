@@ -9,6 +9,7 @@
 * Adds support for defining node names with FQDNs (#335)
   * Adds 'UseNetBIOSName' parameter to enforce VM and disk filenames are created using NetBIOS name format
 * Throws non-ambiguous error when multiple existing switches with the same name are detected (#326)
+* Increases resource and media download performance
 
 ### v0.16.0 ###
 
