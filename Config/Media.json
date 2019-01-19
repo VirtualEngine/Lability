@@ -1,4 +1,65 @@
 [{
+    "Id":  "2019_x64_Standard_EN_Eval",
+    "Filename":  "2019_x64_EN_Eval.iso",
+    "Description":  "Windows Server 2019 Standard 64bit English Evaluation with Desktop Experience",
+    "Architecture":  "x64",
+    "ImageName":  "2",
+    "MediaType":  "ISO",
+    "OperatingSystem":  "Windows",
+    "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
+    "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
+    "CustomData":  {
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
+    },
+    "Hotfixes":  []
+},{
+    "Id":  "2019_x64_Standard_EN_Core_Eval",
+    "Filename":  "2019_x64_EN_Eval.iso",
+    "Description":  "Windows Server 2019 Standard 64bit English Evaluation",
+    "Architecture":  "x64",
+    "ImageName":  "1",
+    "MediaType":  "ISO",
+    "OperatingSystem":  "Windows",
+    "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
+    "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
+    "CustomData":  {
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
+    },
+    "Hotfixes":  []
+},{
+    "Id":  "2019_x64_Datacenter_EN_Eval",
+    "Filename":  "2019_x64_EN_Eval.iso",
+    "Description":  "Windows Server 2019 Datacenter 64bit English Evaluation with Desktop Experience",
+    "Architecture":  "x64",
+    "ImageName":  "3",
+    "MediaType":  "ISO",
+    "OperatingSystem":  "Windows",
+    "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
+    "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
+    "CustomData":  {
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
+    },
+    "Hotfixes":  []
+},{
+    "Id":  "2019_x64_Datacenter_EN_Core_Eval",
+    "Filename":  "2019_x64_EN_Eval.iso",
+    "Description":  "Windows Server 2019 Datacenter Evaluation in Core mode",
+    "Architecture":  "x64",
+    "ImageName":  "4",
+    "MediaType":  "ISO",
+    "OperatingSystem":  "Windows",
+    "Uri":  "https://software-download.microsoft.com/download/sg/17763.253.190108-0006.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso",
+    "Checksum":  "48CD91270581D1BE10C3FF3AD6C41CCE",
+    "CustomData":  {
+        "WindowsOptionalFeature":  ["NetFx3"],
+        "MinimumDismVersion": "10.0.0.0"
+    },
+    "Hotfixes":  []
+},
+{
     "Id":  "2016_x64_Standard_EN_Eval",
     "Filename":  "2016_x64_EN_Eval.iso",
     "Description":  "Windows Server 2016 Standard 64bit English Evaluation",
