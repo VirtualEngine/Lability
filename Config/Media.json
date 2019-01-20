@@ -758,9 +758,9 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x64_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x64_ENT_LTSB_2019_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise LTSB 2019 English Evaluation",
+	"Id": "WIN10_x64_Enterprise_LTSC_EN_Eval",
+    "Filename": "WIN10_x64_ENT_LTSC_2019_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise LTSC 2019 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "1",
 	"MediaType": "ISO",
@@ -781,9 +781,9 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x86_Enterprise_LTSB_EN_Eval",
-    "Filename": "WIN10_x86_ENT_LTSB_2019_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise LTSB 2019 English Evaluation",
+	"Id": "WIN10_x86_Enterprise_LTSC_EN_Eval",
+    "Filename": "WIN10_x86_ENT_LTSC_2019_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSC 2019 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "1",
 	"MediaType": "ISO",
