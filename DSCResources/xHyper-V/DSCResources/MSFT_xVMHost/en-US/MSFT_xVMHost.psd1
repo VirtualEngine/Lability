@@ -5,4 +5,7 @@ ConvertFrom-StringData @'
     VMHostNotInDesiredState  = VM host not in desired state.
     UpdatingVMHostProperties = Updating VM host properties.
     VMHostPropertiesUpdated  = VM host properties have been updated.
+    EnableLiveMigration      = Enabling VM Live Migration.
+    DisableLiveMigration     = Disabling VM Live Migration.
+    LiveMigrationDomainOnly  = Enabling VM Live Migration requires the computer to be joined to an Active Directory domain.
 '@

@@ -139,6 +139,9 @@ function Get-TargetResource
 .PARAMETER LoadBalancingAlgorithm
     The load balancing algorithm that this switch team use.
 
+.PARAMETER Id
+    Desired unique ID of the Hyper-V Switch (Windows Server 2016 only).
+
 .PARAMETER Ensure
     Whether switch should be present or absent.
 #>
@@ -180,6 +183,12 @@ function Set-TargetResource
         $LoadBalancingAlgorithm,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript({$testGuid = New-Guid; if([guid]::TryParse($_,[ref]$testGuid)){return $true}else{Throw 'The VMSwitch Id must be in GUID format!'}})]
+        [String]
+        $Id,
+
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [String]
         $Ensure = "Present"
@@ -206,6 +215,13 @@ function Set-TargetResource
         New-InvalidArgumentError `
             -ErrorId 'SETServer2016Error' `
             -ErrorMessage $LocalizedData.SETServer2016Error
+    }
+
+    if (($PSBoundParameters.ContainsKey('Id')) -and (Get-OSVersion).Major -lt 10)
+    {
+        New-InvalidArgumentError `
+            -ErrorId 'VMSwitchIDServer2016Error' `
+            -ErrorMessage $LocalizedData.VMSwitchIDServer2016Error
     }
 
     if ($Ensure -eq 'Present')
@@ -249,6 +265,19 @@ function Set-TargetResource
                 $removeReaddSwitch = $true
             }
 
+            if ($null -ne $switch.EmbeddedTeamingEnabled -and
+                $switch.EmbeddedTeamingEnabled -ne $EnableEmbeddedTeaming)
+            {
+                Write-Verbose -Message ($LocalizedData.EnableEmbeddedTeamingIncorrect -f $Name)
+                $removeReaddSwitch = $true
+            }
+
+            if ($PSBoundParameters.ContainsKey('Id') -and $switch.Id -ne $Id)
+            {
+                Write-Verbose -Message ($LocalizedData.IdIncorrect -f $Name)
+                $removeReaddSwitch = $true
+            }
+
             if ($removeReaddSwitch)
             {
                 Write-Verbose -Message ($LocalizedData.RemoveAndReaddSwitchMessage -f $Name)
@@ -272,14 +301,18 @@ function Set-TargetResource
                     $parameters["EnableEmbeddedTeaming"] = $EnableEmbeddedTeaming
                 }
 
+                if ($PSBoundParameters.ContainsKey('Id'))
+                {
+                    $parameters["Id"] = $Id.ToString()
+                }
+
                 $null = New-VMSwitch @parameters
-                Write-Verbose -Message "Switch $Name has right netadapter $NetAdapterName"
                 # Since the switch is recreated, the $switch variable is stale and needs to be reassigned
                 $switch = (Get-VMSwitch -Name $Name -SwitchType $Type -ErrorAction SilentlyContinue)
             }
             else
             {
-                Write-Verbose -Message ($LocalizedData.SwitchCorrectNetAdapterAndBandwidthMode -f $Name, $NetAdapterName, $BandwidthReservationMode)
+                Write-Verbose -Message ($LocalizedData.SwitchCorrectNetAdapterAndBandwidthMode -f $Name, ($NetAdapterName -join ','), $BandwidthReservationMode)
             }
 
             Write-Verbose -Message ($LocalizedData.CheckAllowManagementOS -f $Name)
@@ -326,11 +359,16 @@ function Set-TargetResource
                 $parameters["EnableEmbeddedTeaming"] = $EnableEmbeddedTeaming
             }
 
+            if ($PSBoundParameters.ContainsKey('Id'))
+            {
+                $parameters["Id"] = $Id
+            }
+
             $switch = New-VMSwitch @parameters
             Write-Verbose -Message ($LocalizedData.PresentCorrect -f $Name, $Ensure)
         }
 
-        # Set the load balancing algorithm if it's a SET Switch and the paramter is specified
+        # Set the load balancing algorithm if it's a SET Switch and the parameter is specified
         if($EnableEmbeddedTeaming -eq $true -and $PSBoundParameters.ContainsKey('LoadBalancingAlgorithm'))
         {
             Write-Verbose -Message ($LocalizedData.SetLoadBalancingAlgorithmMessage -f $Name, $LoadBalancingAlgorithm)
@@ -368,6 +406,9 @@ function Set-TargetResource
 
 .PARAMETER LoadBalancingAlgorithm
     The load balancing algorithm that this switch team use.
+
+.PARAMETER Id
+    Desired unique ID of the Hyper-V Switch (Windows Server 2016 only).
 
 .PARAMETER Ensure
     Whether switch should be present or absent.
@@ -411,6 +452,12 @@ function Test-TargetResource
         $LoadBalancingAlgorithm,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript({$testGuid = New-Guid; if([guid]::TryParse($_,[ref]$testGuid)){return $true}else{Throw 'The VMSwitch Id must be in GUID format!'}})]
+        [String]
+        $Id,
+
+        [Parameter()]
         [ValidateSet("Present","Absent")]
         [String]
         $Ensure = "Present"
@@ -452,6 +499,13 @@ function Test-TargetResource
             -ErrorId 'SETServer2016Error' `
             -ErrorMessage $LocalizedData.SETServer2016Error
     }
+
+    if (($PSBoundParameters.ContainsKey('Id')) -and (Get-OSVersion).Major -lt 10)
+    {
+        New-InvalidArgumentError `
+            -ErrorId 'VMSwitchIDServer2016Error' `
+            -ErrorMessage $LocalizedData.VMSwitchIDServer2016Error
+    }
     #endregion
 
     try
@@ -483,7 +537,7 @@ function Test-TargetResource
                     }
                 }
 
-                # If switch is the external type, check additional propeties
+                # If switch is the external type, check additional properties
                 if ($Type -eq 'External')
                 {
                     if ($EnableEmbeddedTeaming -eq $false)
@@ -574,6 +628,21 @@ function Test-TargetResource
                     else
                     {
                         Write-Verbose -Message ($LocalizedData.EnableEmbeddedTeamingIncorrect -f $Name)
+                        return $false
+                    }
+                }
+
+                # Check if the Switch has the desired ID
+                if ($PSBoundParameters.ContainsKey("Id") -eq $true)
+                {
+                    Write-Verbose -Message ($LocalizedData.CheckID -f $Name)
+                    if ($switch.Id.Guid -eq $Id)
+                    {
+                        Write-Verbose -Message ($LocalizedData.IdCorrect -f $Name)
+                    }
+                    else
+                    {
+                        Write-Verbose -Message ($LocalizedData.IdIncorrect -f $Name)
                         return $false
                     }
                 }

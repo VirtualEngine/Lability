@@ -17,4 +17,5 @@ class MSFT_xVMHost : OMI_BaseResource
     [Write, Description("Specifies the type of authentication to be used for live migrations. The acceptable values for this parameter are 'Kerberos' and 'CredSSP'."), ValueMap{"CredSSP","Kerberos"}, Values{"CredSSP","Kerberos"}] String VirtualMachineMigrationAuthenticationType;
     [Write, Description("Specifies the performance option to use for live migration. The acceptable values for this parameter are 'TCPIP', 'Compression' and 'SMB'."), ValueMap{"TCPIP","Compression","SMB"}, Values{"TCPIP","Compression","SMB"}] String VirtualMachineMigrationPerformanceOption;
     [Write, Description("Specifies the default folder to store virtual machine configuration files on the Hyper-V host.")] String VirtualMachinePath;
+    [Write, Description("Indicates whether Live Migration should be enabled or disabled on the Hyper-V host.")] Boolean VirtualMachineMigrationEnabled;
 };

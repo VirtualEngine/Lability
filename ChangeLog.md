@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Updates bundled xHyper-V DSC resource to v3.15.0
+
 ### v0.17.0 ###
 
 * Adds checksum support for media hotfixes (#329)

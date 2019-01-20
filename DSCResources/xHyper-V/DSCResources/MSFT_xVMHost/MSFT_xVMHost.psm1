@@ -2,20 +2,20 @@
 if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 {
     Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMHost.psd1 `
-                         -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
+        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
 }
 else
 {
     # fallback to en-US
     Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMHost.psd1 `
-                         -BaseDirectory "${PSScriptRoot}\en-US"
+        -BaseDirectory "${PSScriptRoot}\en-US"
 }
 #endregion
 
 # Import the common HyperV functions
 Import-Module -Name ( Join-Path `
-    -Path (Split-Path -Path $PSScriptRoot -Parent) `
-    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+        -Path (Split-Path -Path $PSScriptRoot -Parent) `
+        -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
 
 <#
 .SYNOPSIS
@@ -65,6 +65,7 @@ function Get-TargetResource
         VirtualMachineMigrationAuthenticationType = $vmHost.VirtualMachineMigrationAuthenticationType
         VirtualMachineMigrationPerformanceOption = $vmHost.VirtualMachineMigrationPerformanceOption
         VirtualMachinePath = $vmHost.VirtualMachinePath
+        VirtualMachineMigrationEnabled = $vmHost.VirtualMachineMigrationEnabled
     }
 
     return $configuration
@@ -139,6 +140,9 @@ function Get-TargetResource
 
 .PARAMETER VirtualMachinePath
     Specifies the default folder to store virtual machine configuration files on the Hyper-V host.
+
+.PARAMETER VirtualMachineMigrationEnabled
+    Indicates whether Live Migration should be enabled or disabled on the Hyper-V host.
 #>
 function Test-TargetResource
 {
@@ -200,18 +204,22 @@ function Test-TargetResource
         $VirtualHardDiskPath,
 
         [Parameter()]
-        [ValidateSet('Kerberos','CredSSP')]
+        [ValidateSet('Kerberos', 'CredSSP')]
         [System.String]
         $VirtualMachineMigrationAuthenticationType,
 
         [Parameter()]
-        [ValidateSet('TCPIP','Compression','SMB')]
+        [ValidateSet('TCPIP', 'Compression', 'SMB')]
         [System.String]
         $VirtualMachineMigrationPerformanceOption,
 
         [Parameter()]
         [System.String]
-        $VirtualMachinePath
+        $VirtualMachinePath,
+
+        [Parameter()]
+        [System.Boolean]
+        $VirtualMachineMigrationEnabled
     )
 
     Assert-Module -Name 'Hyper-V'
@@ -226,7 +234,7 @@ function Test-TargetResource
         {
             $isTargetResourceCompliant = $false
             Write-Verbose -Message ($localizedData.PropertyMismatch -f $parameter.Key,
-                                    $parameter.Value, $targetResource[$parameter.Key])
+                $parameter.Value, $targetResource[$parameter.Key])
         }
     }
 
@@ -311,6 +319,9 @@ function Test-TargetResource
 
 .PARAMETER VirtualMachinePath
     Specifies the default folder to store virtual machine configuration files on the Hyper-V host.
+
+.PARAMETER VirtualMachineMigrationEnabled
+    Indicates whether Live Migration should be enabled or disabled on the Hyper-V host.
 #>
 function Set-TargetResource
 {
@@ -371,18 +382,22 @@ function Set-TargetResource
         $VirtualHardDiskPath,
 
         [Parameter()]
-        [ValidateSet('Kerberos','CredSSP')]
+        [ValidateSet('Kerberos', 'CredSSP')]
         [System.String]
         $VirtualMachineMigrationAuthenticationType,
 
         [Parameter()]
-        [ValidateSet('TCPIP','Compression','SMB')]
+        [ValidateSet('TCPIP', 'Compression', 'SMB')]
         [System.String]
         $VirtualMachineMigrationPerformanceOption,
 
         [Parameter()]
         [System.String]
-        $VirtualMachinePath
+        $VirtualMachinePath,
+
+        [Parameter()]
+        [System.Boolean]
+        $VirtualMachineMigrationEnabled
     )
 
     Assert-Module -Name 'Hyper-V'
@@ -403,7 +418,40 @@ function Set-TargetResource
         $PSBoundParameters['ResourceMeteringSaveInterval'] = $resourceMeteringSaveInterval
     }
 
-    Write-Verbose -Message $localizedData.UpdatingVMHostProperties
-    Set-VMHost @PSBoundParameters
-    Write-Verbose -Message $localizedData.VMHostPropertiesUpdated
+    if ($PSBoundParameters.ContainsKey('VirtualMachineMigrationEnabled'))
+    {
+        $null = $PSBoundParameters.Remove('VirtualMachineMigrationEnabled')
+
+        if ($VirtualMachineMigrationEnabled)
+        {
+            if ((Get-CimInstance -ClassName Win32_ComputerSystem).PartOfDomain)
+            {
+                Write-Verbose -Message $localizedData.EnableLiveMigration
+                Enable-VMMigration
+            }
+            else
+            {
+                New-InvalidOperationError -ErrorId InvalidState -ErrorMessage $localizedData.LiveMigrationDomainOnly
+            }
+        }
+        else
+        {
+            Write-Verbose -Message $localizedData.DisableLiveMigration
+            Disable-VMMigration
+        }
+    }
+
+    $vmHostParams = $PSBoundParameters.GetEnumerator() | Where-Object -FilterScript {
+        $_.Key -notin (
+            [System.Management.Automation.PSCmdlet]::CommonParameters +
+            [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+        )
+    }
+
+    if ($vmHostParams.Count -ne 0)
+    {
+        Write-Verbose -Message $localizedData.UpdatingVMHostProperties
+        Set-VMHost @PSBoundParameters
+        Write-Verbose -Message $localizedData.VMHostPropertiesUpdated
+    }
 } #end function
