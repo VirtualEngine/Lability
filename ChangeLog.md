@@ -10,6 +10,8 @@
   * Adds 'UseNetBIOSName' parameter to enforce VM and disk filenames are created using NetBIOS name format
 * Throws non-ambiguous error when multiple existing switches with the same name are detected (#326)
 * Increases resource and media download performance
+* Adds Windows Server 2019 evaluation media (#323)
+* Updates Windows 10 evaluation media to Windows 10 1809 and Windows 10 LTSC 2019 (RS5)
 
 ### v0.16.0 ###
 
