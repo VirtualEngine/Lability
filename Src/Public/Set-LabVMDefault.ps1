@@ -104,7 +104,13 @@ function Set-LabVMDefault {
 
         ## WSMan maximum envelope size
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Int32] $MaxEnvelopeSizeKb
+        [System.Int32] $MaxEnvelopeSizeKb,
+
+        ## By default, all virtual machines and their associated disks are created using the node name as it is
+        ## defined in the .psd1 configuration file. This name can be either a FQDN or a NetBIOS name format. Enabling
+        ## the 'UseNetBIOSName' forces all VMs and disk files to be created using the NetBIOS (short) name format.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $UseNetBIOSName
     )
     process {
 
@@ -231,6 +237,11 @@ function Set-LabVMDefault {
         if ($PSBoundParameters.ContainsKey('MaxEnvelopeSizeKb')) {
 
             $vmDefaults.MaxEnvelopeSizeKb = $MaxEnvelopeSizeKb;
+        }
+
+        if ($PSBoundParameters.ContainsKey('UseNetBIOSName')) {
+
+            $vmDefaults.UseNetBIOSName = $UseNetBIOSName.ToBool();
         }
 
         if ($vmDefaults.StartupMemory -lt $vmDefaults.MinimumMemory) {

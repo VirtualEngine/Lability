@@ -39,7 +39,7 @@ function New-DiskImage {
         }
         elseif ((Test-Path -Path $Path -PathType Leaf) -and ($Force)) {
 
-            Dismount-VHD -Path $Path -ErrorAction Stop;
+            Hyper-V\Dismount-VHD -Path $Path -ErrorAction Stop;
             Write-Verbose -Message ($localized.RemovingDiskImage -f $Path);
             Remove-Item -Path $Path -Force -ErrorAction Stop;
         }
@@ -54,13 +54,13 @@ function New-DiskImage {
         }
 
         Write-Verbose -Message ($localized.CreatingDiskImageType -f $Type.ToLower(), $Path, ($Size/1MB));
-        [ref] $null = New-Vhd @newVhdParams;
+        [ref] $null = Hyper-V\New-Vhd @newVhdParams;
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
-        $vhdMount = Mount-VHD -Path $Path -Passthru;
+        $vhdMount = Hyper-V\Mount-VHD -Path $Path -Passthru;
 
         Write-Verbose -Message ($localized.InitializingDiskImage -f $Path);
-        [ref] $null = Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
+        [ref] $null = Storage\Initialize-Disk -Number $vhdMount.DiskNumber -PartitionStyle $PartitionStyle -PassThru;
 
         switch ($PartitionStyle) {
             'MBR' {
@@ -77,7 +77,7 @@ function New-DiskImage {
         }
         else {
 
-            Dismount-VHD -Path $Path;
+            Hyper-V\Dismount-VHD -Path $Path;
         }
 
     } #end process

@@ -15,15 +15,15 @@ function Expand-LabIso {
     process {
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
-        $iso = Mount-DiskImage -ImagePath $Path -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
+        $iso = Storage\Mount-DiskImage -ImagePath $Path -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
         ## Refresh drives
         [ref] $null = Get-PSDrive;
-        $isoDriveLetter = $iso | Get-Volume | Select-Object -ExpandProperty DriveLetter;
+        $isoDriveLetter = $iso | Storage\Get-Volume | Select-Object -ExpandProperty DriveLetter;
         $sourcePath = '{0}:\' -f $isoDriveLetter;
         Write-Verbose -Message ($localized.ExpandingIsoResource -f $DestinationPath);
         CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         Write-Verbose -Message ($localized.DismountingDiskImage -f $Path);
-        Dismount-DiskImage -ImagePath $Path;
+        Storage\Dismount-DiskImage -ImagePath $Path;
 
     } #end process
 } #end function

@@ -15,7 +15,7 @@ function Get-DiskImageDriveLetter {
     process {
 
         # Microsoft.Vhd.PowerShell.VirtualHardDisk
-        $driveLetter = Get-Partition -DiskNumber $DiskImage.DiskNumber |
+        $driveLetter = Storage\Get-Partition -DiskNumber $DiskImage.DiskNumber |
             Where-Object Type -eq $PartitionType |
                 Where-Object DriveLetter |
                     Select-Object -Last 1 -ExpandProperty DriveLetter;

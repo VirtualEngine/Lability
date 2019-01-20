@@ -16,7 +16,7 @@ function New-LabVMSnapshot {
         foreach ($vmName in $Name) {
 
             Write-Verbose -Message ($localized.CreatingVirtualMachineSnapshot -f $vmName, $SnapshotName);
-            Checkpoint-VM -VMName $vmName -SnapshotName $SnapshotName;
+            Hyper-V\Checkpoint-VM -VMName $vmName -SnapshotName $SnapshotName;
         } #end foreach VM
 
     } #end process

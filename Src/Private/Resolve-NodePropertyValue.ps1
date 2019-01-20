@@ -62,14 +62,18 @@ function Resolve-NodePropertyValue {
             }
         }
 
-        $moduleName = $labDefaults.ModuleName;
         $resolveLabEnvironmentNameParams = @{
             Name              = $NodeName;
             ConfigurationData = $ConfigurationData;
         }
         ## Set the node's friendly/display name with any prefix/suffix
-        $node["$($moduleName)_NodeDisplayName"] = Resolve-LabEnvironmentName @resolveLabEnvironmentNameParams;
+        $node['NodeDisplayName'] = Resolve-LabEnvironmentName @resolveLabEnvironmentNameParams;
+        ## Use the prefixed/suffixed NetBIOSName is specified
+        if ($node.UseNetBIOSName -eq $true) {
+            $node['NodeDisplayName'] = $node['NodeDisplayName'].Split('.')[0];
+        }
 
+        $moduleName = $labDefaults.ModuleName;
         ## Rename/overwrite existing parameter values where $moduleName-specific parameters exist
         foreach ($key in @($node.Keys)) {
 

@@ -17,12 +17,12 @@ function Remove-LabVMSnapshot {
         foreach ($vmName in $Name) {
 
             # Sort by descending CreationTime to ensure we will not have to commit changes from one snapshot to another
-            Get-VMSnapshot -VMName $vmName -ErrorAction SilentlyContinue |
+            Hyper-V\Get-VMSnapshot -VMName $vmName -ErrorAction SilentlyContinue |
                 Where-Object Name -like $SnapshotName |
                     Sort-Object -Property CreationTime -Descending |
                         ForEach-Object {
                             Write-Verbose -Message ($localized.RemovingSnapshot -f $vmName, $_.Name);
-                            Remove-VMSnapshot -VMName $_.VMName -Name $_.Name -Confirm:$false;
+                            Hyper-V\Remove-VMSnapshot -VMName $_.VMName -Name $_.Name -Confirm:$false;
                         }
 
         } #end foreach VM

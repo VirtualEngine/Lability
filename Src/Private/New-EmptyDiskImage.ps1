@@ -30,7 +30,7 @@ function New-EmptyDiskImage {
         }
         elseif ((Test-Path -Path $Path -PathType Leaf) -and ($Force)) {
 
-            Dismount-VHD -Path $Path -ErrorAction Stop;
+            Hyper-V\Dismount-VHD -Path $Path -ErrorAction Stop;
             Write-Verbose -Message ($localized.RemovingDiskImage -f $Path);
             Remove-Item -Path $Path -Force -ErrorAction Stop;
         }
@@ -45,7 +45,7 @@ function New-EmptyDiskImage {
         }
 
         Write-Verbose -Message ($localized.CreatingDiskImageType -f $Type.ToLower(), $Path, ($Size/1MB));
-        [ref] $null = New-Vhd @newVhdParams;
+        [ref] $null = Hyper-V\New-Vhd @newVhdParams;
 
     } #end process
 } #end function

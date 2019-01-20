@@ -45,7 +45,7 @@ function Checkpoint-Lab {
              Resolve-NodePropertyValue -NodeName $_.NodeName -ConfigurationData $ConfigurationData;
         };
 
-        $runningNodes = Get-VM -Name $nodes.NodeDisplayName | Where-Object { $_.State -ne 'Off' }
+        $runningNodes = Hyper-V\Get-VM -Name $nodes.NodeDisplayName | Where-Object { $_.State -ne 'Off' }
 
         if ($runningNodes -and $Force) {
 

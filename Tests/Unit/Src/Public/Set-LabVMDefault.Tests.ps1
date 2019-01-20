@@ -36,6 +36,7 @@ Describe 'Unit\Src\Public\Set-LabVMDefault' {
             @{ CustomBootstrapOrder = 'Disabled'; }
             @{ GuestIntegrationServices = $true; }
             @{ MaxEnvelopeSizeKb = 2048; }
+            @{ UseNetBIOSName = $true; }
         )
         foreach ($property in $testProperties) {
 

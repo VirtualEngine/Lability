@@ -92,6 +92,7 @@ MEDIA BOOTSTRAP
         $customData = @{
             CustomBootstrap = @(
                 '## Unattend.xml will set the Administrator password, but it won''t enable the account on client OSes',
+                'NET USER Administrator /active:yes',
                 'Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force;',
                 '## Kick-start PowerShell remoting on clients to permit applying DSC configurations',
                 'Enable-PSRemoting -SkipNetworkProfileCheck -Force;'

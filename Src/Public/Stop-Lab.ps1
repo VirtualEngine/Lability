@@ -57,7 +57,7 @@ function Stop-Lab {
             $activity = $localized.ConfiguringNode -f $nodeDisplayNamesString;
             Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
             Write-Verbose -Message ($localized.StoppingVirtualMachine -f $nodeDisplayNamesString);
-            Stop-VM -Name $nodeDisplayNames -Force;
+            Hyper-V\Stop-VM -Name $nodeDisplayNames -Force;
         } #end foreach boot group
 
         Write-Progress -Id 42 -Activity $activity -Completed;

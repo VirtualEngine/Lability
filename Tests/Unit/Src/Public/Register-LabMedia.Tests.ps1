@@ -72,7 +72,16 @@ Describe 'Unit\Src\Public\Register-LabMedia' {
                     "Checksum": "89F6B3079B3669560D29F3C4BE9CC74D"
                 }
 '@
-            Set-Content -Path $customMediaPath -Value $customMedia -Force;
+            <#
+            A lock on $TestDrive\CustomMedia.json cause CI pipeline PowerShell v4 test to intermittently fail with:
+
+            [15:13:15][Step 1/1]  [-] Error occurred in test script 'C:\TeamCity\BuildAgent\work\2ab121e51b4f3d7e\Tests\Unit\Src\Public\Register-LabMedia.Tests.ps1' 21ms
+            [15:13:15][Step 1/1]    IOException: The process cannot access the file 'CustomMedia.json' because it is being used by another process.
+            [15:13:15][Step 1/1]    at Remove-TestDrive, C:\Program Files\WindowsPowerShell\Modules\Pester\Functions\TestDrive.ps1: line 84
+
+            Mocking call to Invoke-WebRequest instead of using a file in TestDrive (see issue #336)
+            #>
+            Mock Invoke-RestMethod { $customMedia | ConvertFrom-Json }
             Mock Resolve-LabMedia { }
             Mock Set-ConfigurationData { }
 

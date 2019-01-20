@@ -17,7 +17,7 @@ function Get-LabVMSnapshot {
 
         foreach ($vmName in $Name) {
 
-            $snapshot = Get-VMSnapshot -VMName $vmName -Name $SnapshotName -ErrorAction SilentlyContinue;
+            $snapshot = Hyper-V\Get-VMSnapshot -VMName $vmName -Name $SnapshotName -ErrorAction SilentlyContinue;
             if (-not $snapshot) {
 
                 Write-Warning -Message ($localized.SnapshotMissingWarning -f $SnapshotName, $vmName);

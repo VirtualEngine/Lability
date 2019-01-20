@@ -2,6 +2,18 @@
 
 ## Versions ##
 
+### v0.17.0 ###
+
+* Adds checksum support for media hotfixes (#329)
+* Updates calls to Hyper-V and Storage module commands to use module-qualified names (#333)
+* Adds support for defining node names with FQDNs (#335)
+  * Adds 'UseNetBIOSName' parameter to enforce VM and disk filenames are created using NetBIOS name format
+* Throws non-ambiguous error when multiple existing switches with the same name are detected (#326)
+* Increases resource and media download performance
+* Adds Windows Server 2019 evaluation media (#323)
+* Updates Windows 10 evaluation media to Windows 10 1809 (RS5) and Windows 10 LTSC 2019 (RS5)
+  * Renames LTSB (long-term servicing branch) media to LTSC (long-term servicing channel)
+
 ### v0.16.0 ###
 
 * Fixes bug downloading external VHD media (#309)
@@ -23,7 +35,7 @@
 * Adds support for creating both fixed and dynamic VHD files (#99)
   * See Examples\CustomDiskSize.psd1 for examples
 * Adds support for creating empty/blank media (#135)
-  * See Examples\BlankMediaExample.psd1
+  * See Examples\BlankMedia.psd1
 * Removes errant "Specify MaximumSizeBytes property" xVHD errors
 * Adds support for configuring the WSMan MaxEnvelopeSizeKb setting (#282)
   * Use `Set-LabVMDefault -MaxEnvelopeSizeKb 2048` to set a new 2MB default value
