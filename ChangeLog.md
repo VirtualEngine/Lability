@@ -5,6 +5,7 @@
 ### Unreleased ###
 
 * Updates bundled xHyper-V DSC resource to v3.15.0
+* Updates bundled xPendingReboot DSC resource to v0.4.0.0
 
 ### v0.17.0 ###
 
