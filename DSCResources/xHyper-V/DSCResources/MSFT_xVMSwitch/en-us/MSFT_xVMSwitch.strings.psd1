@@ -5,7 +5,7 @@ ConvertFrom-StringData @'
     BandwidthReservationModeIncorrect = The switch '{0}' BandwidthReservationMode is incorrect ...
     EnableEmbeddedTeamingIncorrect = The switch '{0}' EnableEmbeddedTeaming is incorrect ...
     RemoveAndReaddSwitchMessage = Removing switch '{0}' and creating with the correct properties ...
-    SwitchCorrectNetAdapterAndBandwidthMode = Switch '{0}' has right netadapter '{1}' and BandwidthReservationMode '{2}'
+    SwitchCorrectNetAdapterAndBandwidthMode = Switch '{0}' set has right network adapter(s) ('{1}') and BandwidthReservationMode ('{2}')
     CheckAllowManagementOS = Checking switch '{0}' AllowManagementOS ...
     AllowManagementOSIncorrect = Switch '{0}' AllowManagementOS property is not correct
     AllowManagementOSUpdated = Switch '{0}' AllowManagementOS property is set to '{1}'
@@ -35,4 +35,9 @@ ConvertFrom-StringData @'
     BandwidthReservationModeError = The BandwidthReservationMode cannot be set on a Hyper-V version lower than 2012
     NetAdapterNameRequiredError = For external switch type, NetAdapterName must be specified
     NetAdapterNameNotRequiredError = For Internal or Private switch type, NetAdapterName should not be specified
+
+    VMSwitchIDServer2016Error = User defined VMSwitch ID is only supported on Windows Server 2016 and onwards
+    CheckID = Checking if Switch '{0}' has the desired Id ...
+    IdCorrect = Switch '{0}' has the desired Id
+    IdIncorrect = Switch '{0}' has NOT the desired Id
 '@

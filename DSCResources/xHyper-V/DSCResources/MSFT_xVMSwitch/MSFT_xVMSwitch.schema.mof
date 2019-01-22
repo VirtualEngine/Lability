@@ -7,8 +7,8 @@ class MSFT_xVMSwitch : OMI_BaseResource
     [Write, Description("Specify if the VM host has access to the physical NIC")] Boolean AllowManagementOS;
     [Write, Description("Should embedded NIC teaming be used (Windows Server 2016 only)")] Boolean EnableEmbeddedTeaming;
     [Write, Description("Type of Bandwidth Reservation Mode to use for the switch"), ValueMap{"Default","Weight","Absolute","None","NA"}, Values{"Default","Weight","Absolute","None","NA"}] String BandwidthReservationMode;
-    [Write, Description("Specifies the load balancing algorithm that this switch team uses"), ValueMap{"Dynamic","HyperVPort"}, Values{"Dynamic","HyperVPort"}] String LoadBalancingAlgorithm; 
+    [Write, Description("Specifies the load balancing algorithm that this switch team uses"), ValueMap{"Dynamic","HyperVPort"}, Values{"Dynamic","HyperVPort"}] String LoadBalancingAlgorithm;
     [Write, Description("Whether switch should be present or absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Read, Description("Unique ID for the switch")] String Id;
+    [Write, Description("Unique ID for the switch (Only settable on Windows Server 2016!)")] String Id;
     [Read, Description("Description of the network interface")] String NetAdapterInterfaceDescription;
 };

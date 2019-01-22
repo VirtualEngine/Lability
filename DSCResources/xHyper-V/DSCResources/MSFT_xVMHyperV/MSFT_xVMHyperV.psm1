@@ -12,7 +12,7 @@ DATA localizedData
         StartUpMemGreaterThanMaxMemError = StartupMemory '{0}' should not be greater than MaximumMemory '{1}'.
         VhdUnsupportedOnGen2VMError = Generation 2 virtual machines do not support the .VHD virtual disk extension.
         CannotUpdatePropertiesOnlineError = Can not change properties for VM '{0}' in '{1}' state unless 'RestartIfNeeded' is set to true.
-        AutomaticCheckpointsUnsupportedError = AutomaticCheckpoints are not supported on this host.
+        AutomaticCheckpointsUnsupported = AutomaticCheckpoints are not supported on this host.
 
         AdjustingGreaterThanMemoryWarning = VM {0} '{1}' is greater than {2} '{3}'. Adjusting {0} to be '{3}'.
         AdjustingLessThanMemoryWarning = VM {0} '{1}' is less than {2} '{3}'. Adjusting {0} to be '{3}'.
