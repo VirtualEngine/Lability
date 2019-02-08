@@ -14,6 +14,14 @@ function Expand-LabIso {
     )
     process {
 
+        ## Disable BitLocker fixed drive write protection if enabled
+        $FDVDenyWriteAccess = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess').FDVDenyWriteAccess;
+        if ($FDVDenyWriteAccess) {
+
+            Write-Verbose -Message $localized.DisablingBitlockerWriteProtection
+            Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value 0;
+        }
+
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
         $iso = Storage\Mount-DiskImage -ImagePath $Path -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
         ## Refresh drives
@@ -24,6 +32,11 @@ function Expand-LabIso {
         CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         Write-Verbose -Message ($localized.DismountingDiskImage -f $Path);
         Storage\Dismount-DiskImage -ImagePath $Path;
+
+        if ($FDVDenyWriteAccess) {
+
+            Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value $FDVDenyWriteAccess;
+        }
 
     } #end process
 } #end function

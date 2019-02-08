@@ -72,6 +72,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Expand-WindowsImage -MockWith { }
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
 
@@ -87,6 +88,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testWimPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
 
@@ -106,6 +108,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Get-WindowsImageByName -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageName $testWimImageName -Vhd $testVhdImage -PartitionStyle GPT;
 
@@ -124,6 +127,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle MBR;
 
@@ -143,6 +147,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle MBR -WimPath $testWimPath;
 
@@ -161,6 +166,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Expand-WindowsImage -MockWith { }
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
 
@@ -176,6 +182,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
             Mock Expand-WindowsImage -MockWith { }
             Mock Dismount-DiskImage { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testWimPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
 
@@ -196,6 +203,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Dismount-DiskImage -MockWith { }
             Mock Get-WindowsImageByIndex -MockWith { return 42; }
             Mock Add-LabImageWindowsOptionalFeature -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             $expandLabImageParams = @{
                 MediaPath = $testIsoPath;
@@ -220,6 +228,7 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Expand-WindowsImage -MockWith { }
             Mock Get-WindowsImageByIndex { return 42; }
             Mock Add-LabImageWindowsOptionalFeature -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             $expandLabImageParams = @{
                 MediaPath = $testWimPath;
@@ -247,11 +256,32 @@ Describe 'Src\Private\Expand-LabImage' {
             Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
             Mock Dismount-DiskImage -MockWith { }
             Mock Expand-WindowsImage -MockWith { Write-Error 'Should Dismount ISO' }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT -ErrorAction SilentlyContinue;
 
             Assert-MockCalled Dismount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
         }
+
+        It 'Disables BitLocker fixed drive write protection if enabled' {
+          $testIsoPath = 'TestDrive:\TestIsoImage.iso';
+          [ref] $null = New-Item -Path $testIsoPath -ItemType File -Force -ErrorAction SilentlyContinue;
+          $testVhdPath = 'TestDrive:\TestImage.vhdx';
+          $testVhdImage = @{ Path = $testVhdPath };
+          $testWimImageIndex = 42;
+          Mock Get-DiskImage -MockWith { return [System.Management.Automation.PSSerializer]::Deserialize($getDiskImageXml -f $testIsoPath) }
+          Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = 'Z' } }
+          Mock Get-DiskImageDriveLetter -MockWith { return 'Z' }
+          Mock Expand-WindowsImage -MockWith { }
+          Mock Dismount-DiskImage -MockWith { }
+          Mock Mount-DiskImage -MockWith { return [PSCustomObject] @{ ImagePath = $testIsoPath } }
+          Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 1 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+          Mock Set-ItemProperty -MockWith { } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+
+          Expand-LabImage -MediaPath $testIsoPath -WimImageIndex $testWimImageIndex -Vhd $testVhdImage -PartitionStyle GPT;
+
+          Assert-MockCalled Set-ItemProperty -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'} -Exactly 2 -Scope It
+      }
 
     } #end InModuleScope
 
