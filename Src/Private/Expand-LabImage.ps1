@@ -68,6 +68,14 @@ function Expand-LabImage {
 
             if ($mediaFileInfo.Extension -eq '.ISO') {
 
+                ## Disable BitLocker fixed drive write protection if enabled
+                $FDVDenyWriteAccess = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess').FDVDenyWriteAccess;
+                if ($FDVDenyWriteAccess) {
+
+                    Write-Verbose -Message $localized.DisablingBitlockerWriteProtection
+                    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value 0;
+                }
+
                 ## Mount ISO
                 Write-Verbose -Message ($localized.MountingDiskImage -f $MediaPath);
                 $mountDiskImageParams = @{
@@ -171,6 +179,11 @@ function Expand-LabImage {
                 ## Always dismount ISO (#166)
                 Write-Verbose -Message ($localized.DismountingDiskImage -f $MediaPath);
                 Storage\Dismount-DiskImage -ImagePath $MediaPath;
+            }
+
+            if ($FDVDenyWriteAccess) {
+
+                Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value $FDVDenyWriteAccess;
             }
 
         } #end finally
