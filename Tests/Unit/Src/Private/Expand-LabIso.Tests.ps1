@@ -18,6 +18,7 @@ Describe 'Src\Private\Expand-LabIso' {
             Mock CopyDirectory -MockWith { }
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath -and $Access -eq 'ReadOnly' } -MockWith { return $fakeDiskImage; }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabIso -Path $testIsoPath -DestinationPath $testDestinationPath;
 
@@ -33,6 +34,7 @@ Describe 'Src\Private\Expand-LabIso' {
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
             Mock Dismount-DiskImage -MockWith { }
             Mock CopyDirectory -ParameterFilter { $DestinationPath.FullName -eq $testDestinationPath } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabIso -Path $testIsoPath -DestinationPath $testDestinationPath;
 
@@ -48,10 +50,28 @@ Describe 'Src\Private\Expand-LabIso' {
             Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
             Mock CopyDirectory -MockWith { }
             Mock Dismount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             Expand-LabIso -Path $testIsoPath -DestinationPath $testDestinationPath;
 
             Assert-MockCalled Dismount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
+        }
+
+        It 'Disables BitLocker fixed drive write protection if enabled' {
+            $testIsoPath = 'TestDrive:\TestIsoImage.iso';
+            $testDestinationPath = 'Y:\';
+            $testIsoMountDrive = 'Z';
+            $fakeDiskImage = [PSCustomObject] @{ DriveLetter = $testIsoMountDrive; ImagePath = $testIsoPath };
+            Mock Get-Volume -MockWith { return [PSCustomObject] @{ DriveLetter = $testIsoMountDrive } }
+            Mock CopyDirectory -MockWith { }
+            Mock Dismount-DiskImage -MockWith { }
+            Mock Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath -and $Access -eq 'ReadOnly' } -MockWith { return $fakeDiskImage; }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 1 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+            Mock Set-ItemProperty -MockWith { } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+
+            Expand-LabIso -Path $testIsoPath -DestinationPath $testDestinationPath;
+
+            Assert-MockCalled Set-ItemProperty -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'} -Exactly 2 -Scope It
         }
 
     } #end InModuleScope
