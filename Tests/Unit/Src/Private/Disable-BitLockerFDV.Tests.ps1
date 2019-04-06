@@ -13,7 +13,7 @@ Describe 'Src\Private\Disable-BitLockerFDV' {
 
         It "Calls 'Set-ItemProperty' when BitLocker is enabled on the system" {
             $fdvDenyWriteAccess = $true;
-            Disable-BitLockerFDV -Verbose;
+            Disable-BitLockerFDV;
 
             Assert-MockCalled Set-ItemProperty -Scope It -Times 1
         }

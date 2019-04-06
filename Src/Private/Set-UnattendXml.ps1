@@ -4,6 +4,7 @@ function Set-UnattendXml {
            Creates a Windows unattended installation file and saves to disk.
     #>
         [CmdletBinding()]
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
         [OutputType([System.Xml.XmlDocument])]
         param (
             # Filename/path to save the unattend file as

@@ -25,6 +25,7 @@ function Install-LabModule {
         Installs all PowerShell modules defined in the 'Config.psd1' document into the local machine's module scope.
 #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.String] $ConfigurationData,

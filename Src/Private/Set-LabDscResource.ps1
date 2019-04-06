@@ -7,6 +7,7 @@ function Set-LabDscResource {
         $Parameters hastable.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Name of the DSC resource to invoke
         [Parameter(Mandatory, ValueFromPipeline)]

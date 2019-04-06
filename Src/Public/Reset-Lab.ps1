@@ -22,6 +22,7 @@ function Reset-Lab {
         Start-LabConfiguration -Force.
 #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param (
         ## Lab DSC configuration data
         [Parameter(Mandatory, ValueFromPipeline)]

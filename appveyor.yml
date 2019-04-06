@@ -9,7 +9,7 @@ environment:
 
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
-    - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -Verbose
+    - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -WarningAction SilentlyContinue -Verbose
     - ps: Install-Module -Name Pester, PSSCriptAnalyzer, PSake -Scope CurrentUser -Force -Verbose
 
 #---------------------------------#
@@ -24,4 +24,10 @@ build: false
 
 test_script:
     - ps: |
+        Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Test
+        Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
+        if (-not $psake.build_success) { exit 1 }
+
+on_finish:
+  - ps: |
         Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Appveyor
