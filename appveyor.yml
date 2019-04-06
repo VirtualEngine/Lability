@@ -1,0 +1,35 @@
+#---------------------------------#
+#      environment configuration  #
+#---------------------------------#
+
+version: 0.17.{build}
+environment:
+  gallery_api:
+    secure: 9ekJzfsPCDBkyLrfmov83XbbhZ6E2N3z+B/Io8NbDetbHc6hWS19zsDmy7t0Vvxv
+
+install:
+    - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
+    - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -Verbose
+    - ps: Install-Module -Name Pester -Scope CurrentUser -Force -Verbose
+
+#---------------------------------#
+#      build configuration        #
+#---------------------------------#
+
+build: false
+
+#---------------------------------#
+#      test configuration         #
+#---------------------------------#
+
+test_script:
+    - ps: |
+        Invoke-Pester -Script .\Tests
+
+#---------------------------------#
+#      deployment configuration   #
+#---------------------------------#
+
+deploy_script:
+  - ps: |
+        Invoke-AppVeyorDeployTask
