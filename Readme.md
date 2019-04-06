@@ -92,6 +92,7 @@ of the module's root directory.
 A brief introduction to the __VirtualEngineLab__ module presented at the European PowerShell Summit 2015 can be found
 __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__. Other generous members of the community have written some comprehensive guides to compliment the built-in documentation – a BIG thank you!
 
+* [Lability tutorial](https://me.micahrl.com/lability-tutorial) by [mrled](https://github.com/mrled)
 * [Building A Lab using Hyper-V and Lability](https://blog.kilasuit.org/2016/04/13/building-a-lab-using-hyper-v-and-lability-the-end-to-end-example/) via @kilasuit
 * [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
