@@ -10,7 +10,8 @@ environment:
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -Verbose
-    - ps: Install-Module -Name Pester -Scope CurrentUser -Force -Verbose
+    - ps: Install-Module -Name Pester -RequiredVersion '3.4.6' -Scope CurrentUser -Force -Verbose
+    - ps: Install-Module -Name PSCriptAnalyzer, PSake -Scope CurrentUser -Force -Verbose
 
 #---------------------------------#
 #      build configuration        #
