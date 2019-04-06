@@ -4,6 +4,7 @@ function Set-LabSetupCompleteCmd {
         Creates a lab BootStrap script block.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     [OutputType([System.Management.Automation.ScriptBlock])]
     param (
         ## Destination SetupComplete.cmd directory path.

@@ -121,7 +121,7 @@ Task Clean -Depends Init {
 
 Task Test {
     $invokePesterParams = @{
-        Path = "$basePath\Tests\Linting";
+        Path = "$basePath\Tests";
         OutputFile = "$basePath\TestResults.xml";
         OutputFormat = 'NUnitXml';
         Strict = $true;

@@ -4,6 +4,7 @@ function Set-DiskImageBootVolume {
         Sets the boot volume of a mounted disk image.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Mounted VHD(X) Operating System disk image
         [Parameter(Mandatory)]

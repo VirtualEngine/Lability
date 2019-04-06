@@ -11,6 +11,7 @@ function Start-LabHostConfiguration {
         Get-LabHostConfiguration
 #>
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     [OutputType([System.Boolean])]
     param (
         ## Ignores pending reboot check

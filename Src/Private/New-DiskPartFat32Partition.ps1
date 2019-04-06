@@ -4,6 +4,7 @@ function New-DiskPartFat32Partition {
         Uses DISKPART.EXE to create a new FAT32 system partition. This permits mocking of DISKPART calls.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         [Parameter(Mandatory)]
         [System.Int32] $DiskNumber,

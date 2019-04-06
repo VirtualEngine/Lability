@@ -4,6 +4,7 @@ function Set-LabBootStrap {
         Writes the lab BootStrap.ps1 file to the target directory.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Destination Bootstrap directory path.
         [Parameter(Mandatory, ValueFromPipeline)]

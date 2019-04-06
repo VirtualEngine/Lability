@@ -4,6 +4,7 @@ function New-LabBootStrap {
         Creates a lab DSC BootStrap script block.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     [OutputType([System.String])]
     param (
         [Parameter(ValueFromPipelineByPropertyName)]

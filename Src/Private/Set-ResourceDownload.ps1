@@ -4,6 +4,7 @@ function Set-ResourceDownload {
         Downloads a (web) resource and creates a MD5 checksum.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $DestinationPath,

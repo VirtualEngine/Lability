@@ -4,6 +4,7 @@ function New-EmptyDiskImage {
         Create an empty disk image.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## VHD/x file path
         [Parameter(Mandatory)]

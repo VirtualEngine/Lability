@@ -9,6 +9,7 @@ function New-UnattendXml {
        to pull its configuration from the specified pull server.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     [OutputType([System.Xml.XmlDocument])]
     param (
         # Local Administrator Password

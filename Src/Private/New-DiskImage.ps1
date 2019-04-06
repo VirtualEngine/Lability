@@ -4,6 +4,7 @@ function New-DiskImage {
         Create a new formatted disk image.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## VHD/x file path
         [Parameter(Mandatory)]
