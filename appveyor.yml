@@ -24,12 +24,4 @@ build: false
 
 test_script:
     - ps: |
-        Invoke-Pester -Script .\Tests
-
-#---------------------------------#
-#      deployment configuration   #
-#---------------------------------#
-
-deploy_script:
-  - ps: |
-        Invoke-AppVeyorDeployTask
+        Invoke-Pester -Script .\Tests -OutputXml .\Test-Pester.xml
