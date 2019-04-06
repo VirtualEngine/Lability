@@ -4,7 +4,7 @@ function New-DiskImageGpt {
         Create a new GPT-formatted disk image.
 #>
     [CmdletBinding()]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
+    #[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Mounted VHD(X) Operating System disk image
         [Parameter(Mandatory)]
