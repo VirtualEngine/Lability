@@ -134,7 +134,7 @@ Describe 'Src\Private\New-DiskImage' {
             Assert-MockCalled New-Vhd -ParameterFilter { $SizeBytes -eq $testDiskSize } -Scope It;
         }
 
-        It 'Disables BitLocker fixed drive write protection if enabled' {
+        It 'Disables/enables BitLocker fixed drive write protection (if required)' {
             $testVhdPath = "TestDrive:\TestImage.vhdx";
             $testDiskNumber = 10;
             $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
@@ -144,12 +144,13 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Remove-Item -MockWith { };
             Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
             Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
-            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 1 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
-            Mock Set-ItemProperty -MockWith { } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+            Mock Disable-BitLockerFDV -MockWith { }
+            Mock Assert-BitLockerFDV -MockWith { }
 
             New-DiskImage @newDiskImageParams
 
-            Assert-MockCalled Set-ItemProperty -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'} -Exactly 2 -Scope It
+            Assert-MockCalled Disable-BitLockerFDV -Exactly 1 -Scope It
+            Assert-MockCalled Assert-BitLockerFDV -Exactly 1 -Scope It
         }
 
     } #end InModuleScope

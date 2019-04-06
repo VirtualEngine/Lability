@@ -66,13 +66,8 @@ function Set-LabVMDiskFile {
         }
         $vhdPath = Resolve-LabVMGenerationDiskPath @resolveLabVMGenerationDiskPathParams;
 
-        ## Disable BitLocker fixed drive write protection if enabled
-        $FDVDenyWriteAccess = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess').FDVDenyWriteAccess;
-        if ($FDVDenyWriteAccess) {
-
-            Write-Verbose -Message $localized.DisablingBitlockerWriteProtection
-            Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value 0;
-        }
+        ## Disable BitLocker fixed drive write protection (if enabled)
+        Disable-BitLockerFDV;
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Hyper-V\Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
@@ -103,10 +98,8 @@ function Set-LabVMDiskFile {
             Write-Verbose -Message ($localized.DismountingDiskImage -f $VhdPath);
             Hyper-V\Dismount-Vhd -Path $VhdPath -Confirm:$false;
 
-            if ($FDVDenyWriteAccess) {
-
-                Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value $FDVDenyWriteAccess;
-            }
+            ## Enable BitLocker (if required)
+            Assert-BitLockerFDV;
         }
 
     } #end process

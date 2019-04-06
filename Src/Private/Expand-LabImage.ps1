@@ -68,13 +68,8 @@ function Expand-LabImage {
 
             if ($mediaFileInfo.Extension -eq '.ISO') {
 
-                ## Disable BitLocker fixed drive write protection if enabled
-                $FDVDenyWriteAccess = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess').FDVDenyWriteAccess;
-                if ($FDVDenyWriteAccess) {
-
-                    Write-Verbose -Message $localized.DisablingBitlockerWriteProtection
-                    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value 0;
-                }
+                ## Disable BitLocker fixed drive write protection (if enabled)
+                Disable-BitLockerFDV;
 
                 ## Mount ISO
                 Write-Verbose -Message ($localized.MountingDiskImage -f $MediaPath);
@@ -122,8 +117,7 @@ function Expand-LabImage {
                 Verbose = $false;
                 ErrorAction = 'Stop';
             }
-            $dismOutput = Expand-WindowsImage @expandWindowsImageParams;
-
+            [ref] $null = Expand-WindowsImage @expandWindowsImageParams;
             [ref] $null = Get-PSDrive;
 
             ## Add additional packages (.cab) files
@@ -143,7 +137,7 @@ function Expand-LabImage {
                     ## Use the specified/literal path
                     $addLabImageWindowsPackageParams['PackagePath'] = $PackagePath;
                 }
-                $dismOutput = Add-LabImageWindowsPackage @addLabImageWindowsPackageParams;
+                [ref] $null = Add-LabImageWindowsPackage @addLabImageWindowsPackageParams;
 
             } #end if Package
 
@@ -163,7 +157,7 @@ function Expand-LabImage {
                     ## The Windows optional feature source path for .WIM files is a literal path
                     $addLabImageWindowsOptionalFeatureParams['ImagePath'] = $SourcePath;
                 }
-                $dismOutput = Add-LabImageWindowsOptionalFeature @addLabImageWindowsOptionalFeatureParams;
+                [ref] $null = Add-LabImageWindowsOptionalFeature @addLabImageWindowsOptionalFeatureParams;
             } #end if WindowsOptionalFeature
 
         }
@@ -181,10 +175,8 @@ function Expand-LabImage {
                 Storage\Dismount-DiskImage -ImagePath $MediaPath;
             }
 
-            if ($FDVDenyWriteAccess) {
-
-                Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value $FDVDenyWriteAccess;
-            }
+            ## Enable BitLocker (if required)
+            Assert-BitLockerFDV
 
         } #end finally
 

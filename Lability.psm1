@@ -46,6 +46,10 @@ $credentialCheckScriptBlock = {
     }
 }
 
+## Store the BitLocker full drive encryption status (used bu Disable-BitLockerFDV and Assert-BitLockerFDV functions)
+$fdvDenyWriteAccessPath = 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE'
+$fdvDenyWriteAccess = (Get-ItemProperty -Path $fdvDenyWriteAccessPath -Name 'FDVDenyWriteAccess' -ErrorAction SilentlyContinue).FDVDenyWriteAccess -as [System.Boolean]
+
 ## Load the call stack logging setting referenced by Write-Verbose
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;
 

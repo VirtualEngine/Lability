@@ -57,7 +57,7 @@ Describe 'Src\Private\Expand-LabIso' {
             Assert-MockCalled Dismount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath } -Scope It;
         }
 
-        It 'Disables BitLocker fixed drive write protection if enabled' {
+        It 'Disables/enables BitLocker fixed drive write protection (if required)' {
             $testIsoPath = 'TestDrive:\TestIsoImage.iso';
             $testDestinationPath = 'Y:\';
             $testIsoMountDrive = 'Z';
@@ -66,12 +66,13 @@ Describe 'Src\Private\Expand-LabIso' {
             Mock CopyDirectory -MockWith { }
             Mock Dismount-DiskImage -MockWith { }
             Mock Mount-DiskImage -ParameterFilter { $ImagePath -eq $testIsoPath -and $Access -eq 'ReadOnly' } -MockWith { return $fakeDiskImage; }
-            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 1 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
-            Mock Set-ItemProperty -MockWith { } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
+            Mock Disable-BitLockerFDV -MockWith { }
+            Mock Assert-BitLockerFDV -MockWith { }
 
             Expand-LabIso -Path $testIsoPath -DestinationPath $testDestinationPath;
 
-            Assert-MockCalled Set-ItemProperty -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'} -Exactly 2 -Scope It
+            Assert-MockCalled Disable-BitLockerFDV -Exactly 1 -Scope It
+            Assert-MockCalled Assert-BitLockerFDV -Exactly 1 -Scope It
         }
 
     } #end InModuleScope

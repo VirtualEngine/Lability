@@ -5,3 +5,5 @@
 *.suo
 *.pssproj
 *.mof
+/.vscode
+TestResults.xml

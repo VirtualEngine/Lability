@@ -176,6 +176,8 @@ ConvertFrom-StringData -StringData @'
     LoadedModuleVersion               = Loaded {0} module version '{1}'.
     ProcessingMofFile                 = Processing DSC node configuration file '{0}'.
     AutomaticCheckPointsNotSupported  = Automatic checkpoints are only supported in Windows 10 "Fall Creators" update (1709 and later) builds.
+    DisablingBitLockerWriteProtection = Temporarily disabling BitLocker fixed drive write protection to prevent read-only mounted drives.
+    EnablingBitLockerWriteProtection  = Enabling BitLocker fixed drive write protection to enforce read-only mounted drives.
 
     NoCertificateFoundWarning         = No '{0}' certificate was found.
     CannotLocateLcmFileWarning        = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -257,5 +259,4 @@ ConvertFrom-StringData -StringData @'
     InvalidVhdSizeError               = Invalid VHD/X size '{0}' specified. Specify a size between 3145728 and 2190433320960 bytes.
     DismVersionMismatchError          = Media '{0}' requires DISM version '{1}' or later installed to create the image.
     AmbiguousSwitchNameError          = Ambiguous switch '{0}' name. More than one virtual switch with a matching name was found.
-    DisablingBitLockerWriteProtection = Disabling BitLocker fixed drive write protection to prevent read-only mounted drives.
 '@

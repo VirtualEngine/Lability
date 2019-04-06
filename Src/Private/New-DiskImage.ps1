@@ -56,13 +56,8 @@ function New-DiskImage {
         Write-Verbose -Message ($localized.CreatingDiskImageType -f $Type.ToLower(), $Path, ($Size/1MB));
         [ref] $null = Hyper-V\New-Vhd @newVhdParams;
 
-        ## Disable BitLocker fixed drive write protection if enabled
-        $FDVDenyWriteAccess = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess').FDVDenyWriteAccess;
-        if ($FDVDenyWriteAccess) {
-
-            Write-Verbose -Message $localized.DisablingBitlockerWriteProtection
-            Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value 0;
-        }
+        ## Disable BitLocker fixed drive write protection (if enabled)
+        Disable-BitLockerFDV;
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
         $vhdMount = Hyper-V\Mount-VHD -Path $Path -Passthru;
@@ -88,10 +83,8 @@ function New-DiskImage {
             Hyper-V\Dismount-VHD -Path $Path;
         }
 
-        if ($FDVDenyWriteAccess) {
-
-            Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE' -Name 'FDVDenyWriteAccess' -Value $FDVDenyWriteAccess;
-        }
+        ## Enable BitLocker (if required)
+        Assert-BitLockerFDV;
 
     } #end process
 } #end function
