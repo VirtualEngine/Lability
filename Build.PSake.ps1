@@ -119,10 +119,7 @@ Task Test {
         PassThru = $true;
         Verbose = $false;
     }
-    $testResult = Invoke-Pester @invokePesterParams;
-    if ($testResult.FailedCount -gt 0) {
-        Write-Error ('Failed "{0}" unit tests.' -f $testResult.FailedCount);
-    }
+    $null = Invoke-Pester @invokePesterParams;
 
 } #end task Test
 
