@@ -1,3 +1,7 @@
+| master branch | dev branch |
+| ------------- | ---------- |
+| [![Build status](https://ci.appveyor.com/api/projects/status/qffyfab12jucd3qj?svg=true)](https://ci.appveyor.com/project/iainbrighton/lability-9tjgw) | [![Build status](https://ci.appveyor.com/api/projects/status/qffyfab12jucd3qj/branch/dev?svg=true)](https://ci.appveyor.com/project/iainbrighton/lability-9tjgw/branch/dev)
+
 # Lability #
 
 <img align="right" alt="Lability logo" src="https://raw.githubusercontent.com/VirtualEngine/Lability/dev/Lability.png">
