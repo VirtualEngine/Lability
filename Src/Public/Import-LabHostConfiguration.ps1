@@ -19,7 +19,7 @@ function Import-LabHostConfiguration {
 
         ## Restores only the lab host default settings
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $Host,
+        [System.Management.Automation.SwitchParameter] $HostSetting,
 
         ## Restores only the lab VM default settings
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -63,28 +63,28 @@ function Import-LabHostConfiguration {
             throw $errorMessage;
         }
 
-        if ((-not $PSBoundParameters.ContainsKey('Host')) -and
+        if ((-not $PSBoundParameters.ContainsKey('HostSetting')) -and
                 (-not $PSBoundParameters.ContainsKey('VM')) -and
                     (-not $PSBoundParameters.ContainsKey('Media'))) {
 
             ## Nothing specified to load 'em all!
             $VM = $true;
-            $Host = $true;
+            $HostSetting = $true;
             $Media = $true;
         }
 
         Write-Verbose -Message ($localized.ImportingConfigurationSettings -f $configuration.GenerationDate, $configuration.GenerationHost);
 
-        if ($Host) {
+        if ($HostSetting) {
 
             $verboseMessage = Get-FormattedMessage -Message ($localized.RestoringConfigurationSettings -f 'Host');
             $operationMessage = $localized.ShouldProcessOperation -f 'Import', 'Host';
             if ($PSCmdlet.ShouldProcess($verboseMessage, $operationMessage, $localized.ShouldProcessActionConfirmation)) {
 
                 [ref] $null = Reset-LabHostDefault -Confirm:$false;
-                $hostDefaultObject = $configuration.HostDefaults;
-                $hostDefaults = Convert-PSObjectToHashtable -InputObject $hostDefaultObject;
-                Set-LabHostDefault @hostDefaults -Confirm:$false;
+                $hostSettingDefaultObject = $configuration.HostDefaults;
+                $hostSettingDefaults = Convert-PSObjectToHashtable -InputObject $hostSettingDefaultObject;
+                Set-LabHostDefault @hostSettingDefaults -Confirm:$false;
                 Write-Verbose -Message ($localized.ConfigurationRestoreComplete -f 'Host');
             }
         } #end if restore host defaults

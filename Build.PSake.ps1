@@ -92,7 +92,7 @@ function Get-ModuleVersionNumber {
     }
 }
 
-Task Default -Depends Build;
+Task Default -Depends Test;
 
 Task Build -Depends Init, Clean, Test, Deploy, Sign;
 
@@ -123,6 +123,7 @@ Task Test {
     if ($testResult.FailedCount -gt 0) {
         Write-Error ('Failed "{0}" unit tests.' -f $testResult.FailedCount);
     }
+
 } #end task Test
 
 Task Appveyor -Depends Test {
