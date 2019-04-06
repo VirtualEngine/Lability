@@ -35,7 +35,7 @@ Task Clean -Depends Init {
 Task Test {
     $invokePesterParams = @{
         Path = "$basePath\Tests";
-        OutputFile = "$releasePath\TestResult.xml";
+        OutputFile = "$basePath\TestResults.xml";
         OutputFormat = 'NUnitXml';
         Strict = $true;
         PassThru = $true;
@@ -46,6 +46,17 @@ Task Test {
         Write-Error ('Failed "{0}" unit tests.' -f $testResult.FailedCount);
     }
 } #end task Test
+
+Task Appveyor -Depends Test {
+
+    #Upload test results
+    Get-ChildItem -Path "$basePath\*Results*.xml" | Foreach-Object {
+        $address = "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)"
+        $source = $_.FullName
+        Write-Verbose "UPLOADING TEST FILE: $address $source" -Verbose
+        #(New-Object 'System.Net.WebClient').UploadFile( $address, $source )
+    }
+}
 
 Task Deploy -Depends Clean {
     Get-ChildItem -Path $basePath -Exclude $exclude | ForEach-Object {

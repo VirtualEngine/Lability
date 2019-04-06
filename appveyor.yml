@@ -24,4 +24,4 @@ build: false
 
 test_script:
     - ps: |
-        Invoke-Pester -Script .\Tests -OutputFile .\Test-Pester.xml
+        Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Appveyor
