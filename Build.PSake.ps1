@@ -9,7 +9,16 @@ Properties {
     $releasePath = (Join-Path -Path $buildPath -ChildPath $moduleName);
     $thumbprint = '3DACD0F2D1E60EB33EC774B9CFC89A4BEE9037AF';
     $timeStampServer = 'http://timestamp.verisign.com/scripts/timestamp.dll';
-    $exclude = @('.git*', '.vscode', 'Release', 'Tests', 'Build.PSake.ps1', '*.png','readme.md');
+    $exclude = @(
+                '.git*',
+                '.vscode',
+                'Release',
+                'Tests',
+                'Build.PSake.ps1',
+                '*.png',
+                'readme.md',
+                'TestResults.xml'
+                );
     $signExclude = @('Examples','DSCResources');
 }
 
@@ -112,27 +121,30 @@ Task Clean -Depends Init {
 
 Task Test {
     $invokePesterParams = @{
-        Path = "$basePath\Tests";
+        Path = "$basePath\Tests\Linting";
         OutputFile = "$basePath\TestResults.xml";
         OutputFormat = 'NUnitXml';
         Strict = $true;
         PassThru = $true;
         Verbose = $false;
     }
-    $null = Invoke-Pester @invokePesterParams;
+    $testResult = Invoke-Pester @invokePesterParams;
+    if ($testResult.FailedCount -gt 0) {
+        Write-Error ('Failed "{0}" unit tests.' -f $testResult.FailedCount);
+    }
 
 } #end task Test
 
-Task Appveyor -Depends Test {
+Task Appveyor {
 
-    #Upload test results
+    # Upload test results to Appveyor
     Get-ChildItem -Path "$basePath\*Results*.xml" | Foreach-Object {
         $address = "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)"
         $source = $_.FullName
         Write-Verbose "UPLOADING TEST FILE: $address $source" -Verbose
         (New-Object 'System.Net.WebClient').UploadFile( $address, $source )
     }
-}
+} #end task Appveyor
 
 Task Deploy -Depends Clean {
     Get-ChildItem -Path $basePath -Exclude $exclude | ForEach-Object {

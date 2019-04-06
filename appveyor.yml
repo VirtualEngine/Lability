@@ -24,4 +24,8 @@ build: false
 
 test_script:
     - ps: |
+        Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Test; exit (!$psake.build_success -as [int])
+
+on_finish:
+  - ps: |
         Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Appveyor
