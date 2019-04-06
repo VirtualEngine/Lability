@@ -4,7 +4,7 @@
 
 ### Unreleased ###
 
-* Updates bundled xHyper-V DSC resource to v3.15.0
+* Updates bundled xHyper-V DSC resource to v3.16.0
 * Updates bundled xPendingReboot DSC resource to v0.4.0.0
 * Fixes a bug where a certain BitLocker policy causes mounting errors
 
