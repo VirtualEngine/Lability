@@ -12,7 +12,7 @@ environment:
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -WarningAction SilentlyContinue -Verbose
-    - ps: Install-Module -Name Pester, PSSCriptAnalyzer, PSake, VirtualEngine.Build -Scope CurrentUser -Force -Verbose
+    - ps: Install-Module -Name Pester, PSSCriptAnalyzer, PSake, VirtualEngine.Build -Scope CurrentUser -Force -AllowClobber -Verbose
     - ps: $null = Invoke-Expression ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
 
 build: false
