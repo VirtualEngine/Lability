@@ -14,8 +14,19 @@ $labDefaults = @{
     DismVersion = $null;
 }
 
-## Import localisation strings
-Import-LocalizedData -BindingVariable localized -FileName Resources.psd1;
+#region LocalizedData
+$culture = 'en-us'
+if (Test-Path -Path (Join-Path -Path $labDefaults.ModuleRoot -ChildPath $PSUICulture)) {
+    $culture = $PSUICulture
+}
+$importLocalizedDataParams = @{
+    BindingVariable = 'localized';
+    Filename = "Lability.Resources.psd1";
+    BaseDirectory = $moduleRoot;
+    UICulture = $culture;
+}
+Import-LocalizedData @importLocalizedDataParams;
+#endregion LocalizedData
 
 ## Import the \Src files. This permits loading of the module's functions for unit testing, without having to unload/load the module.
 $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;

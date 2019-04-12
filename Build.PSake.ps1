@@ -1,4 +1,6 @@
 #requires -Version 5;
+#requires -Modules VirtualEngine.Build;
+
 $psake.use_exit_on_error = $true;
 
 Properties {
@@ -16,101 +18,28 @@ Properties {
                 'Tests',
                 'Build.PSake.ps1',
                 '*.png',
-                'readme.md',
-                'TestResults.xml'
+                '*.md',
+                '*.enc',
+                'TestResults.xml',
+                'appveyor.yml',
+                'appveyor-tools'
                 );
     $signExclude = @('Examples','DSCResources');
 }
 
-function Set-ScriptSignature {
-    <#
-        .SYNOPSIS
-            Signs a script file.
-        .DESCRIPTION
-            The Set-ScriptSignature cmdlet signs a PowerShell script file using the specified certificate thumbprint.
-        .EXAMPLE
-            Set-ScriptSignature -Path .\Example.psm1 -Thumbprint D10BB31E5CE3048A7D4DA0A4DD681F05A85504D3
-
-            This example signs the 'Example.psm1' file in the current path using the certificate.
-    #>
-    [CmdletBinding(DefaultParameterSetName = 'Path')]
-    [OutputType([System.Management.Automation.Signature])]
-    param (
-        # One or more files/paths of the files to sign.
-        [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Path')]
-        [ValidateNotNullOrEmpty()] [Alias('PSPath','FullName')]
-        [System.String[]] $Path = (Get-Location -PSProvider FileSystem),
-
-        # One or more literal files/paths of the files to sign.
-        [Parameter(Position = 0, ValueFromPipelineByPropertyName, ParameterSetName = 'LiteralPath')]
-        [ValidateNotNullOrEmpty()]
-        [System.String[]] $LiteralPath,
-
-        # Thumbprint of the certificate to use.
-        [Parameter(Position = 1, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $Thumbprint,
-
-        # Signing timestamp server URI
-        [Parameter(Position = 2, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [System.String] $TimeStampServer = 'http://timestamp.verisign.com/scripts/timestamp.dll'
-    )
-    begin
-    {
-        if ($PSCmdlet.ParameterSetName -eq 'Path') {
-            for ($i = 0; $i -lt $Path.Length; $i++) {
-                $Path[$i] = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path);
-            }
-        }
-        else {
-            $Path = $LiteralPath;
-        } # end if
-        $codeSigningCert = Get-ChildItem -Path Cert:\ -CodeSigningCert -Recurse | Where-Object Thumbprint -eq $Thumbprint;
-        if (!$codeSigningCert) {
-            throw ("Invalid certificate thumbprint '{0}." -f $Thumbprint);
-        }
-    } #begin
-    process
-    {
-        foreach ($resolvedPath in $Path) {
-            if (Test-Path -Path $resolvedPath -PathType Leaf) {
-                $signResult = Set-AuthenticodeSignature -Certificate $codeSigningCert -TimestampServer $TimeStampServer -FilePath $Path;
-                if ($signResult.Status -ne 'Valid') {
-                    Write-Error ("Error signing file '{0}'." -f $Path);
-                }
-                Write-Output $signResult;
-            }
-            else {
-                Write-Warning ("File path '{0}' was not found or was a directory." -f $resolvedPath);
-            }
-        } #foreach
-    } #process
-} #function
-
-function Get-ModuleVersionNumber {
-    [CmdletBinding()]
-    param ()
-    process
-    {
-        $sourceModuleManifestPath = Join-Path -Path $BuildRoot -ChildPath "$ModuleName.psd1"
-        $sourceModuleManifest = Test-ModuleManifest -Path $sourceModuleManifestPath
-        $commitCount = git.exe rev-list HEAD --count
-        $currentVersion = $sourceModuleManifest.Version
-        return New-Object -TypeName System.Version -ArgumentList ($currentVersion.Major, $currentVersion.Minor, $commitCount)
-    }
-}
-
-Task Default -Depends Test;
-
-Task Build -Depends Init, Clean, Test, Deploy, Sign;
-
+# Synopsis:
 Task Init {
 
+    # Properties are not available in the script scope.
+    Set-Variable manifest -Value (Get-ModuleManifest) -Scope Script;
+    Set-Variable version -Value $manifest.Version -Scope Script;
+    Write-Host (" Building module '{0}'." -f $manifest.Name) -ForegroundColor Yellow;
+    Write-Host (" Building version '{0}'." -f $version) -ForegroundColor Yellow;
 } #end task Init
 
-## Remove release directory
+# Synopsis: Cleans the release directory
 Task Clean -Depends Init {
+
     Write-Host (' Cleaning release directory "{0}".' -f $buildPath) -ForegroundColor Yellow;
     if (Test-Path -Path $buildPath) {
         Remove-Item -Path $buildPath -Include * -Recurse -Force;
@@ -119,7 +48,9 @@ Task Clean -Depends Init {
     [ref] $null = New-Item -Path $releasePath -ItemType Directory -Force;
 } #end task Clean
 
-Task Test {
+# Synopsis: Invokes Pester tests
+Task Test -Depends Init {
+
     $invokePesterParams = @{
         Path = "$basePath\Tests";
         OutputFile = "$basePath\TestResults.xml";
@@ -132,28 +63,27 @@ Task Test {
     if ($testResult.FailedCount -gt 0) {
         Write-Error ('Failed "{0}" unit tests.' -f $testResult.FailedCount);
     }
+}
 
-} #end task Test
-
-Task Appveyor {
-
-    # Upload test results to Appveyor
-    Get-ChildItem -Path "$basePath\*Results*.xml" | Foreach-Object {
-        $address = "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)"
-        $source = $_.FullName
-        Write-Verbose "UPLOADING TEST FILE: $address $source" -Verbose
-        (New-Object 'System.Net.WebClient').UploadFile( $address, $source )
-    }
-} #end task Appveyor
-
+# Synopsis: Copies release files to the release directory
 Task Deploy -Depends Clean {
+
     Get-ChildItem -Path $basePath -Exclude $exclude | ForEach-Object {
         Write-Host (' Copying {0}' -f $PSItem.FullName) -ForegroundColor Yellow;
         Copy-Item -Path $PSItem -Destination $releasePath -Recurse;
     }
-} #end task Deploy
+} #end
 
+# Synopsis: Signs files in release directory
 Task Sign -Depends Deploy {
+
+    if (-not (Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object Thumbprint -eq $thumbprint)) {
+        ## Decrypt and import code signing cert
+        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2019.pfx.enc -secret $env:certificate_secret
+        $certificatePassword = ConvertTo-SecureString -String $env:certificate_secret -AsPlainText -Force
+        Import-PfxCertificate -FilePath .\VE_Certificate_2019.pfx -CertStoreLocation 'Cert:\CurrentUser\My' -Password $certificatePassword
+    }
+
     Get-ChildItem -Path $releasePath -Exclude $signExclude | ForEach-Object {
         if ($PSItem -is [System.IO.DirectoryInfo]) {
             Get-ChildItem -Path $PSItem.FullName -Include *.ps* -Recurse | ForEach-Object {
@@ -169,8 +99,49 @@ Task Sign -Depends Deploy {
             Write-Host (' {0}.' -f $signResult.Status) -ForegroundColor Green;
         }
     }
-} #end task Sign
+}
 
-Task Publish -Depends Build {
+Task Version -Depends Deploy {
+
+    $nuSpecPath = Join-Path -Path $releasePath -ChildPath "$ModuleName.nuspec"
+    $nuspec = [System.Xml.XmlDocument] (Get-Content -Path $nuSpecPath -Raw)
+    $nuspec.Package.MetaData.Version = $version.ToString()
+    $nuspec.Save($nuSpecPath)
+}
+
+# Synopsis: Publishes release module to PSGallery
+Task Publish_PSGallery -Depends Version {
+
     Publish-Module -Path $releasePath -NuGetApiKey "$env:gallery_api_key";
 } #end task Publish
+
+# Synopsis: Creates release module Nuget package
+Task Package -Depends Build {
+
+    $targetNuSpecPath = Join-Path -Path $releasePath -ChildPath "$ModuleName.nuspec"
+    NuGet.exe pack "$targetNuSpecPath" -OutputDirectory "$env:TEMP"
+}
+
+# Synopsis: Publish release module to Dropbox repository
+Task Publish_Dropbox -Depends Package {
+
+    $targetNuPkgPath = Join-Path -Path "$env:TEMP" -ChildPath "$ModuleName.$version.nupkg"
+    $destinationPath = "$env:USERPROFILE\Dropbox\PSRepository"
+    Copy-Item -Path "$targetNuPkgPath"-Destination $destinationPath -Force
+}
+
+# Synopsis: Publish test results to AppVeyor
+Task AppVeyor {
+
+    Get-ChildItem -Path "$basePath\*Results*.xml" | Foreach-Object {
+        $address = 'https://ci.appveyor.com/api/testresults/nunit/{0}' -f $env:APPVEYOR_JOB_ID
+        $source = $_.FullName
+        Write-Verbose "UPLOADING TEST FILE: $address $source" -Verbose
+        (New-Object 'System.Net.WebClient').UploadFile( $address, $source )
+    }
+}
+
+Task Default -Depends Init, Clean, Test
+Task Build -Depends Default, Deploy, Version, Sign;
+Task Publish -Depends Build, Package, Publish_PSGallery
+Task Local -Depends Build, Package, Publish_Dropbox
