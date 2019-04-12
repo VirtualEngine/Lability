@@ -30,17 +30,17 @@ for:
 
   test_script:
     - ps: |
-        Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Test
-        Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
-        if (-not $psake.build_success) { exit 1 }
+          Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Test
+          Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
+          if (-not $psake.build_success) { exit 1 }
 
 -
- branches:
-   only:
-     - master
+  branches:
+    only:
+      - master
 
   test_script:
-      - ps: |
+    - ps: |
           Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Publish
           Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
           if (-not $psake.build_success) { exit 1 }
