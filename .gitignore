@@ -7,3 +7,4 @@
 *.mof
 /.vscode
 TestResults.xml
+appveyor-tools/

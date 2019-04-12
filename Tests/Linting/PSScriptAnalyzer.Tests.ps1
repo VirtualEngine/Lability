@@ -1,4 +1,5 @@
 #requires -Version 4
+#requires -Modules PSScriptAnalyzer
 
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..").Path;
 Describe 'Linting\PSScriptAnalyzer' {
