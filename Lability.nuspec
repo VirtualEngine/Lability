@@ -11,7 +11,7 @@
     <projectUrl>https://github.com/VirtualEngine/Lability</projectUrl>
     <copyright>(c) 2019 Virtual Engine Limited. All rights reserved.</copyright>
     <iconUrl>https://raw.githubusercontent.com/VirtualEngine/Lability/master/Lability.png</iconUrl>
-    <licenseUrl>https://github.com/VirtualEngine/Lability/blob/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>VirtualEngine Lability Powershell Development Build HyperV Hyper-V Test Lab TestLab</tags>
   </metadata>

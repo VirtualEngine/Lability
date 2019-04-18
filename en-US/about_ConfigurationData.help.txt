@@ -2,29 +2,29 @@ TOPIC
         about_ConfigurationData
 
 SHORT DESCRIPTION
-    
+
         Provisioning lab environments requires a PowerShell Desired State Configuration (.psd1) document. Lability
         uses the configuration document to create and configure virtual machines and networking. Additional metadata
         can be added to the configuration document to instruct Lability to perform specific configuration actions.
 
 LONG DESCRIPTION
-    
+
         When provisioning lab environments, a PowerShell Desired State Configuration document (.psd1) is required. The
         configuration document contains an AllNodes array of hashtables containing node information. Each node is
         parsed to determine the number and names of virtual machines to provision.
-        
+
         To customise the provisioned virtual machines, additional metadata can be added to the configuration (.psd1)
         document. If no additional metadata is defined within the configuration document, Lability will provision all
         virtual machines with default values, e.g. a default operating system, memory configuration and a virtual
         switch. The default virtual machine values can be retrieved by running the following command:
-        
+
             PS C:\> Get-LabVMDefault
-            
+
         The default value applied to each individual virtual machine can be altered without changing the default
         values applied to all VMs. To override the default values for a virtual machine, additional metadata can be
         added to the node's configuration. For example, to alter the number of processors assigned to all VMs to 2,
         the `Lability_ProcessorCount` property can be set on each node:
-        
+
             @{
                 AllNodes = @(
                     @{
@@ -37,10 +37,10 @@ LONG DESCRIPTION
                     }
                 )
             }
-            
+
         Lability also supports using the all nodes/wilcard node. The following example will also configure all VMs
         with a processor count of 2:
-        
+
             @{
                 AllNodes = @(
                     @{
@@ -57,55 +57,55 @@ LONG DESCRIPTION
             }
 
         NOTE: the 'Lability_' prefix is optional, but is recommended to avoid clashes with existing properties.
-        
+
 SUPPORTED CONFIGURATION PROPERTIES
 
         The following properties are supported within a node's declaration within the configuration document:
-        
+
             *  StartupMemory [System.UInt64]
                 - The amount of startup memory (in bytes) applied to the virtual machine.
-            
+
             *  MinimumMemory [System.UInt64]
                 - The minimum amount of dynamic memory (in bytes) applied to the virtual machine.
-            
+
             *  MaximumMemory [System.UInt64]
                 - The maximum amount of dynamic memory (in bytes) applied to the virtual machine.
-            
+
             *  ProcessorCount [System.Int32]
                 - The number of virtual CPUs applied to the virtual machine.
-            
+
             *  SwitchName [System.String[]]
                 - The name/Id of the virtual switch(es) to connect the virtual machine to.
                 - Multiple virtual switches can be configured.
                 - One virtual network adatper is created per switch name.
                 - See `Get-Help -Name about_Networking` for more information on networking configurations.
-            
+
             *  Media [System.String]
                 - The media Id of the operating system to apply to the virtual machine.
                 - See `Get-Help -Name about_Media` for more information on media.
-            
+
             *  Timezone [System.String]
                 - The timezone Id applied to the virtual machine's operating system.
                 - Timezones can be listed by running `[System.TimeZoneInfo]::GetSystemTimeZones()`
-            
+
             *  UILanguage [System.String]
                 - The UI language applied to the virtual machine's operating system.
                 - This value should be specified in the 'fr-FR' format, i.e. en-US.
-            
+
             *  SystemLocale [System.String]
                 - The locale applied to the virtual machine's operating system.
                 - This value should be specified in the 'de-DE' format, i.e. en-US.
-                
+
             *  InputLocale [System.String]
                 - The default keyboard layout applied to the virtual machine's operating system.
                 - This value should be specified in the '0809:00000809' (en-GB) format.
-                
+
             *  RegisteredOwner [System.String]
                 - The registered owner applied to the virtual machine's operating system.
-                
+
             *  RegisteredOrganization [System.String]
                 - The registered owner applied to the virtual machine's operating system.
-                
+
             *  CustomBootstrap [System.String]
                 - Custom PowerShell commands that are executed after the virtual machine is deployed.
                 - This is applied before the PowerShell DSC Local Configuration Manager is invoked.
@@ -113,7 +113,7 @@ SUPPORTED CONFIGURATION PROPERTIES
             *  BootDelay [System.Int32]
                 - The number of seconds to wait after starting or stopping the virtual machine.
                 - This is used to permit a virtual machine to boot before starting other VMs.
-                
+
             *  BootOrder [System.Int32]
                 - Specifies the boot priority of the virtual machine.
                 - This is only enforced when using the Start-Lab and Stop-Lab cmdlets.
@@ -122,11 +122,11 @@ SUPPORTED CONFIGURATION PROPERTIES
                 - A virtual machine with the lowest boot order is stopped last.
                 - A virtual machine with the highest boot order is stopped first.
                 - All virtual machines with the same boot order are started/stopped in a random order.
-                
+
             *  WarningMessage [System.String]
                 - Displays a warning message when the virtual machine is deployed.
                 - This is typically used to display additional manual configuration tasks.
-                
+
             *  SecureBoot [System.Boolean]
                 - Specifies whether Secure Boot is enabled.
                 - Secure Boot is typically disabled/unsupported on non-UEFI (Generation 2) virtual machines.
@@ -135,10 +135,9 @@ KEYWORDS
     Lab configuration data
 
 SEE ALSO
-    about_Lability 
+    about_Lability
     about_Bootstrap
     about_Media
     about_Networking
     Get-LabVMDefault
     Set-LabVMDefault
-    

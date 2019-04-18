@@ -27,7 +27,7 @@ Properties {
     $signExclude = @('Examples','DSCResources');
 }
 
-# Synopsis:
+# Synopsis: Initialises build variables
 Task Init {
 
     # Properties are not available in the script scope.
@@ -112,7 +112,7 @@ Task Version -Depends Deploy {
 # Synopsis: Publishes release module to PSGallery
 Task Publish_PSGallery -Depends Version {
 
-    Publish-Module -Path $releasePath -NuGetApiKey "$env:gallery_api_key";
+    Publish-Module -Path $releasePath -NuGetApiKey "$env:gallery_api_key" -Verbose
 } #end task Publish
 
 # Synopsis: Creates release module Nuget package
