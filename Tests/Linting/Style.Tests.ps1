@@ -12,6 +12,7 @@ Describe 'Linting\Style' -Tags "Style" {
                         '*.jpg',
                         '*.docx',
                         '*.enc',
+                        '*.exe',
                         '*.dll',
                         '*.pfx',
                         '*.cer',

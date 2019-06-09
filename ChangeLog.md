@@ -9,6 +9,7 @@
 * Fixes a bug where a certain BitLocker policy causes mounting errors
 * Switches from PowerShell.org community build server to Appveyor
 * Adds PSScriptAnalyzer and styling linting tests
+* Fixes bug in Github hosted modules where branch name contains '/' (#361)
 
 ### v0.17.0 ###
 

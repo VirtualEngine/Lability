@@ -12,6 +12,7 @@ Describe 'Unit\Src\Private\Get-LabModuleCache' {
         $testModuleName = 'TestModule';
         $testOwner = 'TestOwner';
         $testBranch = 'master';
+        $testSubBranch = 'master/Issue361';
         $psGalleryModuleV03 = @{ Name = "$testModuleName`-v0.3.0.zip"; FullName = "TestDrive:\$testModuleName`-v0.3.0.zip"; Version = '0.3.0'; }
         $psGalleryModuleV1 =  @{ Name = "$testModuleName`-v1.0.0.zip"; FullName = "TestDrive:\$testModuleName`-v1.0.0.zip"; Version = '1.0.0'; }
         $psGalleryModuleV11 = @{ Name = "$testModuleName`-v1.1.0.zip"; FullName = "TestDrive:\$testModuleName`-v1.1.0.zip"; Version = '1.1.0'; }
@@ -19,9 +20,10 @@ Describe 'Unit\Src\Private\Get-LabModuleCache' {
         $gitHubModuleV031 = @{ Name = "$testModuleName`_$testOwner`_$testBranch.zip"; FullName = "TestDrive:\$testModuleName`_$testOwner_$testBranch.zip"; }
         $gitHubModuleV101 =  @{ Name = "$testModuleName`-v1.0.1_$testOwner`_$testBranch.zip"; FullName = "TestDrive:\$testModuleName`-v1.0.0_$testOwner_$testBranch.zip"; Version = '1.0.1'; }
         $gitHubModuleV111 = @{ Name = "$testModuleName`-v1.1.1_$testOwner`_$testBranch.zip"; FullName = "TestDrive:\$testModuleName`-v1.1.0_$testOwner_$testBranch.zip"; Version = '1.1.1'; }
-        $gitHubModuleV201 =  @{ Name = "$testModuleName`-v2.0.1_$testOwner`_$testBranch.zip"; FullName = "TestDrive:\$testModuleName`-v2.0.0_$testOwner_$testBranch.zip"; Version = '2.0.1'; }
+        $gitHubModuleV201 =  @{ Name = "$testModuleName`-v2.0.1_$testOwner`_$testBranch.zip"; FullName = "TestDrive:\$testModuleName`-v2.0.0_$testOwner_$testBranch_Issue361.zip"; Version = '2.0.1'; }
+        $gitHubModuleV361 =  @{ Name = "$testModuleName`-v3.6.1_$testOwner`_$testBranch`_Issue361.zip"; FullName = "TestDrive:\$testModuleName`-v3.6.1_$testOwner_$testBranch_`Issue361.zip"; Version = '3.6.1'; }
         $testPSGalleryModules = @($psGalleryModuleV1, $psGalleryModuleV11, $psGalleryModuleV2, $psGalleryModuleV03);
-        $testGitHubModules = @($gitHubModuleV101, $gitHubModuleV111, $gitHubModuleV201, $gitHubModuleV031);
+        $testGitHubModules = @($gitHubModuleV101, $gitHubModuleV111, $gitHubModuleV201, $gitHubModuleV031, $gitHubModuleV361);
 
         It 'Returns only a single module' {
 
@@ -267,6 +269,21 @@ Describe 'Unit\Src\Private\Get-LabModuleCache' {
             }
             { Get-LabModuleCache @testParams } | Should Throw "Module parameter 'MaximumVersion' is invalid";
 
+        }
+
+        It 'Returns the GitHub module version when a (sub)branch is specified (#361)' {
+
+            Mock Get-ChildItem -MockWith { return $testGitHubModules }
+
+            $testParams = @{
+                Name = $testModuleName;
+                Provider = 'GitHub';
+                Owner = $testOwner;
+                Branch = $testSubBranch
+            }
+            $result = Get-LabModuleCache @testParams -Verbose;
+
+            $result.Version | Should Be $gitHubModuleV361.Version;
         }
 
     } #end InModuleScope
