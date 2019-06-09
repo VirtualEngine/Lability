@@ -8,6 +8,8 @@ function Register-LabMedia {
         You can use the Register-LabMedia cmdlet to override the default media entries, e.g. you have the media hosted internally or you wish to replace the built-in media with your own implementation.
 
         To override a built-in media entry, specify the same media Id with the -Force switch.
+    .PARAMETER Legacy
+        Specifies registering a legacy Windows 10 media as custom media.
     .LINK
         Get-LabMedia
         Unregister-LabMedia
@@ -76,18 +78,42 @@ function Register-LabMedia {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
+    DynamicParam {
+
+        ## Adds a dynamic -Legacy parameter that returns the available legacy Windows 10 media Ids
+        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
+        $parameterAttribute.ParameterSetName = 'Legacy';
+        $parameterAttribute.Mandatory = $true;
+        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
+        $attributeCollection.Add($parameterAttribute);
+        $mediaIds = (Get-LabMedia -Legacy).Id;
+        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
+        $attributeCollection.Add($validateSetAttribute);
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('Legacy', [System.String], $attributeCollection);
+        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
+        $runtimeParameterDictionary.Add('Legacy', $runtimeParameter);
+        return $runtimeParameterDictionary;
+    }
     process {
 
         switch ($PSCmdlet.ParameterSetName) {
 
-            'FromUri' {
+            Legacy {
+
+                ## Download the json content and convert into a hashtable
+                $legacyMedia = Get-LabMedia -Id $PSBoundParameters.Legacy -Legacy | Convert-PSObjectToHashtable;
+
+                ## Recursively call Register-LabMedia and splat the properties
+                return (Register-LabMedia @legacyMedia -Force:$Force);
+            }
+
+            FromUri {
 
                 ## Download the json content and convert into a hashtable
                 $customMedia = Invoke-RestMethod -Uri $FromUri | Convert-PSObjectToHashtable;
 
                 ## Recursively call Register-LabMedia and splat the properties
                 return (Register-LabMedia @customMedia -Force:$Force);
-
             }
 
             default {

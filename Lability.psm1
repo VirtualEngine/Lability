@@ -9,6 +9,7 @@ $labDefaults = @{
     VmConfigFilename = 'VmDefaults.json';
     MediaConfigFilename = 'Media.json';
     CustomMediaConfigFilename = 'CustomMedia.json';
+    LegacyMediaPath = 'LegacyMedia';
     DscResourceDirectory = 'DSCResources';
     RepositoryUri = 'https://www.powershellgallery.com/api/v2/package';
     DismVersion = $null;
