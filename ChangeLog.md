@@ -10,6 +10,9 @@
 * Switches from PowerShell.org community build server to Appveyor
 * Adds PSScriptAnalyzer and styling linting tests
 * Fixes bug in Github hosted modules where branch name contains '/' (#361)
+* Updates Windows 10 evaluation media to Windows 10 1903 (19H1)
+  * Includes previous Windows 10 evaluation media definitions
+  * Adds -Legacy switch to Get-LabMedia and Register-LabMedia to import legacy media
 
 ### v0.17.0 ###
 

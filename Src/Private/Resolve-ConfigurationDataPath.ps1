@@ -6,15 +6,18 @@ function Resolve-ConfigurationDataPath {
         When -IncludeDefaultPath is specified, if the configuration data file is not found, the default
         module configuration path is returned.
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([System.Management.Automation.PSCustomObject])]
     param (
         [Parameter(Mandatory)]
-        [ValidateSet('Host','VM','Media','CustomMedia')]
+        [ValidateSet('Host', 'VM', 'Media', 'CustomMedia','LegacyMedia')]
         [System.String] $Configuration,
 
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter] $IncludeDefaultPath
+        [Parameter(ParameterSetName = 'Default')]
+        [System.Management.Automation.SwitchParameter] $IncludeDefaultPath,
+
+        [Parameter(Mandatory, ParameterSetName = 'IsDefaultPath')]
+        [System.Management.Automation.SwitchParameter] $IsDefaultPath
     )
     process {
 
@@ -36,10 +39,19 @@ function Resolve-ConfigurationDataPath {
 
                 $configPath = $labDefaults.CustomMediaConfigFilename;
             }
+            'LegacyMedia' {
+
+                $configPath = $labDefaults.LegacyMediaPath;
+            }
         }
         $configPath = Join-Path -Path $labDefaults.ConfigurationData -ChildPath $configPath;
         $resolvedPath = Join-Path -Path "$env:ALLUSERSPROFILE\$($labDefaults.ModuleName)" -ChildPath $configPath;
-        if ($IncludeDefaultPath) {
+
+        if ($IsDefaultPath) {
+
+            $resolvedPath = Join-Path -Path $labDefaults.ModuleRoot -ChildPath $configPath;
+        }
+        elseif ($IncludeDefaultPath) {
 
             if (-not (Test-Path -Path $resolvedPath)) {
 
@@ -47,7 +59,7 @@ function Resolve-ConfigurationDataPath {
             }
         }
         $resolvedPath = Resolve-PathEx -Path $resolvedPath;
-        Write-Debug -Message ('Resolved ''{0}'' configuration file to ''{1}''.' -f $Configuration, $resolvedPath);
+        Write-Debug -Message ('Resolved ''{0}'' configuration path to ''{1}''.' -f $Configuration, $resolvedPath);
         return $resolvedPath;
 
     } #end process
