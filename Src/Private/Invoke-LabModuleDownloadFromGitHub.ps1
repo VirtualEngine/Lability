@@ -62,6 +62,7 @@ function Invoke-LabModuleDownloadFromGitHub {
         $PSBoundParameters['Repository'] = $Repository;
         $PSBoundParameters['Branch'] = $Branch;
 
+        $Branch = $Branch.Replace('/','_') # Fix branch names with slashes (#361)
     }
     process {
 
