@@ -129,7 +129,7 @@ SUPPORTED CONFIGURATION PROPERTIES
 
             *  SecureBoot [System.Boolean]
                 - Specifies whether Secure Boot is enabled.
-                - Secure Boot is typically disabled/unsupported on non-UEFI (Generation 2) virtual machines.
+                - Secure Boot is typically disabled/unsupported on non-UEFI (Generation 1) virtual machines.
 
 KEYWORDS
     Lab configuration data
