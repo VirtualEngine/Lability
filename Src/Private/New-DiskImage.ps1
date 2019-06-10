@@ -4,6 +4,7 @@ function New-DiskImage {
         Create a new formatted disk image.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## VHD/x file path
         [Parameter(Mandatory)]
@@ -56,6 +57,9 @@ function New-DiskImage {
         Write-Verbose -Message ($localized.CreatingDiskImageType -f $Type.ToLower(), $Path, ($Size/1MB));
         [ref] $null = Hyper-V\New-Vhd @newVhdParams;
 
+        ## Disable BitLocker fixed drive write protection (if enabled)
+        Disable-BitLockerFDV;
+
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
         $vhdMount = Hyper-V\Mount-VHD -Path $Path -Passthru;
 
@@ -79,6 +83,9 @@ function New-DiskImage {
 
             Hyper-V\Dismount-VHD -Path $Path;
         }
+
+        ## Enable BitLocker (if required)
+        Assert-BitLockerFDV;
 
     } #end process
 } #end function

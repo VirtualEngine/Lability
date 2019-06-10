@@ -25,6 +25,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Initialize-Disk -MockWith { }
             Mock New-DiskImageMbr -MockWith { }
             Mock Remove-Item -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { };
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams;
 
@@ -41,6 +42,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Remove-Item -MockWith { };
             Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
             Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams;
 
@@ -57,6 +59,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Initialize-Disk -MockWith { }
             Mock New-DiskImageMbr -MockWith { }
             Mock Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams;
 
@@ -72,6 +75,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Initialize-Disk -MockWith { }
             Mock New-DiskImageMbr -MockWith { }
             Mock Dismount-VHD -ParameterFilter { $Path -eq $testVhdPath } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams;
 
@@ -88,6 +92,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Remove-Item -MockWith { };
             Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
             Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams;
 
@@ -104,6 +109,7 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Remove-Item -MockWith { };
             Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
             Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams -Type 'Fixed'
 
@@ -121,10 +127,30 @@ Describe 'Src\Private\New-DiskImage' {
             Mock Remove-Item -MockWith { };
             Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
             Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+            Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
             New-DiskImage @newDiskImageParams -Size $testDiskSize;
 
             Assert-MockCalled New-Vhd -ParameterFilter { $SizeBytes -eq $testDiskSize } -Scope It;
+        }
+
+        It 'Disables/enables BitLocker fixed drive write protection (if required)' {
+            $testVhdPath = "TestDrive:\TestImage.vhdx";
+            $testDiskNumber = 10;
+            $newDiskImageParams = @{ Path = (New-Item -Path $testVhdPath -Force -ItemType File); PartitionStyle = 'GPT'; Force = $true; }
+            Mock Dismount-VHD -MockWith { }
+            Mock Mount-VHD -MockWith { return [PSCustomObject] @{ DiskNumber = $testDiskNumber; } }
+            Mock New-DiskImageGpt -MockWith { }
+            Mock Remove-Item -MockWith { };
+            Mock Initialize-Disk -ParameterFilter { $Number -eq $testDiskNumber } -MockWith { }
+            Mock New-Vhd -ParameterFilter { $Path -eq $newDiskImageParams.Path } -MockWith { }
+            Mock Disable-BitLockerFDV -MockWith { }
+            Mock Assert-BitLockerFDV -MockWith { }
+
+            New-DiskImage @newDiskImageParams
+
+            Assert-MockCalled Disable-BitLockerFDV -Exactly 1 -Scope It
+            Assert-MockCalled Assert-BitLockerFDV -Exactly 1 -Scope It
         }
 
     } #end InModuleScope

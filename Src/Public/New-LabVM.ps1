@@ -124,7 +124,7 @@ function New-LabVM {
         ## Adds a dynamic -MediaId parameter that returns the available media Ids
         $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
         $parameterAttribute.ParameterSetName = '__AllParameterSets';
-        $parameterAttribute.Mandatory = $true;
+        $parameterAttribute.Mandatory = $false;
         $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
         $attributeCollection.Add($parameterAttribute);
         $mediaIds = (Get-LabMedia).Id;
@@ -171,7 +171,12 @@ function New-LabVM {
         }
 
         ## Ensure the specified MediaId is applied after any CustomData media entry!
-        $configurationNode['Media'] = $PSBoundParameters.MediaId;
+        if ($PSBoundParameters.ContainsKey('MediaId')) {
+            $configurationNode['Media'] = $PSBoundParameters.MediaId;
+        }
+        else {
+            $configurationNode['Media'] = (Get-LabVMDefault).Media;
+        }
 
         $currentNodeCount = 0;
         foreach ($vmName in $Name) {

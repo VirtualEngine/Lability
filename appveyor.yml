@@ -1,0 +1,46 @@
+#---------------------------------#
+#      environment configuration  #
+#---------------------------------#
+
+version: 0.17.{build}
+environment:
+  gallery_api_key:
+    secure: WeDp1yZJECZBjjW+22A8lA8+gmz+wiYostPKtU4pdLXORfK//eJCdR7f0k3oJ+2r
+  certificate_secret:
+    secure: 2NeBUwfDSJomxCyxUlwnqw==
+
+install:
+    - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
+    - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -WarningAction SilentlyContinue -Verbose
+    - ps: Install-Module -Name Pester, PSSCriptAnalyzer, PSake, VirtualEngine.Build -Scope CurrentUser -Force -AllowClobber -Verbose
+    - ps: $null = Invoke-Expression ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+
+build: false
+
+on_finish:
+  - ps: |
+        Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Appveyor
+
+for:
+
+-
+  branches:
+    only:
+      - dev
+
+  test_script:
+    - ps: |
+          Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Test
+          Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
+          if (-not $psake.build_success) { exit 1 }
+
+-
+  branches:
+    only:
+      - master
+
+  test_script:
+    - ps: |
+          Invoke-PSake -BuildFile .\Build.PSake.ps1 -TaskList Publish
+          Write-Verbose "PSake.build_success: $($psake.build_success)" -Verbose
+          if (-not $psake.build_success) { exit 1 }

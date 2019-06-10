@@ -30,6 +30,7 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
         Mock Set-LabVMDiskFileCertificate -MockWith { }
         Mock Set-LabVMDiskFileModule -MockWith { }
         Mock Dismount-Vhd -MockWith { }
+        Mock Get-ItemProperty -MockWith { [PSCustomObject] @{ FDVDenyWriteAccess = 0 } } -ParameterFilter {$Name -eq 'FDVDenyWriteAccess'}
 
         $testParams = @{
             NodeName = $testNode;
@@ -100,6 +101,17 @@ Describe 'Unit\Src\Private\Set-LabVMDiskFile' {
             Set-LabVMDiskFile @testParams;
 
             Assert-MockCalled Dismount-Vhd -ParameterFilter { $Path -eq $testVhdPath } -Scope It;
+        }
+
+        It 'Disables/enables BitLocker fixed drive write protection (if required)' {
+
+            Mock Disable-BitLockerFDV -MockWith { }
+            Mock Assert-BitLockerFDV -MockWith { }
+
+            Set-LabVMDiskFile @testParams;
+
+            Assert-MockCalled Disable-BitLockerFDV -Exactly 1 -Scope It
+            Assert-MockCalled Assert-BitLockerFDV -Exactly 1 -Scope It
         }
 
         It 'Dismounts virtual machine VHDX file when error is thrown' {

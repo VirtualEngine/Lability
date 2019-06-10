@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '3.11.0.0'
+moduleVersion = '3.16.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'f5a5f169-7026-4053-932a-19a7c37b1ca5'
@@ -47,11 +47,14 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Added the following resources:
-  * MSFT_xVMHardDiskDrive to manage additional attached VHD/Xs.
-  * MSFT_xVMScsiController to manage virtual machine SCSI controllers.
-* MSFT_xVMSwitch:
-  * Added parameter ot specify the Load Balancing Algorithm of a vSwitch with Switch Embedded Teaming (SET)
+        ReleaseNotes = '* MSFT_xVMHyperV:
+  * Moved localization string data to own file.
+  * Fixed code styling issues.
+  * Fixed bug where StartupMemory was not evaluated in Test-TargetResource.
+  * Redo of abandoned PRs:
+    * [PR 148](https://github.com/PowerShell/xHyper-V/pull/148), Fixes [Issue 149](https://github.com/PowerShell/xHyper-V/issues/149).
+    * [PR 67](https://github.com/PowerShell/xHyper-V/pull/67), Fixes [Issue 145](https://github.com/PowerShell/xHyper-V/issues/145).
+  * Fixed Get throws error when NetworkAdapters are not attached or missing properties.
 
 '
 
@@ -59,6 +62,11 @@ PrivateData = @{
 
 } # End of PrivateData hashtable
 }
+
+
+
+
+
 
 
 

@@ -14,6 +14,9 @@ function Expand-LabIso {
     )
     process {
 
+        ## Disable BitLocker fixed drive write protection (if enabled)
+        Disable-BitLockerFDV;
+
         Write-Verbose -Message ($localized.MountingDiskImage -f $Path);
         $iso = Storage\Mount-DiskImage -ImagePath $Path -StorageType ISO -Access ReadOnly -PassThru -Verbose:$false;
         ## Refresh drives
@@ -24,6 +27,9 @@ function Expand-LabIso {
         CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         Write-Verbose -Message ($localized.DismountingDiskImage -f $Path);
         Storage\Dismount-DiskImage -ImagePath $Path;
+
+        ## Enable BitLocker (if required)
+        Assert-BitLockerFDV;
 
     } #end process
 } #end function

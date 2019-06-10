@@ -66,6 +66,9 @@ function Set-LabVMDiskFile {
         }
         $vhdPath = Resolve-LabVMGenerationDiskPath @resolveLabVMGenerationDiskPathParams;
 
+        ## Disable BitLocker fixed drive write protection (if enabled)
+        Disable-BitLockerFDV;
+
         Write-Verbose -Message ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Hyper-V\Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
         [ref] $null = Get-PSDrive;
@@ -94,6 +97,9 @@ function Set-LabVMDiskFile {
             ## Ensure the VHD is dismounted (#185)
             Write-Verbose -Message ($localized.DismountingDiskImage -f $VhdPath);
             Hyper-V\Dismount-Vhd -Path $VhdPath -Confirm:$false;
+
+            ## Enable BitLocker (if required)
+            Assert-BitLockerFDV;
         }
 
     } #end process

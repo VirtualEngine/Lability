@@ -104,6 +104,8 @@ function Get-LabModuleCache {
                 $Branch = 'master';
             }
 
+            $Branch = $Branch.Replace('/','_') # Fix branch names with slashes (#361)
+
         } #end if GitHub
         elseif ($Provider -eq 'FileSystem') {
 
@@ -153,7 +155,7 @@ function Get-LabModuleCache {
                 Where-Object Name -match $moduleRegex |
                     ForEach-Object {
 
-                         Write-Debug -Message ("Discovered file '$($_.FullName)'.");
+                        Write-Debug -Message ("Discovered file '$($_.FullName)'.");
                         $trimStart = '{0}-v' -f $Name;
                         $moduleVersionString = $PSItem.Name.TrimStart($trimStart);
                         $moduleVersionString = $moduleVersionString -replace '(_\S+_\S+)?\.zip', '';

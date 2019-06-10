@@ -2,6 +2,18 @@
 
 ## Versions ##
 
+### v0.18.0 ###
+
+* Updates bundled xHyper-V DSC resource to v3.16.0
+* Updates bundled xPendingReboot DSC resource to v0.4.0.0
+* Fixes a bug where a certain BitLocker policy causes mounting errors (#345)
+* Switches from PowerShell.org community build server to Appveyor
+* Adds PSScriptAnalyzer and styling linting tests
+* Fixes bug in Github hosted modules where branch name contains '/' (#361)
+* Updates Windows 10 evaluation media to Windows 10 1903 (19H1)
+  * Includes previous Windows 10 evaluation media definitions
+  * Adds -Legacy switch to Get-LabMedia and Register-LabMedia to import legacy media
+
 ### v0.17.0 ###
 
 * Adds checksum support for media hotfixes (#329)

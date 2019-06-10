@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata>
+    <id>lability</id>
+    <title>Lability</title>
+    <version>0.0.0</version>
+    <authors>Iain Brighton</authors>
+    <owners>Virtual Engine</owners>
+    <summary>The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.</summary>
+    <description>The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.</description>
+    <projectUrl>https://github.com/VirtualEngine/Lability</projectUrl>
+    <copyright>(c) 2019 Virtual Engine Limited. All rights reserved.</copyright>
+    <iconUrl>https://raw.githubusercontent.com/VirtualEngine/Lability/master/Lability.png</iconUrl>
+    <license type="expression">MIT</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>VirtualEngine Lability Powershell Development Build HyperV Hyper-V Test Lab TestLab</tags>
+  </metadata>
+</package>

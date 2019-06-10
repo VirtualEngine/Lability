@@ -4,6 +4,7 @@ function New-DiskImageMbr {
         Create a new MBR-formatted disk image.
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Mounted VHD(X) Operating System disk image
         [Parameter(Mandatory)]

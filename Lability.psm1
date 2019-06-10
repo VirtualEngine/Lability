@@ -9,13 +9,25 @@ $labDefaults = @{
     VmConfigFilename = 'VmDefaults.json';
     MediaConfigFilename = 'Media.json';
     CustomMediaConfigFilename = 'CustomMedia.json';
+    LegacyMediaPath = 'LegacyMedia';
     DscResourceDirectory = 'DSCResources';
     RepositoryUri = 'https://www.powershellgallery.com/api/v2/package';
     DismVersion = $null;
 }
 
-## Import localisation strings
-Import-LocalizedData -BindingVariable localized -FileName Resources.psd1;
+#region LocalizedData
+$culture = 'en-us'
+if (Test-Path -Path (Join-Path -Path $labDefaults.ModuleRoot -ChildPath $PSUICulture)) {
+    $culture = $PSUICulture
+}
+$importLocalizedDataParams = @{
+    BindingVariable = 'localized';
+    Filename = "Lability.Resources.psd1";
+    BaseDirectory = $moduleRoot;
+    UICulture = $culture;
+}
+Import-LocalizedData @importLocalizedDataParams;
+#endregion LocalizedData
 
 ## Import the \Src files. This permits loading of the module's functions for unit testing, without having to unload/load the module.
 $moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
@@ -45,6 +57,10 @@ $credentialCheckScriptBlock = {
         Get-Credential -Message $localized.EnterLocalAdministratorPassword -UserName 'LocalAdministrator';
     }
 }
+
+## Store the BitLocker full drive encryption status (used bu Disable-BitLockerFDV and Assert-BitLockerFDV functions)
+$fdvDenyWriteAccessPath = 'HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FVE'
+$fdvDenyWriteAccess = (Get-ItemProperty -Path $fdvDenyWriteAccessPath -Name 'FDVDenyWriteAccess' -ErrorAction SilentlyContinue).FDVDenyWriteAccess -as [System.Boolean]
 
 ## Load the call stack logging setting referenced by Write-Verbose
 $labDefaults['CallStackLogging'] = (Get-LabHostDefault).EnableCallStackLogging -eq $true;

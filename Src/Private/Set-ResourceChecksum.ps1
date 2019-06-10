@@ -3,6 +3,8 @@ function Set-ResourceChecksum {
     .SYNOPSIS
         Creates a resource's checksum file.
 #>
+    [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
     param (
         ## Path of file to create the checksum of
         [Parameter(Mandatory, ValueFromPipeline)]
