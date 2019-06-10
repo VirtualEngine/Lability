@@ -2,11 +2,11 @@
 
 ## Versions ##
 
-### Unreleased ###
+### v0.18.0 ###
 
 * Updates bundled xHyper-V DSC resource to v3.16.0
 * Updates bundled xPendingReboot DSC resource to v0.4.0.0
-* Fixes a bug where a certain BitLocker policy causes mounting errors
+* Fixes a bug where a certain BitLocker policy causes mounting errors (#345)
 * Switches from PowerShell.org community build server to Appveyor
 * Adds PSScriptAnalyzer and styling linting tests
 * Fixes bug in Github hosted modules where branch name contains '/' (#361)
