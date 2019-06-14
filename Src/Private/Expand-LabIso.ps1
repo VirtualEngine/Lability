@@ -26,7 +26,7 @@ function Expand-LabIso {
         Write-Verbose -Message ($localized.ExpandingIsoResource -f $DestinationPath);
         CopyDirectory -SourcePath $sourcePath -DestinationPath $DestinationPath -Force -Verbose:$false;
         Write-Verbose -Message ($localized.DismountingDiskImage -f $Path);
-        Storage\Dismount-DiskImage -ImagePath $Path;
+        $null = Storage\Dismount-DiskImage -ImagePath $Path;
 
         ## Enable BitLocker (if required)
         Assert-BitLockerFDV;

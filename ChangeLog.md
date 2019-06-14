@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
+
 ### v0.18.0 ###
 
 * Updates bundled xHyper-V DSC resource to v3.16.0
