@@ -13,6 +13,7 @@
                             'Clear-LabModuleCache',
                             'Clear-ModulePath',
                             'Export-LabHostConfiguration',
+                            'Export-LabImage',
                             'Get-LabHostConfiguration',
                             'Get-LabHostDefault',
                             'Get-LabImage',

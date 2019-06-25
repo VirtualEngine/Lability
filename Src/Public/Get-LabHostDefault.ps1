@@ -24,6 +24,7 @@ function Get-LabHostDefault {
         $env:LabilityResourcePath = $hostDefaults.ResourcePath;
         $env:LabilityDismPath = $hostDefaults.DismPath;
         $env:LabilityRepositoruUri = $hostDefaults.RepositoryUri;
+        $env:LabilityParentVhdPath = $hostDefaults.ParentVhdPath;
 
         return $hostDefaults;
 

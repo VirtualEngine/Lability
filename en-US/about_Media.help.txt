@@ -103,11 +103,11 @@ EXISTING DISK IMAGES
         an existing `2012R2_x64_Standard_EN_VL.vhdx` virtual hard disk file.
 
             PS C:\> $customMedia = @{
-                Id = 2012R2_x64_Standard_EN_VL;
-                Filename = 2012R2_x64_Standard_EN_VL.vhdx;
+                Id = '2012R2_x64_Standard_EN_VL';
+                Filename = '2012R2_x64_Standard_EN_VL.vhdx';
                 Description = 'Windows Server 2012 R2 Standard 64bit English Volume License';
-                Architecture = x64;
-                MediaType = VHD;
+                Architecture = 'x64';
+                MediaType = 'VHD';
                 Uri = '\\MyFileServer\Images\2012R2_x64_Standard_EN_VL.vhdx';
             }
             PS C:\> Register-LabMedia @customMedia
@@ -125,7 +125,7 @@ LINUX DISK IMAGES
                 Filename = "NSVPX-11.0-63.16_nc.vhd"
                 Description = "Citrix NetScaler 11.0 VPX Build 63.16_nc";
                 Architecture = "x64";
-	        MediaType = "VHD";
+	            MediaType = "VHD";
                 OperatingSystem = "Linux";
                 Uri = "\\MyFileServer\Images\NSVPX-11.0-63.16_nc.vhd";
             }

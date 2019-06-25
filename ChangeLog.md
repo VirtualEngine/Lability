@@ -5,6 +5,8 @@
 ### Unreleased ###
 
 * Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
+* Adds Export-LabImage cmdlet to export VHD(X) master/parent images
+* Permits overriding media Id with -CustomId parameter when importing legacy media definitions or media from an external file/Uri
 
 ### v0.18.0 ###
 
