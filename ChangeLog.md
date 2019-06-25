@@ -5,6 +5,7 @@
 ### Unreleased ###
 
 * Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
+* Adds Export-LabImage cmdlet to export VHD(X) master/parent images
 
 ### v0.18.0 ###
 
