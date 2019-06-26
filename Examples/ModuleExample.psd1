@@ -16,6 +16,8 @@
                 @{ Name = 'PScribo' }
                 ## Downloads the development branch of the Lability module directly from Github
                 @{ Name = 'Lability'; Provider = 'GitHub'; Owner = 'VirtualEngine'; Branch = 'dev'; }
+                ## Force a download the latest published module version from the PSGallery - every configuration run
+                @{ Name = 'PSReadLine'; Latest = $true }
             )
         };
     };
