@@ -110,7 +110,7 @@ function Invoke-LabModuleCacheDownload {
 
         foreach ($moduleInfo in $Module) {
 
-            if ((-not (Test-LabModuleCache @moduleInfo)) -or ($Force)) {
+            if ((-not (Test-LabModuleCache @moduleInfo)) -or ($Force) -or ($moduleInfo.Latest -eq $true)) {
 
                 if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
 
