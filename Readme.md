@@ -94,7 +94,7 @@ __[here](https://www.youtube.com/watch?v=jefhLaJsG3E "Man vs TestLab")__. Other 
 
 * [Lability tutorial](https://me.micahrl.com/lability-tutorial) by [mrled](https://github.com/mrled)
 * [Building A Lab using Hyper-V and Lability](https://blog.kilasuit.org/2016/04/13/building-a-lab-using-hyper-v-and-lability-the-end-to-end-example/) via @kilasuit
-* [The Ultimate Hyper-V Lab Tool](http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
+* [The Ultimate Hyper-V Lab Tool](https://web.archive.org/web/20180830192145/http://www.absolutejam.co.uk/blog/lability-ultimate-hyperv-lab-tool/) via @absolutejam
 * [Create Your Virtual Lab Environment with Lability How-To](http://blog.mscloud.guru/2016/09/17/create-your-virtual-lab-environment-with-lability-howto/) via @Naboo2604
 * [Microsoft Channel 9 PSDEVOPS](https://channel9.msdn.com/Blogs/PSDEVOPSSIG/PSDEVOPSSIGEventLability-Demo-w-Iain-Brigton) presentation recording
 * [Using Lability, DSC and ARM to define and deploy multi-VM environments] (https://blogs.blackmarble.co.uk/rhepworth/2017/03/02/define-once-deploy-everywhere-sort-of/) via @rikhepworth
