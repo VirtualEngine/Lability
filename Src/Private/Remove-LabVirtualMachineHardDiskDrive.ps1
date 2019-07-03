@@ -15,11 +15,16 @@ function Remove-LabVirtualMachineHardDiskDrive {
         ## Collection of additional hard disk drive configurations
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable[]]
-        $HardDiskDrive
+        $HardDiskDrive,
+
+        ## Configuration environment name
+        [Parameter()]
+        [AllowNull()]
+        [System.String] $EnvironmentName
     )
     process {
 
-        $vmHardDiskPath = (Get-ConfigurationData -Configuration Host).DifferencingVhdPath;
+        $vmHardDiskPath = Resolve-LabVMDiskPath -Name $NodeName -EnvironmentName $EnvironmentName -Parent;
 
         for ($i = 0; $i -lt $HardDiskDrive.Count; $i++) {
 

@@ -22,11 +22,16 @@ function Resolve-LabVMGenerationDiskPath {
     )
     process {
 
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
         $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData;
-        $vhdName = '{0}.{1}' -f $Name, $image.Generation.ToLower();
-        $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdName;
+
+        $resolveLabVMDiskPathParams = @{
+            Name            = $Name;
+            Generation      = $image.Generation;
+            EnvironmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
+        }
+        $vhdPath = Resolve-LabVMDiskPath @resolveLabVMDiskPathParams
+
         return $vhdPath;
 
     } #end process
-} #end function Resolve-LabVMGenerationDiskPath
+} #end function

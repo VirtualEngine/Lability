@@ -5,9 +5,12 @@
 ### Unreleased ###
 
 * Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
-* Adds Export-LabImage cmdlet to export VHD(X) master/parent images
-* Permits overriding media Id with -CustomId parameter when importing legacy media definitions or media from an external file/Uri
-* Adds 'Latest' property to module info to force latest version download on every configuration run (#367)
+* Adds `Export-LabImage` cmdlet to export VHD(X) master/parent images
+* Permits overriding media Id with `-CustomId` parameter when importing legacy media definitions or media from an external file/Uri with `Register-LabMedia`
+* Adds `Latest` property to module info to force latest module version download - on every configuration run (#367)
+* Adds `-DisableVhdEnvironmentName` parameter to `Set-LabHostDefault` (#78)
+  * New installations/deployments will default to False - creating VM differencing disks in a subdirectory when EnvironmentName is defined in configuration data
+  * Existing installations will default to True (at least until `Set-LabHostDefault` or `Reset-LabHostDefault` are called)
 
 ### v0.18.0 ###
 

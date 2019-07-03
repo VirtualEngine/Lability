@@ -114,6 +114,19 @@ Describe 'Unit\Src\Private\Get-ConfigurationData' {
             $customMediaConfiguration.DisableSwitchEnvironmentName | Should Be $true;
         }
 
+        It 'Adds missing "DisableVhdEnvironmentName" property to Host configuration' {
+            $testConfigurationFilename = 'TestMediaConfiguration.json';
+            $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";
+            $fakeConfiguration = '{ "ConfigurationPath": "%SYSTEMDRIVE%\\TestLab\\Configurations" }';
+            [ref] $null = New-Item -Path $testConfigurationPath -ItemType File -Force;
+            Mock Resolve-ConfigurationDataPath -MockWith { return $testConfigurationPath }
+            Mock Get-Content -MockWith { return $fakeConfiguration; }
+
+            $customMediaConfiguration = Get-ConfigurationData -Configuration Host;
+
+            $customMediaConfiguration.DisableVhdEnvironmentName | Should Be $true;
+        }
+
         It 'Adds missing "MaxEnvelopeSizeKb" property to VM configuration' {
             $testConfigurationFilename = 'TestVMConfiguration.json';
             $testConfigurationPath = "$env:SystemRoot\Temp\$testConfigurationFilename";

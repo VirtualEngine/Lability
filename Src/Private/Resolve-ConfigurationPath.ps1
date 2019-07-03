@@ -1,11 +1,10 @@
 function Resolve-ConfigurationPath {
 <#
     .SYNOPSIS
-        Resolves a Lability image by its path.
+        Resolves a node's .mof configuration file path.
     .DESCRIPTION
-        When running Remove-LabVM there is not always a configuration document supplied. This
-        causes issues removing a VMs VHD/X file. The ResolveLabImage function locates the image
-        by its physical path.
+        Searches the current working directory and host configuration data path for a node's .mof
+        files, searching an environment name subdirectory if environment name is defined.
 #>
     [CmdletBinding()]
     param (
@@ -46,7 +45,7 @@ function Resolve-ConfigurationPath {
 
             ## Search the Specified path
             $resolvedPath = Resolve-PathEx -Path $Path;
-            if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+            if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
                 return $resolvedPath;
             }
@@ -54,7 +53,7 @@ function Resolve-ConfigurationPath {
 
                 ## Search the Specified\ConfigurationName path
                 $resolvedPath = Join-Path -Path $resolvedPath -ChildPath $configurationName;
-                if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+                if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
                     return $resolvedPath;
                 }
@@ -64,7 +63,7 @@ function Resolve-ConfigurationPath {
         ## Search the ConfigurationPath path
         $configurationPath = Get-LabHostDscConfigurationPath;
         $resolvedPath = Resolve-PathEx -Path $configurationPath;
-        if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+        if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
             return $resolvedPath;
         }
@@ -72,7 +71,7 @@ function Resolve-ConfigurationPath {
 
             ## Search the ConfigurationPath\ConfigurationName path
             $resolvedPath = Join-Path -Path $resolvedPath -ChildPath $configurationName;
-            if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+            if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
                 return $resolvedPath;
             }
@@ -81,7 +80,7 @@ function Resolve-ConfigurationPath {
         ## Search the Current path
         $currentPath = (Get-Location -PSProvider FileSystem).Path;
         $resolvedPath = Resolve-PathEx -Path $currentPath;
-        if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+        if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
             return $resolvedPath;
         }
@@ -89,7 +88,7 @@ function Resolve-ConfigurationPath {
 
             ## Search the Current\ConfigurationName path
             $resolvedPath = Join-Path -Path $resolvedPath -ChildPath $configurationName;
-            if (Test-Configurationpath -Name $Name -Path $resolvedPath) {
+            if (Test-ConfigurationPath -Name $Name -Path $resolvedPath) {
 
                 return $resolvedPath;
             }
