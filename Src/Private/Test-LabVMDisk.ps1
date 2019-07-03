@@ -1,5 +1,5 @@
 function Test-LabVMDisk {
-<#
+    <#
     .SYNOPSIS
         Checks whether the lab virtual machine disk (VHDX) is present.
 #>
@@ -21,12 +21,10 @@ function Test-LabVMDisk {
         $ConfigurationData,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String] $Ensure = 'Present'
     )
     process {
-
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
 
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
 
@@ -37,12 +35,13 @@ function Test-LabVMDisk {
             $image = Get-LabImage -Id $Media;
         }
 
+        $environmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
         $vhd = @{
-            Name = $Name;
-            Path = $hostDefaults.DifferencingVhdPath;
+            Name       = $Name;
+            Path       = Resolve-LabVMDiskPath -Name $Name -EnvironmentName $environmentName -Parent;
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
-            Type = 'Differencing';
+            Type       = 'Differencing';
         }
 
         if (-not $image) {

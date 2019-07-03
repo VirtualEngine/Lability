@@ -28,7 +28,6 @@ function Remove-LabVMDisk {
     )
     process {
 
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
 
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
@@ -38,18 +37,19 @@ function Remove-LabVMDisk {
             $image = Get-LabImage -Id $Media -ErrorAction Stop;
         }
 
+        $environmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
+
         ## If the parent image isn't there, the differencing VHD won't be either!
         if ($image) {
 
             ## Ensure we look for the correct file extension (#182)
-            $vhdFilename = '{0}.{1}' -f $Name, $image.Generation;
-            $vhdPath = Join-Path -Path $hostDefaults.DifferencingVhdPath -ChildPath $vhdFilename;
+            $vhdPath = Resolve-LabVMDiskPath -Name $Name -Generation $image.Generation -EnvironmentName $environmentName;
 
             if (Test-Path -Path $vhdPath) {
                 ## Only attempt to remove the differencing disk if it's there (and xVHD will throw)
                 $vhd = @{
                     Name = $Name;
-                    Path = $hostDefaults.DifferencingVhdPath;
+                    Path = Split-Path -Path $vhdPath -Parent;
                     ParentPath = $image.ImagePath;
                     Generation = $image.Generation;
                     Type = 'Differencing';
@@ -75,6 +75,7 @@ function Remove-LabVMDisk {
                 $removeLabVirtualMachineHardDiskDriveParams = @{
                     NodeName = $node.NodeDisplayName;
                     HardDiskDrive = $node.HardDiskDrive;
+                    EnvironmentName = $environmentName;
                 }
                 $null = Remove-LabVirtualMachineHardDiskDrive @removeLabVirtualMachineHardDiskDriveParams;
             }

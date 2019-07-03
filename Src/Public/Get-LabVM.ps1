@@ -1,5 +1,5 @@
 function Get-LabVM {
-<#
+    <#
     .SYNOPSIS
         Retrieves the current configuration of a VM.
     .DESCRIPTION
@@ -27,12 +27,14 @@ function Get-LabVM {
             $Name = $ConfigurationData.AllNodes | Where-Object NodeName -ne '*' | ForEach-Object { $_.NodeName; }
         }
 
+        $environmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
+
         foreach ($nodeName in $Name) {
 
             $node = Resolve-NodePropertyValue -NodeName $nodeName -ConfigurationData $ConfigurationData;
             $xVMParams = @{
-                Name = $node.NodeDisplayName;
-                VhdPath = Resolve-LabVMDiskPath -Name $node.NodeDisplayName;;
+                Name    = $node.NodeDisplayName;
+                VhdPath = Resolve-LabVMDiskPath -Name $node.NodeDisplayName -EnvironmentName $environmentName;
             }
 
             try {

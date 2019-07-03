@@ -1,12 +1,12 @@
 function Set-LabVMDisk {
-<#
+    <#
     .SYNOPSIS
         Sets a lab VM disk file (VHDX) configuration.
     .DESCRIPTION
         Configures a VM disk configuration using the xVHD DSC resource.
 #>
     [CmdletBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param (
         ## VM/Node name
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -24,7 +24,6 @@ function Set-LabVMDisk {
     )
     process {
 
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
         if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
 
             $image = Get-LabImage -Id $Media -ConfigurationData $ConfigurationData -ErrorAction Stop;
@@ -34,12 +33,13 @@ function Set-LabVMDisk {
             $image = Get-LabImage -Id $Media -ErrorAction Stop;
         }
 
+        $environmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
         $vhd = @{
-            Name = $Name;
-            Path = $hostDefaults.DifferencingVhdPath;
+            Name       = $Name;
+            Path       = Resolve-LabVMDiskPath -Name $Name -EnvironmentName $environmentName -Parent;
             ParentPath = $image.ImagePath;
             Generation = $image.Generation;
-            Type = 'Differencing';
+            Type       = 'Differencing';
         }
 
         Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVHD -Prefix VHD;

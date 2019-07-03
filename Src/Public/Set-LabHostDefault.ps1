@@ -72,7 +72,12 @@ function Set-LabHostDefault {
 
         ## Specifies whether environment name prefixes/suffixes are applied to virtual switches.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $DisableSwitchEnvironmentName
+        [System.Management.Automation.SwitchParameter] $DisableSwitchEnvironmentName,
+
+        ## Specifies whether VM differencing disks are placed into a subdirectory when an
+        ## environment name is defined.
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Management.Automation.SwitchParameter] $DisableVhdEnvironmentName
     )
     process {
 
@@ -130,6 +135,10 @@ function Set-LabHostDefault {
         if ($PSBoundParameters.ContainsKey('DisableSwitchEnvironmentName')) {
 
             $hostDefaults.DisableSwitchEnvironmentName = $DisableSwitchEnvironmentName.ToBool();
+        }
+        if ($PSBoundParameters.ContainsKey('DisableVhdEnvironmentName')) {
+
+            $hostDefaults.DisableVhdEnvironmentName = $DisableVhdEnvironmentName.ToBool();
         }
 
         Set-ConfigurationData -Configuration Host -InputObject $hostDefaults;

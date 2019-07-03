@@ -90,7 +90,6 @@ function Set-LabVMDiskFile {
 
             ## Bubble up the error to the caller
             throw $_;
-
         }
         finally {
 
