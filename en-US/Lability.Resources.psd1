@@ -227,6 +227,7 @@ ConvertFrom-StringData -StringData @'
     CannotResolveModuleNameError      = Cannot resolve {0} name '{1}'.
     DscResourceNotFoundError          = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError      = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
+    ModuleVersionMismatchError        = Module\\resource '{0}' download version '{1}' does not match specified version '{2}'.
     CannotFindCertificateError        = Cannot locate {0} certificate '{1}'.
     CannotLocateMofFileError          = Cannot locate node '{0}' file and no DSC configuration can be applied. Ensure the DSC configuration has been run successfully.
     CannotLocateNodeError             = Cannot locate node '{0}'.

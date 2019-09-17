@@ -20,17 +20,40 @@ function Rename-LabModuleCacheVersion {
 
         ## GitHub module branch
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'GitHub')]
-        [System.String] $Branch
+        [System.String] $Branch,
+
+        ## The minimum version of the module required
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Version] $MinimumVersion,
+
+        ## The exact version of the module required
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Version] $RequiredVersion
     )
     process {
 
         if ($PSCmdlet.ParameterSetName -eq 'GitHub') {
             $moduleManifest = Get-LabModuleCacheManifest -Path $Path -Provider 'GitHub';
-            $versionedModuleFilename = '{0}-v{1}_{2}_{3}.zip' -f $Name, $moduleManifest.ModuleVersion, $Owner, $Branch;
+            $moduleVersion = $moduleManifest.ModuleVersion;
+            $versionedModuleFilename = '{0}-v{1}_{2}_{3}.zip' -f $Name, $moduleVersion, $Owner, $Branch;
         }
         else {
             $moduleManifest = Get-LabModuleCacheManifest -Path $Path;
-            $versionedModuleFilename = '{0}-v{1}.zip' -f $Name, $moduleManifest.ModuleVersion;
+            $moduleVersion = $moduleManifest.ModuleVersion;
+            $versionedModuleFilename = '{0}-v{1}.zip' -f $Name, $moduleVersion;
+        }
+
+        if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+
+            if ($moduleVersion -ne $RequiredVersion) {
+                throw ($localized.ModuleVersionMismatchError -f $Name, $moduleVersion, $RequiredVersion);
+            }
+        }
+        elseif ($PSBoundParameters.ContainsKey('MinimumVersion')) {
+
+            if ($moduleVersion -lt $MinimumVersion) {
+                throw ($localized.ModuleVersionMismatchError -f $Name, $moduleVersion, $MinimumVersion);
+            }
         }
 
         $versionedModulePath = Join-Path -Path (Split-Path -Path $Path -Parent) -ChildPath $versionedModuleFilename;

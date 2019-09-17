@@ -10,6 +10,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
     InModuleScope $moduleName {
 
         $testModuleName = 'TestModule';
+        $testModuleVersion = '1.2.3.4'
         $testOwner = 'TestOwnder';
         $testBranch = 'TestBranch';
         $testDestinationPath = '{0}\Modules' -f (Get-PSDrive -Name TestDrive).Root;
@@ -31,6 +32,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
                 DestinationPath = $testDestinationPath;
                 Owner = $testOwner;
                 Branch = $testBranch;
+                RequiredVersion = $testModuleVersion;
             }
             $result = Invoke-LabModuleDownloadFromGitHub @testParams;
 
@@ -45,6 +47,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
                 DestinationPath = $testDestinationPath;
                 Owner = $testOwner;
                 Branch = $testBranch;
+                RequiredVersion = $testModuleVersion;
             }
             Invoke-LabModuleDownloadFromGitHub @testParams;
 
@@ -61,6 +64,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
                 DestinationPath = $testDestinationPath;
                 Owner = $testOwner;
                 Branch = $testBranch;
+                RequiredVersion = $testModuleVersion;
                 OverrideRepositoryName = $testRepositoryOverrideName
             }
             Invoke-LabModuleDownloadFromGitHub @testParams;
@@ -89,6 +93,38 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromGitHub' {
             }
 
             { Invoke-LabModuleDownloadFromGitHub @testParams -WarningAction Stop 3>&1 } | Should Throw;
+        }
+
+        It 'Throws when downloaded module version does not match expected minimum version (#375)' {
+            ## BeforeEach does not (currently) work inside InModuleScope scriptblocks https://github.com/pester/Pester/issues/236
+            New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
+            New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
+
+            $testParams = @{
+                Name = $testModuleName;
+                DestinationPath = $testDestinationPath;
+                Owner = $testOwner;
+                Branch = $testBranch;
+                MinimumVersion = '1.2.3.5';
+            }
+            { Invoke-LabModuleDownloadFromGitHub @testParams } | Should Throw;
+        }
+
+        It 'Throws when downloaded module version does not match required version (#375)' {
+            Mock Get-LabModuleCacheManifest -MockWith { return @{  ModuleVersion = '1.2.3.5' } }
+
+            ## BeforeEach does not (currently) work inside InModuleScope scriptblocks https://github.com/pester/Pester/issues/236
+            New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
+            New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
+
+            $testParams = @{
+                Name = $testModuleName;
+                DestinationPath = $testDestinationPath;
+                Owner = $testOwner;
+                Branch = $testBranch;
+                RequiredVersion = $testModuleVersion;
+            }
+            { Invoke-LabModuleDownloadFromPSGallery @testParams } | Should Throw
         }
 
     } #end InModuleScope

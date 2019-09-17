@@ -11,6 +11,7 @@
 * Adds `-DisableVhdEnvironmentName` parameter to `Set-LabHostDefault` (#78)
   * New installations/deployments will default to False - creating VM differencing disks in a subdirectory when EnvironmentName is defined in configuration data
   * Existing installations will default to True (at least until `Set-LabHostDefault` or `Reset-LabHostDefault` are called)
+* Adds version checking of downloaded modules (#375)
 
 ### v0.18.0 ###
 

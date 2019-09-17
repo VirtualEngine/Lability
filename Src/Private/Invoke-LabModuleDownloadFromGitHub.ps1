@@ -1,11 +1,11 @@
 function Invoke-LabModuleDownloadFromGitHub {
-<#
+    <#
 .SYNOPSIS
     Downloads a DSC resource if it has not already been downloaded from Github.
 .NOTES
     Uses the GitHubRepository module!
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Latest')]
     [OutputType([System.IO.DirectoryInfo])]
     param (
         ## PowerShell DSC resource module name
@@ -16,7 +16,6 @@ function Invoke-LabModuleDownloadFromGitHub {
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
-
 
         ## The GitHub repository owner, typically 'PowerShell'
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -43,6 +42,14 @@ function Invoke-LabModuleDownloadFromGitHub {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
 
+        ## The minimum version of the module required
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'MinimumVersion')]
+        [System.Version] $MinimumVersion,
+
+        ## The exact version of the module required
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
+        [System.Version] $RequiredVersion,
+
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments
@@ -62,20 +69,35 @@ function Invoke-LabModuleDownloadFromGitHub {
         $PSBoundParameters['Repository'] = $Repository;
         $PSBoundParameters['Branch'] = $Branch;
 
-        $Branch = $Branch.Replace('/','_') # Fix branch names with slashes (#361)
+        $Branch = $Branch.Replace('/', '_') # Fix branch names with slashes (#361)
     }
     process {
 
-        ## GitHub modules are suffixed with .Owner_Branch.zip
+        ## GitHub modules are suffixed with '_Owner_Branch.zip'
         $destinationModuleName = '{0}_{1}_{2}.zip' -f $Name, $Owner, $Branch;
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri = Resolve-GitHubModuleUri @PSBoundParameters;
-            NoCheckSum = $true;
+            Uri             = Resolve-GitHubModuleUri @PSBoundParameters;
+            NoCheckSum      = $true;
         }
         $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
-        return (Rename-LabModuleCacheVersion -Name $Name -Path $moduleDestinationPath -Owner $Owner -Branch $Branch);
+
+        $renameLabModuleCacheVersionParams = @{
+            Name   = $Name;
+            Path   = $moduleDestinationPath;
+            Owner  = $Owner;
+            Branch = $Branch
+        }
+        if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+
+            $renameLabModuleCacheVersionParams['RequiredVersion'] = $RequiredVersion
+        }
+        elseif ($PSBoundParameters.ContainsKey('MinimumVersion')) {
+
+            $renameLabModuleCacheVersionParams['MinimumVersion'] = $MinimumVersion
+        }
+        return (Rename-LabModuleCacheVersion @renameLabModuleCacheVersionParams);
 
     } #end process
 } #end function
