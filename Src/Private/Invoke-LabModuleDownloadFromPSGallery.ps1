@@ -1,9 +1,9 @@
 function Invoke-LabModuleDownloadFromPSGallery {
-<#
+    <#
     .SYNOPSIS
         Downloads a PowerShell module/DSC resource from the PowerShell gallery to the host's module cache.
 #>
-    [CmdletBinding(DefaultParameterSetName = 'LatestAvailable')]
+    [CmdletBinding(DefaultParameterSetName = 'Latest')]
     [OutputType([System.IO.FileInfo])]
     param (
         ## PowerShell module/DSC resource module name
@@ -33,11 +33,24 @@ function Invoke-LabModuleDownloadFromPSGallery {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri = Resolve-PSGalleryModuleUri @PSBoundParameters;
-            NoCheckSum = $true;
+            Uri             = Resolve-PSGalleryModuleUri @PSBoundParameters;
+            NoCheckSum      = $true;
         }
         $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
-        return (Rename-LabModuleCacheVersion -Name $Name -Path $moduleDestinationPath);
+
+        $renameLabModuleCacheVersionParams = @{
+            Name = $Name;
+            Path = $moduleDestinationPath;
+        }
+        if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+
+            $renameLabModuleCacheVersionParams['RequiredVersion'] = $RequiredVersion
+        }
+        elseif ($PSBoundParameters.ContainsKey('MinimumVersion')) {
+
+            $renameLabModuleCacheVersionParams['MinimumVersion'] = $MinimumVersion
+        }
+        return (Rename-LabModuleCacheVersion @renameLabModuleCacheVersionParams);
 
     } #end process
 } #end function

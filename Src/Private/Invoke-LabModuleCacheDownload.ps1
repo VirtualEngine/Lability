@@ -112,23 +112,20 @@ function Invoke-LabModuleCacheDownload {
 
             if ((-not (Test-LabModuleCache @moduleInfo)) -or ($Force) -or ($moduleInfo.Latest -eq $true)) {
 
+                if ($moduleInfo.ContainsKey('RequiredVersion')) {
+                    Write-Verbose -Message ($localized.ModuleVersionNotCached -f $moduleInfo.Name, $moduleInfo.RequiredVersion);
+                }
+                elseif ($moduleInfo.ContainsKey('MinimumVersion')) {
+                    Write-Verbose -Message ($localized.ModuleMinmumVersionNotCached -f $moduleInfo.Name, $moduleInfo.MinimumVersion);
+                }
+                else {
+                    Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
+                }
+
                 if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
-
-                    if ($moduleInfo.ContainsKey('RequiredVersion')) {
-                        Write-Verbose -Message ($localized.ModuleVersionNotCached -f $moduleInfo.Name, $moduleInfo.RequiredVersion);
-                    }
-                    elseif ($moduleInfo.ContainsKey('MinimumVersion')) {
-                        Write-Verbose -Message ($localized.ModuleMinmumVersionNotCached -f $moduleInfo.Name, $moduleInfo.MinimumVersion);
-                    }
-                    else {
-                        Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
-                    }
-
                     Invoke-LabModuleDownloadFromPSGallery @moduleInfo;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'GitHub') {
-
-                    Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
                     Invoke-LabModuleDownloadFromGitHub @moduleInfo;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'FileSystem') {
