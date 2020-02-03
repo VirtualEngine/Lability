@@ -2,17 +2,17 @@
 
 ## Set the global defaults
 $labDefaults = @{
-    ModuleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
-    ModuleName = 'Lability';
-    ConfigurationData = 'Config';
-    HostConfigFilename = 'HostDefaults.json';
-    VmConfigFilename = 'VmDefaults.json';
-    MediaConfigFilename = 'Media.json';
+    ModuleRoot                = Split-Path -Path $MyInvocation.MyCommand.Path -Parent;
+    ModuleName                = 'Lability';
+    ConfigurationData         = 'Config';
+    HostConfigFilename        = 'HostDefaults.json';
+    VmConfigFilename          = 'VmDefaults.json';
+    MediaConfigFilename       = 'Media.json';
     CustomMediaConfigFilename = 'CustomMedia.json';
-    LegacyMediaPath = 'LegacyMedia';
-    DscResourceDirectory = 'DSCResources';
-    RepositoryUri = 'https://www.powershellgallery.com/api/v2/package';
-    DismVersion = $null;
+    LegacyMediaPath           = 'LegacyMedia';
+    DscResourceDirectory      = 'DSCResources';
+    RepositoryUri             = 'https://www.powershellgallery.com/api/v2/package';
+    DismVersion               = $null;
 }
 
 #region LocalizedData
@@ -22,9 +22,9 @@ if (Test-Path -Path (Join-Path -Path $labDefaults.ModuleRoot -ChildPath $PSUICul
 }
 $importLocalizedDataParams = @{
     BindingVariable = 'localized';
-    Filename = "Lability.Resources.psd1";
-    BaseDirectory = $moduleRoot;
-    UICulture = $culture;
+    Filename        = 'Lability.Resources.psd1';
+    BaseDirectory   = $moduleRoot;
+    UICulture       = $culture;
 }
 Import-LocalizedData @importLocalizedDataParams;
 #endregion LocalizedData
@@ -35,7 +35,7 @@ $moduleSrcPath = Join-Path -Path $moduleRoot -ChildPath 'Src';
 Get-ChildItem -Path $moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurse |
     ForEach-Object {
         Write-Verbose -Message ('Importing library\source file ''{0}''.' -f $_.FullName);
-        ## https://becomelotr.wordpress.com/2017/02/13/expensive-dot-sourcing/
+        # https://becomelotr.wordpress.com/2017/02/13/expensive-dot-sourcing/
         . ([System.Management.Automation.ScriptBlock]::Create(
                 [System.IO.File]::ReadAllText($_.FullName)
             ));
@@ -45,9 +45,11 @@ Get-ChildItem -Path $moduleSrcPath -Include *.ps1 -Exclude '*.Tests.ps1' -Recurs
 $moduleConfigPath = Join-Path -Path $moduleRoot -ChildPath 'Config';
 $allUsersConfigPath = Join-Path -Path $env:AllUsersProfile -ChildPath "$($labDefaults.ModuleName)\Certificates\";
 [ref] $null = New-Directory -Path $allUsersConfigPath;
-Get-ChildItem -Path $moduleConfigPath -Include *.cer,*.pfx -Recurse | ForEach-Object {
-    Write-Verbose -Message ('Updating certificate ''{0}''.' -f $_.FullName);
-    Copy-Item -Path $_ -Destination $allUsersConfigPath;
+Get-ChildItem -Path $moduleConfigPath -Include *.cer, *.pfx -Recurse | ForEach-Object {
+    if (-not (Test-Path -Path (Join-Path -Path $allUsersConfigPath -ChildPath $_.Name))) {
+        Write-Verbose -Message ('Updating certificate ''{0}''.' -f $_.FullName);
+        Copy-Item -Path $_ -Destination $allUsersConfigPath;
+    }
 }
 
 ## Create the credential check scriptblock

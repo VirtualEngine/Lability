@@ -178,6 +178,8 @@ ConvertFrom-StringData -StringData @'
     AutomaticCheckPointsNotSupported  = Automatic checkpoints are only supported in Windows 10 "Fall Creators" update (1709 and later) builds.
     DisablingBitLockerWriteProtection = Temporarily disabling BitLocker fixed drive write protection to prevent read-only mounted drives.
     EnablingBitLockerWriteProtection  = Enabling BitLocker fixed drive write protection to enforce read-only mounted drives.
+    ExportingImage                    = Exporting image '{0}' to '{1}'.
+    ExportingImageRegistrationFile    = Exporting image registration file '{0}'.
 
     NoCertificateFoundWarning         = No '{0}' certificate was found.
     CannotLocateLcmFileWarning        = Cannot locate LCM configuration file '{0}'. No DSC Local Configuration Manager configuration will be applied.
@@ -225,6 +227,7 @@ ConvertFrom-StringData -StringData @'
     CannotResolveModuleNameError      = Cannot resolve {0} name '{1}'.
     DscResourceNotFoundError          = DSC module\\resource '{0}' not found.
     ResourceVersionMismatchError      = DSC module\\resource '{0}' version '{1}' is less than the required '{2}'.
+    ModuleVersionMismatchError        = Module\\resource '{0}' download version '{1}' does not match specified version '{2}'.
     CannotFindCertificateError        = Cannot locate {0} certificate '{1}'.
     CannotLocateMofFileError          = Cannot locate node '{0}' file and no DSC configuration can be applied. Ensure the DSC configuration has been run successfully.
     CannotLocateNodeError             = Cannot locate node '{0}'.

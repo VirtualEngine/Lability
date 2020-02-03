@@ -172,7 +172,7 @@ function Expand-LabImage {
 
                 ## Always dismount ISO (#166)
                 Write-Verbose -Message ($localized.DismountingDiskImage -f $MediaPath);
-                Storage\Dismount-DiskImage -ImagePath $MediaPath;
+                $null = Storage\Dismount-DiskImage -ImagePath $MediaPath;
             }
 
             ## Enable BitLocker (if required)

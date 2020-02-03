@@ -4,7 +4,7 @@
 	"MaximumMemory": 1099511627776,
 	"ProcessorCount": 1,
     "SwitchName": "Default Switch",
-	"Media": "2012R2_x64_Standard_EN_Eval",
+	"Media": "2019_x64_Standard_EN_Eval",
     "TimeZone": "UTC",
     "UILanguage": "en-US",
     "SystemLocale": "en-US",

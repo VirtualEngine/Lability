@@ -10,6 +10,10 @@ function Register-LabMedia {
         To override a built-in media entry, specify the same media Id with the -Force switch.
     .PARAMETER Legacy
         Specifies registering a legacy Windows 10 media as custom media.
+    .EXAMPLE
+        Register-LabMedia -Legacy WIN10_x64_Enterprise_1809_EN_Eval
+
+        Reregisters the deprecated Windows 10 Enterprise x64 English evaluation media.
     .LINK
         Get-LabMedia
         Unregister-LabMedia
@@ -70,9 +74,14 @@ function Register-LabMedia {
         [ValidateSet('Windows','Linux')]
         [System.String] $OperatingSystem = 'Windows',
 
-        ## Registers media via a JSON file hosted externally
+        ## Registers media via a JSON file hosted externally.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'FromUri')]
         [System.String] $FromUri,
+
+        ## Registers media using a custom Id.
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'FromUri')]
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Legacy')]
+        [System.String] $CustomId,
 
         ## Specifies that an exiting media entry should be overwritten.
         [Parameter(ValueFromPipelineByPropertyName)]
@@ -103,6 +112,11 @@ function Register-LabMedia {
                 ## Download the json content and convert into a hashtable
                 $legacyMedia = Get-LabMedia -Id $PSBoundParameters.Legacy -Legacy | Convert-PSObjectToHashtable;
 
+                if ($PSBoundParameters.ContainsKey('CustomId')) {
+
+                    $legacyMedia['Id'] = $CustomId
+                }
+
                 ## Recursively call Register-LabMedia and splat the properties
                 return (Register-LabMedia @legacyMedia -Force:$Force);
             }
@@ -111,6 +125,11 @@ function Register-LabMedia {
 
                 ## Download the json content and convert into a hashtable
                 $customMedia = Invoke-RestMethod -Uri $FromUri | Convert-PSObjectToHashtable;
+
+                if ($PSBoundParameters.ContainsKey('CustomId')) {
+
+                    $customMedia['Id'] = $CustomId
+                }
 
                 ## Recursively call Register-LabMedia and splat the properties
                 return (Register-LabMedia @customMedia -Force:$Force);
@@ -134,7 +153,15 @@ function Register-LabMedia {
                 }
 
                 ## Resolve the media Id to see if it's already been used
-                $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue;
+                try {
+
+                    $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue;
+                }
+                catch {
+
+                    Write-Debug -Message ($localized.CannotLocateMediaError -f $Id);
+                }
+
                 if ($media -and (-not $Force)) {
 
                     throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');

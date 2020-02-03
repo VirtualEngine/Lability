@@ -130,7 +130,12 @@ function Get-LabVirtualMachineProperty {
             }
         }
 
-        $vhdPath = Resolve-LabVMDiskPath -Name $Name -Generation $labImage.Generation;
+        $resolveLabVMDiskPathParams = @{
+            Name            = $Name;
+            Generation      = $labImage.Generation;
+            EnvironmentName = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).EnvironmentName;
+        }
+        $vhdPath = Resolve-LabVMDiskPath @resolveLabVMDiskPathParams;
 
         [ref] $null = $PSBoundParameters.Remove('Media');
         [ref] $null = $PSBoundParameters.Remove('ConfigurationData');

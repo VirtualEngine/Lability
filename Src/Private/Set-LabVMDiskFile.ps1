@@ -90,13 +90,12 @@ function Set-LabVMDiskFile {
 
             ## Bubble up the error to the caller
             throw $_;
-
         }
         finally {
 
             ## Ensure the VHD is dismounted (#185)
             Write-Verbose -Message ($localized.DismountingDiskImage -f $VhdPath);
-            Hyper-V\Dismount-Vhd -Path $VhdPath -Confirm:$false;
+            $null = Hyper-V\Dismount-Vhd -Path $VhdPath -Confirm:$false;
 
             ## Enable BitLocker (if required)
             Assert-BitLockerFDV;

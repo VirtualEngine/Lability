@@ -45,7 +45,7 @@ function Copy-LabModule {
             }
             else {
 
-                $powerShellModules = $ConfigurationData.NonNodeData.Lability.Module;
+                $powerShellModules = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Module;
             }
 
             if ($null -ne $powerShellModules) {
@@ -73,7 +73,7 @@ function Copy-LabModule {
             }
             else {
 
-                $dscResourceModules = $ConfigurationData.NonNodeData.Lability.DSCResource;
+                $dscResourceModules = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).DSCResource;
             }
 
             if ($null -ne $dscResourceModules) {

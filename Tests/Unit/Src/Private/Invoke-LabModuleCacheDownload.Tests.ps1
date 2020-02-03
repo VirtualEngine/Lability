@@ -76,5 +76,17 @@ Describe 'Unit\Src\Private\Invoke-LabModuleCacheDownload' {
             Assert-MockCalled Invoke-LabModuleDownloadFromGitHub -Scope It -Exactly 0;
         }
 
+        It 'Forces module download when module is cached and "Latest" is specified via ModuleInfo (#367)' {
+            Mock Test-LabModuleCache -MockWith { return $true; }
+            $moduleInfo = @{
+                Name = $testModuleName;
+                Latest = $true;
+            }
+
+            Invoke-LabModuleCacheDownload -Module $moduleInfo;
+
+            Assert-MockCalled Invoke-LabModuleDownloadFromPSGallery -Scope It -Exactly 1;
+        }
+
     } #end InModuleScope
 } #end Describe

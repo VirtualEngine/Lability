@@ -56,6 +56,8 @@ function Remove-LabConfiguration {
 
         } #end foreach node
 
+        ## TODO: Remove empty (environment name) differencing disk folder(s)
+
         Write-Progress -Id 42 -Activity $activity -Completed;
         Write-Verbose -Message $localized.FinishedLabConfiguration;
 

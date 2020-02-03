@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Lability.psm1';
-    ModuleVersion     = '0.18.0';
+    ModuleVersion     = '0.19.0';
     GUID              = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author            = 'Iain Brighton';
     CompanyName       = 'Virtual Engine';
@@ -13,6 +13,7 @@
                             'Clear-LabModuleCache',
                             'Clear-ModulePath',
                             'Export-LabHostConfiguration',
+                            'Export-LabImage',
                             'Get-LabHostConfiguration',
                             'Get-LabHostDefault',
                             'Get-LabImage',

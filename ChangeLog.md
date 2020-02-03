@@ -2,6 +2,19 @@
 
 ## Versions ##
 
+### v0.19.0 ###
+
+* Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
+* Adds `Export-LabImage` cmdlet to export VHD(X) master/parent images
+* Permits overriding media Id with -CustomId` parameter when importing legacy media definitions or media from an external file/Uri with `Register-LabMedia`
+* Adds `Latest` property to module info to force latest module version download - on every configuration run (#367)
+* Adds `-DisableVhdEnvironmentName` parameter to `Set-LabHostDefault` (#78)
+  * New installations/deployments will default to False - creating VM differencing disks in a subdirectory when EnvironmentName is defined in configuration data
+  * Existing installations will default to True (at least until `Set-LabHostDefault` or `Reset-LabHostDefault` are called)
+* Adds version checking of downloaded modules (#375)
+* Updates default Windows 10 evaluation media to 19H2 build (1909)
+* Updates default VM media from `2012R2_x64_Standard_EN_Eval` to `2019_x64_Standard_EN_Eval`
+
 ### v0.18.0 ###
 
 * Updates bundled xHyper-V DSC resource to v3.16.0
