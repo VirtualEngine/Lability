@@ -713,14 +713,14 @@
 },
 {
 	"Id": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_19H1_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 1903 English Evaluation",
+    "Filename": "WIN10_x64_ENT_19H2_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 1909 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/18362.30.190401-1528.19h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-	"Checksum": "70C7E8F0599BBB4526F08E6814925E50",
+	"Uri": "https://software-download.microsoft.com/download/pr/18363.418.191007-0143.19h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "B3CD4BAE54E74F1CA497216A3F347CA7",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -736,14 +736,14 @@
 },
 {
 	"Id": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_19H1_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 1903 English Evaluation",
+    "Filename": "WIN10_x86_ENT_19H2_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 1909 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/18362.30.190401-1528.19h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-	"Checksum": "1945092B75613D7822B82D3AFB378F1D",
+	"Uri": "https://software-download.microsoft.com/download/pr/18363.418.191007-0143.19h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "B700FF7684BE392F266B22289CA75979",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
