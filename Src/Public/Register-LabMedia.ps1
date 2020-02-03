@@ -10,6 +10,10 @@ function Register-LabMedia {
         To override a built-in media entry, specify the same media Id with the -Force switch.
     .PARAMETER Legacy
         Specifies registering a legacy Windows 10 media as custom media.
+    .EXAMPLE
+        Register-LabMedia -Legacy WIN10_x64_Enterprise_1809_EN_Eval
+
+        Reregisters the deprecated Windows 10 Enterprise x64 English evaluation media.
     .LINK
         Get-LabMedia
         Unregister-LabMedia

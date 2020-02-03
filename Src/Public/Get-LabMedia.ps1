@@ -9,7 +9,25 @@ function Get-LabMedia {
     .PARAMETER CustomOnly
         Specifies that only registered custom media are returned.
     .PARAMETER Legacy
-        Specifies that legacy Windows 10 evaluation media definition(s) are returned.
+        Specifies that legacy evaluation media definition(s) are returned. These deprecated media definitions can be
+        reregistered using the Register-LabMedia cmdlet with the -Legacy switch.
+    .EXAMPLE
+        Get-LabMedia -Legacy
+
+        Id                                     Arch Media Description
+        --                                     ---- ----- -----------
+        WIN10_x64_Enterprise_1709_EN_Eval       x64   ISO Windows 10 64bit Enterprise 1709 English Evaluation
+        WIN10_x64_Enterprise_1803_EN_Eval       x64   ISO Windows 10 64bit Enterprise 1804 English Evaluation
+        WIN10_x64_Enterprise_1809_EN_Eval       x64   ISO Windows 10 64bit Enterprise 1809 English Evaluation
+        WIN10_x64_Enterprise_1903_EN_Eval       x64   ISO Windows 10 64bit Enterprise 1903 English Evaluation
+        WIN10_x64_Enterprise_LTSB_2016_EN_Eval  x64   ISO Windows 10 64bit Enterprise LTSB 2016 English Evaluation
+        WIN10_x86_Enterprise_1709_EN_Eval       x86   ISO Windows 10 32bit Enterprise 1709 English Evaluation
+        WIN10_x86_Enterprise_1803_EN_Eval       x86   ISO Windows 10 32bit Enterprise 1804 English Evaluation
+        WIN10_x86_Enterprise_1809_EN_Eval       x86   ISO Windows 10 32bit Enterprise 1809 English Evaluation
+        WIN10_x86_Enterprise_1903_EN_Eval       x86   ISO Windows 10 32bit Enterprise 1903 English Evaluation
+        WIN10_x86_Enterprise_LTSB_2016_EN_Eval  x86   ISO Windows 10 32bit Enterprise LTSB 2016 English Evaluation
+
+        Returns deprecated/previous media definitions.
 #>
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType([System.Management.Automation.PSCustomObject])]
