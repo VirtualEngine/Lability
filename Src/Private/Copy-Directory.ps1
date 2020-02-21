@@ -1,5 +1,5 @@
 function CopyDirectory {
-<#
+    <#
     .SYNOPSIS
         Copies a directory structure with progress.
 #>
@@ -58,7 +58,23 @@ function CopyDirectory {
             }
 
             $targetPath = Join-Path -Path $DestinationPath -ChildPath $fileList[$i].FullName.Replace($SourcePath, '');
-            Copy-Item -Path $fileList[$i].FullName -Destination $targetPath -Force:$Force;
+
+            # This retry method is needed when AV scanners hold locks on files for a moment too long
+            $copyTryCount = 1;
+            while ($true) {
+                try {
+                    Copy-Item -Path $fileList[$i].FullName -Destination $targetPath -Force:$Force;
+                    break;
+                }
+                catch {
+                    $copyTryCount += 1;
+                    if ($copyTryCount -gt 5) {
+                        throw;
+                    }
+                    Write-Warning -Message ($localized.FileCopyFailedRetryingWarning -f $fileList[$i].FullName, $targetPath);
+                    Start-Sleep -Seconds 1;
+                }
+            }
         } #end for
 
         Write-Progress -Activity $activity -Completed;

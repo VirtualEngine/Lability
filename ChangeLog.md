@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### v0.19.1 ###
+
+* Retries failed resource file copy operations (fails after 5 attempts)
+
 ### v0.19.0 ###
 
 * Removes extraneous output when unmounting ISOs (Windows 10 1903 only?)
