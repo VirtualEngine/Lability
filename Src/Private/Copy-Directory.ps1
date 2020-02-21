@@ -65,12 +65,13 @@ function CopyDirectory {
                 try {
                     Copy-Item -Path $fileList[$i].FullName -Destination $targetPath -Force:$Force;
                     break;
-                } catch {
+                }
+                catch {
                     $copyTryCount += 1;
                     if ($copyTryCount -gt 5) {
                         throw;
                     }
-                    Write-Warning "Copy item from $($fileList[$i].FullName) to $targetPath failed, trying again";
+                    Write-Warning -Message ($localized.FileCopyFailedRetryingWarning -f $fileList[$i].FullName, $targetPath);
                     Start-Sleep -Seconds 1;
                 }
             }
