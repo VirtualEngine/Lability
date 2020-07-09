@@ -712,15 +712,16 @@
 	]
 },
 {
-	"Id": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_19H2_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 1909 English Evaluation",
+	"Id": "WIN10_x64_Enterprise_20H1_EN_Eval",
+	"Alias": "WIN10_x64_Enterprise_EN_Eval",
+    "Filename": "WIN10_x64_ENT_20H1_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 2004 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/18363.418.191007-0143.19h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-	"Checksum": "B3CD4BAE54E74F1CA497216A3F347CA7",
+	"Uri": "https://software-download.microsoft.com/download/pr/19041.264.200511-0456.vb_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "E85637E135E9B6DBC5FA02B463A95764",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -735,15 +736,16 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_19H2_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 1909 English Evaluation",
+	"Id": "WIN10_x86_Enterprise_20H1_EN_Eval",
+	"Alias": "WIN10_x86_Enterprise_EN_Eval",
+    "Filename": "WIN10_x86_ENT_20H1_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 2004 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/18363.418.191007-0143.19h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-	"Checksum": "B700FF7684BE392F266B22289CA75979",
+	"Uri": "https://software-download.microsoft.com/download/pr/19041.264.200511-0456.vb_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "895283EEA7A5D53A2BD6F071BABBB4F1",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [

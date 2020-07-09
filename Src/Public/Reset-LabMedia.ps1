@@ -10,10 +10,9 @@ function Reset-LabMedia {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess','')]
     param ( )
-    process {
-
-        Remove-ConfigurationData -Configuration CustomMedia;
-        Get-Labmedia;
-
+    process
+    {
+        Remove-ConfigurationData -Configuration CustomMedia
+        Get-Labmedia
     }
-} #end function Reset-LabMedia
+}
