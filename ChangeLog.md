@@ -9,6 +9,7 @@
   * To lock to a specific Windows 10 version, use its media Id - not its alias
   * `WIN10_x64_Enterprise_EN_Eval` will always point to the latest Windows 10 x64 version (currently `WIN10_x64_Enterprise_20H1_EN_Eval`)
   * `WIN10_x86_Enterprise_EN_Eval` will always point to the latest Windows 10 x64 version (currently `WIN10_x86_Enterprise_20H1_EN_Eval`)
+* Fixes bug in custom bootstrap with Regex substituion string(s), e.g. $&
 
 ### v0.19.1 ###
 
