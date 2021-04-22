@@ -41,7 +41,7 @@ function Set-LabBootStrap {
 
         if ($CustomBootStrap) {
 
-            $bootStrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $CustomBootStrap;
+            $bootStrap = $bootStrap.Replace('<#CustomBootStrapInjectionPoint#>', $CustomBootStrap);
         }
 
         [ref] $null = New-Directory -Path $Path -Confirm:$false;

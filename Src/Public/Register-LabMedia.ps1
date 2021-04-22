@@ -20,7 +20,8 @@ function Register-LabMedia {
 #>
     [CmdletBinding(DefaultParameterSetName = 'ID')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
-    param (
+    param
+    (
         ## Specifies the media Id to register. You can override the built-in media if required.
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
         [System.String] $Id,
@@ -74,6 +75,10 @@ function Register-LabMedia {
         [ValidateSet('Windows','Linux')]
         [System.String] $OperatingSystem = 'Windows',
 
+        ## Specifies the media alias (Id).
+        [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'ID')]
+        [System.String] $Alias,
+
         ## Registers media via a JSON file hosted externally.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'FromUri')]
         [System.String] $FromUri,
@@ -87,128 +92,139 @@ function Register-LabMedia {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
-    DynamicParam {
-
+    DynamicParam
+    {
         ## Adds a dynamic -Legacy parameter that returns the available legacy Windows 10 media Ids
-        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
-        $parameterAttribute.ParameterSetName = 'Legacy';
-        $parameterAttribute.Mandatory = $true;
-        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
-        $attributeCollection.Add($parameterAttribute);
-        $mediaIds = (Get-LabMedia -Legacy).Id;
-        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
-        $attributeCollection.Add($validateSetAttribute);
-        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('Legacy', [System.String], $attributeCollection);
-        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
-        $runtimeParameterDictionary.Add('Legacy', $runtimeParameter);
-        return $runtimeParameterDictionary;
+        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute'
+        $parameterAttribute.ParameterSetName = 'Legacy'
+        $parameterAttribute.Mandatory = $true
+        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]'
+        $attributeCollection.Add($parameterAttribute)
+        $mediaIds = (Get-LabMedia -Legacy).Id
+        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds
+        $attributeCollection.Add($validateSetAttribute)
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('Legacy', [System.String], $attributeCollection)
+        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary'
+        $runtimeParameterDictionary.Add('Legacy', $runtimeParameter)
+        return $runtimeParameterDictionary
     }
-    process {
-
-        switch ($PSCmdlet.ParameterSetName) {
-
+    process
+    {
+        switch ($PSCmdlet.ParameterSetName)
+        {
             Legacy {
 
                 ## Download the json content and convert into a hashtable
-                $legacyMedia = Get-LabMedia -Id $PSBoundParameters.Legacy -Legacy | Convert-PSObjectToHashtable;
+                $legacyMedia = Get-LabMedia -Id $PSBoundParameters.Legacy -Legacy | Convert-PSObjectToHashtable
 
-                if ($PSBoundParameters.ContainsKey('CustomId')) {
-
+                if ($PSBoundParameters.ContainsKey('CustomId'))
+                {
                     $legacyMedia['Id'] = $CustomId
                 }
 
                 ## Recursively call Register-LabMedia and splat the properties
-                return (Register-LabMedia @legacyMedia -Force:$Force);
+                return (Register-LabMedia @legacyMedia -Force:$Force)
             }
 
             FromUri {
 
                 ## Download the json content and convert into a hashtable
-                $customMedia = Invoke-RestMethod -Uri $FromUri | Convert-PSObjectToHashtable;
+                $customMedia = Invoke-RestMethod -Uri $FromUri | Convert-PSObjectToHashtable
 
-                if ($PSBoundParameters.ContainsKey('CustomId')) {
-
+                if ($PSBoundParameters.ContainsKey('CustomId'))
+                {
                     $customMedia['Id'] = $CustomId
                 }
 
                 ## Recursively call Register-LabMedia and splat the properties
-                return (Register-LabMedia @customMedia -Force:$Force);
+                return (Register-LabMedia @customMedia -Force:$Force)
             }
 
             default {
 
                 ## Validate Linux VM media type is VHD or NULL
-                if (($OperatingSystem -eq 'Linux') -and ($MediaType -notin 'VHD','NULL')) {
-
-                    throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem);
+                if (($OperatingSystem -eq 'Linux') -and ($MediaType -notin 'VHD','NULL'))
+                {
+                    throw ($localized.InvalidOSMediaTypeError -f $MediaType, $OperatingSystem)
                 }
 
                 ## Validate ImageName when media type is ISO/WIM
-                if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM')) {
-
-                    if (-not $PSBoundParameters.ContainsKey('ImageName')) {
-
-                        throw ($localized.ImageNameRequiredError -f '-ImageName');
+                if (($MediaType -eq 'ISO') -or ($MediaType -eq 'WIM'))
+                {
+                    if (-not $PSBoundParameters.ContainsKey('ImageName'))
+                    {
+                        throw ($localized.ImageNameRequiredError -f '-ImageName')
                     }
                 }
 
                 ## Resolve the media Id to see if it's already been used
-                try {
-
-                    $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue;
+                try
+                {
+                    $media = Resolve-LabMedia -Id $Id -ErrorAction SilentlyContinue
                 }
-                catch {
-
-                    Write-Debug -Message ($localized.CannotLocateMediaError -f $Id);
-                }
-
-                if ($media -and (-not $Force)) {
-
-                    throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force');
+                catch
+                {
+                    Write-Debug -Message ($localized.CannotLocateMediaError -f $Id)
                 }
 
-                ## Get the custom media list (not the built in media)
-                $existingCustomMedia = @(Get-ConfigurationData -Configuration CustomMedia);
-                if (-not $existingCustomMedia) {
-
-                    $existingCustomMedia = @();
+                if ($media -and (-not $Force))
+                {
+                    throw ($localized.MediaAlreadyRegisteredError -f $Id, '-Force')
                 }
 
-                $customMedia = [PSCustomObject] @{
-                    Id = $Id;
-                    Filename = $Filename;
-                    Description = $Description;
-                    Architecture = $Architecture;
-                    ImageName = $ImageName;
-                    MediaType = $MediaType;
-                    OperatingSystem = $OperatingSystem;
-                    Uri = $Uri;
-                    Checksum = $Checksum;
-                    CustomData = $CustomData;
-                    Hotfixes = $Hotfixes;
-                }
-
-                $hasExistingMediaEntry = $false;
-                for ($i = 0; $i -lt $existingCustomMedia.Count; $i++) {
-
-                    if ($existingCustomMedia[$i].Id -eq $Id) {
-
-                        Write-Verbose -Message ($localized.OverwritingCustomMediaEntry -f $Id);
-                        $hasExistingMediaEntry = $true;
-                        $existingCustomMedia[$i] = $customMedia;
+                if ($PSBoundParameters.ContainsKey('Alias'))
+                {
+                    ## Check to see whether the alias is already registered
+                    $existingMediaIds = Get-LabMediaId
+                    if ($existingMediaIds.Contains($Alias))
+                    {
+                        throw ($localized.MediaAliasAlreadyRegisteredError -f $Alias)
                     }
                 }
 
-                if (-not $hasExistingMediaEntry) {
-
-                    ## Add it to the array
-                    Write-Verbose -Message ($localized.AddingCustomMediaEntry -f $Id);
-                    $existingCustomMedia += $customMedia;
+                ## Get the custom media list (not the built in media)
+                $existingCustomMedia = @(Get-ConfigurationData -Configuration CustomMedia)
+                if (-not $existingCustomMedia)
+                {
+                    $existingCustomMedia = @()
                 }
 
-                Write-Verbose -Message ($localized.SavingConfiguration -f $Id);
-                Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia);
-                return $customMedia;
+                $customMedia = [PSCustomObject] @{
+                    Id              = $Id
+                    Alias           = $Alias
+                    Filename        = $Filename
+                    Description     = $Description
+                    Architecture    = $Architecture
+                    ImageName       = $ImageName
+                    MediaType       = $MediaType
+                    OperatingSystem = $OperatingSystem
+                    Uri             = $Uri
+                    Checksum        = $Checksum
+                    CustomData      = $CustomData
+                    Hotfixes        = $Hotfixes
+                }
+
+                $hasExistingMediaEntry = $false
+                for ($i = 0; $i -lt $existingCustomMedia.Count; $i++)
+                {
+                    if ($existingCustomMedia[$i].Id -eq $Id)
+                    {
+                        Write-Verbose -Message ($localized.OverwritingCustomMediaEntry -f $Id)
+                        $hasExistingMediaEntry = $true
+                        $existingCustomMedia[$i] = $customMedia
+                    }
+                }
+
+                if (-not $hasExistingMediaEntry)
+                {
+                    ## Add it to the array
+                    Write-Verbose -Message ($localized.AddingCustomMediaEntry -f $Id)
+                    $existingCustomMedia += $customMedia
+                }
+
+                Write-Verbose -Message ($localized.SavingConfiguration -f $Id)
+                Set-ConfigurationData -Configuration CustomMedia -InputObject @($existingCustomMedia)
+                return $customMedia
 
             } #end default
         } #end switch

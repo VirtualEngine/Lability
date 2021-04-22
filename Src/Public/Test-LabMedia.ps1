@@ -5,39 +5,40 @@ function Test-LabMedia {
     .DESCRIPTION
         The Test-LabMedia cmdlet will check whether the specified media Id has been downloaded and its checksum is correct.
     .PARAMETER Id
-        Specifies the media Id to test.
+        Specifies the media Id (or alias) to test.
 #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
-    param (
+    param
+    (
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Id
     )
-    process {
-
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
-        $media = Get-LabMedia -Id $Id;
-        if ($media) {
-
-            if (-not $hostDefaults.DisableLocalFileCaching) {
-
+    process
+    {
+        $hostDefaults = Get-ConfigurationData -Configuration Host
+        $media = Get-LabMedia -Id $Id
+        if ($media)
+        {
+            if (-not $hostDefaults.DisableLocalFileCaching)
+            {
                 $testResourceDownloadParams = @{
-                    DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename;
-                    Uri = $media.Uri;
-                    Checksum = $media.Checksum;
+                    DestinationPath = Join-Path -Path $hostDefaults.IsoPath -ChildPath $media.Filename
+                    Uri = $media.Uri
+                    Checksum = $media.Checksum
                 }
-                return Test-ResourceDownload @testResourceDownloadParams;
+                return Test-ResourceDownload @testResourceDownloadParams
             }
-            else {
-
+            else
+            {
                 ## Local file resource caching is disabled
-                return $true;
+                return $true
             }
         }
-        else {
-
-            return $false;
+        else
+        {
+            return $false
         }
 
     } #end process

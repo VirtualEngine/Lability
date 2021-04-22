@@ -28,7 +28,8 @@ function New-LabImage {
 #>
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([System.Management.Automation.PSCustomObject])]
-    param (
+    param
+    (
         ## Lab media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
@@ -44,209 +45,210 @@ function New-LabImage {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force
     )
-    process {
-
+    process
+    {
         ## Download media if required..
-        [ref] $null = $PSBoundParameters.Remove('Force');
-        [ref] $null = $PSBoundParameters.Remove('WhatIf');
-        [ref] $null = $PSBoundParameters.Remove('Confirm');
+        [ref] $null = $PSBoundParameters.Remove('Force')
+        [ref] $null = $PSBoundParameters.Remove('WhatIf')
+        [ref] $null = $PSBoundParameters.Remove('Confirm')
 
-        if ((Test-LabImage @PSBoundParameters) -and $Force) {
+        $media = Resolve-LabMedia @PSBoundParameters
+        ## Update media Id if alias was/is used
+        $Id = $media.Id
 
-            $image = Get-LabImage @PSBoundParameters;
-            Write-Verbose -Message ($localized.RemovingDiskImage -f $image.ImagePath);
-            [ref] $null = Remove-Item -Path $image.ImagePath -Force -ErrorAction Stop;
+        if ((Test-LabImage @PSBoundParameters) -and $Force)
+        {
+            $image = Get-LabImage @PSBoundParameters
+            Write-Verbose -Message ($localized.RemovingDiskImage -f $image.ImagePath)
+            [ref] $null = Remove-Item -Path $image.ImagePath -Force -ErrorAction Stop
         }
-        elseif (Test-LabImage @PSBoundParameters) {
-
-            throw ($localized.ImageAlreadyExistsError -f $Id);
+        elseif (Test-LabImage @PSBoundParameters)
+        {
+            throw ($localized.ImageAlreadyExistsError -f $Id)
         }
 
         ## Check Dism requirement (if present) #167
-        $media = Resolve-LabMedia @PSBoundParameters;
-        if ($null -ne $media.CustomData.MinimumDismVersion) {
-
-            $minimumDismVersion = $media.CustomData.MinimumDismVersion;
-            if ($labDefaults.DismVersion -lt $minimumDismVersion) {
-
-                throw ($localized.DismVersionMismatchError -f $Id, $minimumDismVersion.ToString());
+        if ($null -ne $media.CustomData.MinimumDismVersion)
+        {
+            $minimumDismVersion = $media.CustomData.MinimumDismVersion
+            if ($labDefaults.DismVersion -lt $minimumDismVersion)
+            {
+                throw ($localized.DismVersionMismatchError -f $Id, $minimumDismVersion.ToString())
             }
         }
 
-        $hostDefaults = Get-ConfigurationData -Configuration Host;
+        $hostDefaults = Get-ConfigurationData -Configuration Host
 
-        if ($media.MediaType -eq 'VHD') {
-
-            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
-            Write-Verbose -Message ($localized.ImportingExistingDiskImage -f $media.Description);
-            $imageName = $media.Filename;
-            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
-
+        if ($media.MediaType -eq 'VHD')
+        {
+            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media
+            Write-Verbose -Message ($localized.ImportingExistingDiskImage -f $media.Description)
+            $imageName = $media.Filename
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName
         } #end if VHD
-        elseif ($media.MediaType -eq 'NULL') {
-
-            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description);
-            $imageName = '{0}.vhdx' -f $Id;
-            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+        elseif ($media.MediaType -eq 'NULL')
+        {
+            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description)
+            $imageName = '{0}.vhdx' -f $Id
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName
 
             ## Create disk image and refresh PSDrives
             $newEmptyDiskImageParams = @{
-                Path = $imagePath;
-                Force = $true;
-                ErrorAction = 'Stop';
+                Path = $imagePath
+                Force = $true
+                ErrorAction = 'Stop'
             }
 
-            if ($media.CustomData.DiskType) {
-
-                $newEmptyDiskImageParams['Type'] = $media.CustomData.DiskType;
+            if ($media.CustomData.DiskType)
+            {
+                $newEmptyDiskImageParams['Type'] = $media.CustomData.DiskType
             }
 
-            if ($media.CustomData.DiskSize) {
-
-                $newEmptyDiskImageParams['Size'] = $media.CustomData.DiskSize;
+            if ($media.CustomData.DiskSize)
+            {
+                $newEmptyDiskImageParams['Size'] = $media.CustomData.DiskSize
             }
 
-            $image = New-EmptyDiskImage @newEmptyDiskImageParams;
-
+            $image = New-EmptyDiskImage @newEmptyDiskImageParams
         }
-        else {
-
+        else
+        {
             ## Create VHDX
-            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media;
+            $mediaFileInfo = Invoke-LabMediaImageDownload -Media $media
 
-            if ($media.CustomData.PartitionStyle) {
-
+            if ($media.CustomData.PartitionStyle)
+            {
                 ## Custom partition style has been defined so use that
-                $partitionStyle = $media.CustomData.PartitionStyle;
+                $partitionStyle = $media.CustomData.PartitionStyle
             }
-            elseif ($media.Architecture -eq 'x86') {
-
+            elseif ($media.Architecture -eq 'x86')
+            {
                 ## Otherwise default to MBR for x86 media
-                $partitionStyle = 'MBR';
+                $partitionStyle = 'MBR'
             }
-            else {
-
-                $partitionStyle = 'GPT';
+            else
+            {
+                $partitionStyle = 'GPT'
             }
 
-            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description);
+            Write-Verbose -Message ($localized.CreatingDiskImage -f $media.Description)
 
-            $imageName = '{0}.vhdx' -f $Id;
-            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName;
+            $imageName = '{0}.vhdx' -f $Id
+            $imagePath = Join-Path -Path $hostDefaults.ParentVhdPath -ChildPath $imageName
 
             ## Apply WIM (Expand-LabImage) and add specified features
             $expandLabImageParams = @{
-                MediaPath = $mediaFileInfo.FullName;
-                PartitionStyle = $partitionStyle;
+                MediaPath = $mediaFileInfo.FullName
+                PartitionStyle = $partitionStyle
             }
 
             ## Determine whether we're using the WIM image index or image name. This permits
             ## specifying an integer image index in a media's 'ImageName' property.
-            [System.Int32] $wimImageIndex = $null;
-            if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex)) {
-
-                $expandLabImageParams['WimImageIndex'] = $wimImageIndex;
+            [System.Int32] $wimImageIndex = $null
+            if ([System.Int32]::TryParse($media.ImageName, [ref] $wimImageIndex))
+            {
+                $expandLabImageParams['WimImageIndex'] = $wimImageIndex
             }
-            else {
-
-                if ([System.String]::IsNullOrEmpty($media.ImageName)) {
-                    throw ($localized.ImageNameRequiredError -f 'ImageName');
+            else
+            {
+                if ([System.String]::IsNullOrEmpty($media.ImageName))
+                {
+                    throw ($localized.ImageNameRequiredError -f 'ImageName')
                 }
 
-                $expandLabImageParams['WimImageName'] = $media.ImageName;
+                $expandLabImageParams['WimImageName'] = $media.ImageName
             }
 
-            $imageCreationFailed = $false;
+            $imageCreationFailed = $false
 
-            try {
-
+            try
+            {
                 ## Create disk image and refresh PSDrives
                 $newDiskImageParams = @{
-                    Path = $imagePath;
-                    PartitionStyle = $partitionStyle;
-                    Passthru = $true;
-                    Force = $true;
-                    ErrorAction = 'Stop';
+                    Path = $imagePath
+                    PartitionStyle = $partitionStyle
+                    Passthru = $true
+                    Force = $true
+                    ErrorAction = 'Stop'
                 }
 
-                if ($media.CustomData.DiskType) {
-
-                    $newDiskImageParams['Type'] = $media.CustomData.DiskType;
+                if ($media.CustomData.DiskType)
+                {
+                    $newDiskImageParams['Type'] = $media.CustomData.DiskType
                 }
 
-                if ($media.CustomData.DiskSize) {
-
-                    $newDiskImageParams['Size'] = $media.CustomData.DiskSize;
+                if ($media.CustomData.DiskSize)
+                {
+                    $newDiskImageParams['Size'] = $media.CustomData.DiskSize
                 }
 
-                $image = New-DiskImage @newDiskImageParams;
-                [ref] $null = Get-PSDrive;
+                $image = New-DiskImage @newDiskImageParams
+                [ref] $null = Get-PSDrive
 
-                $expandLabImageParams['Vhd'] = $image;
+                $expandLabImageParams['Vhd'] = $image
 
-                if ($media.CustomData.SourcePath) {
-
-                    $expandLabImageParams['SourcePath'] = $media.CustomData.SourcePath;
+                if ($media.CustomData.SourcePath)
+                {
+                    $expandLabImageParams['SourcePath'] = $media.CustomData.SourcePath
                 }
-                if ($media.CustomData.WimPath) {
-
-                    $expandLabImageParams['WimPath'] = $media.CustomData.WimPath;
+                if ($media.CustomData.WimPath)
+                {
+                    $expandLabImageParams['WimPath'] = $media.CustomData.WimPath
                 }
-                if ($media.CustomData.WindowsOptionalFeature) {
-
-                    $expandLabImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature;
+                if ($media.CustomData.WindowsOptionalFeature)
+                {
+                    $expandLabImageParams['WindowsOptionalFeature'] = $media.CustomData.WindowsOptionalFeature
                 }
-                if ($media.CustomData.PackagePath) {
-
-                    $expandLabImageParams['PackagePath'] = $media.CustomData.PackagePath;
+                if ($media.CustomData.PackagePath)
+                {
+                    $expandLabImageParams['PackagePath'] = $media.CustomData.PackagePath
                 }
-                if ($media.CustomData.Package) {
-
-                    $expandLabImageParams['Package'] = $media.CustomData.Package;
+                if ($media.CustomData.Package)
+                {
+                    $expandLabImageParams['Package'] = $media.CustomData.Package
                 }
-                if ($media.CustomData.PackageLocale) {
-
-                    $expandLabImageParams['PackageLocale'] = $media.CustomData.PackageLocale;
+                if ($media.CustomData.PackageLocale)
+                {
+                    $expandLabImageParams['PackageLocale'] = $media.CustomData.PackageLocale
                 }
 
-                Expand-LabImage @expandLabImageParams;
+                Expand-LabImage @expandLabImageParams
 
                 ## Apply hotfixes (Add-DiskImageHotfix)
                 $addDiskImageHotfixParams = @{
-                    Id = $Id;
-                    Vhd = $image;
-                    PartitionStyle = $partitionStyle;
+                    Id = $Id
+                    Vhd = $image
+                    PartitionStyle = $partitionStyle
                 }
-                if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
-
-                    $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData;
+                if ($PSBoundParameters.ContainsKey('ConfigurationData'))
+                {
+                    $addDiskImageHotfixParams['ConfigurationData'] = $ConfigurationData
                 }
-                Add-DiskImageHotfix @addDiskImageHotfixParams;
+                Add-DiskImageHotfix @addDiskImageHotfixParams
 
                 ## Configure boot volume (Set-DiskImageBootVolume)
-                Set-DiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle;
-
+                Set-DiskImageBootVolume -Vhd $image -PartitionStyle $partitionStyle
             }
-            catch {
-
+            catch
+            {
                 ## Have to ensure VHDX is dismounted before we can delete!
-                $imageCreationFailed = $true;
-                Write-Error -Message $_;
+                $imageCreationFailed = $true
+                Write-Error -Message $_
             }
-            finally {
-
+            finally
+            {
                 ## Dismount VHDX
-                Hyper-V\Dismount-VHD -Path $imagePath;
+                Hyper-V\Dismount-VHD -Path $imagePath
             }
 
-            if ($imageCreationFailed -eq $true) {
-
-                Write-Warning -Message ($localized.RemovingIncompleteImageWarning -f $imagePath);
-                Remove-Item -Path $imagePath -Force;
+            if ($imageCreationFailed -eq $true)
+            {
+                Write-Warning -Message ($localized.RemovingIncompleteImageWarning -f $imagePath)
+                Remove-Item -Path $imagePath -Force
             }
         } #end if ISO/WIM
 
-        return (Get-LabImage $PSBoundParameters);
+        return (Get-LabImage $PSBoundParameters)
 
     } #end process
 } #end function New-LabImage

@@ -4,18 +4,19 @@ function Write-Verbose {
         Proxy function for Write-Verbose that adds a timestamp and/or call stack information to the output.
 #>
     [CmdletBinding()]
-    param (
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidOverwritingBuiltInCmdlets','')]
+    param
+    (
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [AllowNull()]
         [System.String] $Message
     )
-    process {
-
-        if (-not [System.String]::IsNullOrEmpty($Message)) {
-
-            $verboseMessage = Get-FormattedMessage -Message $Message;
-            Microsoft.PowerShell.Utility\Write-Verbose -Message $verboseMessage;
+    process
+    {
+        if (-not [System.String]::IsNullOrEmpty($Message))
+        {
+            $verboseMessage = Get-FormattedMessage -Message $Message
+            Microsoft.PowerShell.Utility\Write-Verbose -Message $verboseMessage
         }
-
-    } #end process
-} #end function
+    }
+}

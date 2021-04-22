@@ -9,8 +9,9 @@ function Resolve-LabMedia {
 #>
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns','')]
-    param (
-        ## Media ID
+    param
+    (
+        ## Media ID or alias
         [Parameter(Mandatory, ValueFromPipeline)]
         [System.String] $Id,
 
@@ -20,46 +21,46 @@ function Resolve-LabMedia {
         [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
         $ConfigurationData
     )
-    process {
-
+    process
+    {
         ## Avoid any $media variable scoping issues
-        $media = $null;
+        $media = $null
 
         ## If we have configuration data specific instance, return that
-        if ($PSBoundParameters.ContainsKey('ConfigurationData')) {
-
-            $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id });
-            if ($customMedia) {
-
-                $newLabMediaParams = @{};
-                foreach ($key in $customMedia.Keys) {
-
-                    $newLabMediaParams[$key] = $customMedia.$key;
+        if ($PSBoundParameters.ContainsKey('ConfigurationData'))
+        {
+            $customMedia = $ConfigurationData.NonNodeData.$($labDefaults.ModuleName).Media.Where({ $_.Id -eq $Id -or $_.Alias -eq $Id })
+            if ($customMedia)
+            {
+                $newLabMediaParams = @{ }
+                foreach ($key in $customMedia.Keys)
+                {
+                    $newLabMediaParams[$key] = $customMedia.$key
                 }
-                $media = New-LabMedia @newLabMediaParams;
+                $media = New-LabMedia @newLabMediaParams
             }
         }
 
         ## If we have custom media, return that
-        if (-not $media) {
-
-            $media = Get-ConfigurationData -Configuration CustomMedia;
-            $media = $media | Where-Object { $_.Id -eq $Id };
+        if (-not $media)
+        {
+            $media = Get-ConfigurationData -Configuration CustomMedia
+            $media = $media | Where-Object { $_.Id -eq $Id -or $_.Alias -eq $Id }
         }
 
         ## If we still don't have a media image, return the built-in object
-        if (-not $media) {
-
-            $media = Get-LabMedia -Id $Id;
+        if (-not $media)
+        {
+            $media = Get-LabMedia -Id $Id
         }
 
         ## We don't have any defined, custom or built-in media
-        if (-not $media) {
-
-            throw ($localized.CannotLocateMediaError -f $Id);
+        if (-not $media)
+        {
+            throw ($localized.CannotLocateMediaError -f $Id)
         }
 
-        return $media;
+        return $media
 
     } #end process
 } #end function

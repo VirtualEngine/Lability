@@ -2,7 +2,7 @@
 #      environment configuration  #
 #---------------------------------#
 
-version: 0.17.{build}
+version: 0.19.{build}
 environment:
   gallery_api_key:
     secure: WeDp1yZJECZBjjW+22A8lA8+gmz+wiYostPKtU4pdLXORfK//eJCdR7f0k3oJ+2r
@@ -12,7 +12,8 @@ environment:
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
     - ps: Install-WindowsFeature -Name RSAT-Hyper-V-Tools -IncludeAllSubFeature -ErrorAction Stop -WarningAction SilentlyContinue -Verbose
-    - ps: Install-Module -Name Pester, PSSCriptAnalyzer, PSake, VirtualEngine.Build -Scope CurrentUser -Force -AllowClobber -Verbose
+    - ps: Install-Module -Name Pester -MaximumVersion 4.99 -Scope CurrentUser -Force -AllowClobber -Verbose
+    - ps: Install-Module -Name PSSCriptAnalyzer, PSake, VirtualEngine.Build -Scope CurrentUser -Force -AllowClobber -Verbose
     - ps: $null = Invoke-Expression ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
 
 build: false
