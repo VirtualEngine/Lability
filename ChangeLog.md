@@ -2,14 +2,14 @@
 
 ## Versions ##
 
-### Unreleased ###
+### 0.20.0 ###
 
 * Updates default Windows 10 evaluation media to Windows 10 20H2 (2009)
 * Adds Windows 10 20H1 (2004) evaluation media
 * Adds aliases for latest Windows 10 evaluation media avoiding breaking existing VHD/X chains (or in future)
   * To lock to a specific Windows 10 version, use its media Id - not its alias
   * `WIN10_x64_Enterprise_EN_Eval` will always point to the latest Windows 10 x64 version (currently `WIN10_x64_Enterprise_20H2_EN_Eval`)
-  * `WIN10_x86_Enterprise_EN_Eval` will always point to the latest Windows 10 x64 version (currently `WIN10_x86_Enterprise_20H2_EN_Eval`)
+  * `WIN10_x86_Enterprise_EN_Eval` will always point to the latest Windows 10 x86 version (currently `WIN10_x86_Enterprise_20H2_EN_Eval`)
 * Fixes bug in custom bootstrap injection with Regex substituion string(s), e.g. $&
 
 ### v0.19.1 ###
