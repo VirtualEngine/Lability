@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Disables network location wizard notification(s)
+
 ### 0.20.0 ###
 
 * Updates default Windows 10 evaluation media to Windows 10 20H2 (2009)
