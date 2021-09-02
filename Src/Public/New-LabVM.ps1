@@ -18,7 +18,8 @@ function New-LabVM {
 #>
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'PSCredential')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUserNameAndPassWordParams','')]
-    param (
+    param
+    (
         ## Specifies the virtual machine name.
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
@@ -119,88 +120,90 @@ function New-LabVM {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoSnapshot
     )
-    DynamicParam {
-
+    DynamicParam
+    {
         ## Adds a dynamic -MediaId parameter that returns the available media Ids
-        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute';
-        $parameterAttribute.ParameterSetName = '__AllParameterSets';
-        $parameterAttribute.Mandatory = $false;
-        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]';
-        $attributeCollection.Add($parameterAttribute);
-        $mediaIds = (Get-LabMedia).Id;
-        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds;
-        $attributeCollection.Add($validateSetAttribute);
-        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('MediaId', [System.String], $attributeCollection);
-        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary';
-        $runtimeParameterDictionary.Add('MediaId', $runtimeParameter);
-        return $runtimeParameterDictionary;
+        $parameterAttribute = New-Object -TypeName 'System.Management.Automation.ParameterAttribute'
+        $parameterAttribute.ParameterSetName = '__AllParameterSets'
+        $parameterAttribute.Mandatory = $false
+        $attributeCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection[System.Attribute]'
+        $attributeCollection.Add($parameterAttribute)
+        $mediaIds = Get-LabMediaId
+        $validateSetAttribute = New-Object -TypeName 'System.Management.Automation.ValidateSetAttribute' -ArgumentList $mediaIds
+        $attributeCollection.Add($validateSetAttribute)
+        $runtimeParameter = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameter' -ArgumentList @('MediaId', [System.String], $attributeCollection)
+        $runtimeParameterDictionary = New-Object -TypeName 'System.Management.Automation.RuntimeDefinedParameterDictionary'
+        $runtimeParameterDictionary.Add('MediaId', $runtimeParameter)
+        return $runtimeParameterDictionary
     }
-    begin {
-
+    begin
+    {
         ## If we have only a secure string, create a PSCredential
-        if ($PSCmdlet.ParameterSetName -eq 'Password') {
-            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password;
+        if ($PSCmdlet.ParameterSetName -eq 'Password')
+        {
+            $Credential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList 'LocalAdministrator', $Password
         }
-        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential'); }
-        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password'); }
+        if (-not $Credential) { throw ($localized.CannotProcessCommandError -f 'Credential') }
+        elseif ($Credential.Password.Length -eq 0) { throw ($localized.CannotBindArgumentError -f 'Password') }
 
-    } #end begin
-    process {
-
+    }
+    process
+    {
         ## Skeleton configuration node
         $configurationNode = @{ }
 
-        if ($CustomData) {
-
+        if ($CustomData)
+        {
             ## Add all -CustomData keys/values to the skeleton configuration
-            foreach ($key in $CustomData.Keys) {
-
-                $configurationNode[$key] = $CustomData.$key;
+            foreach ($key in $CustomData.Keys)
+            {
+                $configurationNode[$key] = $CustomData.$key
             }
         }
 
         ## Explicitly defined parameters override any -CustomData
         $parameterNames = @('StartupMemory','MinimumMemory','MaximumMemory','SwitchName','Timezone','UILanguage','MACAddress',
             'ProcessorCount','InputLocale','SystemLocale','UserLocale','RegisteredOwner','RegisteredOrganization','SecureBoot')
-        foreach ($key in $parameterNames) {
-
-            if ($PSBoundParameters.ContainsKey($key)) {
-
-                $configurationNode[$key] = $PSBoundParameters.$key;
+        foreach ($key in $parameterNames)
+        {
+            if ($PSBoundParameters.ContainsKey($key))
+            {
+                $configurationNode[$key] = $PSBoundParameters.$key
             }
         }
 
         ## Ensure the specified MediaId is applied after any CustomData media entry!
-        if ($PSBoundParameters.ContainsKey('MediaId')) {
-            $configurationNode['Media'] = $PSBoundParameters.MediaId;
+        if ($PSBoundParameters.ContainsKey('MediaId'))
+        {
+            $configurationNode['Media'] = $PSBoundParameters.MediaId
         }
-        else {
-            $configurationNode['Media'] = (Get-LabVMDefault).Media;
+        else
+        {
+            $configurationNode['Media'] = (Get-LabVMDefault).Media
         }
 
-        $currentNodeCount = 0;
-        foreach ($vmName in $Name) {
-
+        $currentNodeCount = 0
+        foreach ($vmName in $Name)
+        {
             ## Update the node name before creating the VM
-            $configurationNode['NodeName'] = $vmName;
-            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName;
-            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId);
-            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning)) {
+            $configurationNode['NodeName'] = $vmName
+            $shouldProcessMessage = $localized.PerformingOperationOnTarget -f 'New-LabVM', $vmName
+            $verboseProcessMessage = Get-FormattedMessage -Message ($localized.CreatingQuickVM -f $vmName, $PSBoundParameters.MediaId)
+            if ($PSCmdlet.ShouldProcess($verboseProcessMessage, $shouldProcessMessage, $localized.ShouldProcessWarning))
+            {
+                $currentNodeCount++
+                [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1
+                $activity = $localized.ConfiguringNode -f $vmName
+                Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete
 
-                $currentNodeCount++;
-                [System.Int32] $percentComplete = (($currentNodeCount / $Name.Count) * 100) - 1;
-                $activity = $localized.ConfiguringNode -f $vmName;
-                Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
-
-                $configurationData = @{ AllNodes = @( $configurationNode ) };
-                New-LabVirtualMachine -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM;
+                $configurationData = @{ AllNodes = @( $configurationNode ) }
+                New-LabVirtualMachine -Name $vmName -ConfigurationData $configurationData -Credential $Credential -NoSnapshot:$NoSnapshot -IsQuickVM
             }
-
         } #end foreach name
 
-        if (-not [System.String]::IsNullOrEmpty($activity)) {
-
-            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete;
+        if (-not [System.String]::IsNullOrEmpty($activity))
+        {
+            Write-Progress -Id 42 -Activity $activity -PercentComplete $percentComplete
         }
 
     } #end process

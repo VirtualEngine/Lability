@@ -209,6 +209,7 @@ ConvertFrom-StringData -StringData @'
     ModuleMissingDefinitionWarning    = Missing resource '{0}' definition. The resource module '{0}' is defined in the node .mof but is not included in the lab configuration document.
     IgnorePendingRebootWarning        = Skipping Dsc resource '{0}' as 'IgnorePendingReboot' switch specified.
     FileCopyFailedRetryingWarning     = Copy item from '{0}' to '{1}' failed, trying again.
+    DuplicateMediaAliasIgnoredWarning = Duplicate media alias '{1}' defined in media Id '{0}' and will be ignored.
 
     InvalidPathError                  = {0} path '{1}' is invalid.
     InvalidDestinationPathError       = Invalid destination path '{0}' specified.
@@ -263,4 +264,5 @@ ConvertFrom-StringData -StringData @'
     InvalidVhdSizeError               = Invalid VHD/X size '{0}' specified. Specify a size between 3145728 and 2190433320960 bytes.
     DismVersionMismatchError          = Media '{0}' requires DISM version '{1}' or later installed to create the image.
     AmbiguousSwitchNameError          = Ambiguous switch '{0}' name. More than one virtual switch with a matching name was found.
+    MediaAliasAlreadyRegisteredError  = Media alias '{0}' is already registered/in use.
 '@

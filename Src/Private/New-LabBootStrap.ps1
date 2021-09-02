@@ -122,7 +122,7 @@ Stop-Transcript;
             }
 
             $shellScriptBlockString = $shellScriptBlock.ToString() -f $DefaultShell;
-            $bootstrap = $bootStrap -replace '<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString;
+            $bootstrap = $bootStrap.Replac('<#CustomBootStrapInjectionPoint#>', $shellScriptBlockString);
         }
 
         $bootstrap = $bootstrap -replace  '<#MaxEnvelopeSizeKb#>', $MaxEnvelopeSizeKb;
