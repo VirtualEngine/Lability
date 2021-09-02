@@ -712,16 +712,16 @@
 	]
 },
 {
-	"Id": "WIN10_x64_Enterprise_20H2_EN_Eval",
+	"Id": "WIN10_x64_Enterprise_21H1_EN_Eval",
 	"Alias": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_20H2_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 2009 English Evaluation",
+    "Filename": "WIN10_x64_ENT_21H1_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 2104/21H1 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/19042.631.201119-0144.20h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-	"Checksum": "3B5DA0C84DACDB89ABF4502D79CF0CA4",
+	"Uri": "https://software-download.microsoft.com/download/sg/19043.928.210409-1212.21h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "059EABB2DC0886515808E98910E49D13",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -736,16 +736,16 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x86_Enterprise_20H2_EN_Eval",
+	"Id": "WIN10_x86_Enterprise_21H1_EN_Eval",
 	"Alias": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_20H2_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 2009 English Evaluation",
+    "Filename": "WIN10_x86_ENT_21H1_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 2104/21H1 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
 	"OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/pr/19042.631.201119-0144.20h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-	"Checksum": "7C4EAAC7A6FE514EA0CB48AE8AC790FE",
+	"Uri": "https://software-download.microsoft.com/download/sg/19043.928.210409-1212.21h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "C8201DBBF6B8FFC06DBD854D78FF8337",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [

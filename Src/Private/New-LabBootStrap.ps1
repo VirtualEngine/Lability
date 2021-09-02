@@ -56,6 +56,9 @@ certutil.exe -addstore -f "Root" "$env:SYSTEMDRIVE\BootStrap\LabRoot.cer";
 ## Account for large configurations being "pushed" and increase the default from 500KB to <#MaxEnvelopeSizeKb#>KB (#306)
 Set-ItemProperty -LiteralPath HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN\Client -Name maxEnvelopeSize -Value <#MaxEnvelopeSizeKb#> -Force -Verbose
 
+## Disable network location wizard pop-up
+$null = New-Item -Path HKLM:\SYSTEM\CurrentControlSet\Control\Network -Name NewNetworkWindowOff -ItemType Container -Force -Verbose
+
 if (Test-Path -Path "$env:SystemDrive\BootStrap\localhost.meta.mof") {
     Set-DscLocalConfigurationManager -Path "$env:SystemDrive\BootStrap\" -Verbose;
 }

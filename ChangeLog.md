@@ -2,6 +2,12 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Disables network location wizard notification(s)
+* Adds Windows 10 21H2 (2104) evaluation media
+* Updates default Windows 10 evaluation media to Windows 10 21H1 (2104)
+
 ### 0.20.0 ###
 
 * Updates default Windows 10 evaluation media to Windows 10 20H2 (2009)
