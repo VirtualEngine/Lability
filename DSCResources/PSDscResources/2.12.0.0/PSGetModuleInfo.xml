@@ -1,0 +1,136 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">PSDscResources</S>
+      <S N="Version">2.12.0.0</S>
+      <S N="Type">Module</S>
+      <S N="Description">This module contains the standard DSC resources._x000D__x000A_Because PSDscResources overwrites in-box resources, it is only available for WMF 5.1. Many of the resource updates provided here are also included in the xPSDesiredStateConfiguration module which is still compatible with WMF 4 and WMF 5 (though that module is not supported and may be removed in the future).</S>
+      <S N="Author">Microsoft Corporation</S>
+      <S N="CompanyName">PowerShellTeam</S>
+      <S N="Copyright">(c) 2016 Microsoft Corporation. All rights reserved.</S>
+      <DT N="PublishedDate">2019-06-26T21:35:44-04:00</DT>
+      <Nil N="InstalledDate" />
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://github.com/PowerShell/PSDscResources/blob/master/LICENSE</URI>
+      <URI N="ProjectUri">https://github.com/PowerShell/PSDscResources</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="1">
+        <TN RefId="1">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>DesiredStateConfiguration</S>
+          <S>DSC</S>
+          <S>DSCResourceKit</S>
+          <S>DSCResource</S>
+          <S>AzureAutomationNotSupported</S>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="2">
+        <TN RefId="2">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Workflow</S>
+            <Obj N="Value" RefId="3">
+              <TNRef RefId="1" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Obj N="Value" RefId="4">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Archive</S>
+                <S>Environment</S>
+                <S>Group</S>
+                <S>GroupSet</S>
+                <S>MsiPackage</S>
+                <S>Registry</S>
+                <S>Script</S>
+                <S>Service</S>
+                <S>ServiceSet</S>
+                <S>User</S>
+                <S>WindowsFeature</S>
+                <S>WindowsFeatureSet</S>
+                <S>WindowsOptionalFeature</S>
+                <S>WindowsOptionalFeatureSet</S>
+                <S>WindowsPackageCab</S>
+                <S>WindowsProcess</S>
+                <S>ProcessSet</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes">* Ports style fixes that were recently made in xPSDesiredStateConfiguration_x000D__x000A_  on test related files._x000D__x000A_* Ports most of the style upgrades from xPSDesiredStateConfiguration that have_x000D__x000A_  been made in files in the DscResources folder._x000D__x000A_* Ports fixes for the following issues:_x000D__x000A_  [Issue 505](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/505)_x000D__x000A_  [Issue 590](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/590)_x000D__x000A_  Changes to test helper Enter-DscResourceTestEnvironment so that it only_x000D__x000A_  updates DSCResource.Tests when it is longer than 120 minutes since_x000D__x000A_  it was last pulled. This is to improve performance of test execution_x000D__x000A_  and reduce the likelihood of connectivity issues caused by inability to_x000D__x000A_  pull DSCResource.Tests._x000D__x000A_* Fixes issue where MsiPackage Integration tests fail if the test HttpListener_x000D__x000A_  fails to start. Moves the test HttpListener objects to dynamically assigned,_x000D__x000A_  higher numbered ports to avoid conflicts with other services, and also checks_x000D__x000A_  to ensure that the ports are available before using them. Adds checks to_x000D__x000A_  ensure that no outstanding HTTP server jobs are running before attempting to_x000D__x000A_  setup a new one. Also adds additional instrumentation to make it easier to_x000D__x000A_  troubleshoot issues with the test HttpListener objects in the future._x000D__x000A_  Specifically fixes_x000D__x000A_  [Issue 142](https://github.com/PowerShell/PSDscResources/issues/142)_x000D__x000A_* Improved speed of Test-IsNanoServer function_x000D__x000A_* Remove the Byte Order Mark (BOM) from all affected files_x000D__x000A_* Opt-in to "Validate Module Files" and "Validate Script Files" common meta-tests_x000D__x000A_* Opt-in to "Common Tests - Relative Path Length" common meta-test_x000D__x000A_* Fix README markdownlint validation failures_x000D__x000A_* Move change log from README.md to CHANGELOG.md</S>
+      <Obj N="Dependencies" RefId="5">
+        <TNRef RefId="1" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="6">
+        <TN RefId="3">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) 2016 Microsoft Corporation. All rights reserved.</S>
+          <S N="description">This module contains the standard DSC resources._x000D__x000A_Because PSDscResources overwrites in-box resources, it is only available for WMF 5.1. Many of the resource updates provided here are also included in the xPSDesiredStateConfiguration module which is still compatible with WMF 4 and WMF 5 (though that module is not supported and may be removed in the future).</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes">* Ports style fixes that were recently made in xPSDesiredStateConfiguration_x000D__x000A_  on test related files._x000D__x000A_* Ports most of the style upgrades from xPSDesiredStateConfiguration that have_x000D__x000A_  been made in files in the DscResources folder._x000D__x000A_* Ports fixes for the following issues:_x000D__x000A_  [Issue 505](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/505)_x000D__x000A_  [Issue 590](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/590)_x000D__x000A_  Changes to test helper Enter-DscResourceTestEnvironment so that it only_x000D__x000A_  updates DSCResource.Tests when it is longer than 120 minutes since_x000D__x000A_  it was last pulled. This is to improve performance of test execution_x000D__x000A_  and reduce the likelihood of connectivity issues caused by inability to_x000D__x000A_  pull DSCResource.Tests._x000D__x000A_* Fixes issue where MsiPackage Integration tests fail if the test HttpListener_x000D__x000A_  fails to start. Moves the test HttpListener objects to dynamically assigned,_x000D__x000A_  higher numbered ports to avoid conflicts with other services, and also checks_x000D__x000A_  to ensure that the ports are available before using them. Adds checks to_x000D__x000A_  ensure that no outstanding HTTP server jobs are running before attempting to_x000D__x000A_  setup a new one. Also adds additional instrumentation to make it easier to_x000D__x000A_  troubleshoot issues with the test HttpListener objects in the future._x000D__x000A_  Specifically fixes_x000D__x000A_  [Issue 142](https://github.com/PowerShell/PSDscResources/issues/142)_x000D__x000A_* Improved speed of Test-IsNanoServer function_x000D__x000A_* Remove the Byte Order Mark (BOM) from all affected files_x000D__x000A_* Opt-in to "Validate Module Files" and "Validate Script Files" common meta-tests_x000D__x000A_* Opt-in to "Common Tests - Relative Path Length" common meta-test_x000D__x000A_* Fix README markdownlint validation failures_x000D__x000A_* Move change log from README.md to CHANGELOG.md</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">930548</S>
+          <S N="downloadCount">15913096</S>
+          <S N="packageSize">331184</S>
+          <S N="published">6/26/2019 9:35:44 PM -04:00</S>
+          <S N="created">6/26/2019 9:35:44 PM -04:00</S>
+          <S N="lastUpdated">1/1/2022 7:19:11 PM -05:00</S>
+          <S N="tags">DesiredStateConfiguration DSC DSCResourceKit DSCResource AzureAutomationNotSupported PSModule PSDscResource_Archive PSDscResource_Environment PSDscResource_Group PSDscResource_GroupSet PSDscResource_MsiPackage PSDscResource_Registry PSDscResource_Script PSDscResource_Service PSDscResource_ServiceSet PSDscResource_User PSDscResource_WindowsFeature PSDscResource_WindowsFeatureSet PSDscResource_WindowsOptionalFeature PSDscResource_WindowsOptionalFeatureSet PSDscResource_WindowsPackageCab PSDscResource_WindowsProcess PSDscResource_ProcessSet PSIncludes_DscResource</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2022-01-01T19:19:11Z</S>
+          <S N="NormalizedVersion">2.12.0</S>
+          <S N="Authors">Microsoft Corporation</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">PSDscResources.nuspec|CHANGELOG.md|LICENSE|PSDscResources.psd1|README.md|DscResources\CommonResourceHelper.psm1|DscResources\ResourceSetHelper.psm1|DscResources\GroupSet\GroupSet.psd1|DscResources\GroupSet\GroupSet.schema.psm1|DscResources\MSFT_Archive\MSFT_Archive.psm1|DscResources\MSFT_Archive\MSFT_Archive.schema.mof|DscResources\MSFT_Archive\en-US\MSFT_Archive.schema.mfl|DscResources\MSFT_Archive\en-US\MSFT_Archive.strings.psd1|DscResources\MSFT_EnvironmentResource\MSFT_EnvironmentResource.psm1|DscResources\MSFT_EnvironmentResource\MSFT_EnvironmentResource.schema.mof|DscResources\MSFT_EnvironmentResource\en-US\MSFT_EnvironmentResource.schema.mfl|DscResources\MSFT_EnvironmentResource\en-US\MSFT_EnvironmentResource.strings.psd1|DscResources\MSFT_GroupResource\MSFT_GroupResource.psm1|DscResources\MSFT_GroupResource\MSFT_GroupResource.schema.mof|DscResources\MSFT_GroupResource\en-US\MSFT_GroupResource.schema.mfl|DscResources\MSFT_GroupResource\en-US\MSFT_GroupResource.strings.psd1|DscResources\MSFT_MsiPackage\MSFT_MsiPackage.psm1|DscResources\MSFT_MsiPackage\MSFT_MsiPackage.schema.mof|DscResources\MSFT_MsiPackage\en-US\MSFT_MsiPackage.schema.mfl|DscResources\MSFT_MsiPackage\en-US\MSFT_MsiPackage.strings.psd1|DscResources\MSFT_RegistryResource\MSFT_RegistryResource.psm1|DscResources\MSFT_RegistryResource\MSFT_RegistryResource.schema.mof|DscResources\MSFT_RegistryResource\en-US\MSFT_RegistryResource.schema.mfl|DscResources\MSFT_RegistryResource\en-US\MSFT_RegistryResource.strings.psd1|DscResources\MSFT_ScriptResource\MSFT_ScriptResource.psm1|DscResources\MSFT_ScriptResource\MSFT_ScriptResource.schema.mof|DscResources\MSFT_ScriptResource\en-US\MSFT_ScriptResource.schema.mfl|DscResources\MSFT_ScriptResource\en-US\MSFT_ScriptResource.strings.psd1|DscResources\MSFT_ServiceResource\MSFT_ServiceResource.psm1|DscResources\MSFT_ServiceResource\MSFT_ServiceResource.schema.mof|DscResources\MSFT_ServiceResource\en-US\MSFT_ServiceResource.schema.mfl|DscResources\MSFT_ServiceResource\en-US\MSFT_ServiceResource.strings.psd1|DscResources\MSFT_UserResource\MSFT_UserResource.psm1|DscResources\MSFT_UserResource\MSFT_UserResource.schema.mof|DscResources\MSFT_UserResource\en-US\MSFT_UserResource.schema.mfl|DscResources\MSFT_UserResource\en-US\MSFT_UserResource.strings.psd1|DscResources\MSFT_WindowsFeature\MSFT_WindowsFeature.psm1|DscResources\MSFT_WindowsFeature\MSFT_WindowsFeature.schema.mof|DscResources\MSFT_WindowsFeature\en-US\MSFT_WindowsFeature.schema.mfl|DscResources\MSFT_WindowsFeature\en-US\MSFT_WindowsFeature.strings.psd1|DscResources\MSFT_WindowsOptionalFeature\MSFT_WindowsOptionalFeature.psm1|DscResources\MSFT_WindowsOptionalFeature\MSFT_WindowsOptionalFeature.schema.mof|DscResources\MSFT_WindowsOptionalFeature\en-US\MSFT_WindowsOptionalFeature.schema.mfl|DscResources\MSFT_WindowsOptionalFeature\en-US\MSFT_WindowsOptionalFeature.strings.psd1|DscResources\MSFT_WindowsPackageCab\MSFT_WindowsPackageCab.psm1|DscResources\MSFT_WindowsPackageCab\MSFT_WindowsPackageCab.schema.mof|DscResources\MSFT_WindowsPackageCab\en-US\MSFT_WindowsPackageCab.schema.mfl|DscResources\MSFT_WindowsPackageCab\en-US\MSFT_WindowsPackageCab.strings.psd1|DscResources\MSFT_WindowsProcess\MSFT_WindowsProcess.psm1|DscResources\MSFT_WindowsProcess\MSFT_WindowsProcess.schema.mof|DscResources\MSFT_WindowsProcess\en-US\MSFT_WindowsProcess.schema.mfl|DscResources\MSFT_WindowsProcess\en-US\MSFT_WindowsProcess.strings.psd1|DscResources\ProcessSet\ProcessSet.psd1|DscResources\ProcessSet\ProcessSet.schema.psm1|DscResources\ServiceSet\ServiceSet.psd1|DscResources\ServiceSet\ServiceSet.schema.psm1|DscResources\WindowsFeatureSet\WindowsFeatureSet.psd1|DscResources\WindowsFeatureSet\WindowsFeatureSet.schema.psm1|DscResources\WindowsOptionalFeatureSet\WindowsOptionalFeatureSet.psd1|DscResources\WindowsOptionalFeatureSet\WindowsOptionalFeatureSet.schema.psm1|Examples\Sample_Archive_ExpandArchiveChecksumAndForce.ps1|Examples\Sample_Archive_ExpandArchiveDefaultValidationAndForce.ps1|Examples\Sample_Archive_ExpandArchiveNoValidation.ps1|Examples\Sample_Archive_ExpandArchiveNoValidationCredential.ps1|Examples\Sample_Archive_RemoveArchiveChecksum.ps1|Examples\Sample_Archive_RemoveArchiveNoValidation.ps1|Examples\Sample_Environment_CreateNonPathVariable.ps1|Examples\Sample_Environment_CreatePathVariable.ps1|Examples\Sample_Environment_Remove.ps1|Examples\Sample_GroupSet_AddMembers.ps1|Examples\Sample_Group_RemoveMembers.ps1|Examples\Sample_Group_SetMembers.ps1|Examples\Sample_MsiPackage_InstallPackageFromFile.ps1|Examples\Sample_MsiPackage_InstallPackageFromHttp.ps1|Examples\Sample_MsiPackage_UninstallPackageFromFile.ps1|Examples\Sample_MsiPackage_UnstallPackageFromHttps.ps1|Examples\Sample_ProcessSet_Start.ps1|Examples\Sample_ProcessSet_Stop.ps1|Examples\Sample_RegistryResource_AddKey.ps1|Examples\Sample_RegistryResource_AddOrModifyValue.ps1|Examples\Sample_RegistryResource_RemoveKey.ps1|Examples\Sample_RegistryResource_RemoveValue.ps1|Examples\Sample_Script.ps1|Examples\Sample_ServiceSet_BuiltInAccount.ps1|Examples\Sample_ServiceSet_StartServices.ps1|Examples\Sample_Service_CreateService.ps1|Examples\Sample_Service_DeleteService.ps1|Examples\Sample_Service_UpdateStartupTypeIgnoreState.ps1|Examples\Sample_User_CreateUser.ps1|Examples\Sample_User_Generic.ps1|Examples\Sample_WindowsFeature.ps1|Examples\Sample_WindowsFeatureSet_Install.ps1|Examples\Sample_WindowsFeatureSet_Uninstall.ps1|Examples\Sample_WindowsOptionalFeature.ps1|Examples\Sample_WindowsOptionalFeatureSet_Disable.ps1|Examples\Sample_WindowsOptionalFeatureSet_Enable.ps1|Examples\Sample_WindowsPackageCab.ps1|Examples\Sample_WindowsProcess_Start.ps1|Examples\Sample_WindowsProcess_StartUnderUser.ps1|Examples\Sample_WindowsProcess_Stop.ps1|Examples\Sample_WindowsProcess_StopUnderUser.ps1|Tests\Integration\GroupSet.config.ps1|Tests\Integration\GroupSet.Integration.Tests.ps1|Tests\Integration\MSFT_Archive.EndToEnd.Tests.ps1|Tests\Integration\MSFT_Archive.Integration.Tests.ps1|Tests\Integration\MSFT_Archive_CredentialOnly.config.ps1|Tests\Integration\MSFT_Archive_ValidateAndChecksum.config.ps1|Tests\Integration\MSFT_Archive_ValidateOnly.config.ps1|Tests\Integration\MSFT_EnvironmentResource.config.ps1|Tests\Integration\MSFT_EnvironmentResource.EndToEnd.Tests.ps1|Tests\Integration\MSFT_EnvironmentResource.Integration.Tests.ps1|Tests\Integration\MSFT_GroupResource.Integration.Tests.ps1|Tests\Integration\MSFT_GroupResource_Members.config.ps1|Tests\Integration\MSFT_GroupResource_MembersToIncludeExclude.config.ps1|Tests\Integration\MSFT_GroupResource_NoMembers.config.ps1|Tests\Integration\MSFT_MsiPackage.EndToEnd.Tests.ps1|Tests\Integration\MSFT_MsiPackage.Integration.Tests.ps1|Tests\Integration\MSFT_MsiPackage_LogPath.ps1|Tests\Integration\MSFT_MsiPackage_NoOptionalParameters.ps1|Tests\Integration\MSFT_RegistryResource.EndToEnd.Tests.ps1|Tests\Integration\MSFT_RegistryResource.Integration.Tests.ps1|Tests\Integration\MSFT_RegistryResource_KeyAndNameOnly.config.ps1|Tests\Integration\MSFT_RegistryResource_WithDataAndType.config.ps1|Tests\Integration\MSFT_ScriptResource.Integration.Tests.ps1|Tests\Integration\MSFT_ScriptResource_NoCredential.config.ps1|Tests\Integration\MSFT_ScriptResource_WithCredential.config.ps1|Tests\Integration\MSFT_ServiceResource.Integration.Tests.ps1|Tests\Integration\MSFT_ServiceResource_AllExceptCredential.config.ps1|Tests\Integration\MSFT_ServiceResource_CredentialOnly.config.ps1|Tests\Integration\MSFT_UserResource.config.ps1|Tests\Integration\MSFT_UserResource.Integration.Tests.ps1|Tests\Integration\MSFT_WindowsFeature.config.ps1|Tests\Integration\MSFT_WindowsFeature.Integration.Tests.ps1|Tests\Integration\MSFT_WindowsOptionalFeature.config.ps1|Tests\Integration\MSFT_WindowsOptionalFeature.Integration.Tests.ps1|Tests\Integration\MSFT_WindowsPackageCab.config.ps1|Tests\Integration\MSFT_WindowsPackageCab.Integration.Tests.ps1|Tests\Integration\MSFT_WindowsProcess.Integration.Tests.ps1|Tests\Integration\MSFT_WindowsProcess_NoCredential.config.ps1|Tests\Integration\MSFT_WindowsProcess_WithCredential.config.ps1|Tests\Integration\ProcessSet.config.ps1|Tests\Integration\ProcessSet.Integration.Tests.ps1|Tests\Integration\ServiceSet.Integration.Tests.ps1|Tests\Integration\ServiceSet_AllExceptBuiltInAccount.config.ps1|Tests\Integration\ServiceSet_BuiltInAccountOnly.config.ps1|Tests\Integration\WindowsFeatureSet.config.ps1|Tests\Integration\WindowsFeatureSet.Integration.Tests.ps1|Tests\Integration\WindowsOptionalFeatureSet.config.ps1|Tests\Integration\WindowsOptionalFeatureSet.Integration.Tests.ps1|Tests\TestHelpers\CommonTestHelper.psm1|Tests\TestHelpers\DSCTestService.cs|Tests\TestHelpers\DSCTestServiceNew.cs|Tests\TestHelpers\MSFT_Archive.TestHelper.psm1|Tests\TestHelpers\MSFT_GroupResource.TestHelper.psm1|Tests\TestHelpers\MSFT_MsiPackageResource.TestHelper.psm1|Tests\TestHelpers\MSFT_RegistryResource.TestHelper.psm1|Tests\TestHelpers\MSFT_ServiceResource.TestHelper.psm1|Tests\TestHelpers\MSFT_UserResource.TestHelper.psm1|Tests\TestHelpers\WindowsProcessTestProcess.cs|Tests\TestHelpers\WindowsProcessTestProcess.exe|Tests\TestHelpers\WindowsProcessTestProcessSet.exe|Tests\TestHelpers\WMF5Dot1Installation.psm1|Tests\Unit\CommonResourceHelper.Tests.ps1|Tests\Unit\MSFT_Archive.Tests.ps1|Tests\Unit\MSFT_EnvironmentResource.Tests.ps1|Tests\Unit\MSFT_GroupResource.Tests.ps1|Tests\Unit\MSFT_MsiPackage.Tests.ps1|Tests\Unit\MSFT_RegistryResource.Tests.ps1|Tests\Unit\MSFT_ScriptResource.Tests.ps1|Tests\Unit\MSFT_ServiceResource.Tests.ps1|Tests\Unit\MSFT_UserResource.Tests.ps1|Tests\Unit\MSFT_WindowsFeature.Tests.ps1|Tests\Unit\MSFT_WindowsOptionalFeature.Tests.ps1|Tests\Unit\MSFT_WindowsPackageCab.Tests.ps1|Tests\Unit\MSFT_WindowsProcess.Tests.ps1|Tests\Unit\ResourceSetHelper.Tests.ps1</S>
+          <S N="GUID">7b750b98-bc2c-4059-80b9-f7228941a34f</S>
+          <S N="PowerShellVersion">5.1</S>
+          <S N="CompanyName">Microsoft Corporation</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\greg\Lability\DscResources\PSDscResources\2.12.0.0</S>
+    </MS>
+  </Obj>
+</Objs>
