@@ -20,13 +20,13 @@ function Get-LabHostSetupConfiguration {
 
             Write-Debug -Message 'Implementing desktop configuration.';
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V role';
-                ModuleName = 'PSDesiredStateConfiguration';
+                ModuleName = 'PSDscResources';
                 ResourceName = 'MSFT_WindowsOptionalFeature';
                 Prefix = 'WindowsOptionalFeature';
                 Parameters = @{
-                    Ensure = 'Enable';
+                    Ensure = 'Present';
                     Name = 'Microsoft-Hyper-V-All';
                 }
             };
@@ -35,10 +35,10 @@ function Get-LabHostSetupConfiguration {
 
             Write-Debug -Message 'Implementing server configuration.';
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V Role';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_RoleResource';
+                ModuleName = 'PSDscResources';
+                ResourceName = 'MSFT_WindowsFeature';
                 Prefix = 'WindowsFeature';
                 Parameters = @{
                     Ensure = 'Present';
@@ -47,10 +47,10 @@ function Get-LabHostSetupConfiguration {
                 }
             };
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V Tools';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_RoleResource';
+                ModuleName = 'PSDscResources';
+                ResourceName = 'MSFT_WindowsFeature';
                 Prefix = 'WindowsFeature';
                 Parameters = @{
                     Ensure = 'Present';
