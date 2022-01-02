@@ -1,0 +1,16 @@
+[Description("This resource is used to manage services.") : Amended,AMENDMENT, LOCALE("MS_409")]
+class DSC_xServiceResource : OMI_BaseResource
+{
+  [key,Description("The name for the service") : Amended] string Name;
+  [Description("An enumerated value that describes if the service is expected to be running on the machine.\nRunning {default}  \nStopped   \n") : Amended] string State;
+  [Description("An enumerated value that describes the service start type.\nAutomatic   \nManual   \nDisabled   \n") : Amended] string StartupType;
+  [Description("An enumerated value that describes the built in account the service runs under.\nLocalSystem   \nLocalService   \nNetworkService   \n") : Amended] string BuiltInAccount;
+  [Description("The optional GroupManagedServiceAccount the service runs under, GroupManagedServiceAccount, BuiltInAccount and Credential are mutually exclusive") : Amended] string GroupManagedServiceAccount;
+  [Description("The optional credentials the service runs under") : Amended] string Credential;
+  [Description("The service status") : Amended] string Status;
+  [Description("The service display name") : Amended] string DisplayName;
+  [Description("The service description") : Amended] string Description;
+  [Description("The path to the service executable file") : Amended] string Path;
+  [Description("A list of service dependencies") : Amended] string Dependencies[];
+  [Description("An enumerated value that checks whether a service already exists and creates it if it does not exist on the machine.\nPresent {default}  \nAbsent   \n") : Amended] string Ensure;
+};
