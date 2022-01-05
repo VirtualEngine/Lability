@@ -7,9 +7,9 @@ environment:
   gallery_api_key:
     secure: WeDp1yZJECZBjjW+22A8lA8+gmz+wiYostPKtU4pdLXORfK//eJCdR7f0k3oJ+2r
   certificate_secret:
-    secure: S1o7BQ8ATMlbDngZQBTGW75bDxhHjPJC6GCPHFuPZ1K6dj6EXtZf+OoOjxI/Zl0h
+    secure: FONBsTFRCHncQQzKB2DPsxHFLqkpY/P+tItMHDqtZ8widQ4enBWab8WSzxdaTBp2
   certificate_salt:
-    secure: acrjYZ13rx9Lpxg9G1kSKUWSCdfzUO+RKM+DoX/Tx/jS3V0zVE35dlGcygINFM3BH2wZOv9xwi3yQZwBjCfcZA==
+    secure: x3dqIDhne5WT/6qlfkw1DDKk4wZndsgSDyE62baHSMzzhSD3w1TCZwl0+hURGQTBEcGkGEtjw0k6Xz9u4nUZgA==
 
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
