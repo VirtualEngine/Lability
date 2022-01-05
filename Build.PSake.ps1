@@ -79,7 +79,7 @@ Task Sign -Depends Deploy {
 
     if (-not (Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object Thumbprint -eq $thumbprint)) {
         ## Decrypt and import code signing cert
-        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2023.pfx.enc -secret $env:certificate_secret -salt $env:certificate_salt
+        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2023.pfx.enc -secret "$env:certificate_secret" -salt "$env:certificate_salt"
         $certificatePassword = ConvertTo-SecureString -String $env:certificate_secret -AsPlainText -Force
         Import-PfxCertificate -FilePath .\VE_Certificate_2023.pfx -CertStoreLocation 'Cert:\CurrentUser\My' -Password $certificatePassword
     }
