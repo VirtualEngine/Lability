@@ -1,0 +1,23 @@
+{
+	"Id": "WIN10_x86_Enterprise_LTSC_2019_EN_Eval",
+    "Filename": "WIN10_x86_ENT_LTSC_2019_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSC 2019 English Evaluation",
+	"Architecture": "x86",
+	"ImageName": "1",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "https://software-download.microsoft.com/download/sg/17763.107.101029-1455.rs5_release_svc_refresh_CLIENT_LTSC_EVAL_x86FRE_en-us.iso",
+	"Checksum": "51EABBDA9645683F9FF6A620A2014318",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		],
+		"MinimumDismVersion": "10.0.0.0"
+	},
+    "Hotfixes": []
+}

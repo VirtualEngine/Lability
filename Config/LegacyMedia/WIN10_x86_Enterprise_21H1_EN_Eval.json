@@ -1,0 +1,23 @@
+{
+	"Id": "WIN10_x86_Enterprise_21H1_EN_Eval",
+    "Filename": "WIN10_x86_ENT_21H1_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 2104/21H1 English Evaluation",
+	"Architecture": "x86",
+	"ImageName": "Windows 10 Enterprise Evaluation",
+	"MediaType": "ISO",
+	"OperatingSystem": "Windows",
+	"Uri": "https://software-download.microsoft.com/download/sg/19043.928.210409-1212.21h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "C8201DBBF6B8FFC06DBD854D78FF8337",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		],
+		"MinimumDismVersion": "10.0.0.0"
+	},
+    "Hotfixes": []
+}
