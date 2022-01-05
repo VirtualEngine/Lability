@@ -712,16 +712,16 @@
 	]
 },
 {
-	"Id": "WIN10_x64_Enterprise_21H1_EN_Eval",
+	"Id": "WIN10_x64_Enterprise_21H2_EN_Eval",
 	"Alias": "WIN10_x64_Enterprise_EN_Eval",
-    "Filename": "WIN10_x64_ENT_21H1_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise 2104/21H1 English Evaluation",
+    "Filename": "WIN10_x64_ENT_21H2_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise 2109/21H2 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/sg/19043.928.210409-1212.21h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-	"Checksum": "059EABB2DC0886515808E98910E49D13",
+	"Url": "https://software-download.microsoft.com/download/sg/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "AE1DA210FFFA81BB6A8DF455ECA9636B",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -736,16 +736,16 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x86_Enterprise_21H1_EN_Eval",
+	"Id": "WIN10_x86_Enterprise_21H2_EN_Eval",
 	"Alias": "WIN10_x86_Enterprise_EN_Eval",
-    "Filename": "WIN10_x86_ENT_21H1_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise 2104/21H1 English Evaluation",
+    "Filename": "WIN10_x86_ENT_21H2_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise 2109/21H2 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "Windows 10 Enterprise Evaluation",
 	"MediaType": "ISO",
 	"OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/sg/19043.928.210409-1212.21h1_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-	"Checksum": "C8201DBBF6B8FFC06DBD854D78FF8337",
+	"Uri": "https://software-download.microsoft.com/download/sg/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+	"Checksum": "5EE2786AD091B95399A79D46DEF7D43B",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -760,15 +760,16 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x64_Enterprise_LTSC_EN_Eval",
-    "Filename": "WIN10_x64_ENT_LTSC_2019_EN_Eval.iso",
-    "Description": "Windows 10 64bit Enterprise LTSC 2019 English Evaluation",
+	"Id": "WIN10_x64_Enterprise_LTSC_2021_EN_Eval",
+	"Alias": "WIN10_x64_Enterprise_LTSC_EN_Eval",
+    "Filename": "WIN10_x64_ENT_LTSC_2021_EN_Eval.iso",
+    "Description": "Windows 10 64bit Enterprise LTSC 2021 English Evaluation",
 	"Architecture": "x64",
 	"ImageName": "1",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/sg/17763.107.101029-1455.rs5_release_svc_refresh_CLIENT_LTSC_EVAL_x64FRE_en-us.iso",
-	"Checksum": "B254BA13C50D777E4776A98684E11E11",
+	"Uri": "https://software-download.microsoft.com/download/db/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENT_LTSC_EVAL_x64FRE_en-us.iso",
+	"Checksum": "7E34E331696CA40FEDF657162995C3AD",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
@@ -783,15 +784,40 @@
     "Hotfixes": []
 },
 {
-	"Id": "WIN10_x86_Enterprise_LTSC_EN_Eval",
-    "Filename": "WIN10_x86_ENT_LTSC_2019_EN_Eval.iso",
-    "Description": "Windows 10 32bit Enterprise LTSC 2019 English Evaluation",
+	"Id": "WIN10_x86_Enterprise_LTSC_2021_EN_Eval",
+	"Alias": "WIN10_x86_Enterprise_LTSC_EN_Eval",
+    "Filename": "WIN10_x86_ENT_LTSC_2021_EN_Eval.iso",
+    "Description": "Windows 10 32bit Enterprise LTSC 2021 English Evaluation",
 	"Architecture": "x86",
 	"ImageName": "1",
 	"MediaType": "ISO",
     "OperatingSystem": "Windows",
-	"Uri": "https://software-download.microsoft.com/download/sg/17763.107.101029-1455.rs5_release_svc_refresh_CLIENT_LTSC_EVAL_x86FRE_en-us.iso",
-	"Checksum": "51EABBDA9645683F9FF6A620A2014318",
+	"Uri": "https://software-download.microsoft.com/download/db/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENT_LTSC_EVAL_x86FRE_en-us.iso",
+	"Checksum": "080905D97B178F7FE611BA55531A6CC4",
+    "CustomData": {
+		"WindowsOptionalFeature": ["NetFx3"],
+		"CustomBootstrap": [
+			"## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+			"NET USER Administrator /active:yes;",
+			"Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+			"## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+			"Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+		],
+		"MinimumDismVersion": "10.0.0.0"
+	},
+    "Hotfixes": []
+},
+{
+	"Id": "WIN11_x64_Enterprise_21H2_EN_Eval",
+	"Alias": "WIN11_x64_Enterprise_EN_Eval",
+    "Filename": "WIN11_x64_ENT_21H2_EN_Eval.iso",
+    "Description": "Windows 11 64bit Enterprise 21H2 English Evaluation",
+	"Architecture": "x64",
+	"ImageName": "1",
+	"MediaType": "ISO",
+    "OperatingSystem": "Windows",
+	"Uri": "https://software-download.microsoft.com/download/sg/22000.194.210913-1444.co_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+	"Checksum": "86034E9DA681217E0C7D8A23A27BCF13",
     "CustomData": {
 		"WindowsOptionalFeature": ["NetFx3"],
 		"CustomBootstrap": [
