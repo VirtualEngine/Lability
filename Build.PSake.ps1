@@ -9,7 +9,7 @@ Properties {
     $buildDir = 'Release';
     $buildPath = (Join-Path -Path $basePath -ChildPath $buildDir);
     $releasePath = (Join-Path -Path $buildPath -ChildPath $moduleName);
-    $thumbprint = '177FC8E667D4C022C7CD9CFDFEB66991890F4090';
+    $thumbprint = '6F72C7A1BD6979DD8F08DC066ABC12FB80A453E9';
     $timeStampServer = 'http://timestamp.digicert.com';
     $exclude = @(
                 '.git*',
