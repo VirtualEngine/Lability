@@ -4,6 +4,10 @@
 
 ### Unreleased ###
 
+### 0.21.1 ###
+
+* Fixes bug in `WIN10_x64_Enterprise_21H2_EN_Eval` media download link (@ToreAad)
+
 ### 0.21.0 ###
 
 * Updates code signing certificate
