@@ -2,6 +2,20 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+### 0.21.1 ###
+
+* Fixes bug in `WIN10_x64_Enterprise_21H2_EN_Eval` media download link (@ToreAad)
+
+### 0.21.0 ###
+
+* Updates code signing certificate
+* Disables network location wizard notification(s)
+* Adds Windows 10 Enterprise 21H2 (2109) evaluation media
+* Adds Windows 11 21H2 (2109) evaluation media
+* Adds Windows 10 LTSC 2021 evaluation media
+
 ### 0.20.0 ###
 
 * Updates default Windows 10 evaluation media to Windows 10 20H2 (2009)

@@ -9,7 +9,7 @@ Properties {
     $buildDir = 'Release';
     $buildPath = (Join-Path -Path $basePath -ChildPath $buildDir);
     $releasePath = (Join-Path -Path $buildPath -ChildPath $moduleName);
-    $thumbprint = '177FC8E667D4C022C7CD9CFDFEB66991890F4090';
+    $thumbprint = '6F72C7A1BD6979DD8F08DC066ABC12FB80A453E9';
     $timeStampServer = 'http://timestamp.digicert.com';
     $exclude = @(
                 '.git*',
@@ -79,9 +79,9 @@ Task Sign -Depends Deploy {
 
     if (-not (Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object Thumbprint -eq $thumbprint)) {
         ## Decrypt and import code signing cert
-        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2021.pfx.enc -secret $env:certificate_secret
+        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2023.pfx.enc -secret "$env:certificate_secret" -salt "$env:certificate_salt"
         $certificatePassword = ConvertTo-SecureString -String $env:certificate_secret -AsPlainText -Force
-        Import-PfxCertificate -FilePath .\VE_Certificate_2021.pfx -CertStoreLocation 'Cert:\CurrentUser\My' -Password $certificatePassword
+        Import-PfxCertificate -FilePath .\VE_Certificate_2023.pfx -CertStoreLocation 'Cert:\CurrentUser\My' -Password $certificatePassword
     }
 
     Get-ChildItem -Path $releasePath -Exclude $signExclude | ForEach-Object {

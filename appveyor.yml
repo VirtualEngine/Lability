@@ -8,6 +8,8 @@ environment:
     secure: WeDp1yZJECZBjjW+22A8lA8+gmz+wiYostPKtU4pdLXORfK//eJCdR7f0k3oJ+2r
   certificate_secret:
     secure: 2NeBUwfDSJomxCyxUlwnqw==
+  certificate_salt:
+    secure: hfJXNN22cyxbW4U/r1msEu+yN1QKiyzQqNDnPWeiPAkOKUnPrLGWj00qGmfHw9a5ZUqNBqc1Gn/Xzvspia2sTQ==
 
 install:
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
