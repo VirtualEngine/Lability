@@ -4,6 +4,12 @@
 
 ### Unreleased ###
 
+### 0.22.0 ###
+
+* Adds Windows 11 Enterprise 22H2 (2209) evaluation media
+* Adds Adds Windows Server 2022 evaluation media
+* Updates default VM media from `2019_x64_Standard_EN_Eval` to `2022_x64_Datacenter_EN_Eval` (#406)
+
 ### 0.21.1 ###
 
 * Fixes bug in `WIN10_x64_Enterprise_21H2_EN_Eval` media download link (@ToreAad)
@@ -13,7 +19,7 @@
 * Updates code signing certificate
 * Disables network location wizard notification(s)
 * Adds Windows 10 Enterprise 21H2 (2109) evaluation media
-* Adds Windows 11 21H2 (2109) evaluation media
+* Adds Windows 11 Enterprise 21H2 (2109) evaluation media
 * Adds Windows 10 LTSC 2021 evaluation media
 
 ### 0.20.0 ###
