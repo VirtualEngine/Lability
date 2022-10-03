@@ -884,8 +884,8 @@
 		"ImageName": "1",
 		"MediaType": "ISO",
 		"OperatingSystem": "Windows",
-		"Uri": "https://software-static.download.prss.microsoft.com/dbazure/988969d5-f34g-4e03-ac9d-1f9786c66749/22621.382.220806-0833.ni_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-		"Checksum": "31742751015EED1C0197E342E18C64EB",
+		"Uri": "https://go.microsoft.com/fwlink/p/?LinkID=2206317",
+		"Checksum": "06D32714E332D506E3C565BC08204CAB",
 		"CustomData": {
 			"WindowsOptionalFeature": ["NetFx3"],
 			"CustomBootstrap": [
