@@ -10,6 +10,7 @@ function Expand-ZipArchiveItem {
         A System.IO.FileInfo object for each extracted file.
 #>
     [CmdletBinding(DefaultParameterSetName='Path', SupportsShouldProcess, ConfirmImpact = 'Medium')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidMultipleTypeAttributes','')]
     [OutputType([System.IO.FileInfo])]
     param (
         # Reference to Zip archive item.
