@@ -5,6 +5,7 @@ function Start-DscConfigurationCompilation {
 #>
     [CmdletBinding()]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidMultipleTypeAttributes','')]
     [OutputType([System.IO.FileInfo])]
     param (
         ## DSC configuration file path, e.g. CONTROLLER.ps1
