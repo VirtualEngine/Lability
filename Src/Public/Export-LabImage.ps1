@@ -5,6 +5,7 @@ function Export-LabImage {
         Exports a lab image (.vhdx file) and creates Lability custom media registration document (.json file).
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms','')]
     param (
         ## Lab media Id
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
