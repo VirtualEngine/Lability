@@ -5,6 +5,7 @@ function Set-ResourceChecksum {
 #>
     [CmdletBinding()]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms','')]
     param (
         ## Path of file to create the checksum of
         [Parameter(Mandatory, ValueFromPipeline)]

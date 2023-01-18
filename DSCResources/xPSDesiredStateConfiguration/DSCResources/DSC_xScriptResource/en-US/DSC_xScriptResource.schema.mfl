@@ -1,0 +1,9 @@
+[Description("This resource is used to perform Get, Set and Test functionality on the DSC managed nodes through Powershell scripts. \n") : Amended,AMENDMENT, LOCALE("ms_409")]
+class DSC_xScriptResource : OMI_BaseResource
+{
+    [Key,Description("A string that can be used to create a PowerShell script block that retrieves the current state of the resource.") : Amended] String GetScript;
+    [Key,Description("A string that can be used to create a PowerShell script block that sets the resource to the desired state.") : Amended] String SetScript;
+    [Key,Description("A string that can be used to create a PowerShell script block that validates whether or not the resource is in the desired state.") : Amended] String TestScript;
+    [Description("The credential of the user account to run the script under if needed.") : Amended] String Credential;
+    [Read, Description("The result from the GetScript script block.") : Amended] String DisplayName;
+};

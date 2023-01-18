@@ -1,0 +1,9 @@
+[Description("The xEnvironment resource provides a mechanism to manage machine-wide environment variables.") : Amended,AMENDMENT, LOCALE("MS_409")]
+class DSC_xEnvironmentResource : OMI_BaseResource
+{
+  [Key, Description("The name of the environment variable for which you want to ensure a specific state.") : Amended] String Name;
+  [Description("The desired value for the environment variable.") : Amended] String Value;
+  [Description("Specifies if the environment varaible should exist.") : Amended] String Ensure;
+  [Description("Indicates whether or not the environment variable is the Path variable.") : Amended] Boolean Path;
+  [Description("Indicates the target where the environment variable should be set.") : Amended] String Target[];
+};

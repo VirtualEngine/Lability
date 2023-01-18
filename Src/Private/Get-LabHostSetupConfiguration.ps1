@@ -20,13 +20,13 @@ function Get-LabHostSetupConfiguration {
 
             Write-Debug -Message 'Implementing desktop configuration.';
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V role';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_WindowsOptionalFeature';
-                Prefix = 'WindowsOptionalFeature';
+                ModuleName = 'xPSDesiredStateConfiguration';
+                ResourceName = 'DSC_xWindowsOptionalFeature';
+                Prefix = 'xWindowsOptionalFeature';
                 Parameters = @{
-                    Ensure = 'Enable';
+                    Ensure = 'Present';
                     Name = 'Microsoft-Hyper-V-All';
                 }
             };
@@ -35,11 +35,11 @@ function Get-LabHostSetupConfiguration {
 
             Write-Debug -Message 'Implementing server configuration.';
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V Role';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_RoleResource';
-                Prefix = 'WindowsFeature';
+                ModuleName = 'xPSDesiredStateConfiguration';
+                ResourceName = 'DSC_xWindowsFeature';
+                Prefix = 'xWindowsFeature';
                 Parameters = @{
                     Ensure = 'Present';
                     Name = 'Hyper-V';
@@ -47,11 +47,11 @@ function Get-LabHostSetupConfiguration {
                 }
             };
             $labHostSetupConfiguration += @{
-                UseDefault = $true;
+                UseDefault = $false;
                 Description = 'Hyper-V Tools';
-                ModuleName = 'PSDesiredStateConfiguration';
-                ResourceName = 'MSFT_RoleResource';
-                Prefix = 'WindowsFeature';
+                ModuleName = 'xPSDesiredStateConfiguration';
+                ResourceName = 'DSC_xWindowsFeature';
+                Prefix = 'xWindowsFeature';
                 Parameters = @{
                     Ensure = 'Present';
                     Name = 'RSAT-Hyper-V-Tools';

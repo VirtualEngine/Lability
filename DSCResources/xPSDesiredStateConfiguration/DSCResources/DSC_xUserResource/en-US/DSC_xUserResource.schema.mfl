@@ -1,0 +1,13 @@
+[Description("This resource is used to manage local user accounts.") : Amended,AMENDMENT, LOCALE("MS_409")]
+class DSC_xUserResource : OMI_BaseResource
+{
+  [Key, Description("The name of the User to Create/Modify/Delete") : Amended] String UserName;
+  [Write, Description("An enumerated value that describes if the user is expected to exist on the machine, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
+  [Write, Description("The full name of the user") : Amended] String FullName;
+  [Write, Description("A description for the user") : Amended] String Description;
+  [Write, Description("The password for the user"), (EmbeddedInstance("MSFT_Credential") : Amended] String Password;
+  [Write, Description("Value used to disable/enable a user account") : Amended] Boolean Disabled;
+  [Write, Description("Value used to set whether a user's password expires or not") : Amended] Boolean PasswordNeverExpires;
+  [Write, Description("Value used to require a user to change their password") : Amended] Boolean PasswordChangeRequired;
+  [Write, Description("Value used to set whether a user can/cannot change their password") : Amended] Boolean PasswordChangeNotAllowed;
+};
