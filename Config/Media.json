@@ -780,16 +780,16 @@
 		]
 	},
 	{
-		"Id": "WIN10_x64_Enterprise_21H2_EN_Eval",
+		"Id": "WIN10_x64_Enterprise_22H2_EN_Eval",
 		"Alias": "WIN10_x64_Enterprise_EN_Eval",
-		"Filename": "WIN10_x64_ENT_21H2_EN_Eval.iso",
-		"Description": "Windows 10 64bit Enterprise 2109/21H2 English Evaluation",
+		"Filename": "WIN10_x64_ENT_22H2_EN_Eval.iso",
+		"Description": "Windows 10 64bit Enterprise 2209/22H2 English Evaluation",
 		"Architecture": "x64",
 		"ImageName": "Windows 10 Enterprise Evaluation",
 		"MediaType": "ISO",
 		"OperatingSystem": "Windows",
-		"Uri": "https://software-download.microsoft.com/download/sg/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
-		"Checksum": "AE1DA210FFFA81BB6A8DF455ECA9636B",
+		"Uri": "https://software-static.download.prss.microsoft.com/dbazure/988969d5-f34g-4e03-ac9d-1f9786c66750/19045.2006.220908-0225.22h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+		"Checksum": "E469D0ADD9F698A1B48ADCE2520403EF",
 		"CustomData": {
 			"WindowsOptionalFeature": ["NetFx3"],
 			"CustomBootstrap": [
@@ -804,16 +804,16 @@
 		"Hotfixes": []
 	},
 	{
-		"Id": "WIN10_x86_Enterprise_21H2_EN_Eval",
+		"Id": "WIN10_x86_Enterprise_22H2_EN_Eval",
 		"Alias": "WIN10_x86_Enterprise_EN_Eval",
-		"Filename": "WIN10_x86_ENT_21H2_EN_Eval.iso",
-		"Description": "Windows 10 32bit Enterprise 2109/21H2 English Evaluation",
+		"Filename": "WIN10_x86_ENT_22H2_EN_Eval.iso",
+		"Description": "Windows 10 32bit Enterprise 2209/22H2 English Evaluation",
 		"Architecture": "x86",
 		"ImageName": "Windows 10 Enterprise Evaluation",
 		"MediaType": "ISO",
 		"OperatingSystem": "Windows",
-		"Uri": "https://software-download.microsoft.com/download/sg/444969d5-f34g-4e03-ac9d-1f9786c69161/19044.1288.211006-0501.21h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
-		"Checksum": "5EE2786AD091B95399A79D46DEF7D43B",
+		"Uri": "https://software-static.download.prss.microsoft.com/dbazure/988969d5-f34g-4e03-ac9d-1f9786c66750/19045.2006.220908-0225.22h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x86FRE_en-us.iso",
+		"Checksum": "A2ACBC46AC3DE17122CC3AAB12B11C03",
 		"CustomData": {
 			"WindowsOptionalFeature": ["NetFx3"],
 			"CustomBootstrap": [
