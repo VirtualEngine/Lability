@@ -1,10 +1,10 @@
 @{
     RootModule        = 'Lability.psm1';
-    ModuleVersion     = '0.22.0';
+    ModuleVersion     = '0.23.0';
     GUID              = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author            = 'Iain Brighton';
     CompanyName       = 'Virtual Engine';
-    Copyright         = '(c) 2021 Virtual Engine Limited. All rights reserved.';
+    Copyright         = '(c) 2023 Virtual Engine Limited. All rights reserved.';
     Description       = 'The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.';
     PowerShellVersion = '4.0';
     FormatsToProcess  = @('Lability.Format.ps1xml');
