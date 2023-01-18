@@ -2,7 +2,7 @@
 
 ## Versions ##
 
-### Unreleased ###
+### 0.23.0 ###
 
 * Fixes PSScriptAnalyzer 1.21.0 test failures
 * Fixes Windows 11 Enterprise 22H2 (2209) evaluation media download link
