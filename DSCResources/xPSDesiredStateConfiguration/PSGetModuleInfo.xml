@@ -1,0 +1,160 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">xPSDesiredStateConfiguration</S>
+      <S N="Version">9.1.0</S>
+      <S N="Type">Module</S>
+      <S N="Description">DSC resources for configuring common operating systems features, files and settings.</S>
+      <S N="Author">DSC Community</S>
+      <Obj N="CompanyName" RefId="1">
+        <TN RefId="1">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>PowerShellTeam</S>
+          <S>gaelcolas</S>
+          <S>dsccommunity</S>
+        </LST>
+      </Obj>
+      <S N="Copyright">Copyright the DSC Community contributors. All rights reserved.</S>
+      <DT N="PublishedDate">2020-02-19T21:11:31-05:00</DT>
+      <Nil N="InstalledDate" />
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://github.com/dsccommunity/xPSDesiredStateConfiguration/blob/master/LICENSE</URI>
+      <URI N="ProjectUri">https://github.com/dsccommunity/xPSDesiredStateConfiguration</URI>
+      <URI N="IconUri">https://dsccommunity.org/images/DSC_Logo_300p.png</URI>
+      <Obj N="Tags" RefId="2">
+        <TNRef RefId="1" />
+        <LST>
+          <S>DesiredStateConfiguration</S>
+          <S>DSC</S>
+          <S>DSCResourceKit</S>
+          <S>DSCResource</S>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="3">
+        <TN RefId="2">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="4">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Publish-DscModuleAndMof</S>
+                <S>Publish-ModulesAndChecksum</S>
+                <S>Publish-MofsInSource</S>
+                <S>Publish-ModuleToPullServer</S>
+                <S>Publish-MofToPullServer</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="1" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Publish-DscModuleAndMof</S>
+                <S>Publish-ModulesAndChecksum</S>
+                <S>Publish-MofsInSource</S>
+                <S>Publish-ModuleToPullServer</S>
+                <S>Publish-MofToPullServer</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="1" />
+              <LST>
+                <S>xArchive</S>
+                <S>xDSCWebService</S>
+                <S>xEnvironment</S>
+                <S>xGroup</S>
+                <S>xMsiPackage</S>
+                <S>xPackage</S>
+                <S>xPSEndpoint</S>
+                <S>xRegistry</S>
+                <S>xRemoteFile</S>
+                <S>xScript</S>
+                <S>xService</S>
+                <S>xUser</S>
+                <S>xWindowsFeature</S>
+                <S>xWindowsOptionalFeature</S>
+                <S>xWindowsPackageCab</S>
+                <S>xWindowsProcess</S>
+              </LST>
+            </Obj>
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes">## [9.1.0] - 2020-02-19_x000A__x000D__x000A_### Changed_x000D__x000A__x000D__x000A_- Examples_x000D__x000A_  - Removed the version number of the xPSDesiredStateConfiguration module from the #Requires headers. -_x000D__x000A_    [issue #653](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/653)_x000D__x000A__x000D__x000A_### Fixed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Export `Publish-*` functions in DscPullServerSetup module - Fixes_x000D__x000A_    [issue #673](https://github.com/PowerShell/PSDscResources/issues/673)._x000D__x000A__x000D__x000A_- DSC_x005F_xRegistryResource_x000D__x000A_  - Fixed an issue that failed to create a registry with ":" in the path._x000D__x000A_    [issue #671](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/671)_x000A__x000A_## [9.0.0] - 2020-01-15_x000D__x000A__x000D__x000A_### Added_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Added support for Checksum on xRemoteFile - [issue #423](https://github.com/PowerShell/PSDscResources/issues/423)_x000D__x000A_  - Added `Test-DscParameterState` support function to `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - Added standard unit tests for `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - Added automatic release with a new CI pipeline._x000D__x000A__x000D__x000A_### Changed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - PublishModulesAndMofsToPullServer.psm1:_x000D__x000A_    - Fixes issue in Publish-MOFToPullServer that incorrectly tries to create a_x000D__x000A_      new MOF file instead of reading the existing one._x000D__x000A_      [issue #575](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/575)_x000D__x000A_  - Fix minor style issues with missing spaces between `param` statements and '('._x000D__x000A_  - MSFT_x005F_xDSCWebService:_x000D__x000A_    - Removal of commented out code._x000D__x000A_    - Updated to meet HQRM style guidelines - Fixes [issue #623](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/623)_x000D__x000A_    - Added MOF descriptions._x000D__x000A_  - Corrected minor style issues._x000D__x000A_  - Fix minor style issues in hashtable layout._x000D__x000A_  - Shared modules moved to `source/Module` folder and renamed:_x000D__x000A_    - `CommonResourceHelper.psm1` -&gt; `xPSDesiredStateConfiguration.Common.psm1`_x000D__x000A_  - Moved functions from `ResourceSetHelper.psm1` into_x000D__x000A_    `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - BREAKING CHANGE: Changed resource prefix from MSFT to DSC._x000D__x000A_  - Pinned `ModuleBuilder` to v1.0.0._x000D__x000A_  - Updated build badges in README.MD._x000D__x000A_  - Remove unused localization strings._x000D__x000A_  - Adopt DSC Community Code of Conduct._x000D__x000A_  - DSC_x005F_xPSSessionConfiguration:_x000D__x000A_    - Moved strings to localization file._x000D__x000A_  - DSC_x005F_xScriptResource_x000D__x000A_    - Updated parameter descriptions to match MOF file._x000D__x000A_  - Correct miscellaneous style issues._x000D__x000A_  - DSC_x005F_xWindowsOptionalFeature_x000D__x000A_    - Fix localization strings._x000D__x000A_  - DSC_x005F_xEnvironmentResource_x000D__x000A_    - Remove unused localization strings._x000D__x000A_  - DSC_x005F_xRemoteFile_x000D__x000A_    - Updated end-to-end tests to use the same pattern as the other end-to-end_x000D__x000A_      tests in this module._x000D__x000A_  - DSC_x005F_xDSCWebService_x000D__x000A_    - Moved `PSWSIISEndpoint.psm1` module into `xPSDesiredStateConfiguration.PSWSIIS`._x000D__x000A_    - Moved `Firewall.psm1` module into `xPSDesiredStateConfiguration.Firewall`._x000D__x000A_    - Moved `SecureTLSProtocols.psm1` and `UseSecurityBestPractices.psm1` module_x000D__x000A_      into `xPSDesiredStateConfiguration.Security`._x000D__x000A_    - Fix issue with `Get-TargetResource` when a DSC Pull Server website is not_x000D__x000A_      installed._x000D__x000A_  - DSC_x005F_xWindowsFeature_x000D__x000A_    - Changed tests to be able to run on machines without `*-WindowsFeature` cmdlets._x000D__x000A_    - Changed `Assert-SingleInstanceOfFeature` to accept an array._x000D__x000A_  - BREAKING CHANGE: Renamed `PublishModulesAndMofsToPullServer` module to_x000D__x000A_    `DscPullServerSetup` and moved to Modules folder._x000D__x000A_  - Moved test helper modules into `tests\TestHelpers` folder._x000D__x000A_- DSCPullServerSetup_x000D__x000A_  - Fixed markdown errors in README.MD._x000D__x000A_  - Moved strings to Localization file._x000D__x000A_  - Corrected style violations._x000D__x000A_- Updated build badges to reflect correct Azure DevOps build Definition Id - fixes_x000D__x000A_  [issue #656](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/656)._x000D__x000A_- Set `testRunTitle` for PublishTestResults steps so that a helpful name is_x000D__x000A_  displayed in Azure DevOps for each test run._x000D__x000A_- Set a display name on all the jobs and tasks in the CI_x000D__x000A_  pipeline - fixes [issue #663](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/663)._x000D__x000A__x000D__x000A_### Deprecated_x000D__x000A__x000D__x000A_- None_x000D__x000A__x000D__x000A_### Removed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Removed files no longer required by new CI process._x000D__x000A__x000D__x000A_### Fixed_x000D__x000A__x000D__x000A_- MSFT_x005F_xRegistryResource_x000D__x000A_  - Fixes issue that the `Set-TargetResource` does not determine_x000D__x000A_    the type of registry value correctly._x000D__x000A_    [issue #436](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/436)_x000D__x000A_- Fixed Pull Server example links in `README.MD` - fixes_x000D__x000A_  [issue #659](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/659)._x000D__x000A_- Fixed `GitVersion.yml` feature and fix Regex - fixes_x000D__x000A_  [issue #660](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/660)._x000D__x000A_- Fix import statement in all tests, making sure it throws if module_x000D__x000A_  DscResource.Test cannot be imported - fixes_x000D__x000A_  [issue #666](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/666)._x000D__x000A_- Fix deploy stage in CI pipeline to prevent it executing against forks_x000D__x000A_  of the repository - fixes [issue #665](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/665)._x000D__x000A_- Fix deploy fork detection in CI pipeline - fixes [issue #668](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/668)._x000D__x000A__x000D__x000A_### Security_x000D__x000A__x000D__x000A_- None</S>
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="1" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="9">
+        <TN RefId="3">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">Copyright the DSC Community contributors. All rights reserved.</S>
+          <S N="description">DSC resources for configuring common operating systems features, files and settings.</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes">## [9.1.0] - 2020-02-19_x000A__x000D__x000A_### Changed_x000D__x000A__x000D__x000A_- Examples_x000D__x000A_  - Removed the version number of the xPSDesiredStateConfiguration module from the #Requires headers. -_x000D__x000A_    [issue #653](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/653)_x000D__x000A__x000D__x000A_### Fixed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Export `Publish-*` functions in DscPullServerSetup module - Fixes_x000D__x000A_    [issue #673](https://github.com/PowerShell/PSDscResources/issues/673)._x000D__x000A__x000D__x000A_- DSC_x005F_xRegistryResource_x000D__x000A_  - Fixed an issue that failed to create a registry with ":" in the path._x000D__x000A_    [issue #671](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/671)_x000A__x000A_## [9.0.0] - 2020-01-15_x000D__x000A__x000D__x000A_### Added_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Added support for Checksum on xRemoteFile - [issue #423](https://github.com/PowerShell/PSDscResources/issues/423)_x000D__x000A_  - Added `Test-DscParameterState` support function to `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - Added standard unit tests for `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - Added automatic release with a new CI pipeline._x000D__x000A__x000D__x000A_### Changed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - PublishModulesAndMofsToPullServer.psm1:_x000D__x000A_    - Fixes issue in Publish-MOFToPullServer that incorrectly tries to create a_x000D__x000A_      new MOF file instead of reading the existing one._x000D__x000A_      [issue #575](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/575)_x000D__x000A_  - Fix minor style issues with missing spaces between `param` statements and '('._x000D__x000A_  - MSFT_x005F_xDSCWebService:_x000D__x000A_    - Removal of commented out code._x000D__x000A_    - Updated to meet HQRM style guidelines - Fixes [issue #623](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/623)_x000D__x000A_    - Added MOF descriptions._x000D__x000A_  - Corrected minor style issues._x000D__x000A_  - Fix minor style issues in hashtable layout._x000D__x000A_  - Shared modules moved to `source/Module` folder and renamed:_x000D__x000A_    - `CommonResourceHelper.psm1` -&gt; `xPSDesiredStateConfiguration.Common.psm1`_x000D__x000A_  - Moved functions from `ResourceSetHelper.psm1` into_x000D__x000A_    `xPSDesiredStateConfiguration.Common.psm1`._x000D__x000A_  - BREAKING CHANGE: Changed resource prefix from MSFT to DSC._x000D__x000A_  - Pinned `ModuleBuilder` to v1.0.0._x000D__x000A_  - Updated build badges in README.MD._x000D__x000A_  - Remove unused localization strings._x000D__x000A_  - Adopt DSC Community Code of Conduct._x000D__x000A_  - DSC_x005F_xPSSessionConfiguration:_x000D__x000A_    - Moved strings to localization file._x000D__x000A_  - DSC_x005F_xScriptResource_x000D__x000A_    - Updated parameter descriptions to match MOF file._x000D__x000A_  - Correct miscellaneous style issues._x000D__x000A_  - DSC_x005F_xWindowsOptionalFeature_x000D__x000A_    - Fix localization strings._x000D__x000A_  - DSC_x005F_xEnvironmentResource_x000D__x000A_    - Remove unused localization strings._x000D__x000A_  - DSC_x005F_xRemoteFile_x000D__x000A_    - Updated end-to-end tests to use the same pattern as the other end-to-end_x000D__x000A_      tests in this module._x000D__x000A_  - DSC_x005F_xDSCWebService_x000D__x000A_    - Moved `PSWSIISEndpoint.psm1` module into `xPSDesiredStateConfiguration.PSWSIIS`._x000D__x000A_    - Moved `Firewall.psm1` module into `xPSDesiredStateConfiguration.Firewall`._x000D__x000A_    - Moved `SecureTLSProtocols.psm1` and `UseSecurityBestPractices.psm1` module_x000D__x000A_      into `xPSDesiredStateConfiguration.Security`._x000D__x000A_    - Fix issue with `Get-TargetResource` when a DSC Pull Server website is not_x000D__x000A_      installed._x000D__x000A_  - DSC_x005F_xWindowsFeature_x000D__x000A_    - Changed tests to be able to run on machines without `*-WindowsFeature` cmdlets._x000D__x000A_    - Changed `Assert-SingleInstanceOfFeature` to accept an array._x000D__x000A_  - BREAKING CHANGE: Renamed `PublishModulesAndMofsToPullServer` module to_x000D__x000A_    `DscPullServerSetup` and moved to Modules folder._x000D__x000A_  - Moved test helper modules into `tests\TestHelpers` folder._x000D__x000A_- DSCPullServerSetup_x000D__x000A_  - Fixed markdown errors in README.MD._x000D__x000A_  - Moved strings to Localization file._x000D__x000A_  - Corrected style violations._x000D__x000A_- Updated build badges to reflect correct Azure DevOps build Definition Id - fixes_x000D__x000A_  [issue #656](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/656)._x000D__x000A_- Set `testRunTitle` for PublishTestResults steps so that a helpful name is_x000D__x000A_  displayed in Azure DevOps for each test run._x000D__x000A_- Set a display name on all the jobs and tasks in the CI_x000D__x000A_  pipeline - fixes [issue #663](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/663)._x000D__x000A__x000D__x000A_### Deprecated_x000D__x000A__x000D__x000A_- None_x000D__x000A__x000D__x000A_### Removed_x000D__x000A__x000D__x000A_- xPSDesiredStateConfiguration_x000D__x000A_  - Removed files no longer required by new CI process._x000D__x000A__x000D__x000A_### Fixed_x000D__x000A__x000D__x000A_- MSFT_x005F_xRegistryResource_x000D__x000A_  - Fixes issue that the `Set-TargetResource` does not determine_x000D__x000A_    the type of registry value correctly._x000D__x000A_    [issue #436](https://github.com/dsccommunity/xPSDesiredStateConfiguration/issues/436)_x000D__x000A_- Fixed Pull Server example links in `README.MD` - fixes_x000D__x000A_  [issue #659](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/659)._x000D__x000A_- Fixed `GitVersion.yml` feature and fix Regex - fixes_x000D__x000A_  [issue #660](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/660)._x000D__x000A_- Fix import statement in all tests, making sure it throws if module_x000D__x000A_  DscResource.Test cannot be imported - fixes_x000D__x000A_  [issue #666](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/666)._x000D__x000A_- Fix deploy stage in CI pipeline to prevent it executing against forks_x000D__x000A_  of the repository - fixes [issue #665](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/665)._x000D__x000A_- Fix deploy fork detection in CI pipeline - fixes [issue #668](https://github.com/PowerShell/xPSDesiredStateConfiguration/issues/668)._x000D__x000A__x000D__x000A_### Security_x000D__x000A__x000D__x000A_- None</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">False</S>
+          <S N="versionDownloadCount">4456106</S>
+          <S N="downloadCount">13091089</S>
+          <S N="packageSize">198358</S>
+          <S N="published">2/19/2020 9:11:31 PM -05:00</S>
+          <S N="created">2/19/2020 9:11:31 PM -05:00</S>
+          <S N="lastUpdated">1/2/2022 8:09:14 PM -05:00</S>
+          <S N="tags">DesiredStateConfiguration DSC DSCResourceKit DSCResource PSModule PSFunction_Publish-DscModuleAndMof PSCommand_Publish-DscModuleAndMof PSFunction_Publish-ModulesAndChecksum PSCommand_Publish-ModulesAndChecksum PSFunction_Publish-MofsInSource PSCommand_Publish-MofsInSource PSFunction_Publish-ModuleToPullServer PSCommand_Publish-ModuleToPullServer PSFunction_Publish-MofToPullServer PSCommand_Publish-MofToPullServer PSIncludes_Function PSDscResource_x005F_xArchive PSDscResource_x005F_xDSCWebService PSDscResource_x005F_xEnvironment PSDscResource_x005F_xGroup PSDscResource_x005F_xMsiPackage PSDscResource_x005F_xPackage PSDscResource_x005F_xPSEndpoint PSDscResource_x005F_xRegistry PSDscResource_x005F_xRemoteFile PSDscResource_x005F_xScript PSDscResource_x005F_xService PSDscResource_x005F_xUser PSDscResource_x005F_xWindowsFeature PSDscResource_x005F_xWindowsOptionalFeature PSDscResource_x005F_xWindowsPackageCab PSDscResource_x005F_xWindowsProcess PSIncludes_DscResource</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2022-01-02T20:09:14Z</S>
+          <S N="NormalizedVersion">9.1.0</S>
+          <S N="Authors">DSC Community</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">xPSDesiredStateConfiguration.nuspec|xPSDesiredStateConfiguration.psd1|ResourceDesignerScripts\GenerateXRemoteFileSchema.ps1|ResourceDesignerScripts\New-PSSessionConfigurationResource.ps1|en-US\about_x005F_xPSDesiredStateConfiguration.help.txt|Modules\xPSDesiredStateConfiguration.Security\xPSDesiredStateConfiguration.Security.psd1|Modules\xPSDesiredStateConfiguration.Security\xPSDesiredStateConfiguration.Security.psm1|Modules\xPSDesiredStateConfiguration.Firewall\xPSDesiredStateConfiguration.Firewall.psm1|Modules\xPSDesiredStateConfiguration.Firewall\xPSDesiredStateConfiguration.Firewall.psd1|Modules\xPSDesiredStateConfiguration.PSWSIIS\xPSDesiredStateConfiguration.PSWSIIS.psm1|Modules\xPSDesiredStateConfiguration.PSWSIIS\xPSDesiredStateConfiguration.PSWSIIS.psd1|Modules\DscPullServerSetup\README.md|Modules\DscPullServerSetup\DscPullServerSetup.psm1|Modules\xPSDesiredStateConfiguration.Common\xPSDesiredStateConfiguration.Common.psd1|Modules\xPSDesiredStateConfiguration.Common\xPSDesiredStateConfiguration.Common.psm1|DSCResources\DSC_x005F_xRemoteFile\DSC_x005F_xRemoteFile.psm1|DSCResources\DSC_x005F_xRemoteFile\DSC_x005F_xRemoteFile.schema.mof|DSCResources\DSC_x005F_xMsiPackage\DSC_x005F_xMsiPackage.schema.mof|DSCResources\DSC_x005F_xMsiPackage\DSC_x005F_xMsiPackage.psm1|DSCResources\DSC_x005F_xWindowsOptionalFeature\DSC_x005F_xWindowsOptionalFeature.psm1|DSCResources\DSC_x005F_xWindowsOptionalFeature\DSC_x005F_xWindowsOptionalFeature.schema.mof|DSCResources\DSC_x005F_xWindowsProcess\DSC_x005F_xWindowsProcess.psm1|DSCResources\DSC_x005F_xWindowsProcess\DSC_x005F_xWindowsProcess.schema.mof|DSCResources\xServiceSet\xServiceSet.schema.psm1|DSCResources\xServiceSet\xServiceSet.psd1|DSCResources\DSC_x005F_xUserResource\DSC_x005F_xUserResource.psm1|DSCResources\DSC_x005F_xUserResource\DSC_x005F_xUserResource.schema.mof|DSCResources\DSC_x005F_xServiceResource\DSC_x005F_xServiceResource.psm1|DSCResources\DSC_x005F_xServiceResource\DSC_x005F_xServiceResource.schema.mof|DSCResources\xProcessSet\xProcessSet.schema.psm1|DSCResources\xProcessSet\xProcessSet.psd1|DSCResources\DSC_x005F_xScriptResource\DSC_x005F_xScriptResource.schema.mof|DSCResources\DSC_x005F_xScriptResource\DSC_x005F_xScriptResource.psm1|DSCResources\DSC_x005F_xRegistryResource\DSC_x005F_xRegistryResource.psm1|DSCResources\DSC_x005F_xRegistryResource\DSC_x005F_xRegistryResource.schema.mof|DSCResources\DSC_x005F_xPSSessionConfiguration\DSC_x005F_xPSSessionConfiguration.schema.mof|DSCResources\DSC_x005F_xPSSessionConfiguration\DSC_x005F_xPSSessionConfiguration.psm1|DSCResources\DSC_x005F_xDSCWebService\DSC_x005F_xDSCWebService.schema.mof|DSCResources\DSC_x005F_xDSCWebService\DSC_x005F_xDSCWebService.psm1|DSCResources\xWindowsFeatureSet\xWindowsFeatureSet.psd1|DSCResources\xWindowsFeatureSet\xWindowsFeatureSet.schema.psm1|DSCResources\xFileUpload\xFileUpload.schema.psm1|DSCResources\xFileUpload\xFileUpload.psd1|DSCResources\DSC_x005F_xEnvironmentResource\DSC_x005F_xEnvironmentResource.psm1|DSCResources\DSC_x005F_xEnvironmentResource\DSC_x005F_xEnvironmentResource.schema.mof|DSCResources\DSC_x005F_xWindowsFeature\DSC_x005F_xWindowsFeature.schema.mof|DSCResources\DSC_x005F_xWindowsFeature\DSC_x005F_xWindowsFeature.psm1|DSCResources\DSC_x005F_xWindowsPackageCab\DSC_x005F_xWindowsPackageCab.schema.mof|DSCResources\DSC_x005F_xWindowsPackageCab\DSC_x005F_xWindowsPackageCab.psm1|DSCResources\DSC_x005F_xArchive\DSC_x005F_xArchive.psm1|DSCResources\DSC_x005F_xArchive\DSC_x005F_xArchive.schema.mof|DSCResources\xGroupSet\xGroupSet.psd1|DSCResources\xGroupSet\xGroupSet.schema.psm1|DSCResources\xWindowsOptionalFeatureSet\xWindowsOptionalFeatureSet.schema.psm1|DSCResources\xWindowsOptionalFeatureSet\xWindowsOptionalFeatureSet.psd1|DSCResources\DSC_x005F_xGroupResource\DSC_x005F_xGroupResource.schema.mof|DSCResources\DSC_x005F_xGroupResource\DSC_x005F_xGroupResource.psm1|DSCResources\DSC_x005F_xPackageResource\DSC_x005F_xPackageResource.schema.mof|DSCResources\DSC_x005F_xPackageResource\DSC_x005F_xPackageResource.psm1|Modules\xPSDesiredStateConfiguration.Security\en-US\xPSDesiredStateConfiguration.Security.strings.psd1|Modules\xPSDesiredStateConfiguration.Firewall\en-US\xPSDesiredStateConfiguration.Firewall.strings.psd1|Modules\xPSDesiredStateConfiguration.PSWSIIS\en-US\xPSDesiredStateConfiguration.PSWSIIS.strings.psd1|Modules\DscPullServerSetup\en-US\DscPullServerSetup.strings.psd1|Modules\DscPullServerSetup\DscPullServerSetupTest\DscPullServerSetupTest.ps1|Modules\xPSDesiredStateConfiguration.Common\en-US\xPSDesiredStateConfiguration.Common.strings.psd1|DSCResources\DSC_x005F_xRemoteFile\en-us\DSC_x005F_xRemoteFile.strings.psd1|DSCResources\DSC_x005F_xMsiPackage\en-US\DSC_x005F_xMsiPackage.schema.mfl|DSCResources\DSC_x005F_xMsiPackage\en-US\DSC_x005F_xMsiPackage.strings.psd1|DSCResources\DSC_x005F_xWindowsOptionalFeature\en-US\DSC_x005F_xWindowsOptionalFeature.schema.mfl|DSCResources\DSC_x005F_xWindowsOptionalFeature\en-US\DSC_x005F_xWindowsOptionalFeature.strings.psd1|DSCResources\DSC_x005F_xWindowsProcess\en-US\DSC_x005F_xWindowsProcess.schema.mfl|DSCResources\DSC_x005F_xWindowsProcess\en-US\DSC_x005F_xWindowsProcess.strings.psd1|DSCResources\DSC_x005F_xUserResource\en-US\DSC_x005F_xUserResource.schema.mfl|DSCResources\DSC_x005F_xUserResource\en-US\DSC_x005F_xUserResource.strings.psd1|DSCResources\DSC_x005F_xServiceResource\en-US\DSC_x005F_xServiceResource.strings.psd1|DSCResources\DSC_x005F_xServiceResource\en-US\DSC_x005F_xServiceResource.schema.mfl|DSCResources\DSC_x005F_xScriptResource\en-US\DSC_x005F_xScriptResource.strings.psd1|DSCResources\DSC_x005F_xScriptResource\en-US\DSC_x005F_xScriptResource.schema.mfl|DSCResources\DSC_x005F_xRegistryResource\en-US\DSC_x005F_xRegistryResource.schema.mfl|DSCResources\DSC_x005F_xRegistryResource\en-US\DSC_x005F_xRegistryResource.strings.psd1|DSCResources\DSC_x005F_xPSSessionConfiguration\en-US\DSC_x005F_xPSSessionConfiguration.strings.psd1|DSCResources\DSC_x005F_xDSCWebService\en-US\DSC_x005F_xDSCWebService.strings.psd1|DSCResources\DSC_x005F_xEnvironmentResource\en-US\DSC_x005F_xEnvironmentResource.schema.mfl|DSCResources\DSC_x005F_xEnvironmentResource\en-US\DSC_x005F_xEnvironmentResource.strings.psd1|DSCResources\DSC_x005F_xWindowsFeature\en-US\DSC_x005F_xWindowsFeature.strings.psd1|DSCResources\DSC_x005F_xWindowsFeature\en-US\DSC_x005F_xWindowsFeature.schema.mfl|DSCResources\DSC_x005F_xWindowsPackageCab\en-US\DSC_x005F_xWindowsPackageCab.schema.mfl|DSCResources\DSC_x005F_xWindowsPackageCab\en-US\DSC_x005F_xWindowsPackageCab.strings.psd1|DSCResources\DSC_x005F_xArchive\en-US\DSC_x005F_xArchive.schema.mfl|DSCResources\DSC_x005F_xArchive\en-US\DSC_x005F_xArchive.strings.psd1|DSCResources\DSC_x005F_xGroupResource\en-US\DSC_x005F_xGroupResource.schema.mfl|DSCResources\DSC_x005F_xGroupResource\en-US\DSC_x005F_xGroupResource.strings.psd1|DSCResources\DSC_x005F_xPackageResource\en-US\DSC_x005F_xPackageResource.schema.mfl|DSCResources\DSC_x005F_xPackageResource\en-US\DSC_x005F_xPackageResource.strings.psd1</S>
+          <S N="GUID">cc8dc021-fa5f-4f96-8ecf-dfd68a6d9d48</S>
+          <S N="PowerShellVersion">4.0</S>
+          <S N="CLRVersion">4.0</S>
+          <S N="CompanyName">DSC Community</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\greg\Lability\DSCResources\xPSDesiredStateConfiguration\9.1.0</S>
+    </MS>
+  </Obj>
+</Objs>
