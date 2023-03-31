@@ -25,7 +25,12 @@ function Invoke-LabModuleDownloadFromPSGallery {
 
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments
+        $RemainingArguments,
+
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     process {
 
@@ -35,6 +40,7 @@ function Invoke-LabModuleDownloadFromPSGallery {
             DestinationPath = $moduleCacheDestinationPath;
             Uri             = Resolve-PSGalleryModuleUri @PSBoundParameters;
             NoCheckSum      = $true;
+            FeedCredential  = $FeedCredential;
         }
         $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
 

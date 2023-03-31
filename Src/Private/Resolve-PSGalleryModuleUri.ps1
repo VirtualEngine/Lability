@@ -41,16 +41,41 @@ function Resolve-PSGalleryModuleUri {
             $psRepositoryUri = (Get-ConfigurationData -Configuration Host).RepositoryUri;
         }
 
-        if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+      if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
 
-            ## Download the specific version
-            return ('{0}/{1}/{2}' -f $psRepositoryUri, $Name, $RequiredVersion);
-        }
-        else {
+            ## Download the specific version
+            switch -Wildcard ( $psRepositoryUri) {
 
-            ## Download the latest version
-            return ('{0}/{1}' -f $psRepositoryUri, $Name);
-        }
+                # AzureArtifactsFeed
+                '*pkgs.dev.azure.com*' {
+                  return ('{0}?id={1}&version={2}' -f $psRepositoryUri, $Name.ToLower(), "$($RequiredVersion.Major).$($RequiredVersion.Minor).$($RequiredVersion.Build)")
+                }
+                # Other feeds (PSGallery/ProGet etc)
+                default {
+                    return ('{0}/{1}/{2}' -f $psRepositoryUri, $Name, $RequiredVersion)
+                }
+
+            }
+
+        }
+        else {
+
+            ## Download the latest version
+            switch -Wildcard ( $psRepositoryUri) {
+
+                # AzureArtifactsFeed
+                '*pkgs.dev.azure.com*' {
+                    return ('{0}?id={1}' -f $psRepositoryUri, $Name.ToLower())
+                }
+                # Other feeds (PSGallery/ProGet etc)
+                default {
+                    return ('{0}/{1}' -f $psRepositoryUri, $Name);
+                }
+
+            }
+
+        }
 
     } #end process
 } #end function Resolve-PSGalleryModuleUri
+

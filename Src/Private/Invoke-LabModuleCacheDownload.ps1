@@ -70,7 +70,14 @@ function Invoke-LabModuleCacheDownload {
 
         ## Catch all to be able to pass parameter via $PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments
+        $RemainingArguments,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     begin {
 
@@ -122,8 +129,8 @@ function Invoke-LabModuleCacheDownload {
                     Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
                 }
 
-                if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
-                    Invoke-LabModuleDownloadFromPSGallery @moduleInfo;
+                if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')-or ($moduleInfo['Provider'] -eq 'AZDevOps')) {
+                    Invoke-LabModuleDownloadFromPSGallery @moduleInfo -FeedCredential $FeedCredential;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'GitHub') {
                     Invoke-LabModuleDownloadFromGitHub @moduleInfo;

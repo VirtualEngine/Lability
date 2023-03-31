@@ -20,7 +20,12 @@ function Set-ResourceDownload {
         [System.UInt32] $BufferSize = 64KB,
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $NoChecksum
+        [System.Management.Automation.SwitchParameter] $NoChecksum,
+
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
         ##TODO: Support Headers and UserAgent
     )
     begin {
@@ -41,7 +46,7 @@ function Set-ResourceDownload {
         }
 
         Write-Verbose -Message ($localized.DownloadingResource -f $Uri, $DestinationPath);
-        Invoke-WebClientDownload -DestinationPath $DestinationPath -Uri $Uri -BufferSize $BufferSize;
+        Invoke-WebClientDownload -DestinationPath $DestinationPath -Uri $Uri -BufferSize $BufferSize -Credential $FeedCredential;
 
         if ($NoChecksum -eq $false) {
 

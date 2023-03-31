@@ -121,8 +121,15 @@ function Start-LabConfiguration {
 
         ## Skips pending reboot check
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
-    )
+        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
+)
     begin {
 
         ## If we have only a secure string, create a PSCredential
@@ -206,6 +213,7 @@ function Start-LabConfiguration {
                         Path = $Path;
                         NoSnapshot = $NoSnapshot;
                         Credential = $Credential;
+                        FeedCredential = $FeedCredential;
                     }
                     [ref] $null = New-LabVirtualMachine @newLabVirtualMachineParams;
                 }
