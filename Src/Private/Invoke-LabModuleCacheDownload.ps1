@@ -52,7 +52,7 @@ function Invoke-LabModuleCacheDownload {
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateSet('PSGallery','GitHub','FileSystem')]
+        [ValidateSet('PSGallery','GitHub','AzDevOps','FileSystem')]
         [System.String] $Provider,
 
         ## Lability PowerShell module info hashtable
@@ -72,7 +72,7 @@ function Invoke-LabModuleCacheDownload {
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments,
 
-        ## Credentials to access the a private feed
+        ## Credentials to access the an Azure DevOps private feed
         [Parameter(ValueFromPipelineByPropertyName)]
         [AllowNull()]
         [System.Management.Automation.PSCredential]
@@ -129,8 +129,11 @@ function Invoke-LabModuleCacheDownload {
                     Write-Verbose -Message ($localized.ModuleNotCached -f $moduleInfo.Name);
                 }
 
-                if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')-or ($moduleInfo['Provider'] -eq 'AZDevOps')) {
-                    Invoke-LabModuleDownloadFromPSGallery @moduleInfo -FeedCredential $FeedCredential;
+                if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
+                    Invoke-LabModuleDownloadFromPSGallery @moduleInfo;
+                }
+                elseif ($moduleInfo['Provider'] -eq 'AzDevOps') {
+                    Invoke-LabModuleDownloadFromAzDevOps @moduleInfo -FeedCredential $FeedCredential;
                 }
                 elseif ($moduleInfo['Provider'] -eq 'GitHub') {
                     Invoke-LabModuleDownloadFromGitHub @moduleInfo;

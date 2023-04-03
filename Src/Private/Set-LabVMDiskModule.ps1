@@ -32,7 +32,6 @@ function Set-LabVMDiskModule {
     )
     process {
 
-        $FeedCredential
         ## Invokes the module download if not cached, and returns the source
         [ref] $null = Invoke-LabModuleCacheDownload -Module $Module -Force:$Force -FeedCredential $FeedCredential;
         ## Expand the modules into the VHDX file

@@ -1,7 +1,7 @@
-function Invoke-LabModuleDownloadFromPSGallery {
+function Invoke-LabModuleDownloadFromAzDevOps {
     <#
     .SYNOPSIS
-        Downloads a PowerShell module/DSC resource from the PowerShell gallery to the host's module cache.
+        Downloads a PowerShell module/DSC resource from an Azure DevOps Feed to the host's module cache.
 #>
     [CmdletBinding(DefaultParameterSetName = 'Latest')]
     [OutputType([System.IO.FileInfo])]
@@ -25,7 +25,13 @@ function Invoke-LabModuleDownloadFromPSGallery {
 
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments
+        $RemainingArguments,
+
+        [Parameter(ValueFromPipelineByPropertyName)] 
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     process {
 
@@ -33,8 +39,9 @@ function Invoke-LabModuleDownloadFromPSGallery {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri             = Resolve-PSGalleryModuleUri @PSBoundParameters;
+            Uri             = Resolve-AzDevOpsModuleUri @PSBoundParameters;
             NoCheckSum      = $true;
+            FeedCredential  = $FeedCredential;
         }
         $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
 

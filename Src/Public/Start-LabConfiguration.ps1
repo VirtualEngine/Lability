@@ -73,6 +73,8 @@ function Start-LabConfiguration {
 
         NOTE: If the -Force parameter is specified - and a virtual machine with the same name already exists -
         ALL EXISTING DATA WITHIN THE VM WILL BE LOST.
+    .PARAMETER FeedCredential
+        A [PSCredential] object containing the credentials to use when accessing a private Azure DevOps feed. 
     .LINK
         about_ConfigurationData
         about_Bootstrap

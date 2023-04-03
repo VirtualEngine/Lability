@@ -22,7 +22,8 @@ function Set-ResourceDownload {
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $NoChecksum,
 
-        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
         $FeedCredential

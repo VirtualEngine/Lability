@@ -17,6 +17,7 @@ Describe 'Unit\Src\Private\Invoke-LabModuleCacheDownload' {
         }
         Mock Invoke-LabModuleDownloadFromPSGallery;
         Mock Invoke-LabModuleDownloadFromGitHub;
+        Mock Invoke-LabModuleDownloadFromAzDevOps;
 
         It 'Downloads module from PSGallery when no Provider is specified' {
             Mock Test-LabModuleCache -MockWith { return $false; }
@@ -48,6 +49,14 @@ Describe 'Unit\Src\Private\Invoke-LabModuleCacheDownload' {
             Invoke-LabModuleCacheDownload @testParams -Provider 'PSGallery';
 
             Assert-MockCalled Invoke-LabModuleDownloadFromPSGallery -Scope It;
+        }
+
+        It 'Downloads module from Azure DevOps when "AzDevOps" Provider is specified' {
+            Mock Test-LabModuleCache -MockWith { return $false; }
+
+            Invoke-LabModuleCacheDownload @testParams -Provider 'AzDevOps';
+
+            Assert-MockCalled Invoke-LabModuleDownloadFromAzDevOps -Scope It;
         }
 
         It 'Downloads module from GitHub when "GitHub" Provider is specified' {
