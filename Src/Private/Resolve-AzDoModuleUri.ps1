@@ -1,4 +1,4 @@
-function Resolve-AzDoModuleUri {
+﻿function Resolve-AzDoModuleUri {
  <#
     .SYNOPSIS
         Returns the direct download Uri for a PowerShell module hosted
@@ -41,15 +41,15 @@ function Resolve-AzDoModuleUri {
             $psRepositoryUri = (Get-ConfigurationData -Configuration Host).RepositoryUri;
         }
 
-      if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
-            ## Download the specific version
-            return ('{0}?id={1}&version={2}' -f $psRepositoryUri, $Name.ToLower(), "$($RequiredVersion.Major).$($RequiredVersion.Minor).$($RequiredVersion.Build)")
-        }
-        else {
+Â Â Â Â Â  if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
+Â Â Â Â Â Â Â Â Â Â Â  ## Download the specific version
+Â          Â Â return ('{0}?id={1}&version={2}' -f $psRepositoryUri, $Name.ToLower(), "$($RequiredVersion.Major).$($RequiredVersion.Minor).$($RequiredVersion.Build)")
+Â Â Â Â Â Â Â  }
+Â Â Â Â Â Â Â  else {
 
-            ## Download the latest version
-            return ('{0}?id={1}' -f $psRepositoryUri, $Name.ToLower())
-        }
+Â Â Â Â Â Â Â Â Â Â Â  ## Download the latest version
+ Â Â Â Â Â Â Â Â Â Â  return ('{0}?id={1}' -f $psRepositoryUri, $Name.ToLower())
+Â Â Â Â Â Â Â  }
 
     } #end process
 } #end function Resolve-AzDoModuleUri.ps1
