@@ -1,4 +1,4 @@
-function Resolve-AzDevOpsModuleUri {
+function Resolve-AzDoModuleUri {
  <#
     .SYNOPSIS
         Returns the direct download Uri for a PowerShell module hosted
@@ -52,5 +52,5 @@ function Resolve-AzDevOpsModuleUri {
         }
 
     } #end process
-} #end function Resolve-AzDevOpsModuleUri.ps1
+} #end function Resolve-AzDoModuleUri.ps1
 

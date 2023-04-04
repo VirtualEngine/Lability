@@ -5,7 +5,7 @@ $moduleName = 'Lability';
 $repoRoot = (Resolve-Path "$PSScriptRoot\..\..\..\..").Path;
 Import-Module (Join-Path -Path $RepoRoot -ChildPath "$moduleName.psm1") -Force;
 
-Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
+Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDo' {
 
     InModuleScope $moduleName {
 
@@ -18,7 +18,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
             ModuleVersion = $testModuleVersion;
         }
         Mock Get-LabModuleCacheManifest -MockWith { return $testModuleManifest; }
-        Mock Resolve-AzDevOpsModuleUri -MockWith { return 'http://fake.uri' }
+        Mock Resolve-AzDoModuleUri -MockWith { return 'http://fake.uri' }
         Mock Set-ResourceDownload -MockWith { return $testModulePath }
 
         It 'Returns a [System.IO.FileInfo] object type' {
@@ -30,12 +30,12 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
                 DestinationPath = $testDestinationPath;
                 RequiredVersion = $testModuleVersion;
             }
-            $result = Invoke-LabModuleDownloadFromAzDevOps @testParams;
+            $result = Invoke-LabModuleDownloadFromAzDo @testParams;
 
             $result -is [System.IO.FileInfo] | Should Be $true;
         }
 
-        It 'Calls "Resolve-AzDevOpsModuleUri" with "RequiredVersion" when specified' {
+        It 'Calls "Resolve-AzDoModuleUri" with "RequiredVersion" when specified' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testParams = @{
@@ -43,12 +43,12 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
                 DestinationPath = $testDestinationPath;
                 RequiredVersion = $testModuleVersion;
             }
-            Invoke-LabModuleDownloadFromAzDevOps @testParams;
+            Invoke-LabModuleDownloadFromAzDo @testParams;
 
-            Assert-MockCalled Resolve-AzDevOpsModuleUri -ParameterFilter { $null -ne $RequiredVersion } -Scope It;
+            Assert-MockCalled Resolve-AzDoModuleUri -ParameterFilter { $null -ne $RequiredVersion } -Scope It;
         }
 
-        It 'Calls "Resolve-AzDevOpsModuleUri" with "MinimumVersion" when specified' {
+        It 'Calls "Resolve-AzDoModuleUri" with "MinimumVersion" when specified' {
             New-Item -Path $testDestinationPath -ItemType Directory -Force -ErrorAction SilentlyContinue;
             New-Item -Path $testModulePath -ItemType File -Force -ErrorAction SilentlyContinue;
             $testParams = @{
@@ -56,9 +56,9 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
                 DestinationPath = $testDestinationPath;
                 MinimumVersion = $testModuleVersion;
             }
-            Invoke-LabModuleDownloadFromAzDevOps @testParams;
+            Invoke-LabModuleDownloadFromAzDo @testParams;
 
-            Assert-MockCalled Resolve-AzDevOpsModuleUri -ParameterFilter { $null -ne $MinimumVersion } -Scope It;
+            Assert-MockCalled Resolve-AzDoModuleUri -ParameterFilter { $null -ne $MinimumVersion } -Scope It;
         }
 
         It 'Throws when downloaded module version does not match expected minimum version (#375)' {
@@ -71,7 +71,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
                 DestinationPath = $testDestinationPath;
                 MinimumVersion = '1.2.3.5';
             }
-            { Invoke-LabModuleDownloadFromAzDevOps @testParams } | Should Throw
+            { Invoke-LabModuleDownloadFromAzDo @testParams } | Should Throw
         }
 
         It 'Throws when downloaded module version does not match required version (#375)' {
@@ -86,7 +86,7 @@ Describe 'Src\Private\Invoke-LabModuleDownloadFromAzDevOps' {
                 DestinationPath = $testDestinationPath;
                 RequiredVersion = $testModuleVersion;
             }
-            { Invoke-LabModuleDownloadFromAzDevOps @testParams } | Should Throw
+            { Invoke-LabModuleDownloadFromAzDo @testParams } | Should Throw
         }
 
     } #end InModuleScope

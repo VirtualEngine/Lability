@@ -1,4 +1,4 @@
-function Invoke-LabModuleDownloadFromAzDevOps {
+function Invoke-LabModuleDownloadFromAzDo {
     <#
     .SYNOPSIS
         Downloads a PowerShell module/DSC resource from an Azure DevOps Feed to the host's module cache.
@@ -23,15 +23,18 @@ function Invoke-LabModuleDownloadFromAzDevOps {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
         [System.Version] $RequiredVersion,
 
+        # if I uncomment this I get the error that the parameter is not recognized
+        # but if I comment it out, the script works !!
+        #[Parameter(ValueFromPipelineByPropertyName)] 
+        #[AllowNull()]
+        #[System.Management.Automation.PSCredential]
+        #[System.Management.Automation.CredentialAttribute()]
+        #$FeedCredential,
+        
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments,
+        $RemainingArguments
 
-        [Parameter(ValueFromPipelineByPropertyName)] 
-        [AllowNull()]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.CredentialAttribute()]
-        $FeedCredential
     )
     process {
 
@@ -39,10 +42,11 @@ function Invoke-LabModuleDownloadFromAzDevOps {
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
-            Uri             = Resolve-AzDevOpsModuleUri @PSBoundParameters;
+            Uri             = Resolve-AzDoModuleUri @PSBoundParameters;
             NoCheckSum      = $true;
             FeedCredential  = $FeedCredential;
         }
+
         $moduleDestinationPath = Set-ResourceDownload @setResourceDownloadParams;
 
         $renameLabModuleCacheVersionParams = @{

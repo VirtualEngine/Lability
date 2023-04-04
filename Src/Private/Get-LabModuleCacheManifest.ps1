@@ -10,7 +10,7 @@ function Get-LabModuleCacheManifest {
         [Parameter(Mandatory)]
         [System.String] $Path,
 
-        [ValidateSet('PSGallery','GitHub', 'AzDevOps')]
+        [ValidateSet('PSGallery','GitHub', 'AzDo')]
         [System.String] $Provider = 'PSGallery'
     )
     begin {
@@ -28,7 +28,7 @@ function Get-LabModuleCacheManifest {
 
         $moduleFileInfo = Get-Item -Path $Path;
 
-        if ($Provider -in 'PSGallery', 'AzDevOps') {
+        if ($Provider -in 'PSGallery', 'AzDo') {
             $moduleName = $moduleFileInfo.Name -replace '\.zip', '';
         }elseif ($Provider -eq 'GitHub') {
             ## If we have a GitHub module, trim the _Owner_Branch.zip; if we have a PSGallery module, trim the .zip

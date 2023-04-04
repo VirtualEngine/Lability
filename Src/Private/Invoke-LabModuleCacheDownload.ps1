@@ -52,7 +52,7 @@ function Invoke-LabModuleCacheDownload {
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateSet('PSGallery','GitHub','AzDevOps','FileSystem')]
+        [ValidateSet('PSGallery','GitHub','AzDo','FileSystem')]
         [System.String] $Provider,
 
         ## Lability PowerShell module info hashtable
@@ -64,20 +64,21 @@ function Invoke-LabModuleCacheDownload {
         [ValidateNotNullOrEmpty()]
         [System.String] $DestinationPath = (Get-ConfigurationData -Configuration Host).ModuleCachePath,
 
+        ## Credentials to access the an Azure DevOps private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential,
+        
         ## Force a download of the module(s) even if they already exist in the cache.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Management.Automation.SwitchParameter] $Force,
 
         ## Catch all to be able to pass parameter via $PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments,
+        $RemainingArguments
 
-        ## Credentials to access the an Azure DevOps private feed
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [AllowNull()]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.CredentialAttribute()]
-        $FeedCredential
     )
     begin {
 
@@ -108,7 +109,6 @@ function Invoke-LabModuleCacheDownload {
             if ($PSBoundParameters.ContainsKey('Provider')) {
                 $newModule['Provider'] = $Provider;
             }
-
             $Module = $newModule;
         }
 
@@ -132,8 +132,8 @@ function Invoke-LabModuleCacheDownload {
                 if ((-not $moduleInfo.ContainsKey('Provider')) -or ($moduleInfo['Provider'] -eq 'PSGallery')) {
                     Invoke-LabModuleDownloadFromPSGallery @moduleInfo;
                 }
-                elseif ($moduleInfo['Provider'] -eq 'AzDevOps') {
-                    Invoke-LabModuleDownloadFromAzDevOps @moduleInfo -FeedCredential $FeedCredential;
+                elseif ($moduleInfo['Provider'] -eq 'AzDo') {
+                    Invoke-LabModuleDownloadFromAzDo @moduleInfo -FeedCredential $FeedCredential
                 }
                 elseif ($moduleInfo['Provider'] -eq 'GitHub') {
                     Invoke-LabModuleDownloadFromGitHub @moduleInfo;
