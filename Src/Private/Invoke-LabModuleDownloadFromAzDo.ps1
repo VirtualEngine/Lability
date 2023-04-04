@@ -25,12 +25,12 @@ function Invoke-LabModuleDownloadFromAzDo {
 
         # if I uncomment this I get the error that the parameter is not recognized
         # but if I comment it out, the script works !!
-        #[Parameter(ValueFromPipelineByPropertyName)] 
+        #[Parameter(ValueFromPipelineByPropertyName)]
         #[AllowNull()]
         #[System.Management.Automation.PSCredential]
         #[System.Management.Automation.CredentialAttribute()]
         #$FeedCredential,
-        
+
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
         $RemainingArguments

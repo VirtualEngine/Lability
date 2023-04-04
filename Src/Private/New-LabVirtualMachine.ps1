@@ -169,7 +169,7 @@ function New-LabVirtualMachine {
             ## Skip injecting files for Linux VMs..
         }
         else {
- 
+
             Write-Verbose -Message ($localized.AddingVMCustomization -f 'VM');
             $setLabVMDiskFileParams = @{
                 NodeName = $nodeName;
@@ -200,7 +200,7 @@ function New-LabVirtualMachine {
 
                 $setLabVMDiskFileParams['ProductKey'] = $media.CustomData.ProductKey;
             }
-            Set-LabVMDiskFile @setLabVMDiskFileParams -FeedCredential $feedCredential;  
+            Set-LabVMDiskFile @setLabVMDiskFileParams -FeedCredential $feedCredential;
 
         } #end Windows VMs
 
