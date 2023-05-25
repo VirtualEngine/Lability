@@ -25,7 +25,7 @@ function Invoke-ResourceDownload {
         [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.CredentialAttribute()]
-        $Credential
+        $FeedCredential
         ##TODO: Support Headers and UserAgent
     )
     process {

@@ -43,7 +43,7 @@ function Resolve-AzDoModuleUri {
 
         if ($PSBoundParameters.ContainsKey('RequiredVersion')) {
            ## Download the specific version
-           return ('{0}?id={1}&version={2}' -f $psRepositoryUri, $Name.ToLower(), "$($RequiredVersion.Major).$($RequiredVersion.Minor).$($RequiredVersion.Build)")
+           return ('{0}?id={1}&version={2}' -f $psRepositoryUri, $Name.ToLower(), $RequiredVersion)
         }
         else {
 
