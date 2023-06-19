@@ -23,13 +23,12 @@ function Invoke-LabModuleDownloadFromAzDo {
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'RequiredVersion')]
         [System.Version] $RequiredVersion,
 
-        # if I uncomment this I get the error that the parameter is not recognized
-        # but if I comment it out, the script works !!
-        #[Parameter(ValueFromPipelineByPropertyName)]
-        #[AllowNull()]
-        #[System.Management.Automation.PSCredential]
-        #[System.Management.Automation.CredentialAttribute()]
-        #$FeedCredential,
+        ## Credentials to access the an Azure DevOps private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential,
 
         ## Catch all, for splatting parameters
         [Parameter(ValueFromRemainingArguments)]
@@ -40,6 +39,10 @@ function Invoke-LabModuleDownloadFromAzDo {
 
         $destinationModuleName = '{0}.zip' -f $Name;
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
+        
+        # we need to remove the property to pass all remaing arguments else the credentials are not passed
+        $null = $PSBoundParameters.Remove('RemainingArguments')
+
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
             Uri             = Resolve-AzDoModuleUri @PSBoundParameters;
