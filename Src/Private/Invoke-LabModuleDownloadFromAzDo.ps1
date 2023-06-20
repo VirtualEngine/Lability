@@ -39,9 +39,9 @@ function Invoke-LabModuleDownloadFromAzDo {
 
         $destinationModuleName = '{0}.zip' -f $Name;
         $moduleCacheDestinationPath = Join-Path -Path $DestinationPath -ChildPath $destinationModuleName;
-        
+
         # we need to remove the property to pass all remaing arguments else the credentials are not passed
-        $null = $PSBoundParameters.Remove('RemainingArguments')
+        $null = $PSBoundParameters.Remove('RemainingArguments');
 
         $setResourceDownloadParams = @{
             DestinationPath = $moduleCacheDestinationPath;
