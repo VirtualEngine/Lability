@@ -2,6 +2,10 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Adds support for Azure DevOps package module feeds (thanks @bm-fez)
+
 ### 0.23.0 ###
 
 * Fixes PSScriptAnalyzer 1.21.0 test failures
