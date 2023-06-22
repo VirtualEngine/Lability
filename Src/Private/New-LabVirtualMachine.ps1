@@ -41,7 +41,14 @@ function New-LabVirtualMachine {
 
         ## Is a quick VM, e.g. created via the New-LabVM cmdlet
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $IsQuickVM
+        [System.Management.Automation.SwitchParameter] $IsQuickVM,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     begin {
 
@@ -193,7 +200,7 @@ function New-LabVirtualMachine {
 
                 $setLabVMDiskFileParams['ProductKey'] = $media.CustomData.ProductKey;
             }
-            Set-LabVMDiskFile @setLabVMDiskFileParams;
+            Set-LabVMDiskFile @setLabVMDiskFileParams -FeedCredential $feedCredential;
 
         } #end Windows VMs
 

@@ -73,6 +73,8 @@ function Start-LabConfiguration {
 
         NOTE: If the -Force parameter is specified - and a virtual machine with the same name already exists -
         ALL EXISTING DATA WITHIN THE VM WILL BE LOST.
+    .PARAMETER FeedCredential
+        A [PSCredential] object containing the credentials to use when accessing a private Azure DevOps feed.
     .LINK
         about_ConfigurationData
         about_Bootstrap
@@ -121,8 +123,15 @@ function Start-LabConfiguration {
 
         ## Skips pending reboot check
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot
-    )
+        [System.Management.Automation.SwitchParameter] $IgnorePendingReboot,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
+)
     begin {
 
         ## If we have only a secure string, create a PSCredential
@@ -206,6 +215,7 @@ function Start-LabConfiguration {
                         Path = $Path;
                         NoSnapshot = $NoSnapshot;
                         Credential = $Credential;
+                        FeedCredential = $FeedCredential;
                     }
                     [ref] $null = New-LabVirtualMachine @newLabVirtualMachineParams;
                 }

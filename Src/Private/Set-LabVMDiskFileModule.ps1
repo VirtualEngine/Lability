@@ -27,7 +27,14 @@ function Set-LabVMDiskFileModule {
 
         ## Catch all to enable splatting @PSBoundParameters
         [Parameter(ValueFromRemainingArguments)]
-        $RemainingArguments
+        $RemainingArguments,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     process {
 
@@ -64,7 +71,7 @@ function Set-LabVMDiskFileModule {
             }
 
             Write-Verbose -Message ($localized.AddingDSCResourceModules -f $programFilesPath);
-            Set-LabVMDiskModule @setLabVMDiskDscModuleParams;
+            Set-LabVMDiskModule @setLabVMDiskDscModuleParams -FeedCredential $FeedCredential;
         }
 
         ## Add the PowerShell resource modules

@@ -48,7 +48,7 @@ function Test-LabModuleCache {
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateSet('PSGallery','GitHub','FileSystem')]
+        [ValidateSet('PSGallery','GitHub','AzDo', 'FileSystem')]
         [System.String] $Provider,
 
         ## Lability PowerShell module info hashtable
