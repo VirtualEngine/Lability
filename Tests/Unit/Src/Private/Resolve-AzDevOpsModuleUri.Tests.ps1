@@ -9,11 +9,16 @@ Describe 'Unit\Src\Private\Resolve-AzDoModuleUri' {
 
     InModuleScope $moduleName {
 
+        Mock Invoke-RestMethod -MockWith { return @(
+                [pscustomobject]@{properties=@{NormalizedVersion='1.0.0'}}
+                [pscustomobject]@{properties=@{NormalizedVersion='1.2.3'}}
+             ) }
+
         $testPackageName = 'TestPackage';
         $testUri = 'https://pkgs.dev.azure.com/myorg/_packaging/myfeed/nuget/v2';
 
         It 'Returns specified Uri' {
-            $expected = '{0}?id={1}' -f $testUri, $testPackagename;
+            $expected = '{0}?id={1}&version=1.2.3' -f $testUri, $testPackagename;
 
             $result = Resolve-AzDoModuleUri -Name $testPackageName -Uri $testUri;
   
