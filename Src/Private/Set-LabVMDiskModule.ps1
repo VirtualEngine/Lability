@@ -21,12 +21,19 @@ function Set-LabVMDiskModule {
 
         ## Removes existing target module directory (if present)
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.Management.Automation.SwitchParameter] $Clean
+        [System.Management.Automation.SwitchParameter] $Clean,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     process {
 
         ## Invokes the module download if not cached, and returns the source
-        [ref] $null = Invoke-LabModuleCacheDownload -Module $Module -Force:$Force
+        [ref] $null = Invoke-LabModuleCacheDownload -Module $Module -Force:$Force -FeedCredential $FeedCredential;
         ## Expand the modules into the VHDX file
         [ref] $null = Expand-LabModuleCache -Module $Module -DestinationPath $DestinationPath -Clean:$Clean;
 

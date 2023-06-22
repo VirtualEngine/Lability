@@ -16,7 +16,7 @@ Describe 'Unit\Src\Private\Resolve-PSGalleryModuleUri' {
             $expected = '{0}/{1}' -f $labDefaults.RepositoryUri, $testPackageName;
 
             $result = Resolve-PSGalleryModuleUri -Name $testPackageName;
-
+    
             $result | Should Be $expected;
         }
 

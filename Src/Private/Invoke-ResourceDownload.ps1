@@ -20,7 +20,12 @@ function Invoke-ResourceDownload {
         [System.Management.Automation.SwitchParameter] $Force,
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.UInt32] $BufferSize = 64KB
+        [System.UInt32] $BufferSize = 64KB,
+
+        [Parameter(ValueFromPipelineByPropertyName)] [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
         ##TODO: Support Headers and UserAgent
     )
     process {

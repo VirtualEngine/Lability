@@ -50,7 +50,7 @@ function Get-LabModuleCache {
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Name')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameMinimum')]
         [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'NameRequired')]
-        [ValidateSet('PSGallery','GitHub','FileSystem')]
+        [ValidateSet('PSGallery','GitHub', 'AzDo', 'FileSystem')]
         [System.String] $Provider,
 
         ## Lability PowerShell module info hashtable
@@ -150,7 +150,7 @@ function Get-LabModuleCache {
             ## We have a directory or a .zip file, so just return this
             return (Get-Item -Path $Path);
         }
-        elseif ($Provider -in 'PSGallery','GitHub') {
+        elseif ($Provider -in 'PSGallery', 'AzDo', 'GitHub') {
             $modules = Get-ChildItem -Path $moduleCachePath -ErrorAction SilentlyContinue |
                 Where-Object Name -match $moduleRegex |
                     ForEach-Object {
