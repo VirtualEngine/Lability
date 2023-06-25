@@ -2,9 +2,11 @@
 
 ## Versions ##
 
-### Unreleased ###
+### 0.24.0 ###
 
 * Adds support for Azure DevOps package module feeds (thanks @bm-fez)
+* Moves all Windows 8.1 media to legacy media due to end of support
+* Corrects $env:LabilityRepositoryUri environment variable
 
 ### 0.23.0 ###
 

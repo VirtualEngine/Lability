@@ -1,0 +1,27 @@
+{
+    "Id": "WIN81_x86_Enterprise_EN_V5_1_Eval",
+    "Filename": "WIN81_x86_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 32bit Enterprise English Evaluation with WMF 5.1",
+    "Architecture": "x86",
+    "ImageName": "Windows 8.1 Enterprise Evaluation",
+    "MediaType": "ISO",
+    "OperatingSystem": "Windows",
+    "Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X86FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X86FREE_EN-US_DV9.ISO",
+    "Checksum": "B2ACCD5F135C3EEDE256D398856AEEAD",
+    "CustomData": {
+        "WindowsOptionalFeature": ["NetFx3"],
+        "CustomBootstrap": [
+            "## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+            "NET USER Administrator /active:yes;",
+            "Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+            "## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+            "Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+        ]
+    },
+    "Hotfixes": [
+        {
+            "Id": "Win8.1-KB3191564-x86.msu",
+            "Uri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1-KB3191564-x86.msu"
+        }
+    ]
+}
