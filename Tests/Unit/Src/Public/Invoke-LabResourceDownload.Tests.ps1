@@ -12,9 +12,9 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
         It 'Downloads all media when "MediaId" parameter is not specified' {
             $configurationData= @{
                 AllNodes = @(
-                    @{ NodeName = 'VM1'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM2'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM3'; Media = 'WIN81_x64_Enterprise_EN_Eval' }
+                    @{ NodeName = 'VM1'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM2'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM3'; Media = 'WIN10_x64_Enterprise_EN_Eval' }
                 )
             }
             Mock Invoke-LabMediaImageDownload -MockWith { }
@@ -28,9 +28,9 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
         It 'Downloads only unique media when "MediaId" parameter is not specified' {
             $configurationData= @{
                 AllNodes = @(
-                    @{ NodeName = 'VM1'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM2'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM3'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
+                    @{ NodeName = 'VM1'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM2'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM3'; Media = '2022_x64_Standard_EN_Eval' }
                 )
             }
             Mock Invoke-LabMediaImageDownload -MockWith { }
@@ -44,15 +44,15 @@ Describe 'Unit\Src\Public\Invoke-LabResourceDownload' {
         It 'Downloads single media when "MediaId" parameter is specified' {
             $configurationData= @{
                 AllNodes = @(
-                    @{ NodeName = 'VM1'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM2'; Media = '2012R2_x64_Standard_Core_EN_Eval' }
-                    @{ NodeName = 'VM3'; Media = 'WIN81_x64_Enterprise_EN_Eval' }
+                    @{ NodeName = 'VM1'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM2'; Media = '2022_x64_Standard_EN_Eval' }
+                    @{ NodeName = 'VM3'; Media = 'WIN10_x64_Enterprise_EN_Eval' }
                 )
             }
             Mock Invoke-LabMediaImageDownload -MockWith { }
             Mock Invoke-LabMediaDownload -MockWith { }
 
-            Invoke-LabResourceDownload -ConfigurationData $configurationData -MediaId 'WIN81_x64_Enterprise_EN_Eval';
+            Invoke-LabResourceDownload -ConfigurationData $configurationData -MediaId 'WIN10_x64_Enterprise_EN_Eval';
 
             Assert-MockCalled Invoke-LabMediaImageDownload -Exactly 1 -Scope It;
         }
