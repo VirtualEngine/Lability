@@ -13,7 +13,7 @@ Describe 'Unit\Src\Private\Resolve-PSGalleryModuleUri' {
         $testUri = 'http://testrepo.local/api/v2/packages';
 
         It 'Returns default PowerShell Galleyr Uri' {
-            $expected = '{0}/{1}' -f $labDefaults.RepositoryUri, $testPackageName;
+            $expected = '{0}/{1}' -f $env:LabilityRepositoryUri, $testPackageName;
 
             $result = Resolve-PSGalleryModuleUri -Name $testPackageName;
 
@@ -32,7 +32,7 @@ Describe 'Unit\Src\Private\Resolve-PSGalleryModuleUri' {
         It 'Returns Uri with specific version number when "RequiredVersion" is specified' {
 
             $testPackageVersion = '1.2.3' -as [System.Version];
-            $expected = '{0}/{1}/{2}' -f $labDefaults.RepositoryUri, $testPackageName, $testPackageVersion;
+            $expected = '{0}/{1}/{2}' -f $env:LabilityRepositoryUri, $testPackageName, $testPackageVersion;
 
             $result = Resolve-PSGalleryModuleUri -Name $testPackageName -RequiredVersion $testPackageVersion;
 

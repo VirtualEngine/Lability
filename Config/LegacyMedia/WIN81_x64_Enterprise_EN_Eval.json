@@ -1,0 +1,51 @@
+{
+    "Id": "WIN81_x64_Enterprise_EN_Eval",
+    "Filename": "WIN81_x64_ENT_EN_Eval.iso",
+    "Description": "Windows 8.1 64bit Enterprise English Evaluation",
+    "Architecture": "x64",
+    "ImageName": "Windows 8.1 Enterprise Evaluation",
+    "MediaType": "ISO",
+    "OperatingSystem": "Windows",
+    "Uri": "http://download.microsoft.com/download/B/9/9/B999286E-0A47-406D-8B3D-5B5AD7373A4A/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_ENTERPRISE_EVAL_EN-US-IR3_CENA_X64FREE_EN-US_DV9.ISO",
+    "Checksum": "EE63618E3BE220D86B993C1ABBCF32EB",
+    "CustomData": {
+        "WindowsOptionalFeature": ["NetFx3"],
+        "CustomBootstrap": [
+            "## Unattend.xml will set the Administrator password, but it won't enable the account on client OSes",
+            "NET USER Administrator /active:yes;",
+            "Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell -Name ExecutionPolicy -Value RemoteSigned -Force; #306",
+            "## Kick-start PowerShell remoting on clients to permit applying DSC configurations",
+            "Enable-PSRemoting -SkipNetworkProfileCheck -Force;"
+        ]
+    },
+    "Hotfixes": [
+        {
+            "Id": "Windows8.1-KB2883200-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2883200-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB2894029-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2894029-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB2894179-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2894179-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3003057-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3003057-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3000850-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3000850-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3014442-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3014442-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3016437-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3016437-x64.msu"
+        }
+    ]
+}

@@ -49,7 +49,14 @@ function Set-LabVMDiskFile {
 
         ## Media-defined product key
         [Parameter(ValueFromPipelineByPropertyName)]
-        [System.String] $ProductKey
+        [System.String] $ProductKey,
+
+        ## Credentials to access the a private feed
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.CredentialAttribute()]
+        $FeedCredential
     )
     process {
 
@@ -84,7 +91,7 @@ function Set-LabVMDiskFile {
             Set-LabVMDiskFileUnattendXml @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
             Set-LabVMDiskFileMof @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
             Set-LabVMDiskFileCertificate @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
-            Set-LabVMDiskFileModule @PSBoundParameters -VhdDriveLetter $vhdDriveLetter;
+            Set-LabVMDiskFileModule @PSBoundParameters -VhdDriveLetter $vhdDriveLetter; # FeedCredential passed in bound parameters
         }
         catch {
 

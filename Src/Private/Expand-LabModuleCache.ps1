@@ -41,7 +41,7 @@ function Expand-LabModuleCache {
             }
 
             if ((-not $moduleInfo.ContainsKey('Provider')) -or
-                    ($moduleInfo.Provider -eq 'PSGallery')) {
+                    ($moduleInfo.Provider -in 'PSGallery', 'AzDo')) {
 
                 Write-Verbose -Message ($localized.ExpandingModule -f $moduleDestinationPath);
                 $expandZipArchiveParams = @{
@@ -55,7 +55,7 @@ function Expand-LabModuleCache {
                 }
                 [ref] $null = Expand-ZipArchive @expandZipArchiveParams;
 
-            } #end if PSGallery
+            } #end if PSGallery or Azdo
             elseif (($moduleInfo.ContainsKey('Provider')) -and
                     ($moduleInfo.Provider -eq 'GitHub')) {
 
