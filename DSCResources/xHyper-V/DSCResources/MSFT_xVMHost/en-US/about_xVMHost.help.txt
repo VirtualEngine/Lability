@@ -1,0 +1,82 @@
+.NAME
+    xVMHost
+
+.DESCRIPTION
+    Manages Hyper-V host settings.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER IsSingleInstance
+    Key - String
+    Allowed values: Yes
+    Specifies the resource is a single instance, the value must be 'Yes'.
+
+.PARAMETER EnableEnhancedSessionMode
+    Write - Boolean
+    Indicates whether users can use enhanced mode when they connect to virtual machines on this server by using Virtual Machine Connection.
+
+.PARAMETER FibreChannelWwnn
+    Write - String
+    Specifies the default value of the World Wide Node Name on the Hyper-V host.
+
+.PARAMETER FibreChannelWwpnMaximum
+    Write - String
+    Specifies the maximum value that can be used to generate World Wide Port Names on the Hyper-V host.
+
+.PARAMETER FibreChannelWwpnMinimum
+    Write - String
+    Specifies the minimum value that can be used to generate the World Wide Port Names on the Hyper-V host.
+
+.PARAMETER MacAddressMaximum
+    Write - String
+    Specifies the maximum MAC address using a valid hexadecimal value.
+
+.PARAMETER MacAddressMinimum
+    Write - String
+    Specifies the minimum MAC address using a valid hexadecimal value.
+
+.PARAMETER MaximumStorageMigrations
+    Write - UInt32
+    Specifies the maximum number of storage migrations that can be performed at the same time on the Hyper-V host.
+
+.PARAMETER MaximumVirtualMachineMigrations
+    Write - UInt32
+    Specifies the maximum number of live migrations that can be performed at the same time on the Hyper-V host.
+
+.PARAMETER NumaSpanningEnabled
+    Write - Boolean
+    Specifies whether virtual machines on the Hyper-V host can use resources from more than one NUMA node.
+
+.PARAMETER ResourceMeteringSaveIntervalMinute
+    Write - UInt32
+    Specifies how often the Hyper-V host saves the data that tracks resource usage. The range is a minimum of 60 minutes to a maximum of 1440 (24 hours).
+
+.PARAMETER UseAnyNetworkForMigration
+    Write - Boolean
+    Specifies how networks are selected for incoming live migration traffic.
+
+.PARAMETER VirtualHardDiskPath
+    Write - String
+    Specifies the default folder to store virtual hard disks on the Hyper-V host.
+
+.PARAMETER VirtualMachineMigrationAuthenticationType
+    Write - String
+    Allowed values: CredSSP, Kerberos
+    Specifies the type of authentication to be used for live migrations. The acceptable values for this parameter are 'Kerberos' and 'CredSSP'.
+
+.PARAMETER VirtualMachineMigrationPerformanceOption
+    Write - String
+    Allowed values: TCPIP, Compression, SMB
+    Specifies the performance option to use for live migration. The acceptable values for this parameter are 'TCPIP', 'Compression' and 'SMB'.
+
+.PARAMETER VirtualMachinePath
+    Write - String
+    Specifies the default folder to store virtual machine configuration files on the Hyper-V host.
+
+.PARAMETER VirtualMachineMigrationEnabled
+    Write - Boolean
+    Indicates whether Live Migration should be enabled or disabled on the Hyper-V host.
+

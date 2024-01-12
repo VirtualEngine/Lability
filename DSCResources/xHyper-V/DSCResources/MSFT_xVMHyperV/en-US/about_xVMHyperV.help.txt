@@ -1,0 +1,123 @@
+.NAME
+    xVMHyperV
+
+.DESCRIPTION
+    Manages VMs in a Hyper-V host.
+
+    The following properties cannot be changed after VM creation:
+
+    * VhdPath
+    * Path
+    * Generation
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER Name
+    Key - String
+    Name of the VM
+
+.PARAMETER VhdPath
+    Required - String
+    VHD associated with the VM
+
+.PARAMETER SwitchName
+    Write - StringArray
+    Virtual switch(es) associated with the VM
+
+.PARAMETER State
+    Write - String
+    Allowed values: Running, Paused, Off
+    State of the VM.
+
+.PARAMETER Path
+    Write - String
+    Folder where the VM data will be stored
+
+.PARAMETER Generation
+    Write - UInt32
+    Virtual machine generation
+
+.PARAMETER StartupMemory
+    Write - UInt64
+    Startup RAM for the VM.
+
+.PARAMETER MinimumMemory
+    Write - UInt64
+    Minimum RAM for the VM. This enables dynamic memory.
+
+.PARAMETER MaximumMemory
+    Write - UInt64
+    Maximum RAM for the VM. This enable dynamic memory.
+
+.PARAMETER MACAddress
+    Write - StringArray
+    MAC address(es) of the VM NICs.
+
+.PARAMETER ProcessorCount
+    Write - UInt32
+    Processor count for the VM
+
+.PARAMETER WaitForIP
+    Write - Boolean
+    Waits for VM to get valid IP address.
+
+.PARAMETER RestartIfNeeded
+    Write - Boolean
+    If specified, shutdowns and restarts the VM as needed for property changes
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Should the VM be created or deleted
+
+.PARAMETER Notes
+    Write - String
+    Notes about the VM.
+
+.PARAMETER SecureBoot
+    Write - Boolean
+    Enable secure boot for Generation 2 VMs.
+
+.PARAMETER EnableGuestService
+    Write - Boolean
+    Enable Guest Service Interface for the VM.
+
+.PARAMETER AutomaticCheckpointsEnabled
+    Write - Boolean
+    Enable AutomaticCheckpoints for the VM.
+
+.PARAMETER ID
+    Read - String
+    VM unique ID
+
+.PARAMETER Status
+    Read - String
+    Status of the VM
+
+.PARAMETER CPUUsage
+    Read - UInt32
+    CPU Usage of the VM
+
+.PARAMETER MemoryAssigned
+    Read - UInt64
+    Memory assigned to the VM
+
+.PARAMETER Uptime
+    Read - String
+    Uptime of the VM
+
+.PARAMETER CreationTime
+    Read - DateTime
+    Creation time of the VM
+
+.PARAMETER HasDynamicMemory
+    Read - Boolean
+    Does VM has dynamic memory enabled
+
+.PARAMETER NetworkAdapters
+    Read - StringArray
+    Network adapters' IP addresses of the VM
+

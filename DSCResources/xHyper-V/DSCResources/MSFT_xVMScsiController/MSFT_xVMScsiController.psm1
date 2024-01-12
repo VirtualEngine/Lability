@@ -1,25 +1,10 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_xVMScsiController.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    # fallback to en-US
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_xVMScsiController.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/DscResource.Common'
+$script:hyperVDscCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/HyperVDsc.Common'
 
-# Import the common HyperV functions
-Import-Module -Name ( Join-Path `
-    -Path (Split-Path -Path $PSScriptRoot -Parent) `
-    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+Import-Module -Name $script:dscResourceCommonModulePath
+Import-Module -Name $script:hyperVDscCommonModulePath
+
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -48,17 +33,17 @@ function Get-TargetResource
         $ControllerNumber
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     $controller = Get-VMScsiController -VMName $VMName -ControllerNumber $ControllerNumber
     if ($null -eq $controller)
     {
-        Write-Verbose -Message ($localizedData.ControllerNotFound -f $ControllerNumber, $VMName)
+        Write-Verbose -Message ($script:localizedData.ControllerNotFound -f $ControllerNumber, $VMName)
         $ensure = 'Absent'
     }
     else
     {
-        Write-Verbose -Message ($localizedData.ControllerFound -f $ControllerNumber, $VMName)
+        Write-Verbose -Message ($script:localizedData.ControllerFound -f $ControllerNumber, $VMName)
         $ensure = 'Present'
     }
 
@@ -118,9 +103,9 @@ function Test-TargetResource
     $isCompliant = $true
     foreach ($key in $resource.Keys)
     {
-        Write-Verbose -Message ($localizedData.ComparingParameter -f $key,
-                                                                    $PSBoundParameters[$key],
-                                                                    $resource[$key])
+        Write-Verbose -Message ($script:localizedData.ComparingParameter -f $key,
+            $PSBoundParameters[$key],
+            $resource[$key])
         $isCompliant = $isCompliant -and ($PSBoundParameters[$key] -eq $resource[$key])
     }
 
@@ -168,15 +153,16 @@ function Set-TargetResource
         $Ensure = 'Present'
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     # Getting the state of the VM so we can restore it later
     $existingVmState = (Get-VMHyperV -VMName $VMName).State
 
     if ((-not $RestartIfNeeded) -and ($existingVmState -ne 'Off'))
     {
-        $errorMessage = $localizedData.CannotUpdateVmOnlineError -f $VMName
-        New-InvalidOperationError -ErrorId InvalidState -ErrorMessage $errorMessage
+        $errorMessage = $script:localizedData.CannotUpdateVmOnlineError -f $VMName
+
+        New-InvalidOperationException -Message $errorMessage
     }
 
     [System.Int32] $scsiControllerCount = @(Get-VMScsiController -VMName $VMName).Count
@@ -185,22 +171,23 @@ function Set-TargetResource
         if ($scsiControllerCount -lt $ControllerNumber)
         {
             <#
-            All intermediate controllers should be present on the system as we cannot create
-            a controller at a particular location. For example, we cannot explicitly create
-            controller #2 - it will only be controller #2 if controllers #0 and #1 are already
-            added/present in the VM.
+                All intermediate controllers should be present on the system as we cannot create
+                a controller at a particular location. For example, we cannot explicitly create
+                controller #2 - it will only be controller #2 if controllers #0 and #1 are already
+                added/present in the VM.
             #>
-            $errorMessage = $localizedData.CannotAddScsiControllerError -f $ControllerNumber
-            New-InvalidArgumentError -ErrorId InvalidController -ErrorMessage $errorMessage
+            $errorMessage = $script:localizedData.CannotAddScsiControllerError -f $ControllerNumber
+
+            New-InvalidOperationException -Message $errorMessage
         }
 
         Set-VMState -Name $VMName -State 'Off'
-        Write-Verbose -Message ($localizedData.AddingController -f $scsiControllerCount)
+        Write-Verbose -Message ($script:localizedData.AddingController -f $scsiControllerCount)
         Add-VMScsiController -VMName $VMName
     }
     else
     {
-        if ($scsiControllerCount -ne ($ControllerNumber +1))
+        if ($scsiControllerCount -ne ($ControllerNumber + 1))
         {
             <#
                 All intermediate controllers should be present on the system. Whilst we can remove
@@ -208,22 +195,23 @@ function Set-TargetResource
                 reordered. For example, if we remove controller at position #1, then a controller
                 that was at position #2 will become controller number #1.
             #>
-            $errorMessage = $localizedData.CannotRemoveScsiControllerError -f $ControllerNumber
-            New-InvalidArgumentError -ErrorId InvalidController -ErrorMessage $errorMessage
+            $errorMessage = $script:localizedData.CannotRemoveScsiControllerError -f $ControllerNumber
+
+            New-InvalidOperationException -Message $errorMessage
         }
 
         Set-VMState -Name $VMName -State 'Off'
-        Write-Verbose -Message ($localizedData.CheckingExistingDisks -f $ControllerNumber)
+        Write-Verbose -Message ($script:localizedData.CheckingExistingDisks -f $ControllerNumber)
         $controller = Get-VMScsiController -VMName $VmName -ControllerNumber $ControllerNumber
 
         foreach ($drive in $controller.Drives)
         {
-            $warningMessage = $localizedData.RemovingDiskWarning -f $drive.Path, $ControllerNumber
+            $warningMessage = $script:localizedData.RemovingDiskWarning -f $drive.Path, $ControllerNumber
             Write-Warning -Message $warningMessage
             Remove-VMHardDiskDrive -VMHardDiskDrive $drive
         }
 
-        Write-Verbose -Message ($localizedData.RemovingController -f $ControllerNumber, $VMName)
+        Write-Verbose -Message ($script:localizedData.RemovingController -f $ControllerNumber, $VMName)
         Remove-VMScsiController -VMScsiController $controller
     }
 

@@ -1,0 +1,54 @@
+.NAME
+    xVHD
+
+.DESCRIPTION
+    Manages VHDs in a Hyper-V host.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER Name
+    Key - String
+    Name of the VHD File
+
+.PARAMETER Path
+    Key - String
+    Folder where the VHD will be created
+
+.PARAMETER ParentPath
+    Write - String
+    Parent VHD file path, for differencing disk
+
+.PARAMETER MaximumSizeBytes
+    Write - UInt64
+    Maximum size of Vhd to be created
+
+.PARAMETER Generation
+    Write - String
+    Allowed values: Vhd, Vhdx
+    Virtual disk format - Vhd or Vhdx
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Should the VHD be created or deleted
+
+.PARAMETER ID
+    Read - String
+    Virtual Disk Identifier
+
+.PARAMETER Type
+    Write - String
+    Allowed values: Dynamic, Fixed, Differencing
+    Type of Vhd - Dynamic, Fixed, Differencing
+
+.PARAMETER FileSizeBytes
+    Read - UInt64
+    Current size of the VHD
+
+.PARAMETER IsAttached
+    Read - Boolean
+    Is the VHD attached to a VM or not
+

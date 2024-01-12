@@ -1,21 +1,10 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMHost.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    # fallback to en-US
-    Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMHost.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/DscResource.Common'
+$script:hyperVDscCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/HyperVDsc.Common'
 
-# Import the common HyperV functions
-Import-Module -Name ( Join-Path `
-        -Path (Split-Path -Path $PSScriptRoot -Parent) `
-        -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+Import-Module -Name $script:dscResourceCommonModulePath
+Import-Module -Name $script:hyperVDscCommonModulePath
+
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
 .SYNOPSIS
@@ -36,9 +25,9 @@ function Get-TargetResource
         $IsSingleInstance
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
-    Write-Verbose -Message $localizedData.QueryingVMHost
+    Write-Verbose -Message $script:localizedData.QueryingVMHost
     $vmHost = Get-VMHost
 
     # Convert the current TimeSpan into minutes
@@ -222,7 +211,7 @@ function Test-TargetResource
         $VirtualMachineMigrationEnabled
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     $targetResource = Get-TargetResource -IsSingleInstance $IsSingleInstance
     $isTargetResourceCompliant = $true
@@ -233,18 +222,18 @@ function Test-TargetResource
             ($parameter.Value -ne $targetResource[$parameter.Key]))
         {
             $isTargetResourceCompliant = $false
-            Write-Verbose -Message ($localizedData.PropertyMismatch -f $parameter.Key,
+            Write-Verbose -Message ($script:localizedData.PropertyMismatch -f $parameter.Key,
                 $parameter.Value, $targetResource[$parameter.Key])
         }
     }
 
     if ($isTargetResourceCompliant)
     {
-        Write-Verbose -Message $localizedData.VMHostInDesiredState
+        Write-Verbose -Message $script:localizedData.VMHostInDesiredState
     }
     else
     {
-        Write-Verbose -Message $localizedData.VMHostNotInDesiredState
+        Write-Verbose -Message $script:localizedData.VMHostNotInDesiredState
     }
 
     return $isTargetResourceCompliant
@@ -400,7 +389,7 @@ function Set-TargetResource
         $VirtualMachineMigrationEnabled
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     $null = $PSBoundParameters.Remove('IsSingleInstance')
 
@@ -426,17 +415,21 @@ function Set-TargetResource
         {
             if ((Get-CimInstance -ClassName Win32_ComputerSystem).PartOfDomain)
             {
-                Write-Verbose -Message $localizedData.EnableLiveMigration
+                Write-Verbose -Message $script:localizedData.EnableLiveMigration
+
                 Enable-VMMigration
             }
             else
             {
-                New-InvalidOperationError -ErrorId InvalidState -ErrorMessage $localizedData.LiveMigrationDomainOnly
+                $errorMessage = $script:localizedData.LiveMigrationDomainOnly
+
+                New-InvalidOperationException -Message $errorMessage
             }
         }
         else
         {
-            Write-Verbose -Message $localizedData.DisableLiveMigration
+            Write-Verbose -Message $script:localizedData.DisableLiveMigration
+
             Disable-VMMigration
         }
     }
@@ -450,8 +443,8 @@ function Set-TargetResource
 
     if ($vmHostParams.Count -ne 0)
     {
-        Write-Verbose -Message $localizedData.UpdatingVMHostProperties
+        Write-Verbose -Message $script:localizedData.UpdatingVMHostProperties
         Set-VMHost @PSBoundParameters
-        Write-Verbose -Message $localizedData.VMHostPropertiesUpdated
+        Write-Verbose -Message $script:localizedData.VMHostPropertiesUpdated
     }
 } #end function

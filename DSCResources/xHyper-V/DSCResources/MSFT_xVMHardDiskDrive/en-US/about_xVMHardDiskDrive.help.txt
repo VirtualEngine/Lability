@@ -1,0 +1,41 @@
+.NAME
+    xVMHardDiskDrive
+
+.DESCRIPTION
+    Manages VHD(X)s attached to a Hyper-V virtual machine.
+
+    When ControllerNumber or ControllerLocation is not provided, the same logic
+    as Set-VMHardDiskDrive cmdlet is used.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER VMName
+    Key - String
+    Specifies the name of the virtual machine whose hard disk drive is to be manipulated.
+
+.PARAMETER Path
+    Key - String
+    Specifies the full path to the location of the VHD that represents the hard disk drive.
+
+.PARAMETER ControllerType
+    Write - String
+    Allowed values: IDE, SCSI
+    Specifies the controller type - IDE/SCSI where the disk is attached. If not specified, it defaults to SCSI.
+
+.PARAMETER ControllerNumber
+    Write - UInt32
+    Allowed values: 0, 1, 2, 3
+    Specifies the number of the controller where the disk is attached. If not specified, it defaults to 0.
+
+.PARAMETER ControllerLocation
+    Write - UInt32
+    Specifies the number of the location on the controller where the disk is attached. If not specified, it defaults to 0.
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Specifies if the hard disk drive must be present or absent. If not specified, it defaults to Present.
+

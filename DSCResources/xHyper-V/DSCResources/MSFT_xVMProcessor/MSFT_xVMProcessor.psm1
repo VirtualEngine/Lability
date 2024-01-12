@@ -1,21 +1,10 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMProcessor.psd1 `
-                         -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    # fallback to en-US
-    Import-LocalizedData -BindingVariable localizedData -Filename MSFT_xVMProcessor.psd1 `
-                         -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/DscResource.Common'
+$script:hyperVDscCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/HyperVDsc.Common'
 
-# Import the common HyperV functions
-Import-Module -Name ( Join-Path `
-    -Path (Split-Path -Path $PSScriptRoot -Parent) `
-    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+Import-Module -Name $script:dscResourceCommonModulePath
+Import-Module -Name $script:hyperVDscCommonModulePath
+
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
 .SYNOPSIS
@@ -35,23 +24,23 @@ function Get-TargetResource
         $VMName
     )
 
-    Assert-Module -Name 'Hyper-V'
-    Write-Verbose -Message ($localizedData.QueryingVMProcessor -f $VMName)
+    Assert-Module -ModuleName 'Hyper-V'
+    Write-Verbose -Message ($script:localizedData.QueryingVMProcessor -f $VMName)
     $vmProcessor = Get-VMProcessor -VMName $VMName -ErrorAction Stop
     $configuration = @{
-        VMName = $VMName
-        EnableHostResourceProtection = $vmProcessor.EnableHostResourceProtection
-        ExposeVirtualizationExtensions = $vmProcessor.ExposeVirtualizationExtensions
-        HwThreadCountPerCore = $vmProcessor.HwThreadCountPerCore
-        Maximum = $vmProcessor.Maximum
-        MaximumCountPerNumaNode = $vmProcessor.MaximumCountPerNumaNode
-        MaximumCountPerNumaSocket = $vmProcessor.MaximumCountPerNumaSocket
-        RelativeWeight = $vmProcessor.RelativeWeight
-        Reserve = $vmProcessor.Reserve
-        ResourcePoolName = $vmProcessor.ResourcePoolName
-        CompatibilityForMigrationEnabled = $vmProcessor.CompatibilityForMigrationEnabled
+        VMName                                       = $VMName
+        EnableHostResourceProtection                 = $vmProcessor.EnableHostResourceProtection
+        ExposeVirtualizationExtensions               = $vmProcessor.ExposeVirtualizationExtensions
+        HwThreadCountPerCore                         = $vmProcessor.HwThreadCountPerCore
+        Maximum                                      = $vmProcessor.Maximum
+        MaximumCountPerNumaNode                      = $vmProcessor.MaximumCountPerNumaNode
+        MaximumCountPerNumaSocket                    = $vmProcessor.MaximumCountPerNumaSocket
+        RelativeWeight                               = $vmProcessor.RelativeWeight
+        Reserve                                      = $vmProcessor.Reserve
+        ResourcePoolName                             = $vmProcessor.ResourcePoolName
+        CompatibilityForMigrationEnabled             = $vmProcessor.CompatibilityForMigrationEnabled
         CompatibilityForOlderOperatingSystemsEnabled = $vmProcessor.CompatibilityForOlderOperatingSystemsEnabled
-        RestartIfNeeded = $false
+        RestartIfNeeded                              = $false
     }
     return $configuration
 }
@@ -134,7 +123,7 @@ function Test-TargetResource
         $HwThreadCountPerCore,
 
         [Parameter()]
-        [ValidateRange(0,100)]
+        [ValidateRange(0, 100)]
         [System.UInt64]
         $Maximum,
 
@@ -147,12 +136,12 @@ function Test-TargetResource
         $MaximumCountPerNumaSocket,
 
         [Parameter()]
-        [ValidateRange(0,10000)]
+        [ValidateRange(0, 10000)]
         [System.UInt32]
         $RelativeWeight,
 
         [Parameter()]
-        [ValidateRange(0,100)]
+        [ValidateRange(0, 100)]
         [System.UInt64]
         $Reserve,
 
@@ -173,7 +162,7 @@ function Test-TargetResource
         $RestartIfNeeded
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
     Assert-TargetResourceParameter @PSBoundParameters
 
     $targetResource = Get-TargetResource -VMName $VMName
@@ -187,18 +176,18 @@ function Test-TargetResource
             ($parameter.Value -ne $targetResource[$parameter.Key]))
         {
             $isTargetResourceCompliant = $false
-            Write-Verbose -Message ($localizedData.PropertyMismatch -f $parameter.Key,
-                                    $parameter.Value, $targetResource[$parameter.Key])
+            Write-Verbose -Message ($script:localizedData.PropertyMismatch -f $parameter.Key,
+                $parameter.Value, $targetResource[$parameter.Key])
         }
     }
 
     if ($isTargetResourceCompliant)
     {
-        Write-Verbose -Message ($localizedData.VMProcessorInDesiredState -f $VMName)
+        Write-Verbose -Message ($script:localizedData.VMProcessorInDesiredState -f $VMName)
     }
     else
     {
-        Write-Verbose -Message ($localizedData.VMProcessorNotInDesiredState -f $VMName)
+        Write-Verbose -Message ($script:localizedData.VMProcessorNotInDesiredState -f $VMName)
     }
 
     return $isTargetResourceCompliant
@@ -281,7 +270,7 @@ function Set-TargetResource
         $HwThreadCountPerCore,
 
         [Parameter()]
-        [ValidateRange(0,100)]
+        [ValidateRange(0, 100)]
         [System.UInt64]
         $Maximum,
 
@@ -294,12 +283,12 @@ function Set-TargetResource
         $MaximumCountPerNumaSocket,
 
         [Parameter()]
-        [ValidateRange(0,10000)]
+        [ValidateRange(0, 10000)]
         [System.UInt32]
         $RelativeWeight,
 
         [Parameter()]
-        [ValidateRange(0,100)]
+        [ValidateRange(0, 100)]
         [System.UInt64]
         $Reserve,
 
@@ -320,7 +309,7 @@ function Set-TargetResource
         $RestartIfNeeded
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
     Assert-TargetResourceParameter @PSBoundParameters
 
     # Parameters requiring shutdown.
@@ -346,7 +335,8 @@ function Set-TargetResource
                 if (-not $RestartIfNeeded)
                 {
                     $errorMessage = $localized.CannotUpdateVmOnlineError -f $parameterName
-                    New-InvalidOperationError -ErrorId InvalidState -ErrorMessage $errorMessage
+
+                    New-InvalidOperationException -Message $errorMessage
                 }
                 else
                 {
@@ -362,19 +352,19 @@ function Set-TargetResource
     if (-not $isRestartRequired)
     {
         # No parameter specified that requires a restart, so disable the restart flag
-        Write-Verbose -Message ($localizedData.UpdatingVMProperties -f $VMName)
+        Write-Verbose -Message ($script:localizedData.UpdatingVMProperties -f $VMName)
         Set-VMProcessor -VMName $VMName @PSBoundParameters
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $VMName)
+        Write-Verbose -Message ($script:localizedData.VMPropertiesUpdated -f $VMName)
     }
     else
     {
         # Restart is required and that requires turning VM off
         $setVMPropertyParameters = @{
-            VMName = $VMName
-            VMCommand = 'Set-VMProcessor'
-            ChangeProperty = $PSBoundParameters
+            VMName          = $VMName
+            VMCommand       = 'Set-VMProcessor'
+            ChangeProperty  = $PSBoundParameters
             RestartIfNeeded = $true
-            Verbose = $Verbose
+            Verbose         = $Verbose
         }
         Set-VMProperty @setVMPropertyParameters
     }
@@ -434,8 +424,8 @@ function Assert-TargetResourceParameter
     {
         if (($PSBoundParameters.ContainsKey($parameterName)) -and ($osBuildNumber -lt 14393))
         {
-            $errorMessage = $localizedData.UnsupportedSystemError -f $parameterName, 14393
-            New-InvalidArgumentError -ErrorId SystemUnsupported -ErrorMessage $errorMessage
+            $errorMessage = $script:localizedData.UnsupportedSystemError -f $parameterName, 14393
+            New-InvalidOperationException -Message $errorMessage
         }
     }
 } #end function

@@ -1,3 +1,9 @@
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/DscResource.Common'
+
+Import-Module -Name $script:dscResourceCommonModulePath
+
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
+
 <#
 .SYNOPSIS
     Gets MSFT_xVHD resource current state.
@@ -18,23 +24,23 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path,
 
         [Parameter()]
-        [ValidateSet("Vhd","Vhdx")]
-        [String]
-        $Generation = "Vhd"
+        [ValidateSet('Vhd', 'Vhdx')]
+        [System.String]
+        $Generation = 'Vhd'
     )
 
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if (!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw 'Please ensure that Hyper-V role is installed with its PowerShell module'
+        throw 'Please ensure that Hyper-V role is installed with its PowerShell module'
     }
 
     # Construct the full path for the vhdFile
@@ -95,34 +101,34 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path,
 
         [Parameter()]
-        [String]
+        [System.String]
         $ParentPath,
 
         [Parameter()]
-        [Uint64]
+        [System.UInt64]
         $MaximumSizeBytes,
 
         [Parameter()]
         [ValidateSet('Dynamic', 'Fixed', 'Differencing')]
-        [String]
+        [System.String]
         $Type = 'Dynamic',
 
         [Parameter()]
         [ValidateSet('Vhd', 'Vhdx')]
-        [String]
+        [System.String]
         $Generation = 'Vhd',
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -204,9 +210,9 @@ function Set-TargetResource
             else
             {
                 $params = @{
-                    Path = $vhdFilePath
+                    Path      = $vhdFilePath
                     SizeBytes = $MaximumSizeBytes
-                    $Type = $True
+                    $Type     = $True
                 }
                 $null = New-VHD @params
             }
@@ -248,76 +254,76 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Path,
 
         [Parameter()]
-        [String]
+        [System.String]
         $ParentPath,
 
         [Parameter()]
-        [Uint64]
+        [System.UInt64]
         $MaximumSizeBytes,
 
         [Parameter()]
         [ValidateSet('Vhd', 'Vhdx')]
-        [String]
+        [System.String]
         $Generation = 'Vhd',
 
         [Parameter()]
         [ValidateSet('Dynamic', 'Fixed', 'Differencing')]
-        [String]
+        [System.String]
         $Type = 'Dynamic',
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
     # Check if Hyper-V module is present for Hyper-V cmdlets
     if (!(Get-Module -ListAvailable -Name Hyper-V))
     {
-        Throw "Please ensure that Hyper-V role is installed with its PowerShell module"
+        throw 'Please ensure that Hyper-V role is installed with its PowerShell module'
     }
 
     # input validation
     if ($Type -ne 'Differencing' -and -not $MaximumSizeBytes)
     {
-       Throw 'Specify MaximumSizeBytes property for Fixed and Dynamic VHDs.'
+        throw 'Specify MaximumSizeBytes property for Fixed and Dynamic VHDs.'
     }
 
     if ($ParentPath -and $Type -ne 'Differencing')
     {
-        Throw 'Parent path is only supported for Differencing disks'
+        throw 'Parent path is only supported for Differencing disks'
     }
 
     if (-not $ParentPath -and $Type -eq 'Differencing')
     {
-        Throw 'Differencing requires a parent path'
+        throw 'Differencing requires a parent path'
     }
 
     if ($ParentPath)
     {
         if (!(Test-Path -Path $ParentPath))
         {
-            Throw "$ParentPath does not exists"
+            throw "$ParentPath does not exists"
         }
 
         # Check if the generation matches parenting disk
         if ($Generation -and ($ParentPath.Split('.')[-1] -ne $Generation))
         {
-            Throw "Generation $Generation should match ParentPath extension $($ParentPath.Split('.')[-1])"
+            throw "Generation $Generation should match ParentPath extension $($ParentPath.Split('.')[-1])"
         }
     }
 
     if (!(Test-Path -Path $Path))
     {
-        Throw "$Path does not exists"
+        throw "$Path does not exists"
     }
 
     # Construct the full path for the vhdFile
@@ -328,7 +334,7 @@ function Test-TargetResource
     # Add the logic here and at the end return either $true or $false.
     $result = Test-VHD -Path $vhdFilePath -ErrorAction SilentlyContinue
     Write-Verbose -Message "Vhd $vhdFilePath is present:$result and Ensure is $Ensure"
-    return ($result -and ($Ensure -eq "Present"))
+    return ($result -and ($Ensure -eq 'Present'))
 }
 
 <#
@@ -346,15 +352,15 @@ function GetNameWithExtension
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Generation = 'Vhd'
     )
 
-     # If the name ends with vhd or vhdx don't append the generation to the vhdname.
+    # If the name ends with vhd or vhdx don't append the generation to the vhdname.
     if ($Name -like '*.vhd' -or $Name -like '*.vhdx')
     {
         $extension = $Name.Split('.')[-1]

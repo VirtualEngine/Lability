@@ -1,25 +1,10 @@
-#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_xVMHardDiskDrive.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    # fallback to en-US
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename MSFT_xVMHardDiskDrive.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/DscResource.Common'
+$script:hyperVDscCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/HyperVDsc.Common'
 
-# Import the common HyperV functions
-Import-Module -Name ( Join-Path `
-    -Path (Split-Path -Path $PSScriptRoot -Parent) `
-    -ChildPath '\HyperVCommon\HyperVCommon.psm1' )
+Import-Module -Name $script:dscResourceCommonModulePath
+Import-Module -Name $script:hyperVDscCommonModulePath
+
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -44,19 +29,19 @@ function Get-TargetResource
         $Path
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     $hardDiskDrive = Get-VMHardDiskDrive -VMName $VMName -ErrorAction Stop |
-                        Where-Object -FilterScript { $_.Path -eq $Path }
+        Where-Object -FilterScript { $_.Path -eq $Path }
 
     if ($null -eq $hardDiskDrive)
     {
-        Write-Verbose -Message ($localizedData.DiskNotFound -f $Path, $VMName)
+        Write-Verbose -Message ($script:localizedData.DiskNotFound -f $Path, $VMName)
         $ensure = 'Absent'
     }
     else
     {
-        Write-Verbose -Message ($localizedData.DiskFound -f $Path, $VMName)
+        Write-Verbose -Message ($script:localizedData.DiskFound -f $Path, $VMName)
         $ensure = 'Present'
     }
 
@@ -126,11 +111,12 @@ function Test-TargetResource
 
     $resource = Get-TargetResource -VMName $VMName -Path $Path
 
-    # Throw exception when the ControllerNumber or ControllerLocation are out of bounds for IDE
+    # throw exception when the ControllerNumber or ControllerLocation are out of bounds for IDE
     if ($ControllerType -eq 'IDE' -and ($ControllerNumber -gt 1 -or $ControllerLocation -gt 1))
     {
-        $errorMessage = $localizedData.IdeLocationError -f $ControllerNumber, $ControllerLocation
-        New-InvalidOperationError -ErrorId 'InvalidLocation' -ErrorMessage $errorMessage
+        $errorMessage = $script:localizedData.IdeLocationError -f $ControllerNumber, $ControllerLocation
+
+        New-InvalidArgumentException -ArgumentName 'ControllerType' -Message $errorMessage
     }
 
     $isCompliant = $true
@@ -139,9 +125,9 @@ function Test-TargetResource
         # Only check passed parameter values
         if ($resource.ContainsKey($key))
         {
-            Write-Verbose -Message ($localizedData.ComparingParameter -f $key,
-                                                                    $PSBoundParameters[$key],
-                                                                    $resource[$key])
+            Write-Verbose -Message ($script:localizedData.ComparingParameter -f $key,
+                $PSBoundParameters[$key],
+                $resource[$key])
             $isCompliant = $isCompliant -and ($PSBoundParameters[$key] -eq $resource[$key])
         }
     }
@@ -201,19 +187,19 @@ function Set-TargetResource
         $Ensure = 'Present'
     )
 
-    Assert-Module -Name 'Hyper-V'
+    Assert-Module -ModuleName 'Hyper-V'
 
     $hardDiskDrive = Get-VMHardDiskDrive -VMName $VMName |
-                        Where-Object -FilterScript { $_.Path -eq $Path }
+        Where-Object -FilterScript { $_.Path -eq $Path }
 
     if ($Ensure -eq 'Present')
     {
         $null = $PSBoundParameters.Remove('Ensure')
 
-        Write-Verbose -Message ($localizedData.CheckingDiskIsAttached)
+        Write-Verbose -Message ($script:localizedData.CheckingDiskIsAttached)
         if ($hardDiskDrive)
         {
-            Write-Verbose -Message ($localizedData.DiskFound -f $Path, $VMName)
+            Write-Verbose -Message ($script:localizedData.DiskFound -f $Path, $VMName)
             $null = $PSBoundParameters.Remove('VMName')
             $null = $PSBoundParameters.Remove('Path')
             # As the operation is a move, we must use ToController instead of Controller
@@ -236,22 +222,25 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose -Message ($localizedData.CheckingExistingDiskLocation)
+            Write-Verbose -Message ($script:localizedData.CheckingExistingDiskLocation)
+
             $getVMHardDiskDriveParams = @{
                 VMName             = $VMName
                 ControllerType     = $ControllerType
                 ControllerNumber   = $ControllerNumber
                 ControllerLocation = $ControllerLocation
             }
+
             $existingHardDiskDrive = Get-VMHardDiskDrive @getVMHardDiskDriveParams
+
             if ($null -ne $existingHardDiskDrive)
             {
-                $errorMessage = $localizedData.DiskPresentError -f $ControllerNumber, `
-                                                                    $ControllerLocation
-                New-InvalidOperationError -ErrorId 'ControllerNotEmpty' -ErrorMessage $errorMessage
+                $errorMessage = $script:localizedData.DiskPresentError -f $ControllerNumber, $ControllerLocation
+
+                New-InvalidResultException -Message $errorMessage
             }
 
-            Write-Verbose -Message ($localizedData.AddingDisk -f $Path, $VMName)
+            Write-Verbose -Message ($script:localizedData.AddingDisk -f $Path, $VMName)
             $null = Add-VMHardDiskDrive @PSBoundParameters
         }
     }
@@ -260,12 +249,12 @@ function Set-TargetResource
         # We must ensure that the disk is absent
         if ($hardDiskDrive)
         {
-            Write-Verbose -Message ($localizedData.RemovingDisk -f $Path, $VMName)
+            Write-Verbose -Message ($script:localizedData.RemovingDisk -f $Path, $VMName)
             $null = $hardDiskDrive | Remove-VMHardDiskDrive
         }
         else
         {
-            Write-Warning -Message ($localizedData.DiskNotFound -f $Path, $VMName)
+            Write-Warning -Message ($script:localizedData.DiskNotFound -f $Path, $VMName)
         }
     }
 }

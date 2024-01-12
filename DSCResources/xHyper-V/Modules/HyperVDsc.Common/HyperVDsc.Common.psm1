@@ -1,84 +1,8 @@
-﻿#region localizeddata
-if (Test-Path "${PSScriptRoot}\${PSUICulture}")
-{
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename HyperVCommon.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\${PSUICulture}"
-}
-else
-{
-    # fallback to en-US
-    Import-LocalizedData `
-        -BindingVariable LocalizedData `
-        -Filename HyperVCommon.strings.psd1 `
-        -BaseDirectory "${PSScriptRoot}\en-US"
-}
-#endregion
+$script:dscResourceCommonModulePath = Join-Path -Path $PSScriptRoot -ChildPath '../DscResource.Common'
 
-<#
-    .SYNOPSIS
-    Throws an InvalidOperation custom exception.
+Import-Module -Name $script:dscResourceCommonModulePath
 
-    .PARAMETER ErrorId
-    The error Id of the exception.
-
-    .PARAMETER ErrorMessage
-    The error message text to set in the exception.
-#>
-function New-InvalidOperationError
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorMessage
-    )
-
-    $exception = New-Object -TypeName System.InvalidOperationException `
-        -ArgumentList $ErrorMessage
-    $errorCategory = [System.Management.Automation.ErrorCategory]::InvalidOperation
-    $errorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord `
-        -ArgumentList $exception, $ErrorId, $errorCategory, $null
-    throw $errorRecord
-} # end function New-InvalidOperationError
-
-<#
-    .SYNOPSIS
-    Throws an InvalidArgument custom exception.
-
-    .PARAMETER ErrorId
-    The error Id of the exception.
-
-    .PARAMETER ErrorMessage
-    The error message text to set in the exception.
-#>
-function New-InvalidArgumentError
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ErrorMessage
-    )
-
-    $exception = New-Object -TypeName System.ArgumentException `
-        -ArgumentList $ErrorMessage
-    $errorCategory = [System.Management.Automation.ErrorCategory]::InvalidArgument
-    $errorRecord = New-Object -TypeName System.Management.Automation.ErrorRecord `
-        -ArgumentList $exception, $ErrorId, $errorCategory, $null
-    throw $errorRecord
-} # end function New-InvalidArgumentError
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -140,7 +64,9 @@ function Set-VMProperty
         $ChangeProperty['VMName'] = $VMName
 
         # Set the common parameters for splatting against Get-VM and Set-VMState
-        $vmCommonProperty = @{ Name = $VMName; }
+        $vmCommonProperty = @{
+            Name = $VMName
+        }
 
         # Ensure that the name parameter is set for verbose messages
         $Name = $VMName
@@ -151,7 +77,9 @@ function Set-VMProperty
         $ChangeProperty['Name'] = $Name
 
         # Set the common parameters for splatting against Get-VM and Set-VMState
-        $vmCommonProperty = @{ Name = $Name; }
+        $vmCommonProperty = @{
+            Name = $Name
+        }
     }
 
     $vmObject = Get-VM @vmCommonProperty
@@ -162,7 +90,7 @@ function Set-VMProperty
         # Turn the vm off to make changes
         Set-VMState @vmCommonProperty -State Off
 
-        Write-Verbose -Message ($localizedData.UpdatingVMProperties -f $Name)
+        Write-Verbose -Message ($script:localizedData.UpdatingVMProperties -f $Name)
         # Make changes using the passed hashtable
         & $VMCommand @ChangeProperty
 
@@ -172,24 +100,24 @@ function Set-VMProperty
             Set-VMState @vmCommonProperty -State Running -WaitForIP $WaitForIP
         }
 
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
+        Write-Verbose -Message ($script:localizedData.VMPropertiesUpdated -f $Name)
 
         # Cannot restore a vm to a paused state
         if ($vmOriginalState -eq 'Paused')
         {
-            Write-Warning -Message ($localizedData.VMStateWillBeOffWarning -f $Name)
+            Write-Warning -Message ($script:localizedData.VMStateWillBeOffWarning -f $Name)
         }
     }
     elseif ($vmOriginalState -eq 'Off')
     {
-        Write-Verbose -Message ($localizedData.UpdatingVMProperties -f $Name)
+        Write-Verbose -Message ($script:localizedData.UpdatingVMProperties -f $Name)
         & $VMCommand @ChangeProperty
-        Write-Verbose -Message ($localizedData.VMPropertiesUpdated -f $Name)
+        Write-Verbose -Message ($script:localizedData.VMPropertiesUpdated -f $Name)
     }
     else
     {
-        $errorMessage = $localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmOriginalState
-        New-InvalidOperationError -ErrorId RestartRequired -ErrorMessage $errorMessage
+        $errorMessage = $script:localizedData.CannotUpdatePropertiesOnlineError -f $Name, $vmOriginalState
+        New-InvalidOperationException -Message $errorMessage
     }
 } #end function
 
@@ -238,13 +166,13 @@ function Set-VMState
             if ($vmCurrentState -eq 'Paused')
             {
                 # If VM is in paused state, use resume-vm to make it running
-                Write-Verbose -Message ($localizedData.ResumingVM -f $Name)
+                Write-Verbose -Message ($script:localizedData.ResumingVM -f $Name)
                 Resume-VM -Name $Name
             }
             elseif ($vmCurrentState -eq 'Off')
             {
                 # If VM is Off, use start-vm to make it running
-                Write-Verbose -Message ($localizedData.StartingVM -f $Name)
+                Write-Verbose -Message ($script:localizedData.StartingVM -f $Name)
                 Start-VM -Name $Name
             }
 
@@ -256,14 +184,14 @@ function Set-VMState
         'Paused' {
             if ($vmCurrentState -ne 'Off')
             {
-                Write-Verbose -Message ($localizedData.SuspendingVM -f $Name)
+                Write-Verbose -Message ($script:localizedData.SuspendingVM -f $Name)
                 Suspend-VM -Name $Name
             }
         }
         'Off' {
             if ($vmCurrentState -ne 'Off')
             {
-                Write-Verbose -Message ($localizedData.StoppingVM -f $Name)
+                Write-Verbose -Message ($script:localizedData.StoppingVM -f $Name)
                 Stop-VM -Name $Name -Force -WarningAction SilentlyContinue
             }
         }
@@ -298,39 +226,16 @@ function Wait-VMIPAddress
     [System.Int32] $elapsedSeconds = 0
     while ((Get-VMNetworkAdapter -VMName $Name).IpAddresses.Count -lt 2)
     {
-        Write-Verbose -Message ($localizedData.WaitingForVMIPAddress -f $Name)
-        Start-Sleep -Seconds 3;
+        Write-Verbose -Message ($script:localizedData.WaitingForVMIPAddress -f $Name)
+        Start-Sleep -Seconds 3
 
         $elapsedSeconds += 3
         if ($elapsedSeconds -gt $Timeout)
         {
-            $errorMessage = $localizedData.WaitForVMIPAddressTimeoutError -f $Name, $Timeout
-            New-InvalidOperationError -ErrorId 'WaitVmTimeout' -ErrorMessage $errorMessage
+            $errorMessage = $script:localizedData.WaitForVMIPAddressTimeoutError -f $Name, $Timeout
+
+            New-ObjectNotFoundException -Message $errorMessage
         }
-    }
-} #end function
-
-<#
-    .SYNOPSIS
-    Ensures that the specified PowerShell module(s) are installed.
-
-    .PARAMETER Name
-    Name of the PowerShell module to check is installed.
-#>
-function Assert-Module
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $Name
-    )
-
-    if (-not (Get-Module -Name $Name -ListAvailable ))
-    {
-        $errorMessage = $localizedData.RoleMissingError -f $Name
-        New-InvalidOperationError -ErrorId MissingRole -ErrorMessage $errorMessage
     }
 } #end function
 
@@ -428,8 +333,8 @@ function Get-VMHyperV
     # Check if 1 or 0 VM with name = $name exist
     if ($vm.count -gt 1)
     {
-        $errorMessage = $localizedData.MoreThanOneVMExistsError -f $VMName
-        New-InvalidArgumentError -ErrorId 'MultipleVMsFound' -ErrorMessage $errorMessage
+        $errorMessage = $script:localizedData.MoreThanOneVMExistsError -f $VMName
+        New-InvalidResultException -Message $errorMessage
     }
 
     return $vm

@@ -1,0 +1,32 @@
+.NAME
+    xVMScsiController
+
+.DESCRIPTION
+    Manages the SCSI controllers attached to a Hyper-V virtual machine.
+
+    When removing a controller, all the disks still connected to the controller
+    will be detached.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER VMName
+    Key - String
+    Specifies the name of the virtual machine whose SCSI controller status is to be controlled
+
+.PARAMETER ControllerNumber
+    Key - UInt32
+    Allowed values: 0, 1, 2, 3
+    Specifies the number of the SCSI controller whose status is to be controlled. If not specified, it defaults to 0.
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Specifies if the SCSI controller should exist or not. If not specified, it defaults to Present.
+
+.PARAMETER RestartIfNeeded
+    Write - Boolean
+    Specifies if the VM should be restarted if needed for property changes. If not specified, it defaults to False.
+

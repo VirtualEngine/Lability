@@ -9,11 +9,9 @@ ConvertFrom-StringData @'
     VhdUnsupportedOnGen2VMError       = Generation 2 virtual machines do not support the .VHD virtual disk extension.
     CannotUpdatePropertiesOnlineError = Can not change properties for VM '{0}' in '{1}' state unless 'RestartIfNeeded' is set to true.
     AutomaticCheckpointsUnsupported   = AutomaticCheckpoints are not supported on this host.
-
     AdjustingGreaterThanMemoryWarning = VM {0} '{1}' is greater than {2} '{3}'. Adjusting {0} to be '{3}'.
     AdjustingLessThanMemoryWarning    = VM {0} '{1}' is less than {2} '{3}'. Adjusting {0} to be '{3}'.
     VMStateWillBeOffWarning           = VM '{0}' state will be 'OFF' and not 'Paused'.
-
     CheckingVMExists                  = Checking if VM '{0}' exists ...
     VMExists                          = VM '{0}' exists.
     VMDoesNotExist                    = VM '{0}' does not exist.
@@ -22,7 +20,5 @@ ConvertFrom-StringData @'
     VMPropertyShouldBe                = VM property '{0}' should be '{1}', actual '{2}'.
     VMPropertySet                     = VM property '{0}' is '{1}'.
     VMPropertiesUpdated               = VM '{0}' properties have been updated.
-    WaitingForVMIPAddress             = Waiting for IP Address for VM '{0}' ...
-
     QueryingVM                        = Querying VM '{0}'.
 '@

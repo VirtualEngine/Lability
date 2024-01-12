@@ -1,0 +1,32 @@
+.NAME
+    xVMDvdDrive
+
+.DESCRIPTION
+    Manages DVD drives attached to a Hyper-V virtual machine.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER VMName
+    Key - String
+    Specifies the name of the virtual machine to which the DVD drive is to be added.
+
+.PARAMETER ControllerNumber
+    Key - UInt32
+    Specifies the number of the controller to which the DVD drive is to be added.
+
+.PARAMETER ControllerLocation
+    Key - UInt32
+    Specifies the number of the location on the controller at which the DVD drive is to be added.
+
+.PARAMETER Path
+    Write - String
+    Specifies the full path to the virtual hard disk file or physical hard disk volume for the added DVD drive.
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Specifies if the DVD Drive should exist or not.
+

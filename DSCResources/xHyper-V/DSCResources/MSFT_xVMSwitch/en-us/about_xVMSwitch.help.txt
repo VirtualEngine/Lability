@@ -1,0 +1,55 @@
+.NAME
+    xVMSwitch
+
+.DESCRIPTION
+    Manages virtual switches in a Hyper-V host.
+
+    ## Requirements
+
+    * The Hyper-V Role has to be installed on the machine.
+    * The Hyper-V PowerShell module has to be installed on the machine.
+
+.PARAMETER Name
+    Key - String
+    Name of the VM Switch
+
+.PARAMETER Type
+    Key - String
+    Allowed values: External, Internal, Private
+    Type of switch
+
+.PARAMETER NetAdapterName
+    Write - StringArray
+    Network adapter name(s) for external switch type
+
+.PARAMETER AllowManagementOS
+    Write - Boolean
+    Specify if the VM host has access to the physical NIC
+
+.PARAMETER EnableEmbeddedTeaming
+    Write - Boolean
+    Should embedded NIC teaming be used (Windows Server 2016 only)
+
+.PARAMETER BandwidthReservationMode
+    Write - String
+    Allowed values: Default, Weight, Absolute, None, NA
+    Type of Bandwidth Reservation Mode to use for the switch
+
+.PARAMETER LoadBalancingAlgorithm
+    Write - String
+    Allowed values: Dynamic, HyperVPort
+    Specifies the load balancing algorithm that this switch team uses
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Whether switch should be present or absent
+
+.PARAMETER Id
+    Write - String
+    Unique ID for the switch (Only settable on Windows Server 2016!)
+
+.PARAMETER NetAdapterInterfaceDescription
+    Read - String
+    Description of the network interface
+
