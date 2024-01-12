@@ -121,6 +121,44 @@ LONG DESCRIPTION
                 }
             }
 
+        Furthermore it is possible to define different network adapter settings per node. The network adapter configuration needs to be defined as a hashtable in the node or all-node data.
+        For example you can specify a VLAN for a network adapter, that is connected to a specific switch:
+
+            @{
+                AllNodes = @(
+                    @{
+                        SwitchName = 'Development','Internet';
+                        NetAdapterConfiguration = @(
+                            @{
+                                VlanId = 1
+                                SwitchName = 'Development'
+                                MacAddress = '00-15-5d-ff-ff-01'
+                            },
+                            @{
+                                VlanId = 2
+                                SwitchName = 'Internet'
+                                MacAddress = '00-15-5d-ff-ff-02'
+                            },
+                        )
+                    }
+                )
+                NonNodeData = @{
+                    Lability = @{
+                        Network = @(
+                            @{
+                                Name = 'Development';
+                                Type = 'Private';
+                            },
+                            @{
+                                Name = 'Internet';
+                                Type = 'External';
+                                NetAdapterName = 'Ethernet';
+                                AllowManagementOS = $true;
+                            }
+                        )
+                    }
+                }
+            }
 
 KEYWORDS
     Lab networking
