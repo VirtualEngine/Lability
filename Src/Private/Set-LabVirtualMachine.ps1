@@ -57,6 +57,10 @@ function Set-LabVirtualMachine {
         [Parameter()]
         [System.Collections.Hashtable] $DvdDrive,
 
+        ## xVMNetWorkAdapter options
+        [Parameter()]
+        [System.Collections.Hashtable[]] $NetAdapterConfiguration,
+
         ## Specifies a PowerShell DSC configuration document (.psd1) containing the lab configuration.
         [Parameter(ValueFromPipelineByPropertyName)]
         [System.Collections.Hashtable]
@@ -69,14 +73,18 @@ function Set-LabVirtualMachine {
         $vmProcessorParams = $PSBoundParameters['ProcessorOption'];
         $vmDvdDriveParams = $PSBoundParameters['DvdDrive'];
         $vmHardDiskDriveParams = $PSBoundParameters['HardDiskDrive'];
+        $vmNetAdapterConfiguration = $PSBoundParameters['NetAdapterConfiguration'];
         [ref] $null = $PSBoundParameters.Remove('ProcessorOption');
         [ref] $null = $PSBoundParameters.Remove('DvdDrive');
         [ref] $null = $PSBoundParameters.Remove('HardDiskDrive');
+        [ref] $null = $PSBoundParameters.Remove('NetAdapterConfiguration');
+
 
         ## Resolve the xVMHyperV resource parameters
         $vmHyperVParams = Get-LabVirtualMachineProperty @PSBoundParameters;
         Write-Verbose -Message ($localized.CreatingVMGeneration -f $vmHyperVParams.Generation);
         Import-LabDscResource -ModuleName xHyper-V -ResourceName MSFT_xVMHyperV -Prefix VM;
+
         Invoke-LabDscResource -ResourceName VM -Parameters $vmHyperVParams;
 
         if ($null -ne $vmProcessorParams) {
@@ -105,6 +113,19 @@ function Set-LabVirtualMachine {
                 HardDiskDrive = $vmHardDiskDriveParams;
             }
             Set-LabVirtualMachineHardDiskDrive @setLabVirtualMachineHardDiskDriveParams;
+        }
+
+        if ($null -ne $vmNetAdapterConfiguration) {
+
+            ## Ensure we have the node's name and splat params
+            $setLabVirtualMachineNetworkAdapterParams = @{
+                Nodename = $Name;
+                NetAdapterConfiguration = $vmNetAdapterConfiguration
+                ConfigurationData = $ConfigurationData
+            }
+            
+            Set-LabVirtualMachineNetworkAdapter @setLabVirtualMachineNetworkAdapterParams
+            
         }
 
     } #end process

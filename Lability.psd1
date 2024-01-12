@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Lability.psm1';
-    ModuleVersion     = '0.25.0';
+    ModuleVersion     = '0.25.1';
     GUID              = '374126b4-f3d4-471d-b25e-767f69ee03d0';
     Author            = 'Iain Brighton';
     CompanyName       = 'Virtual Engine';
@@ -8,7 +8,7 @@
     Description       = 'The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.';
     PowerShellVersion = '4.0';
     FormatsToProcess  = @('Lability.Format.ps1xml');
-    FunctionsToExport = @(
+    FunctionsToExport = @(  
                             'Checkpoint-Lab',
                             'Clear-LabModuleCache',
                             'Clear-ModulePath',

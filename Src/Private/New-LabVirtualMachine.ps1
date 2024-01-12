@@ -146,6 +146,7 @@ function New-LabVirtualMachine {
             MaximumMemory = $node.MaximumMemory;
             ProcessorCount = $node.ProcessorCount;
             MACAddress = $node.MACAddress;
+            NetAdapterConfiguration = $node.NetAdapterConfiguration;
             SecureBoot = $node.SecureBoot;
             GuestIntegrationServices = $node.GuestIntegrationServices;
             AutomaticCheckPoints = $node.AutomaticCheckpoints;

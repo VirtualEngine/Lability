@@ -172,6 +172,7 @@ ConvertFrom-StringData -StringData @'
     TestingNodeStatus                 = Node '{0}' reported status '{1}'; expecting 'Idle'.
     CreatingAdditionalVhdFile         = Creating additional VHD/X '{0}'.
     AddingAdditionalVhdFile           = Attaching VHD/X '{0}' to controller location '{1}'.
+    ConfiguringNetworkAdapter         = Configuring network adapter '{0}' on VM '{1}'.
     RemovingVhdFile                   = Removing VHD/X '{0}'.
     LoadedModuleVersion               = Loaded {0} module version '{1}'.
     ProcessingMofFile                 = Processing DSC node configuration file '{0}'.
