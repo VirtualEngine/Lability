@@ -59,7 +59,7 @@ function Get-LabMofModule {
                     }
                     else {
 
-                        Write-Warning -Message ($localized.CannotResolveMofModuleWarning -f $instanceLineNumber);
+                        Write-Warning -Message ($localized.CannotResolveMofModuleWarning -f $path, $instanceLineNumber, $line);
                     }
 
                     $instanceLineNumber = $currentLineNumber;
