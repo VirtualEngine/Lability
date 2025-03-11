@@ -2,10 +2,11 @@
 
 ## Versions ##
 
-### Unreleased ###
+### 0.26.0 (Unreleased) ###
 
 * Moves all Windows Server 2012 R2 media to legacy media due to end of support
 * Assigns mounted VHD(X) a drive letter - if not automatically assigned
+* Updates build pipeline with DotNet Core Azure Sign Tool (and removes VE_Certificate_2023.pfx)
 
 ### 0.25.0 ###
 
