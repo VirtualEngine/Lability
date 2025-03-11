@@ -2,6 +2,11 @@
 
 ## Versions ##
 
+### Unreleased ###
+
+* Moves all Windows Server 2012 R2 media to legacy media due to end of support
+* Assigns mounted VHD(X) a drive letter - if not automatically assigned
+
 ### 0.25.0 ###
 
 * Adds Windows 11 Enterprise 23H2 (2310) evaluation media

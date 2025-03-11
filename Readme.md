@@ -47,13 +47,13 @@ module can interpret.
             NodeName                = 'DC1';
             Lability_ProcessorCount = 2;
             Lability_SwitchName     = 'CORPNET';
-            Lability_Media          = '2012R2_x64_Standard_EN_Eval';
+            Lability_Media          = '2016_x64_Datacenter_EN_Eval';
         },
         @{
             NodeName                = 'APP1';
             Lability_ProcessorCount = 1;
             Lability_SwitchName     = 'CORPNET';
-            Lability_Media          = '2012R2_x64_Standard_EN_Eval';
+            Lability_Media          = '2016_x64_Datacenter_EN_Eval';
         }
     )
     NonNodeData = @{

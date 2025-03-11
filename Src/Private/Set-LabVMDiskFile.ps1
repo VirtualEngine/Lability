@@ -78,10 +78,26 @@ function Set-LabVMDiskFile {
 
         Write-Verbose -Message ($localized.MountingDiskImage -f $VhdPath);
         $vhd = Hyper-V\Mount-Vhd -Path $vhdPath -Passthru -Confirm:$false;
-        [ref] $null = Get-PSDrive;
+        $driveList = Get-PSDrive -PSProvider FileSystem
         $vhdDriveLetter = Storage\Get-Partition -DiskNumber $vhd.DiskNumber |
                             Where-Object DriveLetter |
                                 Select-Object -Last 1 -ExpandProperty DriveLetter;
+
+        ## If no drive letter is automagically assigned, assign one.
+        if ($null -eq $vhdDriveLetter)
+        {
+            $driveListNames = $driveList.Name
+            foreach ($driveLetter in [char[]](67..90))
+            {
+                if ($driveListNames -notcontains $driveLetter)
+                {
+                    $vhdDriveLetter = $driveLetter
+                    break
+                }
+            }
+            Get-Partition | Where-Object { ($_.DiskNumber -eq $vhd.DiskNumber) -and ($_.Type -eq 'Basic') } |
+                Set-Partition -NewDriveLetter $vhdDriveLetter
+        }
         Start-ShellHWDetectionService;
 
         try {

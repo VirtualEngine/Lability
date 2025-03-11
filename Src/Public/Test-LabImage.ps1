@@ -10,9 +10,9 @@ function Test-LabImage {
         Specifies a PowerShell DSC configuration data hashtable or a path to an existing PowerShell DSC .psd1
         configuration document that contains the required media definition.
     .EXAMPLE
-        Test-LabImage -Id 2012R2_x64_Standard_EN_Eval
+        Test-LabImage -Id 2016_x64_Datacenter_EN_Eval
 
-        Tests whether the '-Id 2012R2_x64_Standard_EN_Eval' lab image is present.
+        Tests whether the '-Id 2016_x64_Datacenter_EN_Eval' lab image is present.
     .LINK
         Get-LabImage
 #>

@@ -22,7 +22,7 @@ Describe 'Unit\Src\Public\Set-LabVMDefault' {
             @{ MinimumMemory = 1GB; }
             @{ MaximumMemory = 2GB; }
             @{ ProcessorCount = 4; }
-            @{ Media = '2012R2_x64_Standard_EN_Eval'; }
+            @{ Media = '2016_x64_Datacenter_EN_Eval'; }
             @{ SwitchName = 'Test Switch'; }
             @{ Timezone = 'Eastern Standard Time'; }
             @{ InputLocale = 'DE-de'; }

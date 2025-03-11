@@ -16,7 +16,7 @@ Describe 'Unit\Src\Public\Get-LabMedia' {
         }
 
         It 'Returns a single matching built-in media when "Id" is specified' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $labMedia = Get-LabMedia -Id $testMediaId;
 
             $labMedia | Should Not BeNullOrEmpty;
