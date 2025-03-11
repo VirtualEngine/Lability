@@ -26,7 +26,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Calls "Invoke-ResourceDownload" with "ParentVhdPath" if media type is "VHD"' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.vhdx";
             $testHostIsoPath = 'TestDrive:\ISOs';
             $testHostParentVhdPath = 'TestDrive:\ParentDisks';
@@ -44,7 +44,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Calls "Invoke-ResourceDownload" with "IsoPath" if media type is "ISO"' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.iso";
             $testHostIsoPath = 'TestDrive:\ISOs';
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
@@ -60,7 +60,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Calls "Invoke-ResourceDownload" with "IsoPath" if media type is "WIM"' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = 'TestDrive:\ISOs';
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
@@ -76,7 +76,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Calls "Invoke-ResourceDownload" with "Force" parameter when specified' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.iso";
             $testHostIsoPath = 'TestDrive:\ISOs';
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
@@ -92,7 +92,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Calls "Invoke-ResourceDownload" with large "BufferSize" for file Uris' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = 'TestDrive:\ISOs';
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
@@ -108,7 +108,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Does not call "Invoke-ResourceDownload" when "DisableLocalFileCaching" is enabled' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = '{0}\ISOs' -f (Get-PSDrive -Name TestDrive).Root
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
@@ -124,7 +124,7 @@ Describe 'Unit\Src\Private\Invoke-LabMediaImageDownload' {
         }
 
         It 'Returns source Uri when "DisableLocalFileCaching" is enabled' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = "$testMediaId.wim";
             $testHostIsoPath = '{0}\ISOs' -f (Get-PSDrive -Name TestDrive).Root
             $testImagePath = "$testHostIsoPath\$testMediaFilename";
