@@ -4,28 +4,82 @@
 $psake.use_exit_on_error = $true;
 
 Properties {
-    $moduleName = (Get-Item $PSScriptRoot\*.psd1)[0].BaseName;
-    $basePath = $psake.build_script_dir;
-    $buildDir = 'Release';
-    $buildPath = (Join-Path -Path $basePath -ChildPath $buildDir);
-    $releasePath = (Join-Path -Path $buildPath -ChildPath $moduleName);
-    $thumbprint = '6F72C7A1BD6979DD8F08DC066ABC12FB80A453E9';
-    $timeStampServer = 'http://timestamp.digicert.com';
+    $moduleName = (Get-Item $PSScriptRoot\*.psd1)[0].BaseName
+    $basePath = $psake.build_script_dir
+    $buildDir = 'Release'
+    $buildPath = (Join-Path -Path $basePath -ChildPath $buildDir)
+    $releasePath = (Join-Path -Path $buildPath -ChildPath $moduleName)
+    $combine = @(
+        'Src\Private',
+        'Src\Public'
+    )
     $exclude = @(
-                '.git*',
-                '.vscode',
-                'Release',
-                'Tests',
-                'Build.PSake.ps1',
-                '*.png',
-                '*.md',
-                '*.enc',
-                'TestResults.xml',
-                'appveyor.yml',
-                'appveyor-tools'
-                );
-    $signExclude = @('Examples','DSCResources');
+        '.git*',
+        '.vscode',
+        'Release',
+        'Tests',
+        'Build.PSake.ps1',
+        '*.png',
+        '*.md',
+        '*.enc',
+        'TestResults.xml',
+        'appveyor.yml',
+        'appveyor-tools',
+        'Src' # Fo;es are combined and then signed
+    )
+    $signExclude = @('Examples','DSCResources')
 }
+
+#region functions
+
+function Set-FileSignatureKeyVault
+{
+    [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions','')]
+    param
+    (
+        ## File to sign
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [System.String] $Path,
+
+        ## Code-signing timestamp server
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $TimestampServer = 'http://timestamp.digicert.com',
+
+        ## Code-signing certificate thumbprint
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.String] $HashAlgorithm = 'SHA256'
+    )
+    process
+    {
+        $azureSignToolArguments = @('sign', '-kvu', $env:kv_uri, '-kvc', $env:kv_certificate_name)
+        $azureSignToolArguments += @('-kvi', $env:kv_client_id)
+        $azureSignToolArguments += @('-kvs', $env:kv_client_secret)
+        $azureSignToolArguments += @('-kvt', $env:kv_tenant_id)
+        $azureSignToolArguments += @('-tr', $TimestampServer)
+
+        if ($PSBoundParameters.ContainsKey('HashAlgorithm'))
+        {
+            $azureSignToolArguments += @('-fd', $HashAlgorithm)
+        }
+
+        $azureSignToolArguments += '"{0}"' -f $Path
+
+        $azureSignToolPath = Resolve-Path -Path (Join-Path -Path '~\.dotnet\tools' -ChildPath 'AzureSignTool.exe')
+        if (-not (Test-Path -Path $azureSignToolPath -PathType Leaf))
+        {
+            throw ("Cannot find file '{0}'." -f $azureSignToolPath)
+        }
+
+        & $azureSignToolPath $azureSignToolArguments | Write-Verbose -Verbose
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw ("Error '{0}' signing file '{1}'." -f $LASTEXITCODE, $Path)
+        }
+    }
+}
+
+#endregion functions
 
 # Synopsis: Initialises build variables
 Task Init {
@@ -66,42 +120,52 @@ Task Test -Depends Init {
 }
 
 # Synopsis: Copies release files to the release directory
-Task Deploy -Depends Clean {
+Task Stage -Depends Clean {
 
     Get-ChildItem -Path $basePath -Exclude $exclude | ForEach-Object {
         Write-Host (' Copying {0}' -f $PSItem.FullName) -ForegroundColor Yellow;
         Copy-Item -Path $PSItem -Destination $releasePath -Recurse;
     }
+
+    foreach ($combinePath in $combine)
+    {
+        $combinePathItem = Get-Item -Path (Join-Path -Path $basePath -ChildPath $combinePath)
+        $targetCombinedFilePath = Join-Path -Path $releasePath -ChildPath $combinePath
+        $null = New-Item -Path (Split-Path -Path $targetCombinedFilePath -Parent) -Name (Split-Path -Path $targetCombinedFilePath -Leaf) -ItemType Directory -Force
+        $combinedFilePath = Join-Path -Path $targetCombinedFilePath -ChildPath ('{0}.ps1' -f (Split-Path -Path $targetCombinedFilePath -Leaf))
+        Get-ChildItem -Path $combinePathItem |
+            ForEach-Object {
+                Write-Host (' Combining {0}' -f $PSItem.FullName) -ForegroundColor Yellow;
+                (Get-Content -Path $PSItem.FullName -Raw) | Add-Content -Path $combinedFilePath
+                Start-Sleep -Milliseconds 30
+            }
+    }
 } #end
 
 # Synopsis: Signs files in release directory
-Task Sign -Depends Deploy {
+Task Sign -Depends Stage {
 
-    if (-not (Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object Thumbprint -eq $thumbprint)) {
-        ## Decrypt and import code signing cert
-        .\appveyor-tools\secure-file.exe -decrypt .\VE_Certificate_2023.pfx.enc -secret "$env:certificate_secret" -salt "$env:certificate_salt"
-        $certificatePassword = ConvertTo-SecureString -String $env:certificate_secret -AsPlainText -Force
-        Import-PfxCertificate -FilePath .\VE_Certificate_2023.pfx -CertStoreLocation 'Cert:\CurrentUser\My' -Password $certificatePassword
-    }
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    Get-ChildItem -Path $releasePath -Exclude $signExclude | ForEach-Object {
-        if ($PSItem -is [System.IO.DirectoryInfo]) {
-            Get-ChildItem -Path $PSItem.FullName -Include *.ps* -Recurse | ForEach-Object {
-                Write-Host (' Signing {0}' -f $PSItem.FullName) -ForegroundColor Yellow -NoNewline;
-                $signResult = Set-ScriptSignature -Path $PSItem.FullName -Thumbprint $thumbprint -TimeStampServer $timeStampServer -ErrorAction Stop;
-                Write-Host (' {0}.' -f $signResult.Status) -ForegroundColor Green;
+    Get-ChildItem -Path $releasePath -Include *.ps* -Recurse | ForEach-Object {
+        $isExcluded = $false
+        foreach ($excludedPath in $SignExclude)
+        {
+            if ($PSItem.FullName -match $excludedPath)
+            {
+                $isExcluded = $true
             }
-
         }
-        elseif ($PSItem.Name -like '*.ps*') {
-            Write-Host (' Signing {0}' -f $PSItem.FullName) -ForegroundColor Yellow -NoNewline;
-            $signResult = Set-ScriptSignature -Path $PSItem.FullName -Thumbprint $thumbprint -TimeStampServer $timeStampServer -ErrorAction Stop;
-            Write-Host (' {0}.' -f $signResult.Status) -ForegroundColor Green;
+
+        if (-not $isExcluded)
+        {
+            Write-Host (' Signing file "{0}"' -f $PSItem.FullName) -ForegroundColor Yellow
+            Set-FileSignatureKeyVault -Path $PSItem.FullName
         }
     }
 }
 
-Task Version -Depends Deploy {
+Task Version -Depends Stage {
 
     $nuSpecPath = Join-Path -Path $releasePath -ChildPath "$ModuleName.nuspec"
     $nuspec = [System.Xml.XmlDocument] (Get-Content -Path $nuSpecPath -Raw)
@@ -122,14 +186,6 @@ Task Package -Depends Build {
     NuGet.exe pack "$targetNuSpecPath" -OutputDirectory "$env:TEMP"
 }
 
-# Synopsis: Publish release module to Dropbox repository
-Task Publish_Dropbox -Depends Package {
-
-    $targetNuPkgPath = Join-Path -Path "$env:TEMP" -ChildPath "$ModuleName.$version.nupkg"
-    $destinationPath = "$env:USERPROFILE\Dropbox\PSRepository"
-    Copy-Item -Path "$targetNuPkgPath"-Destination $destinationPath -Force
-}
-
 # Synopsis: Publish test results to AppVeyor
 Task AppVeyor {
 
@@ -144,4 +200,4 @@ Task AppVeyor {
 Task Default -Depends Init, Clean, Test
 Task Build -Depends Default, Deploy, Version, Sign;
 Task Publish -Depends Build, Package, Publish_PSGallery
-Task Local -Depends Build, Package, Publish_Dropbox
+Task Local -Depends Build, Package
