@@ -198,6 +198,6 @@ Task AppVeyor {
 }
 
 Task Default -Depends Init, Clean, Test
-Task Build -Depends Default, Deploy, Version, Sign;
+Task Build -Depends Default, Stage, Version, Sign;
 Task Publish -Depends Build, Package, Publish_PSGallery
 Task Local -Depends Build, Package
