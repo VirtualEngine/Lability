@@ -2,7 +2,7 @@
 
 ## Versions ##
 
-### 0.26.0 (Unreleased) ###
+### 0.26.0 ###
 
 * Adds Windows 11 Enterprise 24H2 (2410) evaluation media
   * Adds EN-US ARM64 media (WIN11_ARM64_Enterprise_24H2_EN_Eval)
