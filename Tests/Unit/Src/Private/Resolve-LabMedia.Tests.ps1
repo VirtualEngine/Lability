@@ -10,7 +10,7 @@ Describe 'Unit\Src\Private\Resolve-LabMedia' {
     InModuleScope -ModuleName $moduleName {
 
         It 'Throws if media Id cannot be resolved' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = 'test-media.iso';
             $configurationData = @{
                 NonNodeData = @{
@@ -27,7 +27,7 @@ Describe 'Unit\Src\Private\Resolve-LabMedia' {
         }
 
         It 'Returns configuration data media entry if it exists' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testMediaFilename = 'test-media.iso';
             $configurationData = @{
                 NonNodeData = @{
@@ -46,7 +46,7 @@ Describe 'Unit\Src\Private\Resolve-LabMedia' {
         }
 
         It 'Returns default media if configuration data entry does not exist' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $configurationData = @{
                 NonNodeData = @{
                     $labDefaults.ModuleName = @{ } } }

@@ -2,6 +2,20 @@
 
 ## Versions ##
 
+### 0.26.0 ###
+
+* Adds Windows 11 Enterprise 24H2 (2410) evaluation media
+  * Adds EN-US ARM64 media (WIN11_ARM64_Enterprise_24H2_EN_Eval)
+  * Adds EN-GB x64 media (WIN11_x64_Enterprise_24H2_ENGB_Eval)
+* Moves all Windows Server 2012 R2 media to legacy media due to end of support
+* Assigns mounted VHD(X) a drive letter - if not automatically assigned
+* Updates build pipeline with DotNet Core Azure Sign Tool (and removes VE_Certificate_2023.pfx)
+
+### 0.25.0 ###
+
+* Adds Windows 11 Enterprise 23H2 (2310) evaluation media
+* Updates default Windows 11 evaluation media to Windows 11 23H2 (2310)
+
 ### 0.24.0 ###
 
 * Adds support for Azure DevOps package module feeds (thanks @bm-fez)

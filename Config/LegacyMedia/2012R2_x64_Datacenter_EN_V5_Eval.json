@@ -1,0 +1,20 @@
+{
+    "Id": "2012R2_x64_Datacenter_EN_V5_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter 64-bit English Evaluation with WMF 5",
+    "Architecture": "x64",
+    "ImageName": "4",
+    "MediaType": "ISO",
+    "OperatingSystem": "Windows",
+    "Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+    "Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+    "CustomData": {
+        "WindowsOptionalFeature": ["NetFx3"]
+    },
+    "Hotfixes": [
+        {
+            "Id": "Win8.1AndW2K12R2-KB3134758-x64.msu",
+            "Uri": "https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu"
+        }
+    ]
+}

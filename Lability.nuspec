@@ -9,7 +9,7 @@
     <summary>The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.</summary>
     <description>The Lability module contains cmdlets for provisioning Hyper-V test lab and development environments.</description>
     <projectUrl>https://github.com/VirtualEngine/Lability</projectUrl>
-    <copyright>(c) 2019 Virtual Engine Limited. All rights reserved.</copyright>
+    <copyright>(c) 2025 Virtual Engine Limited. All rights reserved.</copyright>
     <iconUrl>https://raw.githubusercontent.com/VirtualEngine/Lability/master/Lability.png</iconUrl>
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

@@ -1,0 +1,44 @@
+{
+    "Id": "2012R2_x64_Datacenter_EN_Eval",
+    "Filename": "2012R2_x64_EN_Eval.iso",
+    "Description": "Windows Server 2012 R2 Datacenter 64-bit English Evaluation",
+    "Architecture": "x64",
+    "ImageName": "4",
+    "MediaType": "ISO",
+    "OperatingSystem": "Windows",
+    "Uri": "http://download.microsoft.com/download/6/2/A/62A76ABB-9990-4EFC-A4FE-C7D698DAEB96/9600.17050.WINBLUE_REFRESH.140317-1640_X64FRE_SERVER_EVAL_EN-US-IR3_SSS_X64FREE_EN-US_DV9.ISO",
+    "Checksum": "5B5E08C490AD16B59B1D9FAB0DEF883A",
+    "CustomData": {
+        "WindowsOptionalFeature": ["NetFx3"]
+    },
+    "Hotfixes": [
+        {
+            "Id": "Windows8.1-KB2883200-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2883200-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB2894029-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2894029-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB2894179-x64.msu",
+            "Uri": "http://download.microsoft.com/download/2/7/2/272671E7-44C4-4DC8-BAD0-08A3BF7B08F8/Windows8.1-KB2894179-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3003057-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3003057-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3000850-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3000850-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3014442-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3014442-x64.msu"
+        },
+        {
+            "Id": "Windows8.1-KB3016437-x64.msu",
+            "Uri": "http://download.microsoft.com/download/D/C/6/DC69B595-9C62-4B31-B154-B3722250D296/Windows8.1-KB3016437-x64.msu"
+        }
+    ]
+}

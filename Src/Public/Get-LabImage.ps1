@@ -14,9 +14,9 @@ function Get-LabImage {
 
         Returns all current lab images on the host.
     .EXAMPLE
-        Get-LabImage -Id 2012R2_x64_Standard_EN_Eval
+        Get-LabImage -Id 2016_x64_Datacenter_EN_Eval
 
-        Returns the '2012R2_x64_Standard_EN_Eval' lab image properties, if available.
+        Returns the '2016_x64_Datacenter_EN_Eval' lab image properties, if available.
 #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]

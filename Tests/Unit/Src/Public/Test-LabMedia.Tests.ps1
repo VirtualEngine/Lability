@@ -10,7 +10,7 @@ Describe 'Unit\Src\Public\Test-LabMedia' {
     InModuleScope -ModuleName $moduleName {
 
         It 'Passes when media ISO has been downloaded' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testHostIsoPath = 'TestDrive:';
             $testMediaFilename = 'test-media.iso';
             $fakeLabMedia = @{ Filename = $testMediaFilename; Uri = 'http//testmedia.com/test-media.iso'; Checksum = ''; }
@@ -22,7 +22,7 @@ Describe 'Unit\Src\Public\Test-LabMedia' {
         }
 
         It 'Fails when media ISO has not been downloaded' {
-            $testMediaId = '2012R2_x64_Standard_EN_Eval';
+            $testMediaId = '2016_x64_Datacenter_EN_Eval';
             $testHostIsoPath = 'TestDrive:';
             $testMediaFilename = 'test-media.iso';
             $fakeLabMedia = @{ Filename = $testMediaFilename; Uri = 'http//testmedia.com/test-media.iso'; Checksum = ''; }

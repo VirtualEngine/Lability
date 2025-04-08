@@ -15,13 +15,13 @@ function New-LabImage {
     .PARAMETER Force
         Specifies that any existing image should be overwritten.
     .EXAMPLE
-        New-LabImage -Id 2012R2_x64_Standard_EN_Eval
+        New-LabImage -Id 2016_x64_Datacenter_EN_Eval
 
-        Creates the VHD(X) image from the '2012R2_x64_Standard_EN_Eval' media Id.
+        Creates the VHD(X) image from the '2016_x64_Datacenter_EN_Eval' media Id.
     .EXAMPLE
-        New-LabImage -Id 2012R2_x64_Standard_EN_Eval -Force
+        New-LabImage -Id 2016_x64_Datacenter_EN_Eval -Force
 
-        Creates the VHD(X) image from the '2012R2_x64_Standard_EN_Eval' media Id, overwriting an existing image with the same name.
+        Creates the VHD(X) image from the '2016_x64_Datacenter_EN_Eval' media Id, overwriting an existing image with the same name.
     .LINK
         Get-LabMedia
         Get-LabImage
