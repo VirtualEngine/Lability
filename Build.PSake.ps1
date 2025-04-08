@@ -65,7 +65,7 @@ function Set-FileSignatureKeyVault
 
         $azureSignToolArguments += '"{0}"' -f $Path
 
-        $azureSignToolPath = Resolve-Path -Path (Join-Path -Path '~\.dotnet\tools' -ChildPath 'AzureSignTool.exe')
+        $azureSignToolPath = Resolve-Path -Path (Join-Path -Path "$env:USERPROFILE\.dotnet\tools" -ChildPath 'AzureSignTool.exe')
         if (-not (Test-Path -Path $azureSignToolPath -PathType Leaf))
         {
             throw ("Cannot find file '{0}'." -f $azureSignToolPath)
